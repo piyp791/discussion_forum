@@ -1,0 +1,104 @@
+<html>
+	<head>
+		<title id = 'pagetitle'>Bug on linking to a specific answer within a question: Firefox   AskDifferent
+		</title>
+	<head>
+	<body id = 'pagebody'><p>This question is related to: <a href="https://apple.meta.stackexchange.com/q/1698">How do I link to a specific answer?</a>.</p>
+
+<p>Within the set of answers (to a specific question) I may represent like this:</p>
+
+<ol>
+<li><pre><code>Question 59917
+</code></pre></li>
+<li><pre><code>Answer   59918
+</code></pre></li>
+<li><pre><code>Answer   87982
+</code></pre></li>
+</ol>
+
+<p>I want to use a link toward answer n 3 (which is technically the one which I'd like to refer to because of its technical level).</p>
+
+<p>This function exists, but differential tests (with other Stack Exchange groups and with other browsers) show that there is a relationnal problem between Firefox and Stack Exchange Ask Differnet group. </p>
+
+<p>Look at this particular answer <a href="https://apple.stackexchange.com/a/87982">https://apple.stackexchange.com/a/87982</a>
+as an example of what I'd like to be able to use.
+Within Firefox I'm getting to<a href="https://apple.stackexchange.com/a/59918">https://apple.stackexchange.com/a/59918</a>.</p>
+
+
+<h1>ANSWERS</h1>
+		<p>This looks like a bug between the Javascript in use on StackExchange and
+Firefox (22.0). When I write:</p>
+
+<pre><code>http://apple.stackexchange.com/a/87982
+</code></pre>
+
+<p>within a new Firefox window I see it is immediatly rewritten as:</p>
+
+<pre><code>http://apple.stackexchange.com/questions/59917/how-do-you-get-system-diagnostic-files-from-os-x/87982#87982
+</code></pre>
+
+<p>And the debugger of Firefox tells me that there are some CSS and Javascript error after this single GET:</p>
+
+<pre><code>[20:22:01.482] Error in parsing value for 'transition'.  Declaration dropped. @ http://cdn.sstatic.net/apple/all.css?v=8b74d819562e:1
+[20:22:01.482] Unknown property '-moz-background-clip'.  Declaration dropped. @ http://cdn.sstatic.net/apple/all.css?v=8b74d819562e:1
+[20:22:01.482] Error in parsing value for 'background'.  Declaration dropped. @ http://cdn.sstatic.net/apple/all.css?v=8b74d819562e:1
+[20:22:01.482] Expected color but found 'top'.  Error in parsing value for 'background'.  Declaration dropped. @ http://cdn.sstatic.net/apple/all.css?v=8b74d819562e:1
+[20:22:01.482] Error in parsing value for 'filter'.  Declaration dropped. @ http://cdn.sstatic.net/apple/all.css?v=8b74d819562e:1
+[20:22:01.482] Unknown property '-moz-border-radius'.  Declaration dropped. @ http://cdn.sstatic.net/apple/all.css?v=8b74d819562e:1
+[20:22:01.482] Unknown property '-moz-box-shadow'.  Declaration dropped. @ http://cdn.sstatic.net/apple/all.css?v=8b74d819562e:1
+[20:22:01.482] Unknown property '-moz-border-radius-topleft'.  Declaration dropped. @ http://cdn.sstatic.net/apple/all.css?v=8b74d819562e:1
+[20:22:01.482] Unknown property '-moz-border-radius-topright'.  Declaration dropped. @ http://cdn.sstatic.net/apple/all.css?v=8b74d819562e:1
+[20:22:01.483] Error in parsing value for 'line-height'.  Declaration dropped. @ http://cdn.sstatic.net/apple/all.css?v=8b74d819562e:1
+[20:22:01.483] Unknown property '-moz-border-radius-bottomright'.  Declaration dropped. @ http://cdn.sstatic.net/apple/all.css?v=8b74d819562e:1
+[20:22:01.484] Error in parsing value for 'white-space'.  Declaration dropped. @ http://cdn.sstatic.net/apple/all.css?v=8b74d819562e:1
+[20:22:01.484] Unknown property '-moz-border-radius-bottomleft'.  Declaration dropped. @ http://cdn.sstatic.net/apple/all.css?v=8b74d819562e:1
+[20:22:01.484] Expected 'important' but found 'ie7'.  Expected ';' or '}' to terminate declaration but found 'ie7'.  Declaration dropped. @ http://cdn.sstatic.net/apple/all.css?v=8b74d819562e:1
+[20:22:01.486] Error in parsing value for 'min-height'.  Declaration dropped. @ http://cdn.sstatic.net/apple/all.css?v=8b74d819562e:1
+[20:22:01.486] Expected color but found 'White\9 '.  Error in parsing value for 'background-color'.  Declaration dropped. @ http://cdn.sstatic.net/apple/all.css?v=8b74d819562e:1
+[20:22:01.488] Unknown property '-moz-outline-style'.  Declaration dropped. @ http://cdn.sstatic.net/apple/all.css?v=8b74d819562e:1
+[20:22:01.490] Expected color but found 'bottom'.  Error in parsing value for 'background'.  Declaration dropped. @ http://cdn.sstatic.net/apple/all.css?v=8b74d819562e:1
+[20:22:01.490] Unknown property 'zoom'.  Declaration dropped. @ http://cdn.sstatic.net/apple/all.css?v=8b74d819562e:1
+[20:22:01.491] Unknown property 'background-position-x'.  Declaration dropped. @ http://cdn.sstatic.net/apple/all.css?v=8b74d819562e:1
+[20:22:02.976] no element found @ http://apple.stackexchange.com/posts/59917/ivc/d31a?_=1375726922643:1
+[20:22:02.995] Expected media feature name but found 'view-mode'. @ http://apple.stackexchange.com/questions/59917/how-do-you-get-system-diagnostic-files-from-os-x/87982#87982:1
+[20:22:02.995] Error in parsing value for 'filter'.  Declaration dropped. @ http://apple.stackexchange.com/questions/59917/how-do-you-get-system-diagnostic-files-from-os-x/87982#87982
+</code></pre>
+
+<p>The 2 last lines are the ones who should go to the right reference within the HTML page.</p>
+
+
+<p>I'm using Firefox 22.0 on my Mac and I can confirm this defect. It's also an issue with Firefox on Windows.  FWIW, I've also seen this behavior with previous versions of the browser.</p>
+
+<p>And yet: I've only witnessed this defect at <em>Ask Different</em>.  I'm a moderator at the <em>Personal Finance &amp; Money</em> Stack Exchange and spend enough time there and I've never seen this happen at <em>Money.</em></p>
+
+<p>Consequently, I suspect the issue is related to a difference between how <em>Ask Different</em> has been configured/customized vs. how other Stack Exchange sites behave &ndash; or at least, vs. those SE sites that remain plain beta-themed, like <em>Money</em> is, currently.</p>
+
+<p>For instance, on Ask Different, the following link is <em>supposed</em> to jump directly to the anchor for Jeremy&nbsp;Mullin's answer at the corresponding question:</p>
+
+<ul>
+<li><p><a href="https://apple.stackexchange.com/a/11105">https://apple.stackexchange.com/a/11105</a></p>
+
+<p>... But it jumps to the top answer, <em>not</em> the one whose id is in the link. See:</p>
+
+<p><img src="https://i.stack.imgur.com/cfOLC.png" alt="Erroneous answer anchor jump within page"></p>
+
+<p>(Note that <em>if you scroll down</em> fast enough, you'll at least see Jeremy&nbsp;Mullin's answer flash, like it is supposed to.)</p></li>
+</ul>
+
+<p>Whereas, at <em>Personal Finance &amp; Money</em>, the following link is supposed to &mdash; and does &mdash; jump directly to the anchor for fennec's answer:</p>
+
+<ul>
+<li><p><a href="https://money.stackexchange.com/a/2772">https://money.stackexchange.com/a/2772</a></p>
+
+<p>... It jumps to the expected answer, being the one whose id is in the link. See:</p>
+
+<p><img src="https://i.stack.imgur.com/wkcYR.png" alt="Expected answer jump within page"></p></li>
+</ul>
+
+<p>@patrix had commented on this meta question: <em>"I'll tag it as a bug but I wouldn't bet on it getting resolved."</em>  Actually, I hope the difference I've demonstrated above shows this bug has a solution in reach? e.g. Isolate &amp; test the differences between the <em>Ask Different</em> theme and the plain Stack Exchange beta theme.  Create a sandbox instance of Ask Different, and remove/revert-to-plain the customized JS, CSS, and other parts, one at a time, until the issue goes away, identifying the errant part. Then, determine the appropriate fix for that errant part. </p>
+
+<p>Alternatively, perhaps the errant customized part can already be inferred from the debugging information presented in the other answer? Such might be obvious to the developer who did the customization work for <em>Ask Different</em> in the first place.</p>
+
+
+	</body>
+</html>
