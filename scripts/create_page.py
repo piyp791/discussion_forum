@@ -2,7 +2,15 @@ import xml.dom.minidom as minidom
 import xml.etree.ElementTree as ET
 import re
 
-folder = "views/";
+folder = "../views/";
+
+
+def createAnswerHTML(answer):
+	htmlContent = "\n\t\t\t<div id = \"post-ans\" class = \"post\">" +\
+	"\n\t\t\t\t" +answer+ \
+	"\n\t\t\t</div><br>";
+	return htmlContent
+
 
 def findAnswers(root, quesId):
 	answerStr = '';
@@ -15,10 +23,43 @@ def findAnswers(root, quesId):
 			if parentId == quesId:
 				answer = child.get('Body')
 				answer = re.sub(r'[^\x00-\x7F]+',' ', answer)
-				answerStr  = answerStr + answer + "\n\n"
+				answerStr  = answerStr + createAnswerHTML(answer)
 
 	return answerStr
 		
+
+def createContent(title, body, answerStr):
+
+	content = "<html>"+ \
+			  "\n\t<head>" + \
+			  "\n\t\t<link rel=\"stylesheet\" href=\"/style.css\"/>" + \
+			  "\n\t\t<title id = 'pagetitle'>"+title+ \
+			  "\n\t\t</title>"+\
+			  "\n\t<head>"+\
+			  "\n\t<body id = 'pagebody'>"+ \
+			  "\n\t\t<div class = \"container\">" +\
+			  "\n\t\t\t<header>" +\
+			  "\n\t\t\t\t<h1>Just Another Discussion Forum</h1>" +\
+			  "\n\t\t\t</header>" +\
+			  "\n\t\t\t<div class=\"topnav\" id=\"myTopnav\">" + \
+			  "\n\t\t\t\t<a href=\"/home\">Home</a>" + \
+			  "\n\t\t\t\t<a href=\"#\" style = \"float:right;\">About</a>" +\
+			  "\n\t\t\t\t<a href=\"#\" style = \"float:right;\">Preferences</a>" +\
+			  "\n\t\t\t\t<a href=\"#\" style = \"float:right;\">Profile Link</a>" +\
+			  "\n\t\t\t</div>" +\
+			  "\n\t\t\t<div id = \"post-ques\" class = \"post\">" +\
+			  "\n\t\t\t\t<h2>" + title + "</h2>" +\
+			  "\n"	+body+ \
+			  "\n\t\t\t</div>" +\
+			  "\n\n<h1>ANSWERS</h1>" +\
+			  answerStr +\
+			  "\n\t\t\t<footer>Moore & Peps collaboration.</footer>"+\
+			  "\n\t</div>" +\
+			  "\n\t</body>" + \
+			  "\n</html>";
+
+	return content
+
 
 def main():
 
@@ -40,7 +81,7 @@ def main():
 			
 			#find answers
 			answerStr = findAnswers(root, quesId)
-			content = "<html>\n\t<head>\n\t\t<title id = 'pagetitle'>"  +title+ "\n\t\t</title>\n\t<head>\n\t<body id = 'pagebody'>" +body+"\n\n<h1>ANSWERS</h1>\n\t\t" +answerStr+ "\t</body>\n</html>";
+			content = createContent(title, body, answerStr)
 
 			f.write(content);
 			f.close();
