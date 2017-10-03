@@ -1,6 +1,8 @@
 # discussion_forum
 discussion forum based on stack overflow, with improved usability and accessibility.
 
+![Home Page](/images/home_page.png)
+
 ## current progress status
 
 1. Static HTML Pages created from the dataset.
@@ -16,6 +18,7 @@ discussion forum based on stack overflow, with improved usability and accessibil
 4. recommendation engine module.
 5. user event tracking code.
 6. integration of recommendation enginw with the work flow.
+7. NLP tasks
 
 ## project set up
 

@@ -1,33 +1,89 @@
 <html>
 	<head>
+		 <link rel="stylesheet" href="/style.css"/>
 		<title id = 'pagetitle'>Home Page</title>
 	<head>
 	<body id = 'pagebody'>
-		<h1>Links Fetched From DB</h1>
-		<div id = "homepage"></div>
-		<script>
-			function getHomeLinks(homePageContent){
+		<div class="container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			
+			<div class="topnav" id="myTopnav">
+			  <a href="#">Topic 1</a>
+			  <a href="#">Topic 2</a>
+			  <a href="#">Topic 3</a>
+			  <a href="#" style = "float:right;">Preferences</a>
+			  <a href="#" style = "float:right;">Profile Link</a>
+			</div>
+			<div id = "homepage">
+				<input id="tab-1" type="radio" name="tab-group" checked="checked" />
+			    <label for="tab-1">Trending</label>
+			   
+			    <input id="tab-2" type="radio" name="tab-group" />
+			    <label for="tab-2">Recommended for you</label>
+			   
+			    <input id="tab-3" type="radio" name="tab-group" />
+			    <label for="tab-3">Latest</label>
 
-				homePageContent = eval(homePageContent);
-				console.log('home page content ->' +JSON.stringify(homePageContent));
+			    <div id="content">
+			    	<div id="content-1">
+			    		
+			    	</div>
 
-				var pagebody = document.getElementById('homepage')
-				for(var i=0;i<homePageContent.length;i++){
+			    	<div id="content-2">
+			    		<p>text for tab 2</p>
+			    	</div>
+			    </div>
 
-					var link = homePageContent[i].title;
-					console.log(link)
-					//link = link.replace("?", "%3F")	
+			</div>
+			<script>
 
-					var a = document.createElement('a');
-					a.title = link;
+				//separate div for each post (question and answer)!!!!
+				function getHomeLinks(homePageContent){
 
-					a.href = '/page/' + link.replace("?", "%3F");
-					a.innerHTML = link;
-					pagebody.appendChild(a);
+					homePageContent = eval(homePageContent);
+					//console.log('home page content ->' +JSON.stringify(homePageContent));
+
+					var pagebody = document.getElementById('content-1');
+					for(var i=0;i<homePageContent.length;i++){
+
+						var id = homePageContent[i].Id;
+
+						var par = document.createElement('p');
+						par.className = "post";
+						par.Id = "post-"+ id;
+
+						pagebody.appendChild(par);
+
+						console.log('home page content ->' +JSON.stringify(homePageContent[i]));
+
+						var link = homePageContent[i].Title;
+						console.log('link-->', link)
+						//link = link.replace("?", "%3F")
+
+						var date = homePageContent[i].CreationDate;
+						console.log('date-->', date)	
+
+						var a = document.createElement('a');
+						a.title = link;
+
+						var linktext = link.includes("?")?link.replace("?", "%3F"):link;
+						console.log('linktext-->', linktext)
+
+						a.href = '/page/' + linktext
+						a.innerHTML = link;
+						a.className = "post"
+
+						par.appendChild(a);
+
+						console.log(pagebody)
+					}
+					//document.getElementById('trendingcontent').innerHTML = homePageContent
 				}
-				//document.getElementById('homepage').innerHTML = homePageContent
-			}
-			getHomeLinks(<%-JSON.stringify(homePageContent) %>)
-		</script>
+				getHomeLinks(<%-JSON.stringify(homePageContent) %>)
+			</script>
+			<footer>Moore & Peps collaboration.</footer>
+		</div>
 	</body>
 </html>

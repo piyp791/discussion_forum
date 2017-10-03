@@ -11,7 +11,7 @@ module.exports = function(app) {
     app.get('/home', function(req, res){
 
         //get links from db
-        dbHelper.getHomePageLinks('random', function(err, data){
+        dbHelper.getHomePageLinks('trending', function(err, data){
             if(err){
                 console.log('some error!!');
                 res.render('home.ejs', {'homePageContent': 'hahahahahaha'})

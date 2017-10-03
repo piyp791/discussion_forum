@@ -35,11 +35,19 @@ module.exports = {
   		}
 
 
-  		if(preference == 'latest'){
-  			
-  			
+  		if(preference == 'trending'){
 
+  			var previousDate = new Date();
+  			previousDate.setDate(1);
+  			previousDate.setMonth(previousDate.getMonth()-8);
+
+  			var currentDate = new Date()
+  			
+  			var query = "select * from Posts where PostTypeId = 1 and CreationDate between '" + previousDate.toISOString() + "'  and  '" + currentDate.toISOString() + "'  order by ViewCount desc limit 10;"
+  			
   		}else if(preference == 'top ten'){
+
+  			var query = "select * from Posts where PostTypeId = 1 order by ViewCount desc limit 10;"
 
   		}else if(preference == 'random'){
 
