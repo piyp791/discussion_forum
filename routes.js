@@ -31,4 +31,28 @@ module.exports = function(app) {
 
     });
 
+    app.get('/login-page', function(req, res){
+
+        var action = req.query.action;
+        console.log('action-->' +action)
+
+        res.render('login.ejs', {'action': action})
+
+    });
+
+    app.post('/login', function(req, res){
+
+        var userid = req.body.userid;
+        dbHelper.getUserInfo(userid, function(err, data){
+
+            if(err){
+                console.log('some error!!');
+            }else{
+                res.json({'verified': true})
+            }
+
+        })
+
+    });
+
 }
