@@ -1,27 +1,102 @@
 <html>
 	<head>
 		 <link rel="stylesheet" href="/style.css"/>
+		 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 		<title id = 'pagetitle'>Home Page</title>
 		<script type="text/javascript">
 			window.user;
+			function doLogin(){
+				console.log("do login called")
+				var accid = $('#accid').val();
+				var password = $('#lpasswd').val();
+				console.log('acc id ->' +accid + ' password -->' +password);
+				$.post( "/login", { userid: accid }, function( data ) {
+  					console.log('data-->' +JSON.stringify(data))
+  					if(data.isverified == true){
+  						//user logged in
+  						window.user = accid;
+  						$('#myModal').modal('toggle');
+
+  						//remove existing elements from nav bar
+  						removePreLoginLinks()
+  						//add new elements to nav bar
+  						createPostLogInLinks()
+  					}else{
+
+  					}
+				});
+			}
 		</script>
 	<head>
+
+	
+
 	<body id = 'pagebody'>
+
+		
 		<header>
 			<h1>Just Another Discussion Forum</h1>
-			<!--<a href = "/login-page?action=login" title = "login link">Login</a>
-			<form action = "/login-page?action=signup" method = "GET">
-				<input type ="submit" value = "Signup"/>
-			</form>-->
 		</header>
 		<div class="topnav" id="myTopnav">
 			  <a href="#">Topic 1</a>
 			  <a href="#">Topic 2</a>
-			  <a href="#">Topic 3</a>
-			  <!--<a href="#" style = "float:right;">About</a>-->
-			  <!--<a href="#" style = "float:right;">Preferences</a>
-			  <a href="/me" style = "float:right;">Profile</a>-->
+			  <a href="#">Topic 3</a> 
 		</div>
+
+
+		<!-- Modal -->
+	  <div class="modal fade" id="myModal" role="dialog">
+	    <div class="modal-dialog">
+	    
+	      <!-- Modal content-->
+	      <div class="modal-content">
+	        <div class="modal-header">
+	          <button type="button" class="close" data-dismiss="modal">&times;</button>
+	          <h4 class="modal-title" id = "modaltitle"></h4>
+	        </div>
+	        <div class="modal-body">
+	            <ul class="nav nav-tabs" id="tabContent">
+			        <li><a href="#log-in" data-toggle="tab">Log in</a></li>
+			        <li><a href="#sign-up" data-toggle="tab">Sign Up</a></li>
+				</ul>
+				<div class="tab-content">
+	        		<div class="tab-pane" id="log-in">
+	            		<form>
+			    			Account Id<br>
+				    		<input type = "text" name = "accid", required placeholder="AccountID" id = "accid">
+				    		<br><br>
+				    		Password<br>
+				    		<input type = "password" name = "passwd", required placeholder="Password" id = "lpasswd">
+				    		<br><br>
+				    		<button type="button" onclick = 'doLogin()' id="login_btn">Login</button>
+				    	</form>			 
+	      			</div>
+	        		<div class="tab-pane" id="sign-up">
+	        			<form action = "/sign-up" method = "POST" role = "form">
+			    			Name<br>
+				    		<input type = "text" name = "name", required placeholder="Name" id = "name">
+				    		<br><br>
+				    		Password<br>
+				    		<input type = "password" name = "passwd", required placeholder="Password" id = "spasswd">
+				    		<br><br>
+				    		<button type="submit" id="signup_btn">Sign Up</button>
+				    	</form>	
+	        		</div> 
+				</div>
+	        </div>
+	        <div class="modal-footer">
+	          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	        </div>
+	      </div>
+	      
+	    </div>
+	  </div>
+
 		<div class="container">
 			
 			<div id = "homepage">
@@ -91,31 +166,31 @@
 					//document.getElementById('trendingcontent').innerHTML = homePageContent
 				}
 
-				function checkLoggedInUser(){
+				function openModal(action){
+					console.log('action -->' +action);
+					if(action == 'login'){
+						$('#modaltitle').text('Log In'); 
+
+						$('#tabContent a[href="#log-in"]').tab('show')
+					}else if(action == 'signup'){
+						$('#modaltitle').text('Sign Up');  
+
+						$('#tabContent a[href="#sign-up"]').tab('show')
+					}
+					$("#myModal").modal();
+				}
+
+
+				function removePreLoginLinks(){
+					$("#loginlink").remove();
+					$("#signuplink").remove();
+				}
+
+				function createPostLogInLinks(){
 
 					var navbar = document.getElementById('myTopnav');
-					if (!window.user){
 
-						console.log('no user seems to be logged in....');
-						//hide profile/preferences page
-						
-						var loginlink = document.createElement('a');
-						loginlink.innerHTML = 'Log In';
-						loginlink.title = "Log In"
-						loginlink.href = "/login-page?action=login"
-						loginlink.style.float = "right"
-						
-						navbar.appendChild(loginlink);
-
-						var signuplink = document.createElement('a');
-						signuplink.innerHTML = 'Sign Up';
-						signuplink.style.float = "right"
-
-						navbar.appendChild(signuplink);
-					}else{
-
-
-						var signoutlink = document.createElement('a');
+					var signoutlink = document.createElement('a');
 						signoutlink.innerHTML = 'Sign Out';
 						signoutlink.style.float = "right"
 						
@@ -133,8 +208,53 @@
 						
 						navbar.appendChild(profilelink);
 
+				}
+
+				function createPreLoginLinks(){
+
+					var navbar = document.getElementById('myTopnav');
+					var loginlink = document.createElement('a');
+					loginlink.innerHTML = 'Log In';
+					loginlink.title = "Log In";
+					loginlink.id = "loginlink";
+					loginlink.href = "#";
+					loginlink.style.float = "right"
+					loginlink.onclick = function () {
+						openModal('login');
+					};
+					
+					navbar.appendChild(loginlink);
+
+					var signuplink = document.createElement('a');
+					signuplink.id = "signuplink";
+					signuplink.href = "#";
+					signuplink.innerHTML = 'Sign Up';
+					signuplink.style.float = "right"
+					signuplink.onclick = function () {
+						openModal('signup');
+					};
+
+					navbar.appendChild(signuplink);
+
+				}
+
+				function checkLoggedInUser(){
+
+					
+					if (!window.user){
+
+						console.log('no user seems to be logged in....');
+						//hide profile/preferences page
+						createPreLoginLinks();
+						
+						
+					}else{
+
+						createPostLogInLinks()
+						
 					}
 
+					var navbar = document.getElementById('myTopnav');
 					var aboutlink = document.createElement('a');
 					aboutlink.innerHTML = 'About';
 					aboutlink.style.float = "right"

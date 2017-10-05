@@ -43,12 +43,13 @@ module.exports = function(app) {
     app.post('/login', function(req, res){
 
         var userid = req.body.userid;
-        dbHelper.getUserInfo(userid, function(err, data){
+        dbHelper.isUserVerified(userid, function(err, data){
 
             if(err){
                 console.log('some error!!');
             }else{
-                res.json({'verified': true})
+
+                res.json({'isverified': true})
             }
 
         })
