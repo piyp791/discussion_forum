@@ -1,6 +1,12 @@
 <html>
 	<head>
 		 <link rel="stylesheet" href="/style.css"/>
+		 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+   		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 		<title id = 'pagetitle'>Profile Page</title>
 	<head>
 	<body id = 'pagebody'>
@@ -8,82 +14,82 @@
 			<h1>Just Another Discussion Forum</h1>
 		</header>
 		<div class="topnav" id="myTopnav">
-			  <a href="#">Topic 1</a>
-			  <a href="#">Topic 2</a>
-			  <a href="#">Topic 3</a>
+			  <a href="/">Home</a>
 			  <a href="#" style = "float:right;">About</a>
-			  <a href="#" style = "float:right;">Preferences</a>
-			  <a href="#" style = "float:right;">Profile Link</a>
+			  <a href="#" style = "float:right;">Sign Out</a>
 			</div>
 		<div class="container">
 			
 			<div id = "profilepage">
 				<input id="tab-1" type="radio" name="tab-group" checked="checked" style="visibility:hidden;"/>
-			    <label for="tab-1">Trending</label>
+			    <label for="tab-1">Profile Info</label>
 			   
 			    <input id="tab-2" type="radio" name="tab-group" style="visibility:hidden;"/>
-			    <label for="tab-2">Recommended for you</label>
+			    <label for="tab-2">Site Stats</label>
 			   
 			    <input id="tab-3" type="radio" name="tab-group" style="visibility:hidden;"/>
-			    <label for="tab-3">Latest</label>
+			    <label for="tab-3">Site Activity</label>
+
+			    <input id="tab-4" type="radio" name="tab-group" style="visibility:hidden;"/>
+			    <label for="tab-4">Preferences</label>
 
 			    <div id="content">
 			    	<div id="content-1">
-			    		
+			    		<span class = "profile">
+			    			<h2 id = "DisplayName">DisplayName</h2>
+			    			<img src="/profile.png" alt="Paris" width="300" height="300"></br></br>
+			    			
+			    			<p id = "WebsiteUrl">WebsiteUrl</p>
+			    			<p id = "Location">Location</p>
+			    			<p id = "Age">Age</p>
+			    			<p id = "AboutMe">AboutMe</p>
+			    			<p id = "AccountId">AccountID</p>
+			    		</span>
 			    	</div>
 
 			    	<div id="content-2">
-			    		<p>text for tab 2</p>
+			    		<span class = "stats">
+			    			<h2 id = "Reputation">Reputation</h2>
+			    			<p id = "CreationDate">CreationDate</p>
+			    			<p id = "LastAccessDate">LastAccessDate</p>
+			    			<p id = "Views">Views</p>
+			    			<p id = "UpVotes">UpVotes</p>
+			    			<p id = "DownVotes">DownVotes</p>
+			    		</span>
+			    	</div>
+
+			    	<div id="content-3">
+			    		<span class = "activity">
+			    			<h2 id = "Reputation">Reputation</h2>
+			    			<p id = "CreationDate">CreationDate</p>
+			    			<p id = "LastAccessDate">LastAccessDate</p>
+			    			<p id = "Views">Views</p>
+			    			<p id = "UpVotes">UpVotes</p>
+			    			<p id = "DownVotes">DownVotes</p>
+			    		</span>
 			    	</div>
 			    </div>
 
 			</div>
 			<script>
+				function populateProfile(profileInfo){
 
-				//separate div for each post (question and answer)!!!!
-				function getHomeLinks(homePageContent){
-
-					homePageContent = eval(homePageContent);
-					//console.log('home page content ->' +JSON.stringify(homePageContent));
-
-					var pagebody = document.getElementById('content-1');
-					for(var i=0;i<homePageContent.length;i++){
-
-						var id = homePageContent[i].Id;
-
-						var par = document.createElement('p');
-						par.className = "post-home";
-						par.Id = "post-"+ id;
-
-						pagebody.appendChild(par);
-
-						console.log('home page content ->' +JSON.stringify(homePageContent[i]));
-
-						var link = homePageContent[i].Title;
-						console.log('link-->', link)
-						//link = link.replace("?", "%3F")
-
-						var date = homePageContent[i].CreationDate;
-						console.log('date-->', date)	
-
-						var a = document.createElement('a');
-						a.title = link;
-
-						var linktext = link.includes("?")?link.replace("?", "%3F"):link;
-						var linktext = link.includes("'")?link.replace("'", "%27"):link;
-						console.log('linktext-->', linktext)
-
-						a.href = '/page/' + linktext
-						a.innerHTML = link;
-						//a.className = "post"
-
-						par.appendChild(a);
-
-						console.log(pagebody)
-					}
-					//document.getElementById('trendingcontent').innerHTML = homePageContent
+					console.log(JSON.stringify(profileInfo));
+					profileInfo = profileInfo[0];
+					for (var key in profileInfo) {
+      					if (profileInfo.hasOwnProperty(key)) {
+        					console.log(key + " -> " + profileInfo[key]);
+        					if(key!=='DisplayName'){
+        						$('#' +key).text(key + '--->'+ profileInfo[key])	
+        					}else{
+        						$('#' +key).text(profileInfo[key])
+        					}
+        					
+      					}
+    				}
 				}
-				getHomeLinks(<%-JSON.stringify(homePageContent) %>)
+
+				populateProfile(<%-JSON.stringify(userinfo) %>);
 			</script>
 			<footer>Moore & Peps collaboration.</footer>
 		</div>

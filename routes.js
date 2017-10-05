@@ -56,4 +56,28 @@ module.exports = function(app) {
 
     });
 
+    app.get('/users/id/:userid', function(req, res){
+        var userid = req.params.userid;
+
+        console.log('user id -->' +userid);
+        try{
+            userid = parseInt(userid);
+
+             //get user info from database
+            dbHelper.getUserInfo(userid, function(err, data){
+
+            if(err){
+                console.log('some error!!');
+            }else{
+                console.log('user data-->' +JSON.stringify(data))
+                res.render('profile.ejs', {'userinfo': data})        
+            }
+         });
+        }catch(err){
+            console.log(err)
+            res.json({'response': 'empty'})  
+        }
+        
+    });
+
 }
