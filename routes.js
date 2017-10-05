@@ -80,4 +80,28 @@ module.exports = function(app) {
         
     });
 
+    app.get('/activity/:userid', function(req, res){
+
+        var userid = req.params.userid;
+
+        console.log('user id -->' +userid);
+        try{
+            userid = parseInt(userid);
+
+             //get user info from database
+            dbHelper.getUserActivity(userid, function(err, data){
+
+            if(err){
+                console.log('some error!!');
+            }else{
+                console.log('user data-->' +JSON.stringify(data))
+                res.json({'activity': data})        
+            }
+         });
+        }catch(err){
+            console.log(err);
+            res.json({'response': 'empty'});  
+        }
+    });
+
 }

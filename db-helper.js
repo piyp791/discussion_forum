@@ -124,5 +124,30 @@ module.exports = {
 				callback(null, result);
 			}
   		});
+  	},
+
+  	getUserActivity: function(userid, callback){
+
+  		if(!connection){
+  			connection = connect();
+  		}
+
+  		var query = "select * from Posts where OwnerUserId = " + userid
+  		console.log('query-->' +query);
+
+  		connection.query(query, function(err, result, fields){
+
+  			if(err){
+  				console.log(err);
+  				callback(err, null);
+  			}
+  			console.log('number of rows returned -->' +JSON.stringify(result));
+			if(result.length == 0){
+				console.log('callback with err called');
+				callback(null, false);
+			}else{
+				callback(null, result);
+			}
+  		});
   	}
 }

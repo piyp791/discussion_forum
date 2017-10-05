@@ -27,10 +27,22 @@ app.get('/', function(req, res) {
 
 //handle 404 errors for all the unhandled requests
 app.get('/*', function(req, res) {
-    res.status(404).write("404")
-    res.end();
+    //res.status(404).write("404")
+    //console.log('error->' +error)
+    //res.render('four0hfour.ejs', {'status':'404'})
+    //res.end()
  
 })
+
+// Handle 500
+  app.use(function(error, req, res, next) {
+     //res.status(500).write("505")
+     console.log('error->' +error)
+    
+    res.render('five00.ejs')
+    
+     
+  });
 
 var httpServer = http.createServer(app);
 
