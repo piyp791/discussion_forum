@@ -60,7 +60,7 @@ def insertIntoPosts(keyStr, value_arr, cnx):
 
 
 
-	add_user = ("INSERT INTO Users (" + keyStr + ") VALUES (" + value_arr  + ")");
+	add_user = ("INSERT INTO Comments (" + keyStr + ") VALUES (" + value_arr  + ")");
 
 	#values_arr = 'some text';
 	#add_user = ("INSERT INTO Posts ( Body ) VALUES ('" +values_arr + "' )");
@@ -86,7 +86,7 @@ def main():
 	cnx = getConn()
 	print cnx
 	print 'Hello World'
-	xmldoc = minidom.parse('../data/apple.meta.stackexchange.com/Users.xml')
+	xmldoc = minidom.parse('../data/apple.meta.stackexchange.com/Comments.xml')
 	#doc = ET.parse("apple.meta.stackexchange.com/Posts.xml");
 	itemlist = xmldoc.getElementsByTagName('row')
 
@@ -101,7 +101,8 @@ def main():
 
 			#insert into database
 
-			val = atr.value.replace("'", "")
+			val = atr.value.replace("'", "");
+			val = val.replace("\\", "")
 			val = re.sub(r'[^\x00-\x7F]+',' ', val)
 			keys = keys + "" + atr.name.replace("'", "") + ",";
 			values = values + "'" + val + "',";

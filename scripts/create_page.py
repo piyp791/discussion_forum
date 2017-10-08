@@ -5,14 +5,40 @@ import re
 folder = "../views/";
 
 
-def createAnswerHTML(answer):
-	htmlContent = "\n\t\t\t<div id = \"post-ans\" class = \"post\">" +\
-	"\n\t\t\t\t" +answer+ \
-	"\n\t\t\t</div><br>";
+def createAnswerHTML(id, answer, score):
+
+	if score is None:
+		score = '--'
+	htmlContent = "\n\t\t\t<br><div id = \"ans-" + id + "\"  class = \"post\">" +\
+	"\n\t\t\t\t<h2>Answer</h2>" +\
+	"\n\t\t\t\t<h3>Score ::" + score +  "</h3>" +\
+	"\n\t\t\t\t<p>" +answer+ "</p><br>" +\
+	"\n\t\t\t\t<input type = 'text'/>" +\
+	"\n\t\t\t\t<input type = 'button' value = 'Comment'/>" +\
+	"\n\t\t\t</div>";
 	return htmlContent
 
+def createCommentHTML(id, comment):
+	htmlContent = "\n\t\t\t<div id = \"comment-" +id + "\" class = \"post\">" +\
+	"\n\t\t\t\t<p>" +comment+ "</p>" +\
+	"\n\t\t\t</div>";
+	return htmlContent
 
-def findAnswers(root, quesId):
+def findComments(root, quesId):
+	#print root
+	#print quesId
+	commentStr = '';
+	for child in root:
+		postId = child.get('PostId');
+		if postId == quesId:
+			id = child.get("Id");
+			comment = child.get('Text');
+			comment = re.sub(r'[^\x00-\x7F]+',' ', comment);
+			commentStr  = commentStr + createCommentHTML(id, comment);
+	return commentStr
+
+
+def findAnswers(root, commentRoot, quesId):
 	answerStr = '';
 	for child in root:
 		postTypeId = child.get('PostTypeId');
@@ -20,15 +46,24 @@ def findAnswers(root, quesId):
 			#its an answer
 			#see if its parent id matches the quesId
 			parentId = child.get('ParentId')
+			postId = child.get('Id');
+			#print 'post id-->', postId
 			if parentId == quesId:
 				answer = child.get('Body')
+				views = child.get('ViewCount')
+				#print 'views-->', views
+				score = child.get('Score')
+				#print 'score-->', score
 				answer = re.sub(r'[^\x00-\x7F]+',' ', answer)
-				answerStr  = answerStr + createAnswerHTML(answer)
+
+				#find comment for this answer
+				commentStr = findComments(commentRoot, postId);
+				answerStr = answerStr + createAnswerHTML(postId, answer, score) + commentStr;
 
 	return answerStr
-		
 
-def createContent(title, body, answerStr):
+
+def createContent(title, id, body, score, views, comments, answerStr):
 
 	content = "<html>"+ \
 			  "\n\t<head>" + \
@@ -47,10 +82,15 @@ def createContent(title, body, answerStr):
 			  "\n\t\t\t\t<a href=\"#\" style = \"float:right;\">Preferences</a>" +\
 			  "\n\t\t\t\t<a href=\"#\" style = \"float:right;\">Profile Link</a>" +\
 			  "\n\t\t\t</div>" +\
-			  "\n\t\t\t<div id = \"post-ques\" class = \"post\">" +\
+			  "\n\t\t\t<div id = \"ques-" + id + "\" class = \"post\">" +\
+			  "\n\t\t\t<h2>Question</h2>" +\
+			  "\n\t\t\t<h3>Score ::" + score +"</h3>" +\
+			  "\n\t\t\t<h3>Views ::" +views + "</h3>" +\
 			  "\n\t\t\t\t<h2>" + title + "</h2>" +\
 			  "\n"	+body+ \
 			  "\n\t\t\t</div>" +\
+			  "\n\n<h1>COMMENTS</h1>" +\
+			  comments + \
 			  "\n\n<h1>ANSWERS</h1>" +\
 			  answerStr +\
 			  "\n\t\t\t<footer>Moore & Peps collaboration.</footer>"+\
@@ -63,25 +103,33 @@ def createContent(title, body, answerStr):
 
 def main():
 
-	tree = ET.parse('../data/apple.meta.stackexchange.com/Posts.xml')
-	root = tree.getroot()
+	tree = ET.parse('../data/apple.meta.stackexchange.com/Posts.xml');
+	commentTree = ET.parse('../data/apple.meta.stackexchange.com/Comments.xml');
+	commentRoot = commentTree.getroot();
+	root = tree.getroot();
 	for child in root:
 
 		postTypeId = child.get('PostTypeId');
 		if(postTypeId == '1'):
 			#create separate page
 			title = child.get('Title');
-			title = re.sub(r'[^\x00-\x7F]+',' ', title)
+			title = re.sub(r'[^\x00-\x7F]+',' ', title);
 			body = child.get('Body');
-			body = re.sub(r'[^\x00-\x7F]+',' ', body)
-			title = title.replace("/", "~")
+			body = re.sub(r'[^\x00-\x7F]+',' ', body);
+			title = title.replace("/", "~");
 			quesId = child.get('Id');
+			score = child.get('Score');
+			views = child.get('ViewCount')
 
 			f = open(folder + title + ".ejs","w") #opens file with name of "test.txt"
 			
+			#findcomments
+			commentStr = findComments(commentRoot, quesId)
+
 			#find answers
-			answerStr = findAnswers(root, quesId)
-			content = createContent(title, body, answerStr)
+			answerStr = findAnswers(root, commentRoot, quesId)
+			
+			content = createContent(title, quesId, body, score, views, commentStr, answerStr)
 
 			f.write(content);
 			f.close();
