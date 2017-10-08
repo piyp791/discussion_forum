@@ -19,7 +19,7 @@ def createAnswerHTML(id, answer, score):
 	return htmlContent
 
 def createCommentHTML(id, comment):
-	htmlContent = "\n\t\t\t<div id = \"comment-" +id + "\" class = \"post\">" +\
+	htmlContent = "\n\t\t\t<div id = \"comment-" +id + "\" class = \"comment\">" +\
 	"\n\t\t\t\t<p>" +comment+ "</p>" +\
 	"\n\t\t\t</div>";
 	return htmlContent
