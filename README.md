@@ -3,6 +3,8 @@ discussion forum based on stack overflow, with improved usability and accessibil
 
 ![Home Page](/images/home_page.png)
 
+![Post Page](/images/post_page.png)
+
 ## current progress status
 
 1. Static HTML Pages created from the dataset.
@@ -55,4 +57,7 @@ run the project by executing the command
 node index.js
 ```
 
+#### Python set up
+
+Python 2 should be installed for the report issue feature and create HTML/save data in DB scripts to run.
 
