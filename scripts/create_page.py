@@ -67,6 +67,9 @@ def createContent(title, id, body, score, views, comments, answerStr):
 
 	content = "<html>"+ \
 			  "\n\t<head>" + \
+			  "\n\t\t<link href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css\" rel=\"stylesheet\" integrity=\"sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u\" crossorigin=\"anonymous\">" +\
+			  "\n\t\t<script src=\"https://code.jquery.com/jquery-3.2.1.min.js\" integrity=\"sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=\"  crossorigin=\"anonymous\"></script>" +\
+			  "\n\t\t<script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js\"></script>" +\
 			  "\n\t\t<link rel=\"stylesheet\" href=\"/style.css\"/>" + \
 			  "\n\t\t<title id = 'pagetitle'>"+title+ \
 			  "\n\t\t</title>"+\
@@ -82,6 +85,7 @@ def createContent(title, id, body, score, views, comments, answerStr):
 			  "\n\t\t\t\t<a href=\"#\" style = \"float:right;\">Preferences</a>" +\
 			  "\n\t\t\t\t<a href=\"#\" style = \"float:right;\">Profile Link</a>" +\
 			  "\n\t\t\t</div>" +\
+			  "\n\t\t\t<div class = \"content\">" +\
 			  "\n\t\t\t<div id = \"ques-" + id + "\" class = \"post\">" +\
 			  "\n\t\t\t<h2>Question</h2>" +\
 			  "\n\t\t\t<h3>Score ::" + score +"</h3>" +\
@@ -93,6 +97,10 @@ def createContent(title, id, body, score, views, comments, answerStr):
 			  comments + \
 			  "\n\n<h1>ANSWERS</h1>" +\
 			  answerStr +\
+			  "\n\t\t\t</div>" +\
+			  "\n\t\t\t<div class = \"resourcestab\">" +\
+			  "\n\t\t\t\t<h2>RESOURCES</h2>" +\
+			  "\n\t\t\t</div>" +\
 			  "\n\t\t\t<footer>Moore & Peps collaboration.</footer>"+\
 			  "\n\t</div>" +\
 			  "\n\t</body>" + \

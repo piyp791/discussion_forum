@@ -31,14 +31,24 @@
   					}
 				});
 			}
+
+			function reportIssue(){
+
+				var issueText = document.getElementById('issuetext').value; 
+				console.log(issueText);
+				$.post( "/reportIssue", { issue: issueText }, function( data ) {
+					alert('Thanks for reporting the issue. ')
+					$('#issueModal').modal('toggle');
+				});
+
+
+			}
 		</script>
 	<head>
 
 	
 
 	<body id = 'pagebody'>
-
-		
 		<header>
 			<h1>Just Another Discussion Forum</h1>
 		</header>
@@ -46,10 +56,11 @@
 			  <a href="#">Topic 1</a>
 			  <a href="#">Topic 2</a>
 			  <a href="#">Topic 3</a> 
+			  <a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
 		</div>
 
 
-		<!-- Modal -->
+	<!-- Modal -->
 	  <div class="modal fade" id="myModal" role="dialog">
 	    <div class="modal-dialog">
 	    
@@ -88,6 +99,31 @@
 				    	</form>	
 	        		</div> 
 				</div>
+	        </div>
+	        <div class="modal-footer">
+	          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	        </div>
+	      </div>
+	      
+	    </div>
+	  </div>
+
+
+	  <div class="modal fade" id="issueModal" role="dialog">
+	    <div class="modal-dialog">
+	    
+	      <!-- Modal content-->
+	      <div class="modal-content">
+	        <div class="modal-header">
+	          <button type="button" class="close" data-dismiss="modal">&times;</button>
+	          <h4 class="modal-title" id = "issuemodaltitle">Report Issue</h4>
+	        </div>
+	        <div class="modal-body">
+	        	
+        		<label for="issuetext">Issue</label>
+           		<textarea id="issuetext" class="scrollabletextbox"></textarea>
+           		<button type = "button" onclick = "reportIssue()" id="issue_btn">Report</button>
+	           
 	        </div>
 	        <div class="modal-footer">
 	          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -241,6 +277,7 @@
 
 				function checkLoggedInUser(){
 
+					var navbar = document.getElementById('myTopnav');
 					
 					if (!window.user){
 
@@ -255,12 +292,11 @@
 						
 					}
 
-					var navbar = document.getElementById('myTopnav');
 					var aboutlink = document.createElement('a');
 					aboutlink.innerHTML = 'About';
 					aboutlink.style.float = "right"
-					
 					navbar.appendChild(aboutlink);
+
 				}
 
 				checkLoggedInUser()

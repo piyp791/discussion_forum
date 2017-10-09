@@ -1,4 +1,6 @@
 var request = require('request');
+const querystring = require('querystring');                                                                                                                                                                                                
+const https = require('https');
 const fs = require('fs');
 var path = require("path");
 var express = require('express');
@@ -103,5 +105,21 @@ module.exports = function(app) {
             res.json({'response': 'empty'});  
         }
     });
+
+    app.post('/reportIssue', function(req, res){
+
+        var issue = req.body.issue;
+        console.log('issue-->' +issue);
+
+        var spawn = require("child_process").spawn;
+        var process = spawn('python',["todoist.py", issue]);
+
+        process.stdout.on('data', function (data){
+            // Do something with the data returned from python script
+
+            console.log('ho ho...some thing came back' + data);
+            res.json({'status': 'success'})
+        });
+    })
 
 }
