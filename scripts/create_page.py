@@ -13,8 +13,6 @@ def createAnswerHTML(id, answer, score):
 	"\n\t\t\t\t<h2>Answer</h2>" +\
 	"\n\t\t\t\t<h3>Score ::" + score +  "</h3>" +\
 	"\n\t\t\t\t<p>" +answer+ "</p><br>" +\
-	"\n\t\t\t\t<input type = 'text'/>" +\
-	"\n\t\t\t\t<input type = 'button' value = 'Comment'/>" +\
 	"\n\t\t\t</div>";
 	return htmlContent
 
@@ -27,7 +25,7 @@ def createCommentHTML(id, comment):
 def findComments(root, quesId):
 	#print root
 	#print quesId
-	commentStr = '';
+	commentStr = '<h3>Comments</h3>';
 	for child in root:
 		postId = child.get('PostId');
 		if postId == quesId:
@@ -35,6 +33,10 @@ def findComments(root, quesId):
 			comment = child.get('Text');
 			comment = re.sub(r'[^\x00-\x7F]+',' ', comment);
 			commentStr  = commentStr + createCommentHTML(id, comment);
+
+	entercontent = "\n\t\t\t\t<input type = 'text'/>" +\
+	"\n\t\t\t\t<input type = 'button' value = 'Comment'/><br>";
+	commentStr = commentStr + entercontent
 	return commentStr
 
 
@@ -71,6 +73,7 @@ def createContent(title, id, body, score, views, comments, answerStr):
 			  "\n\t\t<script src=\"https://code.jquery.com/jquery-3.2.1.min.js\" integrity=\"sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=\"  crossorigin=\"anonymous\"></script>" +\
 			  "\n\t\t<script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js\"></script>" +\
 			  "\n\t\t<link rel=\"stylesheet\" href=\"/style.css\"/>" + \
+			  "\n\t\t<script src=\"/commons.js\"></script>" + \
 			  "\n\t\t<title id = 'pagetitle'>"+title+ \
 			  "\n\t\t</title>"+\
 			  "\n\t<head>"+\
@@ -93,16 +96,19 @@ def createContent(title, id, body, score, views, comments, answerStr):
 			  "\n\t\t\t\t<h2>" + title + "</h2>" +\
 			  "\n"	+body+ \
 			  "\n\t\t\t</div>" +\
-			  "\n\n<h1>COMMENTS</h1>" +\
 			  comments + \
-			  "\n\n<h1>ANSWERS</h1>" +\
+			  "\n\n<h1>Answers</h1>" +\
 			  answerStr +\
 			  "\n\t\t\t</div>" +\
-			  "\n\t\t\t<div class = \"resourcestab\">" +\
+			  "\n\t\t\t<div id = \"resourcestab\" class = \"resourcestab\">" +\
 			  "\n\t\t\t\t<h2>RESOURCES</h2>" +\
 			  "\n\t\t\t</div>" +\
 			  "\n\t\t\t<footer>Moore & Peps collaboration.</footer>"+\
 			  "\n\t</div>" +\
+			  "\n\t<script type=\"text/javascript\">" +\
+			  "\n\t\tvar content = $('.content').html();" +\
+			  "\n\t\tpopulateResources(content)" +\
+			  "\n\t</script>" +\
 			  "\n\t</body>" + \
 			  "\n</html>";
 
