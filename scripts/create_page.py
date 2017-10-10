@@ -35,7 +35,10 @@ def findComments(root, quesId):
 			commentStr  = commentStr + createCommentHTML(id, comment);
 
 	entercontent = "\n\t\t\t\t<input type = 'text'/>" +\
-	"\n\t\t\t\t<input type = 'button' value = 'Comment'/><br>";
+	"\n\t\t\t\t<input type = 'button' value = 'Comment'/><br>" +\
+	"\n\t\t\t\t<button class=\"record-start\" id=\"start-"+quesId+"\">Record</button>" +\
+    "\n\t\t\t\t<button class=\"record-stop\" id=\"stop-"+quesId+"\">Stop</button>" +\
+    "\n\t\t\t\t<p id=\"recording-"+quesId+"\"></p>"
 	commentStr = commentStr + entercontent
 	return commentStr
 
@@ -109,6 +112,7 @@ def createContent(title, id, body, score, views, comments, answerStr):
 			  "\n\t\tvar content = $('.content').html();" +\
 			  "\n\t\tpopulateResources(content)" +\
 			  "\n\t</script>" +\
+			  "\n\t<script src=\"/media.js\"></script>" +\
 			  "\n\t</body>" + \
 			  "\n</html>";
 

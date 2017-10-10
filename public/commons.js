@@ -1,3 +1,4 @@
+
 function populateResources(content){
 
     //var content = $('.content').html();
