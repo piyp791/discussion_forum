@@ -1,42 +1,71 @@
-'use strict'
+var final_transcript = '';
+var recognizing = false;
+var ignore_onend;
+//var start_timestamp;
 
-var quesid = '';
-let log = console.log.bind(console),
+var quesid;
+if (!('webkitSpeechRecognition' in window)) {
+  //NO GO!!!!
+  console.log('here!!!!')
 
-  stream,
-  recorder,
-  counter=1,
-  chunks,
-  media;
+} else {
+  var recognition = new webkitSpeechRecognition();
+  recognition.continuous = true;
+  recognition.interimResults = true;
 
-var mediaOptions = {
-        video: {
-          tag: 'video',
-          type: 'video/webm',
-          ext: '.mp4',
-          gUM: {video: true, audio: true}
-        },
-        audio: {
-          tag: 'audio',
-          type: 'audio/ogg',
-          ext: '.ogg',
-          gUM: {audio: true}
-        }
-      };
+  recognition.onstart = function() {
+    recognizing = true;
+    document.getElementById('start_img-'+quesid).src = '/mic-animate.gif'
+  };
 
-media = mediaOptions.audio;
-console.log('media-->' +media)
-  navigator.mediaDevices.getUserMedia(media.gUM).then(_stream => {
-    stream = _stream;
+  recognition.onerror = function(event) {
+    if (event.error == 'no-speech') {
+      document.getElementById('start_img-'+quesid).src = '/mic.gif';
+      ignore_onend = true;
+    }
+    if (event.error == 'audio-capture') {
+      document.getElementById('start_img-'+quesid).src = '/mic.gif';
+      ignore_onend = true;
+    }
+    if (event.error == 'not-allowed') {
+    
+      ignore_onend = true;
+    }
+  };
 
-    //document.getElementById('start').removeAttribute('disabled');
-    recorder = new MediaRecorder(stream);
-    recorder.ondataavailable = e => {
-      chunks.push(e.data);
-      if(recorder.state == 'inactive')  makeLink();
-    };
-    log('got media successfully');
-  }).catch(log);
+  recognition.onend = function() {
+    recognizing = false;
+    if (ignore_onend) {
+      return;
+    }
+    document.getElementById('start_img-'+quesid).src = '/mic.gif';
+    if (!final_transcript) {
+      //showInfo('info_start');
+      return;
+    }
+  };
+
+  recognition.onresult = function(event) {
+    var interim_transcript = '';
+    for (var i = event.resultIndex; i < event.results.length; ++i) {
+      if (event.results[i].isFinal) {
+        final_transcript += event.results[i][0].transcript;
+      } else {
+        interim_transcript += event.results[i][0].transcript;
+      }
+    }
+    final_transcript = capitalize(final_transcript);
+    
+    console.log('final_transcript-->' +final_transcript)
+    console.log('interim_transcript-->' +interim_transcript)
+    document.getElementById('speech-'+quesid).value = final_transcript;
+  };
+}
+
+var first_char = /\S/;
+function capitalize(s) {
+  return s.replace(first_char, function(m) { return m.toUpperCase(); });
+}
 
 
 $(".record-start").click(function(){
@@ -45,41 +74,15 @@ $(".record-start").click(function(){
   console.log('button clicked -->' + cmtbtnid)
   quesid = cmtbtnid.substring(cmtbtnid.indexOf('-')+1)
 
-  $('.record-start').attr('disabled', true);
-  $('.record-stop').removeAttr( "disabled" )
-  chunks=[];
-  recorder.start();
-});
-
-
-$(".record-stop").click(function(){
-  
-  $('.record-stop').attr('disabled', true);
-  recorder.stop();
-  $('.record-start').removeAttr( "disabled" )
-
-});
-
-
-function makeLink(){
-  let blob = new Blob(chunks, {type: media.type })
-    , url = URL.createObjectURL(blob)
-    //, li = document.createElement('li')
-    , p = document.createElement('p')
-    , mt = document.createElement(media.tag)
-    , hf = document.createElement('a')
-  ;
-  mt.controls = true;
-  mt.src = url;
-  hf.href = url;
-  
-  p.appendChild(mt);
-  p.appendChild(hf);
-
-  //if any element is present before, remove
-  var parent = document.getElementById('recording-' + quesid);
-  while(parent.hasChildNodes()){
-     parent.removeChild(parent.lastChild);
+  if (recognizing) {
+    recognition.stop();
+    return;
   }
-  parent.appendChild(p)
-}
+  final_transcript = '';
+  recognition.lang = "en-US";
+  //recognition.lang = select_dialect.value;
+  recognition.start();
+  ignore_onend = false;
+
+  document.getElementById('start_img-'+quesid).src = '/mic-slash.gif';
+});
