@@ -8,11 +8,26 @@ function getHomeLinks(homePageContent, div){
 
 	var pagebody = document.getElementById(div);
 
+	var tbl = document.createElement("table");
+  	var tblBody = document.createElement("tbody");
+  	tbl.appendChild(tblBody);
+  	pagebody.appendChild(tbl);
 
-	//var tbl = document.createElement("table");
-  	//var tblBody = document.createElement("tbody");
+  	var row = document.createElement("tr");
+  	var dateEl = document.createElement('th');
+  	dateEl.innerHTML = 'Date';
+  	row.appendChild(dateEl);
+  	var viewEl = document.createElement('th');
+  	viewEl.innerHTML = 'Views';
+  	row.appendChild(viewEl);
+  	var linkEl = document.createElement('th');
+  	linkEl.innerHTML = 'Question';
+  	row.appendChild(linkEl);
+  	tblBody.appendChild(row)
 
 	for(var i=0;i<homePageContent.length;i++){
+
+		var row = document.createElement("tr");
 
 		var id = homePageContent[i].Id;
 
@@ -20,9 +35,9 @@ function getHomeLinks(homePageContent, div){
 		par.className = "post-home";
 		par.Id = "post-"+ id;
 
-		pagebody.appendChild(par);
+		//row.appendChild(par);
 
-		console.log('home page content ->' +JSON.stringify(homePageContent[i]));
+		//console.log('home page content ->' +JSON.stringify(homePageContent[i]));
 
 		var link = homePageContent[i].Title;
 		console.log('link-->', link);
@@ -42,12 +57,27 @@ function getHomeLinks(homePageContent, div){
 		console.log('linktext-->', linktext)
 
 		a.href = '/page/' + linktext
-		a.innerHTML = date.substring(0, date.indexOf('T')) + "\t\t\t\t\t" + views + "\t\t\t\t\t" +link;
-		//a.className = "post"
 
+		var cell = document.createElement("td");
+		var cellText = document.createTextNode(date.substring(0, date.indexOf('T')));
+      	cell.appendChild(cellText);
+      	row.appendChild(cell);
+		
+      	var cell = document.createElement("td");
+		var cellText = document.createTextNode(views);
+      	cell.appendChild(cellText);
+      	row.appendChild(cell);
+
+   
+		a.innerHTML = link;
 		par.appendChild(a);
 
-		console.log(pagebody)
+		var cell = document.createElement("td");
+      	cell.appendChild(par);
+      	cell.style.width = '80%'
+      	row.appendChild(cell);
+
+      	tblBody.appendChild(row)
 	}
 	//document.getElementById('trendingcontent').innerHTML = homePageContent
 }
