@@ -105,19 +105,20 @@ def createContent(title, id, body, score, views, comments, answerStr):
 			  "\n\t\t<script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js\"></script>" +\
 			  "\n\t\t<link rel=\"stylesheet\" href=\"/style.css\"/>" + \
 			  "\n\t\t<script src=\"/commons.js\"></script>" + \
+			  "\n\t\t<script src=\"/createlinks.js\"></script>" + \
 			  "\n\t\t<title id = 'pagetitle'>"+title+ \
 			  "\n\t\t</title>"+\
 			  "\n\t<head>"+\
 			  "\n\t<body id = 'pagebody'>"+ \
+			  "\n\t\t<div id = \"loginmodals\"></div>" +\
+    		  "\n\t\t<div id = \"issuemodals\"></div>" +\
 			  "\n\t\t<div class = \"container\">" +\
 			  "\n\t\t\t<header>" +\
 			  "\n\t\t\t\t<h1>Just Another Discussion Forum</h1>" +\
 			  "\n\t\t\t</header>" +\
 			  "\n\t\t\t<div class=\"topnav\" id=\"myTopnav\">" + \
 			  "\n\t\t\t\t<a href=\"/home\">Home</a>" + \
-			  "\n\t\t\t\t<a href=\"#\" style = \"float:right;\">About</a>" +\
-			  "\n\t\t\t\t<a href=\"#\" style = \"float:right;\">Preferences</a>" +\
-			  "\n\t\t\t\t<a href=\"#\" style = \"float:right;\">Profile Link</a>" +\
+			  "\n\t\t\t\t<a href = \"#issueModal\" data-toggle=\"modal\" style = \"float:right\">Report Issue</a>" +\
 			  "\n\t\t\t</div>" +\
 			  "\n\t\t\t<div class = \"content\">" +\
 			  "\n\t\t\t<div id = \"ques-" + id + "\" class = \"post\">" +\
@@ -149,6 +150,9 @@ def createContent(title, id, body, score, views, comments, answerStr):
 			  "\n\t\t\t<footer>Moore & Peps collaboration.</footer>"+\
 			  "\n\t</div>" +\
 			  "\n\t<script type=\"text/javascript\">" +\
+			  "\n\t\t$(\"#loginmodals\").load(\"/loginModal.html\");"+\
+    		  "\n\t\t$(\"#issuemodals\").load(\"/issueModal.html\");" +\
+    		  "\n\t\tcheckLoggedInUser()" +\
 			  "\n\t\tvar content = $('.content').html();" +\
 			  "\n\t\tpopulateResources(content)" +\
 			  "\n\t</script>" +\
