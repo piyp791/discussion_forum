@@ -1,6 +1,4 @@
-
 function populateResources(content){
-
     //var content = $('.content').html();
     //console.log('content' +content);
     var index = 0;
