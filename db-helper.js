@@ -49,12 +49,11 @@ module.exports = {
 
   			var query = "select * from Posts where PostTypeId = 1 order by ViewCount desc limit 10;"
 
-  		}else if(preference == 'random'){
+  		}else if(preference == 'latest'){
 
-  			var query = "select title from Posts where PostTypeId = 1 LIMIT 10;" 
+  			var query = "select * from Posts where PostTypeId = 1 order by CreationDate desc limit 10;"
   		}else{
   			//oh crap!!!
-
   		}
 
 		console.log("Query -->" + query)
@@ -91,7 +90,7 @@ module.exports = {
   				callback(err, null)
   			}
   			console.log('number of rows returned -->' +JSON.stringify(result));
-			if(result.length == 0){
+			if(result[0].usercount == 0){
 				console.log('callback with err called')
 				callback(null, false)
 			}else{

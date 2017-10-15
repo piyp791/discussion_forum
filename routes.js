@@ -24,6 +24,19 @@ module.exports = function(app) {
         });
     });
 
+    app.get('/getlatest', function(req, res){
+
+        dbHelper.getHomePageLinks('latest', function(err, data){
+            if(err){
+                console.log('some error!!');
+                res.json({'content': 'hahahahahaha'})
+
+            }else{
+                res.json(JSON.stringify(data))
+            }
+        });
+    });
+
     app.get('/page/:link', function(req, res){
 
         var linkTitle = req.params.link;
@@ -50,8 +63,13 @@ module.exports = function(app) {
             if(err){
                 console.log('some error!!');
             }else{
-
-                res.json({'isverified': true})
+                console.log('data-->' +JSON.stringify(data))
+                if(JSON.stringify(data) == 'false'){
+                    res.json({'isverified': false})    
+                }else{
+                    res.json({'isverified': true})
+                }
+                
             }
 
         })
@@ -72,7 +90,12 @@ module.exports = function(app) {
                 console.log('some error!!');
             }else{
                 console.log('user data-->' +JSON.stringify(data))
-                res.render('profile.ejs', {'userinfo': data})        
+                /*if(JSON.stringify(data) == 'false'){
+                    res.JSON({'status': 'Not verified'})
+                }else{*/
+                    res.render('profile.ejs', {'userinfo': data})   
+                //}
+                     
             }
          });
         }catch(err){

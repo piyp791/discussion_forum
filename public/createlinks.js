@@ -1,49 +1,17 @@
-window.user;
-
-function doLogin(){
-	console.log("do login called")
-	var accid = $('#accid').val();
-	var password = $('#lpasswd').val();
-	console.log('acc id ->' +accid + ' password -->' +password);
-	$.post( "/login", { userid: accid }, function( data ) {
-			console.log('data-->' +JSON.stringify(data))
-			if(data.isverified == true){
-				//user logged in
-				window.user = accid;
-				//save user details in localstorage
-				localStorage.setItem("userid", accid);
-
-				$('#myModal').modal('toggle');
-
-				//remove existing elements from nav bar
-				removePreLoginLinks()
-				//add new elements to nav bar
-				createPostLogInLinks();
-			}else{
-
-			}
-	});
-}
-
-function reportIssue(){
-
-	var issueText = document.getElementById('issuetext').value; 
-	console.log(issueText);
-	$.post( "/reportIssue", { issue: issueText }, function( data ) {
-		alert('Thanks for reporting the issue. ')
-		$('#issueModal').modal('toggle');
-	});
-
-}
-
-
 //separate div for each post (question and answer)!!!!
-function getHomeLinks(homePageContent){
+function getHomeLinks(homePageContent, div){
 
 	homePageContent = eval(homePageContent);
-	//console.log('home page content ->' +JSON.stringify(homePageContent));
+	console.log('home page content->' +JSON.stringify(homePageContent));
+	console.log('home page content length->' +homePageContent.length);
 
-	var pagebody = document.getElementById('content-1');
+
+	var pagebody = document.getElementById(div);
+
+
+	//var tbl = document.createElement("table");
+  	//var tblBody = document.createElement("tbody");
+
 	for(var i=0;i<homePageContent.length;i++){
 
 		var id = homePageContent[i].Id;
@@ -57,11 +25,14 @@ function getHomeLinks(homePageContent){
 		console.log('home page content ->' +JSON.stringify(homePageContent[i]));
 
 		var link = homePageContent[i].Title;
-		console.log('link-->', link)
-		//link = link.replace("?", "%3F")
+		console.log('link-->', link);
+		link = link.replace("?", "%3F")
 
 		var date = homePageContent[i].CreationDate;
-		console.log('date-->', date)	
+		console.log('date-->', date)
+
+		var views = homePageContent[i].ViewCount;
+		console.log('views-->', views)
 
 		var a = document.createElement('a');
 		a.title = link;
@@ -71,7 +42,7 @@ function getHomeLinks(homePageContent){
 		console.log('linktext-->', linktext)
 
 		a.href = '/page/' + linktext
-		a.innerHTML = link;
+		a.innerHTML = date.substring(0, date.indexOf('T')) + "\t\t\t\t\t" + views + "\t\t\t\t\t" +link;
 		//a.className = "post"
 
 		par.appendChild(a);
