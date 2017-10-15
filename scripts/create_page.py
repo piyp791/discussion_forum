@@ -25,7 +25,11 @@ def createCommentHTML(id, comment):
 def findComments(root, quesId):
 	#print root
 	#print quesId
-	commentStr = '<h3>Comments</h3>';
+	commentHeader = '<h3>Comments</h3>';
+	commentStr = '';
+	
+	#div for containing comments
+	parentdivStart = "\n\t\t\t<div id = \"commentsection-" +quesId + "\" class = 'collapse'>"
 	for child in root:
 		postId = child.get('PostId');
 		if postId == quesId:
@@ -34,12 +38,23 @@ def findComments(root, quesId):
 			comment = re.sub(r'[^\x00-\x7F]+',' ', comment);
 			commentStr  = commentStr + createCommentHTML(id, comment);
 
+	parentdivEnd = "\n\t\t\t</div>";
+
 	entercontent = "\n\t\t\t\t<textarea id = \"speech-"+quesId+"\" rows=\"3\" cols=\"80\"></textarea><br>" +\
 	"\n\t\t\t\t<button class=\"record-start\" id=\"start-"+quesId+"\">"+\
 	"\n\t\t\t\t\t<img id=\"start_img-" +quesId+"\" src=\"/mic.gif\" alt=\"Start\">" +\
 	"\n\t\t\t\t</button>" +\
-    "\n\t\t\t\t<input type = 'button' value = 'Comment'/>";
-	commentStr = commentStr + entercontent
+    "\n\t\t\t\t<button>Comment</button>";
+	if commentStr !="":
+		#print 'some comments'
+		loadCmtsButton = "\n\t\t\t\t<button data-toggle = 'collapse' data-target = \"#commentsection-" + quesId +"\">Load Comments</button></br>";
+		commentStr = commentHeader + loadCmtsButton + parentdivStart + commentStr + parentdivEnd + entercontent; 
+	else:
+		#print 'no comments'
+		#display label
+		noCommentsLabel = '<p>no comments yet<p><br>'
+		commentStr = commentHeader + noCommentsLabel + parentdivStart + commentStr + parentdivEnd + entercontent; 
+
 	return commentStr
 
 
