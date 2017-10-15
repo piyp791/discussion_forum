@@ -9,7 +9,7 @@ function populateResources(content){
     endindex = 0;
 
     var list = document.createElement('ul')
-    var resourcesTab = document.getElementById('resourcestab')
+    var resourcestab = document.getElementById('resourcescontent')
     resourcestab.appendChild(list)
 
     while(startindex!=-1){
@@ -33,5 +33,4 @@ function populateResources(content){
 
         index = endindex+1;
     }
-
 }

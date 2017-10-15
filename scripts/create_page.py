@@ -119,7 +119,20 @@ def createContent(title, id, body, score, views, comments, answerStr):
 			  answerStr +\
 			  "\n\t\t\t</div>" +\
 			  "\n\t\t\t<div id = \"resourcestab\" class = \"resourcestab\">" +\
-			  "\n\t\t\t\t<h2>RESOURCES</h2>" +\
+			  "\n\t\t\t\t<ul class=\"nav nav-tabs\">" +\
+          	  "\n\t\t\t\t\t<li class=\"active\"><a data-toggle=\"tab\" href=\"#resources\">Resources</a></li>" +\
+          	  "\n\t\t\t\t\t<li><a data-toggle=\"tab\" href=\"#summary\">Summary</a></li>" +\
+        	  "\n\t\t\t\t</ul>" +\
+        	  "\n\t\t\t\t\t<div class=\"tab-content\">" +\
+              "\n\t\t\t\t\t\t<div id=\"resources\" class=\"tab-pane fade in active\">"+\
+              "\n\t\t\t\t\t\t\t<h3>Resources</h3>" +\
+              "\n\t\t\t\t\t\t\t<div id = \"resourcescontent\"></div>" +\
+          	  "\n\t\t\t\t\t\t</div>" +\
+              "\n\t\t\t\t\t\t<div id=\"summary\" class=\"tab-pane fade\">" +\
+              "\n\t\t\t\t\t\t\t<h3>Summary</h3>" +\
+              "\n\t\t\t\t\t\t\t<div id = \"summarycontent\"></div>" +\
+              "\n\t\t\t\t\t\t</div>" +\
+			  "\n\t\t\t</div>" +\
 			  "\n\t\t\t</div>" +\
 			  "\n\t\t\t<footer>Moore & Peps collaboration.</footer>"+\
 			  "\n\t</div>" +\
