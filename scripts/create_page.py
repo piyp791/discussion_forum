@@ -158,6 +158,7 @@ def createContent(title, id, body, score, views, comments, answerStr):
 			  "\n\t</script>" +\
 			  "\n\t<script src=\"/media.js\"></script>" +\
 			  "\n\t<script src=\"/vote.js\"></script>" +\
+			  "\n\t<script src=\"/managefunction.js\"></script>" +\
 			  "\n\t</body>" + \
 			  "\n</html>";
 

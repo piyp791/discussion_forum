@@ -120,7 +120,7 @@ module.exports = function(app) {
                 console.log('some error!!');
             }else{
                 console.log('user data-->' +JSON.stringify(data))
-                res.json({'activity': data})        
+                res.json(data)        
             }
          });
         }catch(err){

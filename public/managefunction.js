@@ -37,7 +37,6 @@ function reportIssue(){
 
 }
 
- 
 
 $(document).ready(function(){
     $('input[name="tab-group"]').change(function(){
