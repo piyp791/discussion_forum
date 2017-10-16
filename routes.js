@@ -145,4 +145,8 @@ module.exports = function(app) {
         });
     })
 
+    app.get('/ask', function(req, res){
+        res.render(__dirname + "/views/" + "ask.ejs");
+    });
+
 }

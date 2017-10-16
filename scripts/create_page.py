@@ -124,6 +124,9 @@ def createContent(title, id, body, score, views, comments, answerStr):
 			  "\n\t\t\t<div id = \"ques-" + id + "\" class = \"post\">" +\
 			  "\n\t\t\t<h2>Question</h2>" +\
 			  createVoteHTML(id, views, score, 'True') +\
+			  "\n\t\t\t<form id = \"questionpostsform\" method=\"GET\" action = \"/ask\">" +\
+          	  "\n\t\t\t\t<input type=\"submit\" id = \"quesbtn\" class=\"btn btn-primary btn-lg\" value=\"Ask Question\">" +\
+        	  "\n\t\t\t</form>" +\
 			  "\n\t\t\t\t<h2>" + title + "</h2>" +\
 			  "\n"	+body+ \
 			  "\n\t\t\t</div>" +\
