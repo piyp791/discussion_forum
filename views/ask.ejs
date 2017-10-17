@@ -8,7 +8,21 @@
   crossorigin="anonymous"></script>
    		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 		<title id = 'pagetitle'>Ask Question</title>
-	<head>
+	<style type="text/css">
+	.bs-example{
+    	margin: 100px 50px;
+    }
+    /* Custom styles for popover */
+    .custom-title{
+        margin: 0;
+    }
+    .custom-title .glyphicon{
+        vertical-align: top;
+    }
+</style>
+	</head>
+		
+	</script>
 	<body id = 'pagebody'>
 		<header>
 			<h1>Just Another QnA</h1>
@@ -19,18 +33,82 @@
 			  <a href="#" style = "float:right;">Sign Out</a>
 			</div>
 		<div class="container">
+
+			<!--<div id = "popoverhtml"></div>-->
 			<div id = "questionpage">
 			    
-			    <form action = "/postquestion" method = "POST" id = "questionform">
+			    <div id = "questionform">
 			    	<h2>Ask Question</h2>
 			    	<label for="question_title">Title</label><br><br><br>
-			    	<input id="question_title" size="180"/><br><br><br>
+			    	<input id="question_title" placeholder="Enter a short and concise title for your problem statement, as if you were explaining to a busy colleague"  maxlength="100" style="width:70%" /><br><br><br>
 			    	<label for="question_body">Body</label><br><br><br>
-			    	<textarea id="question_body" rows="20" cols="181"></textarea><br><br><br>
-			    	<input type="submit" id = "postquesbtn" class="btn btn-primary" value="Post Question">
-			    </form>
+			    	<textarea id="question_body" placeholder="Explain what are trying to achieve. Followed by where you got stuck. Then mention what did you try to resolve the issue at hand ? And why did it not work ?" rows="20" style="width: 70%;"></textarea><br><br><br>
+			    	<button type="button" data-toggle="popover" data-placement="right"  id = "askbtn">Post Question</button>
+			    </div>
 			</div>
 			<footer>Moore & Peps collaboration.</footer>
 		</div>
+		<script type="text/javascript">
+			//$("#popoverhtml").load("/popover.html"); 
+			$( "#question_title" ).on('input', function() {
+    			if ($(this).val().length>=100) {
+        			alert('You have reached the maximum word limit.');       
+    			}
+			});
+
+			$("#askbtn").popover({
+		        title: '<h3 class="custom-title"><span class="glyphicon glyphicon-info-sign"></span> You\'re almost there!</h3>',
+		        content : "<div id = 'problemstmtdiv'><label><input  class = 'sample' id='problemstmtcheckbox' type='checkbox' /> Have you explained what is it exactly that you want ?</label></div><div id = 'settingdiv'  style='display:none;'><label><input  class = 'sample' id='settingcheckbox' type='checkbox' />Explained the Problem Setting ?</label></div><div id = 'problemdiv' style='display:none;'><label><input  class='sample' id='problemcheckbox' type='checkbox' /> Explained where you got stuck ?</label></div><div id = 'trialdiv' style='display:none;'><label><input  class = 'sample' id='trialcheckbox' type='checkbox' /> Explained what have you tried so far and why did\'t it work? </label></div><button type='button' id = 'postbtn' class='btn btn-primary btn-block' disabled>Post Question</button><div id = 'faqlink'><p>Here\'s some more info about posting questions.</p></div>",
+		        html: true
+		    }); 
+
+		    $(function() {
+    
+	            $('body').on('click', '.sample', function(){
+
+	                $('input[type="checkbox"][id="problemstmtcheckbox"]').change(function() {
+	                   if(this.checked) {
+	                       // do something when checked
+	                       $("#settingdiv").fadeIn(500);
+	                       //$("#settingdiv").attr("style", "visibility: block")
+	                   }
+	                  });
+	                 $('input[type="checkbox"][id="settingcheckbox"]').change(function() {
+	                   if(this.checked) {
+	                       // do something when checked
+	                        $("#problemdiv").fadeIn(500);
+	                       //$("#problemdiv").attr("style", "visibility: block")
+	                   }
+	                  });
+	                 $('input[type="checkbox"][id="problemcheckbox"]').change(function() {
+	                   if(this.checked) {
+	                       // do something when checked
+	                        $("#trialdiv").fadeIn(500);
+	                       //$("#trialdiv").attr("style", "visibility: block")
+	                   }
+	                 });
+	                 $('input[type="checkbox"][id="trialcheckbox"]').change(function() {
+	                   if(this.checked) {
+	                       // do something when checked
+	                       //$("#trialdiv").fadeIn(500);
+	                       //alert('')
+	                      $("#postbtn").prop('disabled', false);
+
+	                      //ajax request
+	                   }
+	                 });
+	            });
+
+	        });
+
+
+			/*$("#questionform").submit(function(e){
+			    //e.preventDefault();
+			    console.log('form submit intercepted!!!')
+			    var form = this;
+			});*/
+
+		
+		</script>
 	</body>
 </html>
