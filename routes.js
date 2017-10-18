@@ -42,7 +42,7 @@ module.exports = function(app) {
         var linkTitle = req.params.link;
         console.log('link title -->' +linkTitle)
 
-        res.render(linkTitle + ".ejs")
+        res.render('posts/' + linkTitle + ".ejs")
 
     });
 

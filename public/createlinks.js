@@ -1,87 +1,8 @@
-//separate div for each post (question and answer)!!!!
-function getHomeLinks(homePageContent, div){
+/*name: createlinks.js*/
+/*description: javascript code for all posts files handling creation of navbar links in relation to user login, and other login functionalities*/
+/*author: ppapreja*/
 
-	homePageContent = eval(homePageContent);
-	console.log('home page content->' +JSON.stringify(homePageContent));
-	console.log('home page content length->' +homePageContent.length);
-
-
-	var pagebody = document.getElementById(div);
-
-	var tbl = document.createElement("table");
-  	var tblBody = document.createElement("tbody");
-  	tbl.appendChild(tblBody);
-  	pagebody.appendChild(tbl);
-
-  	var row = document.createElement("tr");
-  	var dateEl = document.createElement('th');
-  	dateEl.innerHTML = 'Date';
-  	row.appendChild(dateEl);
-  	var viewEl = document.createElement('th');
-  	viewEl.innerHTML = 'Views';
-  	row.appendChild(viewEl);
-  	var linkEl = document.createElement('th');
-  	linkEl.innerHTML = 'Question';
-  	row.appendChild(linkEl);
-  	tblBody.appendChild(row)
-
-	for(var i=0;i<homePageContent.length;i++){
-
-		var row = document.createElement("tr");
-
-		var id = homePageContent[i].Id;
-
-		var par = document.createElement('p');
-		par.className = "post-home";
-		par.Id = "post-"+ id;
-
-		//row.appendChild(par);
-
-		//console.log('home page content ->' +JSON.stringify(homePageContent[i]));
-
-		var link = homePageContent[i].Title;
-		console.log('link-->', link);
-		link = link.replace("?", "%3F")
-
-		var date = homePageContent[i].CreationDate;
-		console.log('date-->', date)
-
-		var views = homePageContent[i].ViewCount;
-		console.log('views-->', views)
-
-		var a = document.createElement('a');
-		a.title = link;
-
-		var linktext = link.includes("?")?link.replace("?", "%3F"):link;
-		var linktext = link.includes("'")?link.replace("'", "%27"):link;
-		console.log('linktext-->', linktext)
-
-		a.href = '/page/' + linktext
-
-		var cell = document.createElement("td");
-		var cellText = document.createTextNode(date.substring(0, date.indexOf('T')));
-      	cell.appendChild(cellText);
-      	row.appendChild(cell);
-		
-      	var cell = document.createElement("td");
-		var cellText = document.createTextNode(views);
-      	cell.appendChild(cellText);
-      	row.appendChild(cell);
-
-   
-		a.innerHTML = link;
-		par.appendChild(a);
-
-		var cell = document.createElement("td");
-      	cell.appendChild(par);
-      	cell.style.width = '80%'
-      	row.appendChild(cell);
-
-      	tblBody.appendChild(row)
-	}
-	//document.getElementById('trendingcontent').innerHTML = homePageContent
-}
-
+/*opens login modal on login/signup link click*/
 function openModal(action){
 	console.log('action -->' +action);
 	if(action == 'login'){
@@ -97,18 +18,20 @@ function openModal(action){
 }
 
 
+/*removes login and sign up links once the user has logged in*/
 function removePreLoginLinks(){
 	$("#loginlink").remove();
 	$("#signuplink").remove();
 }
 
+/*removes profile, preferences and signout links once the user has logged out*/
 function removePostLoginLinks(){
 	$("#profilelink").remove();
 	$("#preferenceslink").remove();
 	$("#signoutlink").remove();
 }
 
-
+/*creates profile, preferences and signout links once the user has logged in*/
 function createPostLogInLinks(){
 
 	var navbar = document.getElementById('myTopnav');
@@ -147,6 +70,7 @@ function createPostLogInLinks(){
 
 }
 
+/*creates login and signup links once the user has logged in*/
 function createPreLoginLinks(){
 
 	var navbar = document.getElementById('myTopnav');
@@ -175,6 +99,7 @@ function createPreLoginLinks(){
 
 }
 
+/*checks if the user is loggedin. creates pre/post login links accordingly*/
 function checkLoggedInUser(){
 
 	var navbar = document.getElementById('myTopnav');
@@ -186,11 +111,8 @@ function checkLoggedInUser(){
 		//hide profile/preferences page
 		createPreLoginLinks();
 		
-		
 	}else{
-
 		createPostLogInLinks()
-		
 	}
 
 	var aboutlink = document.createElement('a');

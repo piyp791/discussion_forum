@@ -104,8 +104,8 @@ def createContent(title, id, body, score, views, comments, answerStr):
     		   "\n\t\t<script src = \"/jquery.upvote.js\" type=\"text/javascript\"></script>" +\
 			  "\n\t\t<script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js\"></script>" +\
 			  "\n\t\t<link rel=\"stylesheet\" href=\"/style.css\"/>" + \
-			  "\n\t\t<script src=\"/commons.js\"></script>" + \
 			  "\n\t\t<script src=\"/createlinks.js\"></script>" + \
+			  "\n\t\t<script src=\"/textaudit.js\"></script>" + \
 			  "\n\t\t<script src=\"/PorterStemmer1980.min.js\"></script>" + \
 			  "\n\t\t<title id = 'pagetitle'>"+title+ \
 			  "\n\t\t</title>"+\
@@ -153,6 +153,7 @@ def createContent(title, id, body, score, views, comments, answerStr):
 			  "\n\t\t\t</div>" +\
 			  "\n\t\t\t<footer>Moore & Peps collaboration.</footer>"+\
 			  "\n\t</div>" +\
+			  "\n\t<script src=\"/post.js\"></script>" +\
 			  "\n\t<script type=\"text/javascript\">" +\
 			  "\n\t\t$(\"#loginmodals\").load(\"/loginModal.html\");"+\
     		  "\n\t\t$(\"#issuemodals\").load(\"/issueModal.html\");" +\
