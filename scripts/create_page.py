@@ -55,7 +55,7 @@ def findComments(root, quesId):
 	"\n\t\t\t\t<button class=\"record-start\" id=\"start-"+quesId+"\">"+\
 	"\n\t\t\t\t\t<img id=\"start_img-" +quesId+"\" src=\"/mic.gif\" alt=\"Start\">" +\
 	"\n\t\t\t\t</button>" +\
-    "\n\t\t\t\t<button>Comment</button>";
+    "\n\t\t\t\t<button class = \"comment-btn\" id = \"comment-btn-" + quesId + "\">Comment</button>";
 	if commentStr !="":
 		#print 'some comments'
 		loadCmtsButton = "\n\t\t\t\t<button data-toggle = 'collapse' data-target = \"#commentsection-" + quesId +"\">Load Comments</button></br>";
@@ -106,6 +106,7 @@ def createContent(title, id, body, score, views, comments, answerStr):
 			  "\n\t\t<link rel=\"stylesheet\" href=\"/style.css\"/>" + \
 			  "\n\t\t<script src=\"/commons.js\"></script>" + \
 			  "\n\t\t<script src=\"/createlinks.js\"></script>" + \
+			  "\n\t\t<script src=\"/PorterStemmer1980.min.js\"></script>" + \
 			  "\n\t\t<title id = 'pagetitle'>"+title+ \
 			  "\n\t\t</title>"+\
 			  "\n\t<head>"+\
