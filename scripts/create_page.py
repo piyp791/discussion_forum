@@ -2,7 +2,84 @@ import xml.dom.minidom as minidom
 import xml.etree.ElementTree as ET
 import re
 
-folder = "../views/";
+folder = "../views/posts/";
+
+def extractTagsFromObj(tags):
+	print 'original tags-->', tags
+	tagsArr = []
+	tagsArr = tags.split('>')
+	newTagsArr = [tag.replace('<', '') for tag in tagsArr]
+	
+	newTagsArr = newTagsArr[:-1]
+	print 'formatted tags array-->', newTagsArr
+	return newTagsArr;
+
+
+def extractUserInfoFromPosts(root, userId):
+	
+	tagSortedDictionary = {'None':0};
+
+	for child in root:
+		postOwnerId = child.get('OwnerUserId');
+		if userId == postOwnerId:
+
+			tagsArr = []
+			#get score and tag information and put them in a dictionary
+			tags = child.get('Tags');
+			if tags is not None:
+				tagsArr = extractTagsFromObj(tags)
+
+			#tags = str(tags).replace('<', '');
+			#tags = str(tags).replace('>', '');
+			score = child.get('Score');
+			score = int(score);
+
+			if tagsArr !=[]:
+				for tag in tagsArr:
+					if tag in tagSortedDictionary:
+						tagSortedDictionary[tag] += score
+					else:
+						tagSortedDictionary[tag] = score
+			else:
+				tagSortedDictionary['None'] += score;
+
+	return tagSortedDictionary
+
+
+
+def createUserInfoHTML(displayname, reputation, quesId, tagSortedDictionary):
+
+	userHTML = "\n\t\t\t<div id = \"userinfo-" + quesId +"\" style = \"float:right\">" +\
+				"\n\t\t\t\t<p>user name : " + displayname  + "</p>" +\
+				"\n\t\t\t\t<p> user reputation : " + str(reputation) + "</p>" +\
+				"\n\t\t\t\t<p> user tag wise history : " + str(tagSortedDictionary) + "</p>" +\
+				"\n\t\t\t</div><br>"
+
+	return userHTML;
+
+def getUserInfoHTML(root, postRoot, userId, quesId):
+
+	#print 'ID-->', userId, ' quesid-->', quesId
+	if userId is not None:
+		for child in root:
+			currentUserId = child.get('Id');
+			if currentUserId == userId:
+				#get information of this user such as display name, reputation.
+				displayName = child.get('DisplayName');
+				#print 'display name -->', displayName
+				reputation = child.get('Reputation');
+				#print 'reputation -->', reputation
+				break;
+	else:
+		displayName = 'None'
+		reputation = 'NA'
+
+	tagSortedDictionary = extractUserInfoFromPosts(postRoot, userId);
+
+	#print tagSortedDictionary
+	
+	userInfoHTML = createUserInfoHTML(displayName, reputation, quesId, tagSortedDictionary);
+	return userInfoHTML;
 
 def createVoteHTML(id, views, score, isQues):
 	votehtml = "\n\t\t\t<div id=\"vote-" + id + "\" class=\"upvote\" style=\"float:left;\">" +\
@@ -69,7 +146,7 @@ def findComments(root, quesId):
 	return commentStr
 
 
-def findAnswers(root, commentRoot, quesId):
+def findAnswers(root, commentRoot, quesId, userRoot):
 	answerStr = '';
 	for child in root:
 		postTypeId = child.get('PostTypeId');
@@ -84,17 +161,22 @@ def findAnswers(root, commentRoot, quesId):
 				views = child.get('ViewCount')
 				#print 'views-->', views
 				score = child.get('Score')
+				currentUserId = child.get('OwnerUserId')
 				#print 'score-->', score
 				answer = re.sub(r'[^\x00-\x7F]+',' ', answer)
 
+				#find user info for this answer
+				userInfoHTML = getUserInfoHTML(userRoot, root, currentUserId, postId)
+				userInfoHTML = re.sub(r'[^\x00-\x7F]+',' ', userInfoHTML);
+
 				#find comment for this answer
 				commentStr = findComments(commentRoot, postId);
-				answerStr = answerStr + createAnswerHTML(postId, answer, score) + commentStr;
+				answerStr = answerStr + createAnswerHTML(postId, answer, score) + userInfoHTML + commentStr;
 
 	return answerStr
 
 
-def createContent(title, id, body, score, views, comments, answerStr):
+def createContent(title, id, body, userInfoHTML, score, views, comments, answerStr):
 
 	content = "<html>"+ \
 			  "\n\t<head>" + \
@@ -129,8 +211,10 @@ def createContent(title, id, body, score, views, comments, answerStr):
           	  "\n\t\t\t\t<input type=\"submit\" id = \"quesbtn\" class=\"btn btn-primary btn-lg\" value=\"Ask Question\">" +\
         	  "\n\t\t\t</form>" +\
 			  "\n\t\t\t\t<h2>" + title + "</h2>" +\
-			  "\n"	+body+ \
+			  "\n"	+body+\
 			  "\n\t\t\t</div>" +\
+			  userInfoHTML +\
+			  "\n\t\t\t<br>" +\
 			  comments + \
 			  "\n\n<h1>Answers</h1>" +\
 			  answerStr +\
@@ -164,7 +248,7 @@ def createContent(title, id, body, score, views, comments, answerStr):
 			  "\n\t<script src=\"/media.js\"></script>" +\
 			  "\n\t<script src=\"/vote.js\"></script>" +\
 			  "\n\t<script src=\"/managefunction.js\"></script>" +\
-			  "\n\t</body>" + \
+			  "\n\t</body>" +\
 			  "\n</html>";
 
 	return content
@@ -174,6 +258,8 @@ def main():
 
 	tree = ET.parse('../data/apple.meta.stackexchange.com/Posts.xml');
 	commentTree = ET.parse('../data/apple.meta.stackexchange.com/Comments.xml');
+	userTree = ET.parse('../data/apple.meta.stackexchange.com/Users.xml');
+	userRoot = userTree.getroot();
 	commentRoot = commentTree.getroot();
 	root = tree.getroot();
 	for child in root:
@@ -188,17 +274,28 @@ def main():
 			title = title.replace("/", "~");
 			quesId = child.get('Id');
 			score = child.get('Score');
-			views = child.get('ViewCount')
+			views = child.get('ViewCount');
+
+			#get the user id for this post
+			userid = child.get('OwnerUserId');
 
 			f = open(folder + title + ".ejs","w") #opens file with name of "test.txt"
 			
+			#find user information
+			userInfoHTML = getUserInfoHTML(userRoot, root, userid, quesId);
+			userInfoHTML = re.sub(r'[^\x00-\x7F]+',' ', userInfoHTML);
+
+			#print 'user info ->', userInfoHTML
+
 			#findcomments
-			commentStr = findComments(commentRoot, quesId)
+			commentStr = findComments(commentRoot, quesId);
 
 			#find answers
-			answerStr = findAnswers(root, commentRoot, quesId)
+			answerStr = findAnswers(root, commentRoot, quesId, userRoot);
 			
-			content = createContent(title, quesId, body, score, views, commentStr, answerStr)
+			content = createContent(title, quesId, body, userInfoHTML, score, views, commentStr, answerStr);
+
+			#print content
 
 			f.write(content);
 			f.close();
