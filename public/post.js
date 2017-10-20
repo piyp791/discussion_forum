@@ -47,6 +47,68 @@ $(".comment-btn").popover({
     html: true
 }); 
 
+
+var originalLeave = $.fn.popover.Constructor.prototype.leave;
+$.fn.popover.Constructor.prototype.leave = function(obj){
+  var self = obj instanceof this.constructor ?
+    obj : $(obj.currentTarget)[this.type](this.getDelegateOptions()).data('bs.' + this.type)
+  var container, timeout;
+
+  originalLeave.call(this, obj);
+
+  if(obj.currentTarget) {
+    container = $(obj.currentTarget).siblings('.popover')
+    timeout = self.timeout;
+    container.one('mouseenter', function(){
+      //We entered the actual popover – call off the dogs
+      clearTimeout(timeout);
+      //Let's monitor popover content instead
+      container.one('mouseleave', function(){
+        $.fn.popover.Constructor.prototype.leave.call(self, self);
+      });
+    })
+  }
+};
+
+$(document).ready(function(){
+
+    $('[data-toggle="popover"]').popover({
+
+        placement : 'auto',
+        trigger : 'hover',
+        content: function(){
+            console.log(this.id)
+            divid = this.id.substring(this.id.indexOf('-')+1).trim();
+            console.log('div id-->', divid);
+
+            //extract dictionary from  
+            var tagcontentid = 'usertaginfo-' + divid
+            console.log('tag content id -->' +tagcontentid)
+            var tagcontent = $('#usertaginfo-' + divid).html();
+            console.log('tag content -->' +tagcontent)
+
+            tagcontent = tagcontent.replace(/\'/g, "\"")
+            console.log('tag content -->' +tagcontent)
+            tagcontent = JSON.parse(tagcontent)
+        
+            mystr = '<div style = "height: 90px;overflow:auto;">';
+            mystr = mystr + '<h4>User Reputation</h4>'
+            for (var key in tagcontent) {
+                if (tagcontent.hasOwnProperty(key)) {
+                    console.log(key + " -> " + tagcontent[key]);
+                    mystr = mystr + ('<p>' + key + "-" + tagcontent[key] + '<p>')
+                }
+            }
+            mystr += '</div>'
+            return mystr;
+        },
+        html: true,
+        trigger: 'click hover', 
+        delay: {show: 50, hide: 400}
+    })
+});
+
+
 /*final comment posting to be handled from within this function.*/
 function publishcomment(){
 	console.log('publish comment called');

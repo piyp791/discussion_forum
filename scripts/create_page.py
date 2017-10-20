@@ -49,10 +49,10 @@ def extractUserInfoFromPosts(root, userId):
 
 def createUserInfoHTML(displayname, reputation, quesId, tagSortedDictionary):
 
-	userHTML = "\n\t\t\t<div id = \"userinfo-" + quesId +"\" style = \"float:right\">" +\
+	userHTML = "\n\t\t\t<div class = \"userinfosection\"  id = \"userinfo-" + quesId +"\" data-toggle = \"popover\">" +\
 				"\n\t\t\t\t<p>user name : " + displayname  + "</p>" +\
 				"\n\t\t\t\t<p> user reputation : " + str(reputation) + "</p>" +\
-				"\n\t\t\t\t<p> user tag wise history : " + str(tagSortedDictionary) + "</p>" +\
+				"\n\t\t\t\t<p class = \"tagcontent\" id = \"usertaginfo-" + quesId + "\">" +  str(tagSortedDictionary) + "</p>" +\
 				"\n\t\t\t</div><br>"
 
 	return userHTML;
