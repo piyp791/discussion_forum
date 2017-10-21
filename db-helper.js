@@ -125,13 +125,44 @@ module.exports = {
   		});
   	},
 
-  	getUserActivity: function(userid, callback){
+  	getUserActivity: function(userid, filtervalue, sortvalue, postval, callback){
 
   		if(!connection){
   			connection = connect();
   		}
 
-  		var query = "select * from Posts where OwnerUserId = " + userid
+      var corequery = "select * from Posts";
+
+      var condition = " where OwnerUserId = " + userid;
+
+      if(filtervalue!= "" && filtervalue){
+        condition += " && Tags like %\"" + filtervalue + "\"%";
+      }
+      if(postval!= "" && postval){
+        condition += " && PostTypeId = " + postval;
+      }
+
+
+      var order = ""
+      if(sortvalue == "Popularity"){
+
+        order = " order by ViewCount desc";
+
+      }else if(sortvalue == "Newest"){
+
+        order = " order by CreationDate desc";
+
+      }else if(sortvalue == "Oldest"){
+
+          order = " order by CreationDate asc";
+
+      }else{
+        //something default
+      }
+
+      limit = " limit 10";
+
+      var query = corequery + condition + order + limit;
   		console.log('query-->' +query);
 
   		connection.query(query, function(err, result, fields){
@@ -141,12 +172,12 @@ module.exports = {
   				callback(err, null);
   			}
   			console.log('number of rows returned -->' +JSON.stringify(result));
-			if(result.length == 0){
-				console.log('callback with err called');
-				callback(null, false);
-			}else{
-				callback(null, result);
-			}
+  			if(result.length == 0){
+  				console.log('callback with err called');
+  				callback(null, false);
+  			}else{
+  				callback(null, result);
+  			}
   		});
   	}
 }

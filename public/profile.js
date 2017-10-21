@@ -4,12 +4,12 @@ function populateProfile(profileInfo){
 	profileInfo = profileInfo[0];
 	for (var key in profileInfo) {
 			if (profileInfo.hasOwnProperty(key)) {
-			console.log(key + " -> " + profileInfo[key]);
-			if(key!=='DisplayName'){
-				$('#' +key).text(key + '--->'+ profileInfo[key])	
-			}else{
-				$('#' +key).text(profileInfo[key])
-			}
+				console.log(key + " -> " + profileInfo[key]);
+				if(key!=='DisplayName'){
+					$('#' +key).text(key + '--->'+ profileInfo[key])	
+				}else{
+					$('#' +key).text(profileInfo[key])
+				}
 			
 			}
 	}
@@ -23,16 +23,46 @@ function createActivityText(postType, ParentID, bodytext){
  	}else{
  		text="User Added a post "
  	}
- 	text+=" " + bodytext.substring(0, 500) + "..."
+ 	//text+=" " + bodytext.substring(0, 500) + "..."
+ 	text+=bodytext
  	return text;
 
 }
+
+function extractTagsFromStr(tagStr){
+
+	console.log('original tags-->'+ tagStr);
+
+
+	if(tagStr==null || tagStr.length==0 || !tagStr){
+		return ['None'];
+	}
+	tagsArr = []
+	tagsArr = tagStr.split('>')
+	for(var i=0;i<tagsArr.length;i++){
+		tagsArr[i] = tagsArr[i].replace('<', '')
+	}
+	tagsArr.splice(-1,1);
+	console.log('formatted tags array-->'+ tagsArr)
+	return tagsArr;
+
+}
+
+function mergeTagArrays(currentArray, origArray){
+	var mergedArray = origArray.concat(currentArray.filter(function (item) {
+    	return origArray.indexOf(item) < 0;
+	}));
+	return mergedArray;
+}
+
 
 function formatProfileActivity(homePageContent, div){
 
 	homePageContent = eval(homePageContent);
 	console.log('home page content->' +JSON.stringify(homePageContent));
 	console.log('home page content length->' +homePageContent.length);
+
+	var userTagArr = [];
 
 
 	var pagebody = document.getElementById(div);
@@ -56,6 +86,7 @@ function formatProfileActivity(homePageContent, div){
   	activityEl.innerHTML = 'Activity';
   	row.appendChild(activityEl);
 
+
   	tblBody.appendChild(row)
 
 	for(var i=0;i<homePageContent.length;i++){
@@ -70,13 +101,13 @@ function formatProfileActivity(homePageContent, div){
 		//console.log('home page content ->' +JSON.stringify(homePageContent[i]));
 
 		var postid = homePageContent[i].ID;
-		console.log('post id-->', postid);
+		//console.log('post id-->', postid);
 
 		var date = homePageContent[i].CreationDate;
-		console.log('date-->', date)
+		//console.log('date-->', date)
 
 		var postType = homePageContent[i].PostTypeId;
-		console.log('postType-->', postType)
+		//console.log('postType-->', postType)
 
 		var ParentID = -1;
 
@@ -86,7 +117,20 @@ function formatProfileActivity(homePageContent, div){
 		}
 
 		var body = homePageContent[i].Body;
-		console.log('body-->', body);
+		//console.log('body-->', body);
+
+		var title = homePageContent[i].Title;
+		title = title.replace("?", "%3F");
+		console.log('title-->', title);
+
+		var tags = homePageContent[i].Tags;
+		console.log('tags-->'+tags);
+		var tagsArr = extractTagsFromStr(tags);
+		console.log('tags array-->'+tagsArr);
+
+		//merge this array with usertag array
+		userTagArr = mergeTagArrays(tagsArr, userTagArr);
+		console.log('merged aray -->' +userTagArr)
 		
       	var cell = document.createElement("td");
 		var cellText = document.createTextNode(i+1);
@@ -101,8 +145,21 @@ function formatProfileActivity(homePageContent, div){
       	//par.innerHTML = createActivityText(postType, ParentID, body);
 
 		var cell = document.createElement("td");
-		var cellText = document.createTextNode(createActivityText(postType, ParentID, body));
+
+		var cellText = document.createElement('p');
+		cellText.innerHTML = 'Posted a question'
+		var postLink = document.createElement('a');
+		//postLink.innerHTML = createActivityText(1, 1 ,title);
+		//postLink.href = '/page/'+ cellText.innerHTML;
+
+		var linktext = title.includes("?")?title.replace("?", "%3F"):title;
+        var linktext = title.includes("'")?title.replace("'", "%27"):title;
+
+        postLink.href = '/page/' + linktext;
+        postLink.innerHTML = linktext;
+
       	//cell.appendChild(par);
+      	cellText.appendChild(postLink)
       	cell.appendChild(cellText)
       	cell.style.width = '85%'
       	row.appendChild(cell);
@@ -110,13 +167,24 @@ function formatProfileActivity(homePageContent, div){
       	tblBody.appendChild(row)
 	}
 	//document.getElementById('trendingcontent').innerHTML = homePageContent
+
+	var outerlistelement = document.getElementById('tagFilter')
+	//populate dropdown with usertag array values
+	for(var j=0;j<userTagArr.length;j++){
+		
+		var listelement = document.createElement('option');		
+		listelement.innerHTML = userTagArr[j];
+		outerlistelement.appendChild(listelement);
+	}
 }
 
 $(document).ready(function(){
+
+	console.log('code run....');
+
     $('input[name="tab-group"]').change(function(){
         if($('#tab-3').prop('checked')){
             //alert('tab 3 is checked!');
-
 
             //get user details from localstorage
             var loggedInUser = localStorage.getItem("userid");
@@ -124,10 +192,54 @@ $(document).ready(function(){
             	console.log(JSON.stringify(data));
 
             	$('#activity').text("")
-            	formatProfileActivity(data, 'activity')
+            	formatProfileActivity(data, 'activity');
             	//$('#activity').text(JSON.stringify(data))
-
             });
         }
     });
+
+
+    $(".drop").change(function () {
+        console.log('function called..');
+        var selectedVal = this.value;
+		//var firstDropVal = $('#drop').val();
+		console.log('selected dropdown value -->' +selectedVal);
+		//console.log('firstDropval-->'+firstDropVal);
+
+    });
+
+
+	$('#filtersearchbtn').click(function(){
+
+		var sortval = $('#postTypeFilter').val();
+		var tagval = $('#tagFilter').val();
+		var posttypeval = $('#sortFilter').val();
+
+		console.log('sort value -->' +sortval);
+		console.log('tag value -->' +tagval);
+		console.log('tag value -->' +posttypeval);
+
+		if(sortval.includes('Select')){
+
+			if(tagval.includes('Select')){
+
+				
+
+			}else{
+				//query by tag only
+
+			}
+			
+		}else{
+			//query by post sort only 
+		}
+
+		//get user from localstorage
+		var userid = localStorage.getItem('userid');
+		$.get( "/activity/" +userid + "?sort='popularity'", function( data ) {
+  			//$( ".result" ).html( data );
+		});
+
+	});
 });
+

@@ -123,9 +123,9 @@ function populateResources(content){
     startindex = 0;
     endindex = 0;
 
-    var list = document.createElement('ul')
-    var resourcestab = document.getElementById('resourcescontent')
-    resourcestab.appendChild(list)
+    var list = document.createElement('ul');
+    var resourcestab = document.getElementById('resourcescontent');
+    resourcestab.appendChild(list);
 
     while(startindex!=-1){
 
@@ -137,14 +137,17 @@ function populateResources(content){
         }
         endindex = content.indexOf("</a>", startindex);
         console.log(endindex)
-        var link = content.substring(startindex, endindex+1);
-        console.log('link-->' +link)
+        var link = content.substring(startindex, endindex);
+        console.log('link-->' +link +  ' length-->' +link.length);
         
 
-        var el = document.createElement('li');
-        list.appendChild(el);
-        el.innerHTML = link;
-        list.append(document.createElement('br'))
+        if(link!="" && link.length>0 && link.includes('href')){
+           var el = document.createElement('li');
+            list.appendChild(el);
+            el.innerHTML = link;
+            list.append(document.createElement('br')); 
+        }
+        
 
         index = endindex+1;
     }

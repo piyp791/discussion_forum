@@ -108,21 +108,26 @@ module.exports = function(app) {
     app.get('/activity/:userid', function(req, res){
 
         var userid = req.params.userid;
-
         console.log('user id -->' +userid);
+
+        var sortval = req.query.sort==undefined?'':req.query.sort;
+        var filterval = req.query.filter==undefined?'':req.query.filter;
+        var posttype = req.query.posttype==undefined?'1':req.query.posttype;
+        console.log('sort value-->' +sortval + ' filter value-->' +filterval + '  posttype value-->' + posttype);
+
         try{
             userid = parseInt(userid);
 
-             //get user info from database
-            dbHelper.getUserActivity(userid, function(err, data){
+            //get user info from database
+            dbHelper.getUserActivity(userid, filterval, sortval, posttype, function(err, data){
 
-            if(err){
-                console.log('some error!!');
-            }else{
-                console.log('user data-->' +JSON.stringify(data))
-                res.json(data)        
-            }
-         });
+                if(err){
+                    console.log('some error!!');
+                }else{
+                    //console.log('user data-->' +JSON.stringify(data))
+                    res.json(data)        
+                }
+             });
         }catch(err){
             console.log(err);
             res.json({'response': 'empty'});  
