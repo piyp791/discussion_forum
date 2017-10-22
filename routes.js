@@ -111,15 +111,15 @@ module.exports = function(app) {
         console.log('user id -->' +userid);
 
         var sortval = req.query.sort==undefined?'':req.query.sort;
-        var filterval = req.query.filter==undefined?'':req.query.filter;
-        var posttype = req.query.posttype==undefined?'1':req.query.posttype;
-        console.log('sort value-->' +sortval + ' filter value-->' +filterval + '  posttype value-->' + posttype);
+        var tagval = req.query.tag==undefined?'':req.query.tag;
+        var posttype = (req.query.postType==undefined || req.query.postType=='Questions') ?'1':'2';
+        console.log('sort value-->' +sortval + ' filter value-->' +tagval + '  posttype value-->' + posttype);
 
         try{
             userid = parseInt(userid);
 
             //get user info from database
-            dbHelper.getUserActivity(userid, filterval, sortval, posttype, function(err, data){
+            dbHelper.getUserActivity(userid, tagval, sortval, posttype, function(err, data){
 
                 if(err){
                     console.log('some error!!');

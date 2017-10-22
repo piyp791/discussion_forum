@@ -131,33 +131,65 @@ module.exports = {
   			connection = connect();
   		}
 
-      var corequery = "select * from Posts";
-
-      var condition = " where OwnerUserId = " + userid;
-
-      if(filtervalue!= "" && filtervalue){
-        condition += " && Tags like %\"" + filtervalue + "\"%";
-      }
-      if(postval!= "" && postval){
-        condition += " && PostTypeId = " + postval;
-      }
-
-
+      var corequery = ""
+      var condition = ""
       var order = ""
-      if(sortvalue == "Popularity"){
 
-        order = " order by ViewCount desc";
+      if(postval=='1'){
 
-      }else if(sortvalue == "Newest"){
+        corequery = "select * from Posts";
 
-        order = " order by CreationDate desc";
+        condition = " where OwnerUserId = " + userid;
 
-      }else if(sortvalue == "Oldest"){
+        if(filtervalue!= "" && filtervalue){
+          condition += " and Tags like \"%" + filtervalue + "%\"";
+        }
+        
+        condition += " and PostTypeId = " + postval
 
-          order = " order by CreationDate asc";
+        
+        if(sortvalue == "Popularity"){
 
-      }else{
-        //something default
+          order = " order by ViewCount desc";
+
+        }else if(sortvalue == "Newest"){
+
+          order = " order by CreationDate desc";
+
+        }else if(sortvalue == "Oldest"){
+
+            order = " order by CreationDate asc";
+
+        }else{
+          //something default
+        }
+
+      }else if(postval =='2'){
+
+          corequery = "Select A.Title, A.Tags, B.ID, B.PostTypeId, B.ParentID, B.CreationDate, B.Score, B.Body, B.OwneruserId from Posts A , Posts B";
+
+          condition = " where B.OwnerUserId = " + userid;
+
+          condition+= " and A.ID = B.ParentID";
+
+          if(filtervalue!= "" && filtervalue){
+            condition += " and A.Tags like \"%" + filtervalue + "%\"";
+          }
+        
+          condition += " and B.PostTypeId = " + postval
+
+          if(sortvalue == "Newest"){
+
+            order = " order by B.CreationDate desc";
+
+          }else if(sortvalue == "Oldest"){
+
+            order = " order by B.CreationDate asc";
+
+          }else{
+            //something default
+          }
+
       }
 
       limit = " limit 10";
@@ -171,13 +203,15 @@ module.exports = {
   				console.log(err);
   				callback(err, null);
   			}
-  			console.log('number of rows returned -->' +JSON.stringify(result));
-  			if(result.length == 0){
-  				console.log('callback with err called');
+  			//console.log('number of rows returned -->' +JSON.stringify(result));
+
+        callback(null, result)
+  			/*if(result.length == 0){
+  				console.log('no rows'); 
   				callback(null, false);
   			}else{
   				callback(null, result);
-  			}
+  			}*/
   		});
   	}
 }

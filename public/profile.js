@@ -56,7 +56,7 @@ function mergeTagArrays(currentArray, origArray){
 }
 
 
-function formatProfileActivity(homePageContent, div){
+function formatProfileActivity(homePageContent, div, ontabload = 'true'){
 
 	homePageContent = eval(homePageContent);
 	console.log('home page content->' +JSON.stringify(homePageContent));
@@ -147,7 +147,13 @@ function formatProfileActivity(homePageContent, div){
 		var cell = document.createElement("td");
 
 		var cellText = document.createElement('p');
-		cellText.innerHTML = 'Posted a question'
+
+		if(postType == '1'){
+			cellText.innerHTML = 'Posted a question-->'	
+		}else{
+			cellText.innerHTML = 'Added an answer to the question-->'
+		}
+		
 		var postLink = document.createElement('a');
 		//postLink.innerHTML = createActivityText(1, 1 ,title);
 		//postLink.href = '/page/'+ cellText.innerHTML;
@@ -168,14 +174,26 @@ function formatProfileActivity(homePageContent, div){
 	}
 	//document.getElementById('trendingcontent').innerHTML = homePageContent
 
-	var outerlistelement = document.getElementById('tagFilter')
-	//populate dropdown with usertag array values
-	for(var j=0;j<userTagArr.length;j++){
-		
-		var listelement = document.createElement('option');		
-		listelement.innerHTML = userTagArr[j];
-		outerlistelement.appendChild(listelement);
+
+	if(ontabload == 'true'){
+
+		var outerlistelement = document.getElementById('tagFilter')
+
+		//clear values first from the dropdown
+		$(".tags").remove();
+
+		//populate dropdown with usertag array values
+		for(var j=0;j<userTagArr.length;j++){
+			
+			var listelement = document.createElement('option');		
+			listelement.innerHTML = userTagArr[j];
+			listelement.value = userTagArr[j];
+			listelement.className = "tags"
+			outerlistelement.appendChild(listelement);
+		}
+
 	}
+	
 }
 
 $(document).ready(function(){
@@ -211,33 +229,41 @@ $(document).ready(function(){
 
 	$('#filtersearchbtn').click(function(){
 
-		var sortval = $('#postTypeFilter').val();
+		var sortval = $('#sortFilter').val();
 		var tagval = $('#tagFilter').val();
-		var posttypeval = $('#sortFilter').val();
+		var posttypeval = $('#postTypeFilter').val();
 
 		console.log('sort value -->' +sortval);
 		console.log('tag value -->' +tagval);
 		console.log('tag value -->' +posttypeval);
 
-		if(sortval.includes('Select')){
+		var queryStr = ''
 
-			if(tagval.includes('Select')){
+		sortval = sortval.includes('Sort')?'':sortval
+		tagval = tagval.includes('Filter')?'':tagval
 
-				
-
-			}else{
-				//query by tag only
-
-			}
-			
-		}else{
-			//query by post sort only 
+		if(sortval!=''){
+			keyvalpair = "sort=" + sortval;
+			queryStr+=keyvalpair + "&"
 		}
+		if(tagval!=''){
+			keyvalpair = "tag=" + tagval;
+			queryStr+=keyvalpair + "&"
+		}
+
+		keyvalpair = "postType=" + posttypeval;
+		queryStr+=keyvalpair
+
+		console.log('queryStr-->' + queryStr);
 
 		//get user from localstorage
 		var userid = localStorage.getItem('userid');
-		$.get( "/activity/" +userid + "?sort='popularity'", function( data ) {
-  			//$( ".result" ).html( data );
+		$.get( "/activity/" +userid + "?" + queryStr, function( data ) {
+  			console.log('user activity results -->' +JSON.stringify(data))
+
+  			$('#activity').text("")
+  			formatProfileActivity(data, 'activity', 'false')
+
 		});
 
 	});
