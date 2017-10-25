@@ -3,9 +3,9 @@ module.exports = {
  
   app:{
     //dbUri: 'mongodb://peps0791:piyush0791@ds133814.mlab.com:33814/test_db',
-    dbUri :'127.0.0.1',
-    dbPort: 3000,
-    dbUser: 'root',
+    dbUri :'forumdbinstance.cwlujkspel9c.us-east-1.rds.amazonaws.com',
+    dbPort: 3306,
+    dbUser: 'peps0791',
     dbPassword: 'piyush0791'
   }
 };
