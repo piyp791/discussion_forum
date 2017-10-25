@@ -64,7 +64,13 @@ function createPostLogInLinks(){
 		profilelink.innerHTML = 'Profile';
 		profilelink.id = 'profilelink';
 		profilelink.style.float = "right"
-		profilelink.href = "/users/id/" + window.user
+
+		//get logged in user id
+		if(!localStorage.getItem("userid") || localStorage.getItem("userid")==""){
+			profilelink.href = "/users/id/#";
+		}else{
+			profilelink.href = "/users/id/" + localStorage.getItem("userid")
+		}
 		
 		navbar.appendChild(profilelink);
 
