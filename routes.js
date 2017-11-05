@@ -154,4 +154,45 @@ module.exports = function(app) {
         res.render(__dirname + "/views/" + "ask.ejs");
     });
 
+    app.post('/highlight', function(req, res){
+
+        var title = req.body.title;
+        var text = req.body.text;
+
+        console.log('title-->' + title);
+        console.log('text-->' +text);
+
+        //store in database this information
+        dbHelper.storeHighlightDetails(title, text, function(err, data){
+
+            if(err){
+                console.log('some error while storing highlight details')
+            }else{
+                console.log('result from database-->' +JSON.stringify(data))
+                if(data && data.insertId!=-1){
+                    res.json({'status': 'success'});
+                }else{
+                    res.json({'status': 'failure'});
+                }
+            }
+        })
+    });
+
+    app.get('/getHighlights', function(req, res){
+
+        var title = req.query.title;
+        console.log('getting highlights for-->' +title);
+
+        dbHelper.getHighlights(title, function(err, data){
+
+            if(err){
+                console.log('some error while storing highlight details')
+            }else{
+                console.log('result from database-->' +JSON.stringify(data))
+                res.json(data);
+            }
+
+        });
+
+    });
 }

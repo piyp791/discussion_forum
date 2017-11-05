@@ -189,12 +189,14 @@ def createContent(title, id, body, userInfoHTML, score, views, comments, answerS
 			  "\n\t\t<script src=\"/createlinks.js\"></script>" + \
 			  "\n\t\t<script src=\"/textaudit.js\"></script>" + \
 			  "\n\t\t<script src=\"/PorterStemmer1980.min.js\"></script>" + \
+			  "\n\t\t<script src=\"/highlight.js\"></script>" + \
 			  "\n\t\t<title id = 'pagetitle'>"+title+ \
 			  "\n\t\t</title>"+\
-			  "\n\t<head>"+\
+			  "\n\t</head>"+\
 			  "\n\t<body id = 'pagebody'>"+ \
 			  "\n\t\t<div id = \"loginmodals\"></div>" +\
     		  "\n\t\t<div id = \"issuemodals\"></div>" +\
+    		  "\n\t\t<div id = \"highlight_tool\"></div>" +\
 			  "\n\t\t<div class = \"container\">" +\
 			  "\n\t\t\t<header>" +\
 			  "\n\t\t\t\t<h1>Just Another Discussion Forum</h1>" +\
@@ -241,6 +243,7 @@ def createContent(title, id, body, userInfoHTML, score, views, comments, answerS
 			  "\n\t<script type=\"text/javascript\">" +\
 			  "\n\t\t$(\"#loginmodals\").load(\"/loginModal.html\");"+\
     		  "\n\t\t$(\"#issuemodals\").load(\"/issueModal.html\");" +\
+    		  "\n\t\t$(\"#highlight_tool\").load(\"/highlight_tool.html\");" +\
     		  "\n\t\tcheckLoggedInUser()" +\
 			  "\n\t\tvar content = $('.content').html();" +\
 			  "\n\t\tpopulateResources(content)" +\

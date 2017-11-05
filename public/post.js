@@ -152,3 +152,17 @@ function populateResources(content){
         index = endindex+1;
     }
 }
+
+function getHighlights(){
+
+    var title = $(document).attr('title')
+
+     $.get( "/getHighlights", {'title' : title}, function( data ) {
+
+        console.log(JSON.stringify(data))
+
+        for(var text of data){
+            $('#pagebody').highlight(text.Text);
+        }
+     });
+}
