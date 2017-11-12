@@ -5,6 +5,7 @@ const fs = require('fs');
 var path = require("path");
 var express = require('express');
 var dbHelper = require('./db-helper');
+var misc = require('./misc');
 
 module.exports = function(app) {
 
@@ -13,7 +14,7 @@ module.exports = function(app) {
     app.get('/home', function(req, res){
 
         //get links from db
-        dbHelper.getHomePageLinks('trending', function(err, data){
+        dbHelper.getHomePageLinks('trending', -1, function(err, data){
             if(err){
                 console.log('some error!!');
                 res.render('home.ejs', {'homePageContent': 'hahahahahaha'})
@@ -26,7 +27,7 @@ module.exports = function(app) {
 
     app.get('/getlatest', function(req, res){
 
-        dbHelper.getHomePageLinks('latest', function(err, data){
+        dbHelper.getHomePageLinks('latest', -1, function(err, data){
             if(err){
                 console.log('some error!!');
                 res.json({'content': 'hahahahahaha'})
@@ -35,6 +36,33 @@ module.exports = function(app) {
                 res.json(JSON.stringify(data))
             }
         });
+    });
+
+    app.get('/getrecommended/:userid', function(req, res){
+
+        var userid = req.params.userid;
+
+        if(!userid){
+            res.json(JSON.stringify({'status': 'failure'}))
+        }
+
+        dbHelper.getHomePageLinks('recommended', userid, function(err, data){
+
+            if(err){
+                console.log('some error!!');
+                res.json({'content': 'hahahahahaha'})
+
+            }else{
+
+                var response = misc.searchRecommendations(userid, data, function(err, response){
+                     console.log('response-->' + JSON.stringify(response))
+                     res.json(response)
+                })
+                //console.log('handled query-->' + post[1].substring(0,50));
+            }
+
+        });
+
     });
 
     app.get('/page/:link', function(req, res){

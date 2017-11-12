@@ -10,7 +10,6 @@ function getHomeLinks(homePageContent, div){
     console.log('home page content->' +JSON.stringify(homePageContent));
     console.log('home page content length->' +homePageContent.length);
 
-
     var pagebody = document.getElementById(div);
 
     var tbl = document.createElement("table");
@@ -99,6 +98,35 @@ $(document).ready(function(){
             	//$('#latest-content').html(JSON.stringify(data))
             });
             
+        }
+    });
+
+    $('input[name="tab-group"]').change(function(){
+        if($('#recommended-tab').prop('checked')){
+
+            //console.log('clicked');
+            //get logged in user from localstorage
+            var loggedInUser = localStorage.getItem("userid");
+            console.log('logged in user-->' +loggedInUser);
+            if(loggedInUser && loggedInUser!=''){
+
+                $.get( "/getrecommended/"+loggedInUser , function( data ) {
+                    console.log(JSON.stringify(data));
+                    //$('#latest-content').html("")
+                    //getHomeLinks(data, 'latest-content')
+                    //$('#latest-content').html(JSON.stringify(data))
+                });
+
+            }else{
+
+                 $.get( "/getrecommended/-1" , function( data ) {
+                    console.log('response from recommendation api->' +JSON.stringify(data));
+                    $('#recommended-content').html("");
+                    getHomeLinks(data, 'recommended-content');
+                    //$('#latest-content').html(JSON.stringify(data))
+                 });
+
+            }
         }
     });
 });

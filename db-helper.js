@@ -28,12 +28,14 @@ module.exports = {
 		}
   	},
 
-  	getHomePageLinks: function(preference, callback){
+  	getHomePageLinks: function(preference, userid, callback){
+
+
+      console.log('get Home page links::::userid-->' +userid)
 
   		if(!connection){
   			connection = connect()
   		}
-
 
   		if(preference == 'trending'){
 
@@ -52,26 +54,48 @@ module.exports = {
   		}else if(preference == 'latest'){
 
   			var query = "select * from Posts where PostTypeId = 1 order by CreationDate desc limit 10;"
+
+  		}else if(preference == 'recommended'){
+  
+        var query = "select * from Posts"
+
+        if(userid != -1){
+
+            query +=" where OwnerUserId = " +userid
+        }
+
   		}else{
-  			//oh crap!!!
-  		}
+        //oh crap
 
-		console.log("Query -->" + query)
-		connection.query(query, function (err, result, fields) {
-			if (err){
-				console.log(err)
-				callback(err, null)
+        //some tag
+        console.log('preference-->'+preference)
+        var query = "select * from Posts where "
+        var preferenceArr  = preference.split(',');
+        var tagstring = ''
+        for(var tag of preferenceArr){
+          if(tagstring==''){
+            tagstring= " Tags like '%" + tag + "%'"  
+          }else{
+            tagstring+= " or Tags like '%" + tag + "%'"
+          }
+        } 
+        query+= tagstring + " order by ViewCount desc limit 10"         
+      }
 
-			} 
-			console.log('number of rows returned -->' +JSON.stringify(result));
-			if(result.length == 0){
-				console.log('callback with err calleed')
-				callback(null, false)
-			}else{
-				callback(null, result)
-			}
-		});
-
+  		console.log("Query -->" + query);
+  		connection.query(query, function (err, result, fields) {
+  			if (err){
+  				console.log(err)
+  				callback(err, null)
+  			} 
+  			//console.log('number of rows returned -->' +JSON.stringify(result));
+  			if(result.length == 0){
+  				console.log('callback with err calleed');
+  				callback(null, false);
+  			}else{
+  				callback(null, result);
+  			}
+  		});
   	},
 
   	isUserVerified: function(userid, callback){
@@ -131,7 +155,10 @@ module.exports = {
         connection = connect();
       }
 
-      query = "Replace into Highlights set Title = \"" +title + "\", Text = \"" + text + "\", NumOfHighlights = NumOfHighlights + 1"; 
+      title = title.replace(/"/g,"")
+      console.log('title-->' +title)
+
+      var query = "Replace into Highlights set Title = \"" +title + "\", Text = \"" + text + "\", NumOfHighlights = NumOfHighlights + 1"; 
 
       //query = "insert into Highlights(Title, Text) values(\"" + title + "\",\"" + text + "\")"
       console.log('query-->' +query)
@@ -161,8 +188,15 @@ module.exports = {
         connection = connect();
       }
 
-      query = "select * from Highlights where Title = \"" +title + "\"";
+      title = title.replace(/"/g,"")
+      console.log('title-->' +title)
+      //str = str.replace(/abc/g, '');
+      var query = "select * from Highlights where Title = \"" +title + "\"";
+      //query = query.replace("\"", "")
+      //query = query.replace("'", "")
       console.log('query-->' +query)
+
+
 
       connection.query(query, function(err, result, fields){
 

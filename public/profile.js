@@ -216,7 +216,6 @@ $(document).ready(function(){
         }
     });
 
-
     $(".drop").change(function () {
         console.log('function called..');
         var selectedVal = this.value;

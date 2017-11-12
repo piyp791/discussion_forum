@@ -182,8 +182,9 @@ def createContent(title, id, body, userInfoHTML, score, views, comments, answerS
 			  "\n\t<head>" + \
 			  "\n\t\t<link href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css\" rel=\"stylesheet\" integrity=\"sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u\" crossorigin=\"anonymous\">" +\
 			  "\n\t\t<script src=\"https://code.jquery.com/jquery-3.2.1.min.js\" integrity=\"sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=\"  crossorigin=\"anonymous\"></script>" +\
-			   "\n\t\t<link href=\"/jquery.upvote.css\" rel=\"stylesheet\">" +\
-    		   "\n\t\t<script src = \"/jquery.upvote.js\" type=\"text/javascript\"></script>" +\
+			  "\n\t\t<script src = \"/jquery-highlight.js\"></script>" +\
+			  "\n\t\t<link href=\"/jquery.upvote.css\" rel=\"stylesheet\">" +\
+    		  "\n\t\t<script src = \"/jquery.upvote.js\" type=\"text/javascript\"></script>" +\
 			  "\n\t\t<script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js\"></script>" +\
 			  "\n\t\t<link rel=\"stylesheet\" href=\"/style.css\"/>" + \
 			  "\n\t\t<script src=\"/createlinks.js\"></script>" + \
@@ -247,6 +248,7 @@ def createContent(title, id, body, userInfoHTML, score, views, comments, answerS
     		  "\n\t\tcheckLoggedInUser()" +\
 			  "\n\t\tvar content = $('.content').html();" +\
 			  "\n\t\tpopulateResources(content)" +\
+			  "\n\t\tgetHighlights()" +\
 			  "\n\t</script>" +\
 			  "\n\t<script src=\"/media.js\"></script>" +\
 			  "\n\t<script src=\"/vote.js\"></script>" +\
