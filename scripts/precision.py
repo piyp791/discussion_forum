@@ -2,10 +2,11 @@ from collections import defaultdict
 
 from surprise import Dataset
 from surprise import SVD
+from surprise import NMF
 from surprise.dataset import Reader
 
 
-def precision_recall_at_k(predictions, k=10, threshold=3.5):
+def precision_recall_at_k(predictions, k=10, threshold=2):
     '''Return precision and recall at k metrics for each user.'''
 
     # First map the predictions to each user.
@@ -43,12 +44,13 @@ reader = Reader(line_format='user item rating', sep=' ')
 data = Dataset.load_from_file(file_path, reader=reader)
 #data = Dataset.load_builtin('ml-100k')
 data.split(n_folds=5)
-algo = SVD()
+#algo = SVD()
+algo = NMF()
 
 for trainset, testset in data.folds():
     algo.train(trainset)
     predictions = algo.test(testset)
-    precisions, recalls = precision_recall_at_k(predictions, k=5, threshold=4)
+    precisions, recalls = precision_recall_at_k(predictions, k=10, threshold=2)
 
     # Precision and recall can then be averaged over all users
     print(sum(prec for prec in precisions.values()) / len(precisions))

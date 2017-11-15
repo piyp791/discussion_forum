@@ -38,10 +38,10 @@ $(".comment-btn").popover({
   		console.log('block comment -->' + blockcomment)
     	if(blockcomment == false){
 
-    		return "<div id = contentcheck><p id = 'okaytext' style = 'font-color:green;'>Looks OK</p></div> <div id = 'similaritydiv'><label><input  class = 'sample' id='similaritycheckbox' type='checkbox' /> Are you sure your comments isn't just a \"Me too!\", \"thanks\", or \"+1\"? </label></div><button type='button' id = 'postcmtbtn'  class='popovercomment btn btn-primary btn-block' onclick = \'publishcomment()\'>Post Question</button><div id = 'faqlink'><p>Here\'s some more info about posting questions.</p></div>"
+    		return "<div id = contentcheck><p id = 'okaytext' style = 'font-color:green;'>Looks OK</p></div> <div id = 'similaritydiv'><label><input  class = 'sample' id='similaritycheckbox' type='checkbox' /> Are you sure your comments isn't just a \"Me too!\", \"thanks\", or \"+1\"? </label></div><button type='button' id = 'postcmtbtn'  class='popovercomment btn btn-primary btn-block' onclick = \'publishcomment()\'>Post Comment</button><div id = 'faqlink'><p>Here\'s some more info about posting comments.</p></div>"
 
     	}else{
-    		return "<div id = contentcheck><p id = 'notokaytext' style = 'font-color:red;'>Fix Needed</p></div> <div id = 'similaritydiv'><label><input  class = 'sample' id='similaritycheckbox' type='checkbox' /> Are you sure your comments isn't just a \"Me too!\", \"thanks\", or \"+1\"? </label></div><button type='button' id = 'postcmtbtn'  class='popovercomment btn btn-primary btn-block' onclick = \'publishcomment()\'>Post Question</button><div id = 'faqlink'><p>Here\'s some more info about posting questions.</p></div>"
+    		return "<div id = contentcheck><p id = 'notokaytext' style = 'font-color:red;'>Fix Needed</p></div> <div id = 'similaritydiv'><label><input  class = 'sample' id='similaritycheckbox' type='checkbox' /> Are you sure your comments isn't just a \"Me too!\", \"thanks\", or \"+1\"? </label></div><button type='button' id = 'postcmtbtn'  class='popovercomment btn btn-primary btn-block' onclick = \'publishcomment()\'>Post Comment</button><div id = 'faqlink'><p>Here\'s some more info about posting comments.</p></div>"
     	}	
     },
     html: true
@@ -116,8 +116,62 @@ function publishcomment(){
 
 /*populates resources (links extracted from the page into the resources window pane)*/
 function populateResources(content){
-    //var content = $('.content').html();
-    //console.log('content' +content);
+
+    /*$('.content').children().each(function () {
+        var $currentElement = $(this);
+        console.info($currentElement);
+    });*/
+
+    var linksArray = []
+
+    $('.content').find('a').each(function () {
+        var currentElement = $(this)
+
+        var classname = currentElement.attr('class')
+        //console.log('classname-->' +classname)
+        if(classname == 'upvote' || classname == 'downvote' || classname == 'star'){
+            //console.log('skipping element')
+        }else{
+
+            var obj = {}
+            var elemlink = currentElement.attr('href')
+            var elemhtml = currentElement.html()
+            //console.log('html link-->' + currentElement.attr('href')); // "this" is the current element in the loop
+            //console.log('inner html-->' + currentElement.html())
+
+            //find parent div
+            var parent = currentElement.parent().closest('div').attr('class', 'post');
+
+            //find vote element and then span count element
+            var voteElem = parent.find('div').attr('class', 'upvote')
+            if(voteElem){
+                //console.log(voteElem)
+                var count = voteElem.find('span').attr('class', 'count')
+                //console.log(count)
+                var votecount =count.html()
+                //console.log('vote count-->' +votecount)
+                //push elements in dictionary
+                obj['link'] = elemlink
+                obj['html'] = elemhtml
+                obj['votes'] = parseInt(votecount)
+
+            }
+
+            //console.log('obj-->' + JSON.stringify(obj))
+            linksArray.push(obj)
+            
+        }
+
+    });
+
+    //console.log('links array-->' +JSON.stringify(linksArray))
+    var sorterArray = linksArray.sort(function(a,b){return b['votes']-a['votes']})
+    console.log('links array-->' +JSON.stringify(sorterArray))
+    //alert(keysSorted); 
+    //var somecontent = $('.content').html();
+
+    //console.log('content' +somecontent);
+
     var index = 0;
     
     startindex = 0;
@@ -127,7 +181,18 @@ function populateResources(content){
     var resourcestab = document.getElementById('resourcescontent');
     resourcestab.appendChild(list);
 
-    while(startindex!=-1){
+    for(var linkObj of sorterArray){
+
+        var el = document.createElement('li');
+        var linkel = document.createElement('a');
+        el.appendChild(linkel)
+        list.appendChild(el);
+        linkel.innerHTML = linkObj['html'];
+        linkel.href = linkObj['link']
+        list.append(document.createElement('br')); 
+    }
+
+    /*while(startindex!=-1){
 
         startindex = content.indexOf("<a", index);
         console.log(startindex)
@@ -150,7 +215,7 @@ function populateResources(content){
         
 
         index = endindex+1;
-    }
+    }*/
 }
 
 function getHighlights(){

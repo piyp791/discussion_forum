@@ -5,6 +5,9 @@ fs = require('fs');
 var jpickle = require('jpickle');
 
 
+
+
+
 client = redis.createClient();
 
 client.on("error", function (err) {
@@ -90,9 +93,13 @@ function getParentTags(post, dbpostdata){
 
 	//get tags of parents
 	var tagstr = ''
-	var parentId = post.ParentId;
+	var parentId = post.ParentID;
+	/*if(post.ID == '905'){
+		console.log(JSON.stringify(post))
+		console.log('parent id-->' +parentId)	
+	}*/
 	for(var item of dbpostdata){
-		if(item.Id == parentId){
+		if(item.ID == parentId){
 			//get tags
 			tagstr = item.Tags
 			break;
@@ -109,6 +116,9 @@ function getPostTags(post, dbpostdata){
 		var tagstr = post.Tags;
 		
 	}else if(postType == '2'){
+		/*if(post.ID == '905'){
+			console.log('getting paent tags')
+		}*/
 		var tagstr = getParentTags(post, dbpostdata)
 	}
 
@@ -229,6 +239,9 @@ function getUserTagDataFromPosts(dbpostdata){
 
  		//console.log('post ID-->' +post.ID)
  		var tagsarr = getPostTags(post, dbpostdata);
+ 		if(post.ID == '905'){
+ 			console.log('tags -->' +tagsarr)
+ 		}
  		//console.log(tagsarr)
  		postdatajson =  appendNewTags(tagsarr, postdatajson, post);
  		//console.log('postdatajson-->' +JSON.stringify(postdatajson))
@@ -289,16 +302,20 @@ function searchFromRedis(userid, tag){
 function normalize(score){
 
 	//console.log(score)
-	var min = 1;
-	var max = 400;
+	/*if(score>150){
+		score = 150;
+	}*/
+	/*var min = 1;
+	var max = 150;
     var range = max-min;
     var normalval = (score - min) / range;
     //console.log('normal value-->' +normalval)
     //% Then scale to [x,y]:
     var range2 = 5 - 1;
-    var normalized = (normalval*range2) + min;
-	return normalized;
-	//return score;
+    //var normalized = Math.round((normalval*range2) + min  );
+ 	var normalized = (normalval*range2) + min;
+	return normalized;*/
+	return score;
 }
 
 function createMatrix(dbuserdata, usertagpostdatajson){
@@ -310,6 +327,9 @@ function createMatrix(dbuserdata, usertagpostdatajson){
 	var tagnamearr = [];
 	var count = 0;
 	var ratingsStr = ''
+	var questionarr = []
+	var answerarr = []
+	var orgact = [];
  	for(var user of dbuserdata){
  		var tagsarr = []
  		var found = false
@@ -320,11 +340,14 @@ function createMatrix(dbuserdata, usertagpostdatajson){
  				//console.log('tag -->' + JSON.stringify(tag.details.users[user.Id]))
  				var activity = 0
  				var questioncount= tag['details']['users'][user.OwnerUserId]['questions'].length;
- 				//console.log('questioncountfor user -->' + user.Id + ' -->' +  questioncount)
+ 				questionarr.push(questioncount)
+ 				console.log('questioncountfor user -->' + user.OwnerUserId + ' for tag -->'  +  tag['tagname']  + ' -->' +  questioncount)
     			var answercount= tag['details']['users'][user.OwnerUserId]['answers'].length;
-    			//console.log('answercount for user -->' + user.Id + ' -->' +  answercount)
-    			activity = questioncount + 3*(answercount);
-				console.log('un-normalized activity-->' +activity)
+    			answerarr.push(answercount)
+    			console.log('answercount for user -->' + user.OwnerUserId + ' -->' + tag['tagname'] + '-->' +   answercount)
+    			orgact.push((questioncount+answercount))
+    			activity = (0.5*questioncount) + (2*answercount);
+				//console.log('un-normalized activity-->' +activity)
 				activity = normalize(activity)
 				console.log('normalized activity-->' +activity)
     			found = true;
@@ -362,8 +385,8 @@ function createMatrix(dbuserdata, usertagpostdatajson){
  		usernamearr.push(user.OwnerUserId)
  	}
 
- 	console.log('rating string->' +ratingsStr)
- 	return [userarr, usernamearr, tagnamearr, ratingsStr];
+ 	//console.log('rating string->' +ratingsStr)
+ 	return [userarr, usernamearr, tagnamearr, ratingsStr, questionarr, answerarr, orgact];
 }
 
 
@@ -384,8 +407,8 @@ async function searchRecommendations(){
  	saveInRedis('userdatajson', usertagpostdatajson, 'test')
 
  	//get user details
- 	//var useractivity = await searchFromRedis('3', 'discussion');
- 	//console.log('user activity for user id 1 is -->' +useractivity)
+ 	//var useractivity = await searchFromRedis('9058', 'community-wiki');
+ 	//console.log('user activity for user id 1 is -->' +JSON.stringify(useractivity))
 
  	//store the entire thing in 2 d matrix
  	//get the users list
@@ -399,19 +422,34 @@ async function searchRecommendations(){
  	console.log(userlist.length);
  	var taglist = usertagitems[2];
  	console.log(taglist.length);
- 	var ratingsStr = usertagitems[3]
+ 	var ratingsStr = usertagitems[3];
+ 	var questionarr = usertagitems[4];
+ 	var answerarr = usertagitems[5];
+ 	var orgact = usertagitems[6];
+
+ 	//console.log('questioncount-->' +questionarr)
+ 	//console.log('questioncount-->' +answerarr)
+
  	saveInRedis('usertagmatrix', usertagmatrix, 'test');
  	saveInRedis('userlist', userlist, 'test');
  	saveInRedis('taglist', taglist, 'test');
  	saveInRedis('ratings', ratingsStr, 'test');
+ 	saveInRedis('orgact', orgact, 'test');
+
+
  	//console.log(userarr.length);
  	//console.log(userarr[1].length);
  	client.hget('test', 'ratings', function (err, replies) {
- 		console.log(JSON.parse(replies));
+ 		//console.log(JSON.parse(replies));
  		//string = replies;
  		fs.writeFile('ratings.dat', JSON.parse(replies), function (err) {
   			if (err) return console.log(err);
   			console.log('written successfully');
+
+  			fs.writeFile('scripts/ratings.dat', JSON.parse(replies), function (err) {
+  				if (err) return console.log(err);
+  				console.log('written successfully');
+			});
 		});
  	});
  	/*client.hget('test', 'userlist', function (err, replies) {
@@ -434,4 +472,4 @@ async function searchRecommendations(){
 
 }
 
-//searchRecommendations()
+searchRecommendations()

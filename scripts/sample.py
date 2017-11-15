@@ -1,6 +1,7 @@
 from collections import defaultdict
 
 from surprise import SVD
+from surprise import NMF
 from surprise import Dataset
 from surprise.dataset import Reader
 import redis
