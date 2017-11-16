@@ -89,6 +89,26 @@ function getUsersFromDB(connection){
   	});
 }
 
+
+function getCommentsFromDB(connection){
+
+	var query = "Select * from Comments";
+
+	return new Promise(function(resolve, reject){
+
+  		connection.query(query, function(err, result, fields){
+
+  			if(err){
+				console.log(err);
+				//callback(err, null);
+				reject(err)
+			}
+			//console.log('number of rows returned -->' +JSON.stringify(result));
+			resolve(result)
+	  	});
+  	});
+}
+
 function getParentTags(post, dbpostdata){
 
 	//get tags of parents
@@ -160,8 +180,11 @@ function appendNewTags(tagsarr, postdatajson, post){
 						//console.log('post 1 doesnt exists');
 						item['details']['users'][userid] = {};
 						item['details']['users'][userid]['questions'] = []
-						item['details']['users'][userid]['answers'] = []
 						item['details']['users'][userid]['questions'].push(postId);
+
+						item['details']['users'][userid]['answers'] = []
+						item['details']['users'][userid]['comments'] = []
+						
 					}
 
 					//console.log('user details inserted')
@@ -179,8 +202,11 @@ function appendNewTags(tagsarr, postdatajson, post){
 						//console.log('post 2 doesnt exists');
 						item['details']['users'][userid] = {};
 						item['details']['users'][userid]['answers'] = []
-						item['details']['users'][userid]['questions'] = []
 						item['details']['users'][userid]['answers'].push(postId);
+						
+						item['details']['users'][userid]['questions'] = []
+						item['details']['users'][userid]['comments'] = []
+						
 					}
 
 					//console.log('user details inserted')
@@ -197,24 +223,29 @@ function appendNewTags(tagsarr, postdatajson, post){
 			//add item tag to array
 			tagobj = {}
 			tagobj['tagname'] = tag
-			tagobj['details'] = {'users':{}, 'questions':[], 'answers':[]}
+			tagobj['details'] = {'users':{}, 'questions':[], 'answers':[], 'comments': []}
 
 			if(postType == '1'){
 				//insert user details
 				tagobj['details']['users'][userid] = {}
 				tagobj['details']['users'][userid]['questions'] = []
-				tagobj['details']['users'][userid]['answers'] = []
 				tagobj['details']['users'][userid]['questions'].push(postId);
 
+
+				tagobj['details']['users'][userid]['answers'] = []
+				tagobj['details']['users'][userid]['comments'] = []
+	
 				//insert post details
 				tagobj['details']['questions'].push(post);					
 			}else if(postType == '2'){
 				//insert user details
 				tagobj['details']['users'][userid] = {}
 				tagobj['details']['users'][userid]['answers'] = []
-				tagobj['details']['users'][userid]['questions'] = []
 				tagobj['details']['users'][userid]['answers'].push(postId);
 
+				tagobj['details']['users'][userid]['questions'] = []
+				tagobj['details']['users'][userid]['comments'] = []
+				
 				//insert post details
 				tagobj['details']['answers'].push(post);	
 			}
@@ -239,9 +270,9 @@ function getUserTagDataFromPosts(dbpostdata){
 
  		//console.log('post ID-->' +post.ID)
  		var tagsarr = getPostTags(post, dbpostdata);
- 		if(post.ID == '905'){
+ 		/*if(post.ID == '905'){
  			console.log('tags -->' +tagsarr)
- 		}
+ 		}*/
  		//console.log(tagsarr)
  		postdatajson =  appendNewTags(tagsarr, postdatajson, post);
  		//console.log('postdatajson-->' +JSON.stringify(postdatajson))
@@ -253,6 +284,89 @@ function getUserTagDataFromPosts(dbpostdata){
 
  	//console.log('postdatajson-->' +JSON.stringify(postdatajson))
  	return postdatajson;
+}
+
+
+function searchInQuestions(postId, tag){
+
+	for(var question of tag.details.questions){
+
+		//console.log('question->' +JSON.stringify(question))
+		//console.log('question id-->' +question.ID + '  post id-->' +postId )
+		if(question.ID == postId){
+			//console.log('post found!!!');
+			return true;
+		}
+
+	}
+	return false;
+}
+
+function searchInAnswers(postId, tag){
+
+	for(var answer of tag.details.answers){
+
+		if(answer.ID == postId){
+			//console.log('post found!!!')
+			return true;
+		}
+		
+	}
+	return false;
+}
+
+function addCommentToJSON(comment, usertagpostdatajson){
+
+	var postId = comment.PostId;
+	var userId = comment.UserId;
+	var commentId = comment.Id;
+	
+	for(var tag of usertagpostdatajson){
+
+		//console.log('searching for tag-->' +tag.tagname)
+
+		if(searchInQuestions(postId, tag) || searchInAnswers(postId, tag)){
+			
+			//console.log('tag found !!!!')
+
+			//console.log('user id -->' +userId)
+			//add comment information to tag
+			//console.log(tag['tagname'] + '-->' +JSON.stringify(tag['details']['users'][userId]))
+			
+			if(tag['details']['users'][userId]){
+				tag['details']['users'][userId]['comments'].push(commentId)
+			}else{
+				//console.log('creating user entry for this tag')
+
+				tag['details']['users'][userId] = {};
+				tag['details']['users'][userId]['questions'] = []
+				tag['details']['users'][userId]['answers'] = []
+				tag['details']['users'][userId]['comments'] = []
+				tag['details']['users'][userId]['comments'].push(commentId)
+
+			}
+			
+		}
+	}
+
+	return usertagpostdatajson;
+}
+
+
+
+function addCommentsToPostJSON(dbcommentdata, usertagpostdatajson){
+
+	//iterate over all comments
+		//get tags of comments
+		//add info to each tag
+	for(var comment of dbcommentdata){
+
+		//console.log('comment ->' +comment.Id)
+		addCommentToJSON(comment, usertagpostdatajson);
+	}
+
+	return usertagpostdatajson
+
 }
 
 
@@ -318,6 +432,30 @@ function normalize(score){
 	return score;
 }
 
+function calculateActivity(questioncount, answercount, commentcount, userid){
+
+	console.log('user id --> ' +  userid  + ' questioncount-->' +questioncount + '  answercount-->' +answercount + '  commentcount->' +commentcount )
+
+	//get all answers for user
+	//get all comments for user
+	//get all questions for user
+
+
+}
+
+function arrayUnique(array) {
+    var a = array.concat();
+    for(var i=0; i<a.length; ++i) {
+        for(var j=i+1; j<a.length; ++j) {
+            if(a[i] === a[j])
+                a.splice(j--, 1);
+        }
+    }
+
+    return a;
+}
+
+
 function createMatrix(dbuserdata, usertagpostdatajson){
 
 	var userarr = [];
@@ -326,11 +464,16 @@ function createMatrix(dbuserdata, usertagpostdatajson){
 	var usernamearr = [];
 	var tagnamearr = [];
 	var count = 0;
-	var ratingsStr = ''
+	var ratingsStr = '';
 	var questionarr = []
 	var answerarr = []
 	var orgact = [];
+
+	var userObj = {};
  	for(var user of dbuserdata){
+
+ 		var userDetails = {'questions': [], 'answers':[], 'comments':[]}
+
  		var tagsarr = []
  		var found = false
  		var tagcount = 0;
@@ -339,17 +482,30 @@ function createMatrix(dbuserdata, usertagpostdatajson){
  			if(tag['details']['users'][user.OwnerUserId]){
  				//console.log('tag -->' + JSON.stringify(tag.details.users[user.Id]))
  				var activity = 0
+
  				var questioncount= tag['details']['users'][user.OwnerUserId]['questions'].length;
  				questionarr.push(questioncount)
- 				console.log('questioncountfor user -->' + user.OwnerUserId + ' for tag -->'  +  tag['tagname']  + ' -->' +  questioncount)
+ 				userDetails.questions = arrayUnique(userDetails.questions.concat(tag['details']['users'][user.OwnerUserId]['questions']));
+ 				//console.log('question count for user -->' + user.OwnerUserId + ' for tag -->'  +  tag['tagname']  + ' -->' +  questioncount);
+    			
     			var answercount= tag['details']['users'][user.OwnerUserId]['answers'].length;
     			answerarr.push(answercount)
-    			console.log('answercount for user -->' + user.OwnerUserId + ' -->' + tag['tagname'] + '-->' +   answercount)
-    			orgact.push((questioncount+answercount))
-    			activity = (0.5*questioncount) + (2*answercount);
+    			userDetails.answers = arrayUnique(userDetails.answers.concat(tag['details']['users'][user.OwnerUserId]['answers']));
+    			//userDetails.answers+=answercount
+    			//console.log('answer count for user -->' + user.OwnerUserId + ' -->' + tag['tagname'] + '-->' +   answercount)
+
+				var commentcount= tag['details']['users'][user.OwnerUserId]['comments'].length;
+    			answerarr.push(commentcount)
+    			userDetails.comments = arrayUnique(userDetails.comments.concat(tag['details']['users'][user.OwnerUserId]['comments']));
+    			//console.log('comment count for user -->' + user.OwnerUserId + ' -->' + tag['tagname'] + '-->' +   commentcount)
+
+
+    			orgact.push((questioncount+answercount + commentcount))
+    			activity = (0.5*questioncount) + (2*answercount) + (1*commentcount);
 				//console.log('un-normalized activity-->' +activity)
-				activity = normalize(activity)
-				console.log('normalized activity-->' +activity)
+				activity = calculateActivity(questioncount, answercount, commentcount, user.OwnerUserId);
+				//activity = normalize(activity)
+				//console.log('normalized activity-->' +activity)
     			found = true;
     			tagsarr.push(activity);
     			if(ratingsStr==''){
@@ -383,10 +539,84 @@ function createMatrix(dbuserdata, usertagpostdatajson){
  		//console.log('ratingsStr-->' + ratingsStr)
  		userarr.push(tagsarr);
  		usernamearr.push(user.OwnerUserId)
+
+ 		userObj[user.OwnerUserId] = userDetails;
  	}
 
  	//console.log('rating string->' +ratingsStr)
- 	return [userarr, usernamearr, tagnamearr, ratingsStr, questionarr, answerarr, orgact];
+ 	return [userarr, usernamearr, tagnamearr, ratingsStr, questionarr, answerarr, orgact, userObj];
+}
+
+function calculateScore(postcount, totalpostcount, posttype){
+
+	//console.log('postcount-->' +postcount + ' totalpostcount-->' +totalpostcount + ' posttype-->' +posttype)
+	var score = 0;
+	if(totalpostcount!=0){
+
+		score = (postcount/totalpostcount)*(postcount)
+	}
+	
+	if(posttype == 1){
+
+		//question
+		score *=2
+
+	}else if(posttype==2){
+
+		score *=4
+
+	}else if(posttype ==3){
+
+		score *=3
+
+	}
+	//console.log('score-->' +score)
+	return score
+
+}
+
+function calculateActivityScores(userObj, dbuserdata, usertagpostdatajson){
+
+	var ratingsStr = ''
+	for(var user of dbuserdata){
+
+		var tagcount = 0;
+		for(var tag of usertagpostdatajson){
+
+			if(tag['details']['users'][user.OwnerUserId]){
+
+				var questioncount= tag['details']['users'][user.OwnerUserId]['questions'].length;
+				var answercount= tag['details']['users'][user.OwnerUserId]['answers'].length;
+				var commentcount= tag['details']['users'][user.OwnerUserId]['comments'].length;
+
+				var questionScore = calculateScore(questioncount, userObj[user.OwnerUserId]['questions'].length, 1 )
+				
+				var answerScore = calculateScore(answercount, userObj[user.OwnerUserId]['answers'].length, 2 )
+				var commentScore = calculateScore(commentcount, userObj[user.OwnerUserId]['comments'].length, 3 )
+
+				if(user.OwnerUserId == '21790'){
+					console.log(tag.tagname + ' -->  ' +questioncount + ' --' + answercount + '--' + commentcount + ' ------>' +questionScore + '-->' + answerScore + ' -->' +commentScore);	
+				}
+
+				var activity = questionScore + answerScore + commentScore
+
+				/*if(activity>=4){
+					activity = 4 + 1/(1+Math.pow(Math.E, -activity) + ((activity-4)/10));
+
+				}*/
+
+				if(ratingsStr==''){
+    				//ratingsStr = count + ' ' + tagcount + ' ' + activity
+    				ratingsStr = user.OwnerUserId + ' ' + tagcount + ' ' + activity
+    			}else{
+    				//ratingsStr += ('\n' + count + ' ' + tagcount + ' ' + activity)
+    				ratingsStr += ('\n' + user.OwnerUserId + ' ' + tagcount + ' ' + activity)
+    			}
+			}
+			tagcount++;
+		}
+	}
+	return ratingsStr
 }
 
 
@@ -400,9 +630,15 @@ async function searchRecommendations(){
  	var dbpostdata = await getPostsFromDB(connection);
  	//console.log('post data from db-->' +JSON.stringify(dbpostdata));
 
- 	var usertagpostdatajson = getUserTagDataFromPosts(dbpostdata)
- 	//console.log('usertagpostdatajson length-->' +usertagpostdatajson.length)
+ 	var dbcommentdata = await getCommentsFromDB(connection);
+ 	//console.log('comment data from db-->' +JSON.stringify(dbcommentdata));
 
+ 	var usertagpostdatajson = getUserTagDataFromPosts(dbpostdata)
+ 	//console.log('usertagpostdatajson length-->' +JSON.stringify(usertagpostdatajson))
+
+ 	var usertagpostdatajson = addCommentsToPostJSON(dbcommentdata, usertagpostdatajson)
+ 	//console.log('usertagpostdatajson-->' +JSON.stringify(usertagpostdatajson))
+ 	
  	//save usertagpostdatajson in redis
  	saveInRedis('userdatajson', usertagpostdatajson, 'test')
 
@@ -412,12 +648,16 @@ async function searchRecommendations(){
 
  	//store the entire thing in 2 d matrix
  	//get the users list
+ 	
+
  	var dbuserdata = await getUsersFromDB(connection);
- 	console.log('db user data-->' +JSON.stringify(dbuserdata))
+ 	//console.log('db user data-->' +JSON.stringify(dbuserdata))
  	var usertagitems = createMatrix(dbuserdata, usertagpostdatajson);
 
  	var usertagmatrix = usertagitems[0];
- 	console.log(usertagmatrix.length + ' --' + usertagmatrix[0].length);
+ 	//console.log(usertagmatrix.length + ' --' + usertagmatrix[0].length);
+ 	
+
  	var userlist = usertagitems[1];
  	console.log(userlist.length);
  	var taglist = usertagitems[2];
@@ -426,16 +666,19 @@ async function searchRecommendations(){
  	var questionarr = usertagitems[4];
  	var answerarr = usertagitems[5];
  	var orgact = usertagitems[6];
+ 	var userObj = usertagitems[7];
+
+ 	//calculate user ratings
+ 	ratingsStr = calculateActivityScores(userObj, dbuserdata, usertagpostdatajson);
 
  	//console.log('questioncount-->' +questionarr)
  	//console.log('questioncount-->' +answerarr)
-
+ 	//console.log('userObj-->' +JSON.stringify(userObj))
  	saveInRedis('usertagmatrix', usertagmatrix, 'test');
  	saveInRedis('userlist', userlist, 'test');
  	saveInRedis('taglist', taglist, 'test');
  	saveInRedis('ratings', ratingsStr, 'test');
  	saveInRedis('orgact', orgact, 'test');
-
 
  	//console.log(userarr.length);
  	//console.log(userarr[1].length);
@@ -452,6 +695,9 @@ async function searchRecommendations(){
 			});
 		});
  	});
+
+
+
  	/*client.hget('test', 'userlist', function (err, replies) {
     	console.log(JSON.parse(replies)[0]);
 

@@ -6,7 +6,7 @@ from surprise import NMF
 from surprise.dataset import Reader
 
 
-def precision_recall_at_k(predictions, k=10, threshold=2):
+def precision_recall_at_k(predictions, k, threshold):
     '''Return precision and recall at k metrics for each user.'''
 
     # First map the predictions to each user.
@@ -50,7 +50,7 @@ algo = NMF()
 for trainset, testset in data.folds():
     algo.train(trainset)
     predictions = algo.test(testset)
-    precisions, recalls = precision_recall_at_k(predictions, k=10, threshold=2)
+    precisions, recalls = precision_recall_at_k(predictions, k=10, threshold=1)
 
     # Precision and recall can then be averaged over all users
     print(sum(prec for prec in precisions.values()) / len(precisions))
