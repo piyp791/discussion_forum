@@ -1,0 +1,170 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>DC Motor PID control with unstable velocity feedback
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-6696" class = "post">
+			<h2>Question</h2>
+			<div id="vote-6696" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 363</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>DC Motor PID control with unstable velocity feedback</h2>
+<p>Currently I am building a omnidirectional robot with 4 DC Motors with embedded incremental encoder.</p>
+
+<p>However, with a constant pwm input, i am not able to control the motor to rotate in a "relatively stable" state, refer to the figure, it can be observed that the linear speed of the motors can varied in 10cm/s range. I believe one possible reason is the PWM signal generated from my Arduino Mega Controller is not good enough.</p>
+
+<p>And my problem is how can I implement a stable PID controller in this case? As the speed of the motor varies even with the same input, I believe extra work like adding a filter is needed?</p>
+
+<p>Any advice is appreciated >.&lt; Thank you</p>
+
+<p><img src="https://i.stack.imgur.com/9FGAU.png" alt="Velocity feedback (cm/s) against time"></p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6696" data-toggle = "popover">
+				<p>user name : fasttony</p>
+				<p> user reputation : 6</p>
+				<p class = "tagcontent" id = "usertaginfo-6696">{'motor': 1, 'None': 0, 'pid': 1, 'quadrature-encoder': 0, 'kalman-filter': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-6696">Load Comments</button></br>
+			<div id = "commentsection-6696" class = 'collapse'>
+			<div id = "comment-10820" class = "comment">
+				<p>Can you provide the code you have used to generate the PWM signal and the datasheet for the motors?</p>
+			</div>
+			<div id = "comment-11212" class = "comment">
+				<p>What motors do you use? How are the motors positioned? How are the motors connected to the arduino? How is the encoder connected to the arduino? How is the motor powered? What control scheme are you currently using?</p>
+			</div>
+			<div id = "comment-11243" class = "comment">
+				<p>You need to implement a current controller first and then a velocity controller. What you do is open loop control of the current using PWM, this is not stable. You have to add a feedback loop for the the current, and then another outer loop for the velocity.</p>
+			</div>
+			</div>
+				<textarea id = "speech-6696" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6696">
+					<img id="start_img-6696" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6696">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7518"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7518" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Have you checked the supply voltage of the sensors? Sometimes PWM can cause problems.
+If that is not the problem try to measure the voltage/current directly on the sensor using a scope. If this is stable something else is wrong in your circuit or arduino</p>
+
+<p>EDIT: think I read it wrong. Is the driver you are using correct? is the signal which the arduino delivers good? Sometimes a pull-up resistor will do the trick.</p>
+
+<p>If everything functions well, the PID values are not chosen correctly. Try using the ziegler and nichols method if this is posssible</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7518" data-toggle = "popover">
+				<p>user name : KoenR</p>
+				<p> user reputation : 26</p>
+				<p class = "tagcontent" id = "usertaginfo-7518">{'None': 0, 'microcontroller': 5, 'pid': 5, 'arduino': 5}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7518">Load Comments</button></br>
+			<div id = "commentsection-7518" class = 'collapse'>
+			<div id = "comment-10819" class = "comment">
+				<p>I don't think a PID controller has been implemented yet. As I understand the problem statement, I think OP is saying, "If open loop response is unstable, how can I control it?" I agree with you that I think there is a problem with the PWM signal, either on the transmission (arduino) end or the receiving (motor) end.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7518" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7518">
+					<img id="start_img-7518" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7518">Comment</button>
+			<br><div id = "ans-7715"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7715" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I have used Arduino and the PWM signal worked fine.</p>
+
+<p>Have you tried supplying the motors from a DC power source, just to see how they react to a constant DC power signal, not a PWM?</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7715" data-toggle = "popover">
+				<p>user name : Victor Jaramillo</p>
+				<p> user reputation : 11</p>
+				<p class = "tagcontent" id = "usertaginfo-7715">{'None': 1}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7715" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7715" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7715">
+					<img id="start_img-7715" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7715">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

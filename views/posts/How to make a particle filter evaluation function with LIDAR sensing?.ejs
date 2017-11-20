@@ -1,0 +1,206 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to make a particle filter evaluation function with LIDAR sensing?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11835" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11835" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 120</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to make a particle filter evaluation function with LIDAR sensing?</h2>
+<p>I am currently trying to implement a particle filter an a robot in a view to localize it on a 2D plane (i.e. to determine <code>x</code>, <code>y</code> and its orientation <code>theta</code> ). I am using a LIDAR which give me <code>(alpha, d)</code> with alpha the angle of measurement and d the distance measured at this angle. For now, I can compute the theoretical measures for each of my particle. But I am struggling with the evaluation function (the function that will give me the probability (or weight) of a particle considering the real measures).</p>
+
+<p>Suppose my LIDAR give me 5 values per rotation (0 , 72 , 144 , 216 , 288 ), thus I store one rotation in an array (5000mm is my maximum value) :</p>
+
+<ul>
+<li>Real LIDAR value : <code>[5000, 5000, 350, 5000, 5000]</code></li>
+<li>Particle 1 : <code>[5000, 5000, 5000, 350, 5000]</code></li>
+<li>Particle 2 : <code>[5000, 5000, 5000, 5000, 350]</code></li>
+</ul>
+
+<p>In this example, I want the function to return a higher probability (or weight) for Particle 1 than for Particle 2 (72  error vs 144 ). </p>
+
+<p>For now I am just doing the invert of the sum of the absolute difference between the two value at the same place in the array (e.g. for Particle 1 : <code>1 / (5000-5000 + 5000-5000 + 5000-350 + 5000-350 + 5000-5000)</code>). The problem with this method is that, in this example, Particle 1 and 2 have the same probability.</p>
+
+<p>So, what kind of function should I use to have the probability of a particle to be the right one with those kind of measurements ?</p>
+
+<p>PS : I am trying to adapt what is in this course : <a href="https://classroom.udacity.com/courses/cs373/lessons/48704330/concepts/487500080923#" rel="nofollow noreferrer">https://classroom.udacity.com/courses/cs373/lessons/48704330/concepts/487500080923#</a> to my problem.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11835" data-toggle = "popover">
+				<p>user name : EngelOfChipolata</p>
+				<p> user reputation : 135</p>
+				<p class = "tagcontent" id = "usertaginfo-11835">{'None': 1, 'lidar': 4, 'precise-positioning': 4, 'particle-filter': 0, 'localization': 4}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11835">Load Comments</button></br>
+			<div id = "commentsection-11835" class = 'collapse'>
+			<div id = "comment-21055" class = "comment">
+				<p>What papers or books are you using to develop your particle filter? I'm a little confused on your terminology - generally, for a 2D plane, you can have Cartesian coordinates: x,y; or you can have polar coordinates: $\alpha$, d. You have x,y,theta - what's theta? You mention the particle filter "works well for the x,y error but not at all for the theta error" - again, what's theta? I would think you'll either want to convert your map from Cartesian to polar coordinates, or you'd want to convert your lidar output from polar to Cartesian coordinates.</p>
+			</div>
+			<div id = "comment-21056" class = "comment">
+				<p>I'm going to put the question *on hold* (not closing it) to allow you time to clarify what you're trying to do. I don't understand how you have three variables on a 2D plane. Again, please provide more information on how you developed your method and what all your inputs and variables are.</p>
+			</div>
+			<div id = "comment-21073" class = "comment">
+				<p>@Chuck It sounds like he's trying to estimate the position and heading of his robot. That is the source of his x, y, theta</p>
+			</div>
+			<div id = "comment-21075" class = "comment">
+				<p>@JacobPanikulam Exactly, I edited my question, I hope it is a bit clearer; in fact I just need a function that gives me a score of how similar are two arrays of float, but it has to take the position of number in array into account !</p>
+			</div>
+			<div id = "comment-21133" class = "comment">
+				<p>Define a multivariate gaussian with means equal to values of your Real measurement. Then having the map and state of each particle which in your case is [x y theta], you can calculate "measurement" of each particle and evaluate your gaussian on it and get the probability which describes how well this particle fits in your actual measurement.</p>
+			</div>
+			<div id = "comment-21134" class = "comment">
+				<p>For good explanation I can advise you to look at udacity course "artificial intelligence for robotics" by Sebastian Thrun. He has clear explanations for some complex things like particle filters, kalman filters and etc.</p>
+			</div>
+			<div id = "comment-21135" class = "comment">
+				<p>Oh, you are trying to adapt. Then I can not understand why don't you use gaussian? As I remember in this course it was used in implementation of particle filter.</p>
+			</div>
+			<div id = "comment-21146" class = "comment">
+				<p>@LongSmith The problem I have with the method used in this course is that he is using distance to known landmarks. Here I can't do that because I don't know what is a landmark all the points the LIDAR returns to me. Furthermore, it does not take into account the angle at which the robot "sees" those landmarks.</p>
+			</div>
+			<div id = "comment-21148" class = "comment">
+				<p>@EngelOfChipolata there is no way to do it without creating a model of taking measurements from particles.</p>
+			</div>
+			</div>
+				<textarea id = "speech-11835" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11835">
+					<img id="start_img-11835" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11835">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-11890"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11890" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Having your "real" measurement, particles' state and model of taking "virtual" measurements from particles, you can define multivariate Gaussian and exploit it in order to get your probability.</p>
+
+<p>Multivariate normal distribution has density function:</p>
+
+<p>$f(x) = \frac{1}{\sqrt{(2\pi)^{k} |\boldsymbol{\sum}|}}\exp(-\frac{1}{2}(x-u)^{T}\sum^{-1}(x-u))$ where $x$ and $u$ are measurements vectors of size [k x 1] and $\sum$ is a covariance matrix of size [k x k]. As $u$ you use your "real" measurements taken by robot, as for $x$, it contains "virtual" measurements taken from particles.</p>
+
+<p>In your case you have 5 measurements so $x$ is going to have a size of [5 x 1] and $\sum$ --- [5 x 5]. Since measurements are independent, off-diagonal elements of covariance matrix are going to be zeros and diagonal elements define how uncertain your measurements are. So covariance matrix looks like this:</p>
+
+<p>$\sum = 
+\begin{bmatrix}
+q_{0} &amp; 0 &amp; 0 &amp; 0 &amp; 0\\ 
+0 &amp; q_{1} &amp; 0 &amp; 0 &amp; 0\\
+0 &amp; 0 &amp; q_{2} &amp; 0 &amp; 0\\
+0 &amp; 0 &amp; 0 &amp; q_{3} &amp; 0\\
+0 &amp; 0 &amp; 0 &amp; 0 &amp; q_{4}\\
+\end{bmatrix}$</p>
+
+<p>And because all your measurements are taken by the same LIDAR $q = q_{0} = ... =q_{4}$.</p>
+
+<p>Now having a state of your particle you can obtain "virtual" measurement and feed it to your density function and as an output you will get the probability $p(z|x)$ which describes how likely this "virtual" measurement  is your "real" measurement. Then based on that probability you can resample your particles.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11890" data-toggle = "popover">
+				<p>user name : Long Smith</p>
+				<p> user reputation : 190</p>
+				<p class = "tagcontent" id = "usertaginfo-11890">{'control': 2, 'None': 4, 'inverse-kinematics': 0, 'algorithm': 0, 'wheeled-robot': 1, 'motion': 1, 'kinematics': 1, 'robotic-arm': 1, 'mobile-robot': 1, 'motion-planning': 2, 'forward-kinematics': 1, 'arm': 1, 'movement': 1}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11890">Load Comments</button></br>
+			<div id = "commentsection-11890" class = 'collapse'>
+			<div id = "comment-21180" class = "comment">
+				<p>With this method I have the same probability for the Particle 1 and Particle 2 described in question, however the Particle 1 is clearly "better" than the Particle 2. Is it important ? Will multivariate Gaussian still work ?</p>
+			</div>
+			<div id = "comment-21197" class = "comment">
+				<p>@EngelOfChipolata can not see why do you think that `Particle 1 is clearly "better"`. For me they are equal and naturally you get the same probabilities.</p>
+			</div>
+			<div id = "comment-21200" class = "comment">
+				<p>Suppose I only have in my environment an obstacle standing at 144 , 350mm away from me (thus, the real measurements). Particle 1 states that the obstacle is standing at 216  while Particle 2 says 288 , so for me Particle 1 makes an error of 72  and Particle 2, 144 . This is why I think Particle 1 is better than Particle 2. Am I wrong ?</p>
+			</div>
+			<div id = "comment-21201" class = "comment">
+				<p>@EngelOfChipolata can not say this is a good idea. Firstly because it will make your measurements dependent: i.e. you claim that your fourth measurement have to be close to third measurement. But why this has to be truth?</p>
+			</div>
+			<div id = "comment-21202" class = "comment">
+				<p>@EngelOfChipolata measurements are all about an environment and if your fourth measurement is close to the third, it is no more than a coincidence. Therefore it doesn't make sense to consider it "better".</p>
+			</div>
+			<div id = "comment-21203" class = "comment">
+				<p>Intuitively I would say that there is a direct link between measurement number (i.e. angle of measurement) and orientation of my robot (theta). This is a bit sad to not take it into consideration in the evaluation function.</p>
+			</div>
+			<div id = "comment-21204" class = "comment">
+				<p>@EngelOfChipolata Look, if your particle is in the same point as your robot your state does make sense: the closer measurements are the closer orientations are. But remember you can also shift your particle. It may have the same orientation as yours but also be on other side of an obstacle. Because angle is higher than 180 it can detect obstacle. There are infinite number of positions which can make your measurements look like this. So in general it has nothing to do with your orientation.</p>
+			</div>
+			<div id = "comment-21205" class = "comment">
+				<p>Oh yes... You are right, thanks !</p>
+			</div>
+			</div>
+				<textarea id = "speech-11890" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11890">
+					<img id="start_img-11890" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11890">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

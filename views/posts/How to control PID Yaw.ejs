@@ -1,0 +1,218 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to control PID Yaw
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-4836" class = "post">
+			<h2>Question</h2>
+			<div id="vote-4836" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 660</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to control PID Yaw</h2>
+<p>My yaw angle varies from -180 degree to 180 degree. </p>
+
+<pre><code>                                        -170 170
+                                   -135            135
+                                 -90                  90
+                                      45           45
+                                          10 -10   
+</code></pre>
+
+<p>If my current heading is about 170 degree, then the wind makes it rotate to the left at about -170 degree, then how can PID control it to make it rotate back to the right at 170 degree.</p>
+
+<p>Since, for PID   <code>ERROR = SETPOINT - INPUT</code>
+In my case, <code>SETPOINT = 170</code>, and <code>INPUT = -170</code>, the the <code>ERROR = 170 - (-170) = 340</code>.
+So instead of moving to the right and apply <code>PWM = 20</code>, it rotate to the left and apply <code>PWM = 340</code> and come back to the desired position, which is 170 degree?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4836" data-toggle = "popover">
+				<p>user name : Tuyen Vo Quang</p>
+				<p> user reputation : 72</p>
+				<p class = "tagcontent" id = "usertaginfo-4836">{'quadcopter': 5, 'None': 2, 'i2c': 0, 'pid': 4}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-4836" class = 'collapse'>
+			</div>
+				<textarea id = "speech-4836" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4836">
+					<img id="start_img-4836" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4836">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-4837"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4837" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>While the books give general formulas, you need to have enough understanding to adjust them based on your specific application. The textbook definition of error is:</p>
+
+<pre><code>error = goal - position
+</code></pre>
+
+<p>where <code>position</code> is your current state and <code>goal</code> is the state you wish you were at. While this definition is ok for a cartesian space, in others, as you have observed, is not the best thing.</p>
+
+<p>With your own system, where the <code>goal</code> and <code>position</code> are angles, you have in fact infinite possible values for <code>error</code>.</p>
+
+<p>$goal = 2k'\pi+\alpha$</p>
+
+<p>$position = 2k''\pi + \beta$</p>
+
+<p>and therefore:</p>
+
+<p>$error = 2k\pi + (\alpha - \beta)$</p>
+
+<p>In your case, the <code>error</code> could be 340, 700, 1060, -20, -380 etc. Clearly, depending on what value you choose for the <code>error</code> (all of which are correct), the controller behaves differently. If you choose 1060 over 340 for example, the controller thinks it's much farther from the <code>goal</code> and therefore tries to get to it in much more of a hurry.</p>
+
+<p>You would usually want the minimum movement to reach your <code>goal</code>, so from the values above you would want to choose -20. That's quite easy. Simply choose the value of <code>error</code> in the range $[-\pi, \pi)$ (or $[-180, 180)$ if you want). That would have the minimum absolute value among the infinite choices.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4837" data-toggle = "popover">
+				<p>user name : Shahbaz</p>
+				<p> user reputation : 2615</p>
+				<p class = "tagcontent" id = "usertaginfo-4837">{'None': 193, 'usb': 12, 'distributed-systems': 7, 'microcontroller': 1, 'embedded-systems': 7, 'servomotor': 1, 'platform': 18, 'can': 1, 'machine-learning': 12, 'real-time': 18, 'mobile-robot': 1, 'rs232': 12, 'software': 20}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-4837" class = 'collapse'>
+			</div>
+				<textarea id = "speech-4837" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4837">
+					<img id="start_img-4837" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4837">Comment</button>
+			<br><div id = "ans-4838"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4838" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Shahbaz has the perfect explanation, the PID controller will not solve your problem by itself, what you have to do is figure out a piece of code that reads the angle and the reference, calculates the shortest distance from the reference to the current position and inputs it to the PID controller with the correct sign(+ or -). You can calculate the shortest distance by determining if where you want to go is less or more than 180  from where you are. The math would be simpler if you worked with angles between 0  and 360  because you wouldn't have to deal with negative angles.</p>
+
+<pre><code>                      |Ref|---&gt;|"piece of code"|---&gt;|PID|---&gt;|Plant|-----&gt;
+                                      ^                               |
+                                      |_______________________________|
+</code></pre>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4838" data-toggle = "popover">
+				<p>user name : goncalo luis</p>
+				<p> user reputation : 324</p>
+				<p class = "tagcontent" id = "usertaginfo-4838">{'None': 14}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-4838" class = 'collapse'>
+			</div>
+				<textarea id = "speech-4838" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4838">
+					<img id="start_img-4838" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4838">Comment</button>
+			<br><div id = "ans-4854"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4854" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The problem is here:</p>
+
+<blockquote>
+  <p>Since, for PID   <code>ERROR = SETPOINT - INPUT</code></p>
+</blockquote>
+
+<p>This is only true for linear systems.  In your system, your error never exceeds $180^\circ$ no matter how many times you rotate -- modular arithmetic is affecting your calculation.  (For the PID to work properly for angles, you would need to keep track of the <em>absolute</em> yaw value, which would indicate how many rotations you've done in one direction or the other.  That would only be relevant to cases where the error corresponds to the amount of "twist" in a rope or cable that connects 2 rotating elements.)</p>
+
+<p>The simple solution is to say </p>
+
+<pre><code>ABS_ERROR = SETPOINT - INPUT
+if ABS_ERROR &lt; 180
+    ERROR = ABS_ERROR
+else
+    ERROR = ABS_ERROR - 360
+</code></pre>
+
+<p>However, this could result in some instability if your system has a lot of momentum (large $K_d$ term).  So a more correct solution would account for whether <code>ABS_ERROR</code> combined with that momentum should take the "long way" around instead of attempting to stop, change directions, and rotate the "shorter" distance.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4854" data-toggle = "popover">
+				<p>user name : Ian</p>
+				<p> user reputation : 9640</p>
+				<p class = "tagcontent" id = "usertaginfo-4854">{'planning': 10, 'None': 809, 'power': 1, 'algorithm': 10, 'battery': 1, 'slam': 7, 'coverage': 10, 'mobile-robot': 9, 'sensors': 9}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-4854" class = 'collapse'>
+			</div>
+				<textarea id = "speech-4854" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4854">
+					<img id="start_img-4854" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4854">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

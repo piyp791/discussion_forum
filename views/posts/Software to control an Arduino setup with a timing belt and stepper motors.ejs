@@ -1,0 +1,207 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Software to control an Arduino setup with a timing belt and stepper motors
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8954" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8954" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 361</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Software to control an Arduino setup with a timing belt and stepper motors</h2>
+<p>I would like to know what software is available to control a timing belt with stepper motors for arduino board.Much like how its done in 3d printing.
+But in this case i wont be making a 3d printer.Just one simple setup.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8954" data-toggle = "popover">
+				<p>user name : sohaib shaikh</p>
+				<p> user reputation : 33</p>
+				<p class = "tagcontent" id = "usertaginfo-8954">{'quadcopter': -1, 'None': 0, '3d-printing': -1, 'arduino': 3, 'first-robotics': 1, 'mechanism': -1, 'research': 0, 'stepper-driver': 4, 'robotic-arm': 5, 'stepper-motor': 1, 'software': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8954" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8954" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8954">
+					<img id="start_img-8954" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8954">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8957"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8957" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Typically stepper motor control isn't necessarily done in software but in hardware. See this <a href="https://www.sparkfun.com/products/12779" rel="nofollow">stepper motor driver</a> for an example. </p>
+
+<p>The driver allows you to set bits to control how much you would like to step (full, half, quarter, etc.), and takes care of actually providing driving current to the motor. Some drivers may allow you to set a speed in steps/time, but typically after that point you send a pulse train to the motor driver; this can be done with an interrupt or other hardware timer. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8957" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-8957">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8957" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8957" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8957">
+					<img id="start_img-8957" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8957">Comment</button>
+			<br><div id = "ans-8958"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8958" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Here you go.  This will control 2 steppers on an Arduino.</p>
+
+<pre><code>#include &lt;Stepper.h&gt;
+
+#define STEPS 200       // change this to the number of steps on your motor
+
+// create an instance of the stepper class, specifying
+// the number of steps of the motor and the pins it's attached to 
+Stepper stepperX(STEPS, 2, 3, 4, 5);    // Arduino pins attached to the stepper driver
+Stepper stepperY(STEPS, 8, 9, 10, 11);
+
+int previous = 0;       // the previous reading from the analog input
+
+void setup()
+{
+    // set the speed of the motor to # RPMs
+    stepperX.setSpeed(60);
+    stepperY.setSpeed(60);
+
+    // Initialize the Serial port:
+    Serial.begin(9600);
+}
+
+void loop()
+{
+    int sensorPosition = analogRead(0);
+
+    // Step forward # steps:
+    Serial.println("Moving Forward...");
+    stepperX.step(500);
+    stepperY.step(500);
+    delay(1000);
+
+    // Step backward # steps:
+    Serial.println("Moving Backward...");
+    stepperX.step(-100);
+    stepperY.step(-100);
+    delay(1000); 
+}
+</code></pre>
+
+<p>As mentioned in @Chuck's post, the Arduino doesn't directly control stepper motors.  What happens is that you plug in a stepper driver to the Arduino, and that driver is wired to &amp; controls the motor.  You'll see that my pins are 2, 3, 4, and 5 for one driver &amp; motor, and 8, 9, 10, and 11 for the other driver &amp; motor.</p>
+
+<pre><code>Stepper stepperX(STEPS, 2, 3, 4, 5);    // Arduino pins attached to the stepper driver
+Stepper stepperY(STEPS, 8, 9, 10, 11);
+</code></pre>
+
+<p>This is because I'm using 4-phase unipolar motors.  Your choice of stepper motors will determine your own setup.</p>
+
+<p>Here's a great writeup on the topic of motor selection:</p>
+
+<p><a href="https://learn.adafruit.com/all-about-stepper-motors/types-of-steppers" rel="nofollow">AdaFruit stepper motor knowledge</a></p>
+
+<p>Good luck!</p>
+
+<p>Ryan</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8958" data-toggle = "popover">
+				<p>user name : Ryan Loggerythm</p>
+				<p> user reputation : 265</p>
+				<p class = "tagcontent" id = "usertaginfo-8958">{'None': 15}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8958">Load Comments</button></br>
+			<div id = "commentsection-8958" class = 'collapse'>
+			<div id = "comment-14764" class = "comment">
+				<p>Great answer! Only comment I would make is to point out that the step values could be parameterized. Currently your code has the values hard coded, and the values for forward and reverse are different. Way more detail than my post, though, as I have yet to actually do anything with the Arduinos I have laying around.</p>
+			</div>
+			<div id = "comment-14767" class = "comment">
+				<p>Thanks for the code.
+I shall read the Stepper Motor Knowledge link.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8958" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8958">
+					<img id="start_img-8958" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8958">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,226 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Line Follower optimization
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-1524" class = "post">
+			<h2>Question</h2>
+			<div id="vote-1524" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 3802</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Line Follower optimization</h2>
+<p>I'm working on building a line follower robot and want to optimize its performance. It was suggested that I use a PID algorithm. I read a lot about PID but am confused a bit regarding following:</p>
+
+<p>I've calculated the error_value using $k_p * proportional + ...$
+But regarding the change in the motor speed I'm confused as to what to use during comparison the difference (i.e. currentposition - setpoint) or the errorvalue. That is should I use </p>
+
+<pre><code>if (difference &gt; 0)
+{ //code for changing appropriate motor's speed using error_value }
+</code></pre>
+
+<p>or </p>
+
+<pre><code>if (error_value &gt; 0)
+{ //code for changing appropriate motor's speed using error_value }
+</code></pre>
+
+<p>Also is there any specified range for the values of the constants $k_p$, $k_i$ and $k_d$?
+I'm using a <a href="https://en.wikipedia.org/wiki/Differential_wheeled_robot" rel="nofollow">differential wheeled robot</a> for my line follower.</p>
+
+<p>Also I would be happy if someone suggests me any other advanced optimization algorithm for improving the line follower robot.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1524" data-toggle = "popover">
+				<p>user name : meteors</p>
+				<p> user reputation : 141</p>
+				<p class = "tagcontent" id = "usertaginfo-1524">{'None': 2, 'pid': 3, 'line-following': 3, 'arduino': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1524">Load Comments</button></br>
+			<div id = "commentsection-1524" class = 'collapse'>
+			<div id = "comment-3220" class = "comment">
+				<p>I'm not sure what terminology you're using, but normal in control systems terminology your "difference" is the error value, and (as near as I can tell) your "error_value" is the control command.</p>
+			</div>
+			<div id = "comment-18348" class = "comment">
+				<p>Hello there,
+
+The variable $K_{p}$, for example, is your proportional gain. Are you familiar with control theory?</p>
+			</div>
+			<div id = "comment-18353" class = "comment">
+				<p>@leCrazyEngineer I don't remember most part of this question as it was like 3 years ago. I have no idea about control theory either. Maybe the guys who answered would have some clue.</p>
+			</div>
+			</div>
+				<textarea id = "speech-1524" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1524">
+					<img id="start_img-1524" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1524">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-1527"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1527" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>When using a PID loop to steer using line following, then your set point will always be the same. You will always want the line to be in the same position with respect to the robot, for instance in the centre of your sensor.</p>
+
+<p>So if your line sensor outputs a value from -1 to 1 with 0 being the centre of the sensor, then you will want your set point to be zero (and sensor read back and difference will be the same). If your line sensor outputs a value of 0 to 10, then you will want your set point to be 5 (and your sensor read back and difference will be different).</p>
+
+<p>Since you are steering by setting the wheels to turn at different speeds, then to smoothly follow a line at a constant velocity, you will probably want to adjust the speeds for both wheels based on the error. For example, if you need to turn left to stay on the line, you will slow down the left wheel and speed up the right wheel. The more you need to turn, the more you will need to slow down the inside wheel and the more you will need to speed up the outside wheel.</p>
+
+<p>Consider the situation where you need to turn $\theta$ radians to the left to correct for error $e$ and your current speed is $S_0$:</p>
+
+<p><a href="https://en.wikipedia.org/wiki/File:DifferentialSteering.svg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/TVXKL.png" alt="Differential Steering"></a></p>
+
+<p>So your left wheel needs to travel at $S_L = r\theta$ and your right wheel needs to travel at $S_R = (r+b)\theta$.</p>
+
+<p>To maintain the same overall speed $S_0$, you need $S_0 = (r+b/2)\theta$, 
+so the left wheel will need to travel at $S_L = S_0 - (b/2)\theta$
+while the right wheel will need to travel at $S_R = S_0 + (b/2)\theta$.</p>
+
+<p>As your error tends towards zero, the speeds of each motor will also tend towards each other. As the error grows, the speed differentials will grow too.</p>
+
+<p>You may even need your inside wheel to rotate backwards if your sensor is telling you that the line is curving more tightly than the distance between your wheels. These are complications which you can work through step by step as your control gets more sophisticated though.</p>
+
+<p>Also, since your error will have both positive and negative values (to represent the continuum from <em>off the scale left ... too far left ... on the line ... too far right ... off the scale right</em> then you should never need to ask <code>if</code> the error is positive or negative, you should just calculate new values based on the error value, since a positive value and a negative value should have opposite and symmetric effects on the motors.</p>
+
+<p>Note that for line following, you may be able to get away with just the proportional gain term (i.e. leaving the other terms at zero). Implementing a Derivative term may well allow you to push up the proportional gain term higher to get a more responsive system, but an integral term is unlikely to help. The fact that if you robot goes in the wrong direction the error will get larger means that your robots physical movements will act like an integral term anyway.</p>
+
+<p>The specific values of P, D and I will be determined by the responsiveness of your system. For general advice about tuning PID parameters, see <a href="https://robotics.stackexchange.com/a/174/37">my answer</a> and others on <a href="https://robotics.stackexchange.com/q/167/37">What are good strategies for tuning PID loops?</a></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1527" data-toggle = "popover">
+				<p>user name : Mark Booth</p>
+				<p> user reputation : 3037</p>
+				<p class = "tagcontent" id = "usertaginfo-1527">{'control': 7, 'quadcopter': 2, 'None': 258, 'tuning': 7, 'uav': 2, 'design': 2, 'stepper-motor': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1527">Load Comments</button></br>
+			<div id = "commentsection-1527" class = 'collapse'>
+			<div id = "comment-3200" class = "comment">
+				<p>according to you "you should just calculate new values based on the error value, since a positive value and a negative value should have opposite and symmetric effects on the motors." but how do I determine which motor should get effect of the error?</p>
+			</div>
+			<div id = "comment-3202" class = "comment">
+				<p>@AnkitShah They both do. Hopefully my update will explain it a little better.</p>
+			</div>
+			<div id = "comment-3211" class = "comment">
+				<p>Thank you @Mark Booth that really explained the stuff. I've not got enough rep. on the site to upvote your answer but really that was nice explained.</p>
+			</div>
+			<div id = "comment-3212" class = "comment">
+				<p>Glad I could help @AnkitShah - If you edit your question to remove some of the ambiguity (such as whether you are using a differential or ackermann steering) then you will get an upvote from at least me and possibly others too. It shouldn't take long to get 15 rep if you listen to the suggestions people make.</p>
+			</div>
+			<div id = "comment-3218" class = "comment">
+				<p>Thanks @Mark are there any other algorithms thats help reduce the error and makes the bot move more smoothly and follow the line?</p>
+			</div>
+			<div id = "comment-3222" class = "comment">
+				<p>@AnkitShah - Often the best place for subsidiary questions are as new questions. That way you can incorporate what you have learned from your previous question in the new question. It is also a good idea to reference the old question from the new question.</p>
+			</div>
+			</div>
+				<textarea id = "speech-1527" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1527">
+					<img id="start_img-1527" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1527">Comment</button>
+			<br><div id = "ans-1528"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1528" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You may want to check out <a href="https://robotics.stackexchange.com/questions/167/what-are-good-strategies-for-tuning-pid-loops">this question on how to tune PIDs</a>.  </p>
+
+<p>It sounds like you're confusing the role of <code>error</code> in this calculation.  The PID equation takes the error measurement (actual position - desired position) and determines how much "response" should be commanded in the controller (e.g. how much force).  </p>
+
+<p>So instead of saying <code>if (error_value &gt; 0) { }</code>, you should be saying something like <code>response = get_PID_calculation(error_value)</code>.  Depending on the construction of your specific vehicle, that response would be sent to the drive motor as the throttle amount, the steering as desired angle, or some other control input.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1528" data-toggle = "popover">
+				<p>user name : Ian</p>
+				<p> user reputation : 9640</p>
+				<p class = "tagcontent" id = "usertaginfo-1528">{'planning': 10, 'None': 809, 'power': 1, 'algorithm': 10, 'battery': 1, 'slam': 7, 'coverage': 10, 'mobile-robot': 9, 'sensors': 9}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1528">Load Comments</button></br>
+			<div id = "commentsection-1528" class = 'collapse'>
+			<div id = "comment-3201" class = "comment">
+				<p>This is the link to my arduino code what do you suggest.
+http://www1.datafilehost.com/d/5dcbdd4e</p>
+			</div>
+			<div id = "comment-3203" class = "comment">
+				<p>That depends, what is the robot doing wrong?</p>
+			</div>
+			</div>
+				<textarea id = "speech-1528" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1528">
+					<img id="start_img-1528" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1528">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

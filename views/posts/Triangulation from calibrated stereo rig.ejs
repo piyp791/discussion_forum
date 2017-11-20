@@ -1,0 +1,134 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Triangulation from calibrated stereo rig
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-10213" class = "post">
+			<h2>Question</h2>
+			<div id="vote-10213" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 128</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Triangulation from calibrated stereo rig</h2>
+<p>I am using a stereo rig to do SLAM, calibrated using the MATLAB Calibration Tool. I need to compute the 2D coordinates of a landmark using the observation model obtained from triangulation (the images are rectified). </p>
+
+<p>The equations obtained from triangulation are the ones presented in the blue box <a href="https://www.cs.auckland.ac.nz/courses/compsci773s1t/lectures/773-GG/topCS773.htm" rel="nofollow noreferrer">here</a>. Because I am doing SLAM in 2D the coordinates I need to use are $Z_p$ and $X_p$. The parameters needed to compute those values are $f$, $T$ and $disparity (x_L - x_R)$.</p>
+
+<p>After doing the calibration intrinsics matrices $K_L$ and $K_R$ are obtained and a common intrinsic matrix for the stereo rig is calculated from $K = 1/2*(K_L +K_R)$ so I get the parameters needed in triangulation from  this common matrix.</p>
+
+<p>The focal length is supplied from the manufacturer, and for my Logitech C170 is 2.3mm. The baseline $T$ from the calibration is 78.7803 mm. To compute the disparity I am obtaining SURF points and using RANSAC to discard the outliers so I get x coordinates from both rectified images.</p>
+
+<p>The problem is that with those values I can't obtain correct values for $Z_p$ and $X_p$ and I am not sure why or where I am doing the wrong step. Anyone can help with this? Are those the correct steps to do triangulation from rectified stereo images?</p>
+
+<p><strong>EDIT:</strong> My stereo rig looks like the figure I attach:<a href="https://i.stack.imgur.com/1gpVj.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/1gpVj.jpg" alt="Figure 1"></a></p>
+
+<p>If you compare the coordinates system with the one used in the link before is easy to see that my $X_r$ corresponds to the $Z_p$ from the link and the $Y_r$ corresponds to $X_p$, so the equations to calculate the distance using triangulation and with the coordinate system of the figure are:</p>
+
+<p>$x_r=\frac{fb}{x_L-x_R}$</p>
+
+<p>$y_r = \frac{(x_L-p_x)b}{x_L-x_R}-\frac{b}{2}$ </p>
+
+<p>Being $f$ the focal length, $b$ the baseline, $p_x$ the x coordinate of the central point and $x_L-x_R$ the disparity. The $X_r$ $Y_r$ coordinate system is situated between the two cameras, so this is the meaning of the $\frac{b}{2}$ displacement in the equations.</p>
+
+<p><strong>Calibration</strong> </p>
+
+<p>To obtain the cameras calibration I am using the <a href="http://es.mathworks.com/help/vision/ug/stereo-camera-calibrator-app.html" rel="nofollow noreferrer">Stereo Camera Calibrator Toolbox</a> with the chessboard pattern.</p>
+
+<p>After calibration, I made some tests using MATLAB functions <em>triangulate</em> and <em>reconstructScene</em> to know whether the parameteres are well calculated. The distances I obtained using this functions (which use the stereoParams object created by the calibrator) works well and I obtain distances very similar to the actual ones. So I suposse the calibration works well.</p>
+
+<p>The problem, as I explained before, is when I try to calculate the distances using the equations $x_r$ and $y_r$ because I am not sure how to obtain the common matrix $K$ for the stereo rig (the calibrator gives one intrinsic matrix for each camera, so you have two matrices).</p>
+
+<p>The value of the baseline given from calibration make sense, I made a measurement with a ruler and gives me 78 mm approximately.</p>
+
+<p>The $f$ value I assume should be in pixels but here again the calibration gives an $f_x$ and $f_y$ value so I am not sure which one should I use.</p>
+
+<p>Those are the intrinsic matrices I obtain:</p>
+
+<p><strong>Left</strong>: 
+$\begin{pmatrix} 672.6879&amp;-0.7752&amp;282.2488\\0&amp;674.3705&amp;240.1287\\0&amp;0&amp;1 \end{pmatrix}$</p>
+
+<p><strong>Right</strong>: $\begin{pmatrix} 681.7049&amp;0.0451&amp;331.2612\\0&amp;681.8235&amp;246.1209\\0&amp;0&amp;1\end{pmatrix}$</p>
+
+<p>Being the parameters of $K$: $\begin{pmatrix}f_x&amp;s&amp;p_x\\0&amp;f_y&amp;p_y\\0&amp;0&amp;1\end{pmatrix}$</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10213" data-toggle = "popover">
+				<p>user name : osuarez</p>
+				<p> user reputation : 128</p>
+				<p class = "tagcontent" id = "usertaginfo-10213">{'control': 5, 'stereo-vision': 2, 'beginner': 3, 'pid': 3, 'uav': 5, 'slam': 3, 'robotic-arm': 0, 'mobile-robot': 7, 'forward-kinematics': 0, 'cameras': 2, 'kinect': 0, 'visual-servoing': 2, 'matlab': 1, 'motion-planning': 4, 'movement': 1, 'odometry': 1, 'None': 2, 'inverse-kinematics': 0, 'raspberry-pi': 7, '3d-reconstruction': 2, 'quadcopter': 9, 'computer-vision': 6, 'geometry': 3, 'c++': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-10213" class = 'collapse'>
+			</div>
+				<textarea id = "speech-10213" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10213">
+					<img id="start_img-10213" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10213">Comment</button>
+
+<h1>Answers</h1>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

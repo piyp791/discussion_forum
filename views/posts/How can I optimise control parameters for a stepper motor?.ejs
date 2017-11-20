@@ -1,0 +1,154 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How can I optimise control parameters for a stepper motor?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-478" class = "post">
+			<h2>Question</h2>
+			<div id="vote-478" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">7</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 419</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How can I optimise control parameters for a stepper motor?</h2>
+<p>As an industrial roboticist I spent most of my time working with robots and machines which used brushless DC motors or linear motors, so I have lots of experience tuning PID parameters for those motors.</p>
+
+<p>Now I'm moving to doing hobby robotics using stepper motors (I'm building my first <a href="http://tvrrug.org.uk/">RepRap</a>), I wonder what I need to do differently. </p>
+
+<p>Obviously without encoder feedback I need to be much more conservative in requests to the motor, making sure that I always keep within the envelope of what is possible, but how do I find out whether my tuning is optimal, sub optimal or (worst case) marginally unstable?</p>
+
+<p>Obviously for a given load (in my case the extruder head) I need to generate step pulse trains which cause a demanded acceleration and speed that the motor can cope with, without missing steps.</p>
+
+<p>My first thought is to do some test sequences, for instance:</p>
+
+<ul>
+<li>Home motor precisely on it's home sensor.</li>
+<li>Move $C$ steps away from home slowly.</li>
+<li>Move $M$ steps away from home with a conservative move profile.</li>
+<li>Move $N$ steps with the test acceleration/speed profile.</li>
+<li>Move $N$ steps back to the start of the test move with a conservative move profile.</li>
+<li>Move $M$ steps back to home with a conservative move profile.</li>
+<li>Move $C$ steps back to the home sensor slowly, verifying that the sensor is triggered at the correct position.</li>
+<li>Repeat for a variety of $N$, $M$, acceleration/speed &amp; load profiles.</li>
+</ul>
+
+<p>This should reliably detect missed steps in the test profile move, but it does seem like an awfully large space to test through however, so I wonder what techniques have been developed to optimise stepper motor control parameters.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-478" data-toggle = "popover">
+				<p>user name : Mark Booth</p>
+				<p> user reputation : 3037</p>
+				<p class = "tagcontent" id = "usertaginfo-478">{'control': 7, 'quadcopter': 2, 'None': 258, 'tuning': 7, 'uav': 2, 'design': 2, 'stepper-motor': 7}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-478">Load Comments</button></br>
+			<div id = "commentsection-478" class = 'collapse'>
+			<div id = "comment-2211" class = "comment">
+				<p>In the RepRap World the Diagnosis is that the print looks awful. That is the detection of missed steps, as far as I know. But I think the current used by the stepper could be used as a feedback if the stepper was able to do the move. But have not heard of somebody really doing that.</p>
+			</div>
+			<div id = "comment-2854" class = "comment">
+				<p>(These topics are getting popular this week. Must be because of that gun article.) The best/easiest way is to do the test prints such as the Torture Test http://www.thingiverse.com/thing:33902</p>
+			</div>
+			</div>
+				<textarea id = "speech-478" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-478">
+					<img id="start_img-478" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-478">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-670"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-670" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The "math" way to do this is to generate a speed/torque curve for your stepper at its given voltage, and determine the maximum force that will be applied to the object in motion (in this case, the largest force is likely to be acceleration).</p>
+
+<p>Note that most hobby 3d printers are so flimsy that the frame bending under acceleration will harm print quality long before you start missing steps.  In this case, you could model the deflection of the frame under load.</p>
+
+<p>In my experience, 90% of missed steps are caused by mechanical or software problems such as the axes binding or pulses being missed.  Try moving everything by hand to check if it is smooth.</p>
+
+<p>Overly aggressive speeds and accelerations should be visible (and audible) on a 3d printer long before the steppers stall.  </p>
+
+<p>Generally a single missed step will also cause the next steps to also be missed (since the motor must now work even harder to catch up) and you get a few seconds of buzzing instead of motion.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-670" data-toggle = "popover">
+				<p>user name : user65</p>
+				<p> user reputation : 2041</p>
+				<p class = "tagcontent" id = "usertaginfo-670">{'None': 174, 'localization': 16}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-670" class = 'collapse'>
+			</div>
+				<textarea id = "speech-670" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-670">
+					<img id="start_img-670" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-670">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

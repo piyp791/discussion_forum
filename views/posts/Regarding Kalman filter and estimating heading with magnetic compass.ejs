@@ -1,0 +1,175 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Regarding Kalman filter and estimating heading with magnetic compass
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9636" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9636" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 251</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Regarding Kalman filter and estimating heading with magnetic compass</h2>
+<p>I have trouble estimating the heading when close to the "pivot" point of the compass, and could use some input on how to solve it. I have set up my angles to be from 0-360 degrees during the testing but will be using radians (-pi, pi) from now on.</p>
+
+<p>The setup is a differential robot with IMU, wheel encoders and a magnetic compass. </p>
+
+<p>A complementary filter is used for fusing gyroZ and odo measurements to estimate the heading, and then correct it with a Kalman filter using the magnetic compass.</p>
+
+<p>My problem occurs when the robot heading is close to -pi/pi .</p>
+
+<p>The estimated heading is useless even though the robot is not even moving.</p>
+
+<p>I am thinking this must be a very common problem and probably has a better solution than what I came up with, which was either re-initializing the integrator when crossing zero, adding 180 degrees each time the error is larger, or just ignoring the compass if the error is too large...</p>
+
+<p>It's my first Kalman filter so I may have made a poor implementation if this is not a common issue...</p>
+
+<p>Edit: trudesagen's solution solved my problem.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9636" data-toggle = "popover">
+				<p>user name : erltot</p>
+				<p> user reputation : 28</p>
+				<p class = "tagcontent" id = "usertaginfo-9636">{'mobile-robot': 5, 'None': 0, 'kalman-filter': 5, 'compass': 5}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-9636" class = 'collapse'>
+			</div>
+				<textarea id = "speech-9636" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9636">
+					<img id="start_img-9636" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9636">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9641"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9641" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I encountered this problem myself when making an extended Kalman filter for a quadrotor.</p>
+
+<p>You have to check if the estimate goes above or below +/- pi, and then correct it if it does.</p>
+
+<p>You can do this with a simple <code>if</code> statement:</p>
+
+<pre><code>if (angle &gt; pi)
+    angle = angle - 2*pi;
+else if (angle &lt; -pi)
+    angle = angle + 2*pi;
+</code></pre>
+
+<p>You could also throw in a <code>while</code> loop over that, if the value ever becomes larger than <code>2*pi</code> for some reason, due to spikes etc. This looks like so:</p>
+
+<pre><code>while (abs(angle) &gt; pi) {    
+    if (angle &gt; pi)
+        angle = angle - 2*pi;
+    else if (angle&lt; -pi)
+        angle = angle + 2*pi;
+}
+</code></pre>
+
+<p>Remember to have this check after your prediction, as well as on the difference between your measured compass angle and your prediction, that you use to calculate the corrected estimate.</p>
+
+<p>After this you also check the corrected estimate for the same, which should fix your problem.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9641" data-toggle = "popover">
+				<p>user name : trudesagen</p>
+				<p> user reputation : 66</p>
+				<p class = "tagcontent" id = "usertaginfo-9641">{'None': 5}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9641">Load Comments</button></br>
+			<div id = "commentsection-9641" class = 'collapse'>
+			<div id = "comment-17746" class = "comment">
+				<p>This is a kind of band-aid for the problem. The issue still exists in the angular velocity component of the Kalman Filter, although it should correct itself quickly. A better solution is to use orientation parametrisations that do not suffer from gimbal lock as Euler angles do (quaternions or rotation matrices) in the filters.</p>
+			</div>
+			<div id = "comment-17754" class = "comment">
+				<p>I think you are misunderstanding the problem. This is how you keep the heading within +/- 180 degrees. Also, it is a differential two wheeled robot, so you will never encounter a gimbal lock, and if you do (pitch or roll at 90 degrees, depending on the euler rep, you have other problems on your hands). What do you mean by "the issue still exists in the angular velocity" ? The angular velocity can be as high or low as it want to be, doesn</p>
+			</div>
+			<div id = "comment-17755" class = "comment">
+				<p>@Gouda I think you misunderstand the issue here. It is not a band aid, this is how you keep your heading calculations within +/- pi (180) degrees. This is needed when controlling the robot, so that when you want to turn 90 degrees and your controller subtracts this from your current heading, you don't have to turn 5 times to get there, if the robot is at 5*2pi heading. Gimbal lock is never an issue with planar two wheeled robots, only for pitch or roll, depending on your euler representation. Also, this is NOT an issue for angular velocity, which is the diff between on stample and the next.</p>
+			</div>
+			<div id = "comment-17756" class = "comment">
+				<p>Had to comment twice, as my connection went down mid comment and lost my 5 min edit window</p>
+			</div>
+			<div id = "comment-17820" class = "comment">
+				<p>@trudesagen, I agree. Perhaps what I meant to say was, the angular velocity is determined by the heading residual, which can be easily incorrectly calculated as the difference between a predicted angle and measured angle. eg in the case case of estimating 1 degree then measuring 359 degrees the angular velocity is very large, when in fact it (probably) is very small and negative. Although it's easy to account for that in the 2D case too :). The reason I mention quaternions is because it will take care of both the angle wrap and angular velocity problems simultaneously.</p>
+			</div>
+			<div id = "comment-17837" class = "comment">
+				<p>@Gouda  He is using an IMU, so the angular velocity is read directly from the rate gyro. Your example of a large residual around the +180/-180 limit is also solved by applying the same solution i gave on the residual aswell. Quaternions in planar motion is overcomplicating things. 3D motion, sure.</p>
+			</div>
+			</div>
+				<textarea id = "speech-9641" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9641">
+					<img id="start_img-9641" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9641">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,168 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Help sending serial command to Roomba
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2530" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2530" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 587</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Help sending serial command to Roomba</h2>
+<p>I have a Raspberry Pi hooked up to a Roomba 560's serial port. While going over <a href="http://www.irobot.com/images/consumer/hacker/Roomba_SCI_Spec_Manual.pdf" rel="nofollow">the spec</a>, I noticed movement controls weren't as simple as I expected. I can't send bytes larger than 255, but, according to the spec, to go straight I have to send 8000. How does this work?</p>
+
+<p>EDIT: My solution was the following three functions:</p>
+
+<pre><code>import serial
+import time
+
+def start():
+    #Open serial connection
+    global ser
+    ser = serial.Serial('/dev/ttyUSB0', 115200)
+    # this is the defualt Roomba baud rate
+    # Start SCI - puts into safe mode
+    ser.write(chr(128))
+    # Enable the safe mode
+    ser.write(chr(131))
+    # this is required or the command may fail
+    time.sleep(1)
+
+# This makes the serial command fit the big-endian notation
+def make4(num):
+    num = num[2:]
+    z2a = 4-len(num)
+    for q in range(z2a):
+        num = '0' + num
+    return '\\x'+num
+
+def move(vel, rad):
+    # Init move command
+    ser.write(chr(137))
+
+    # velocity
+    vhex = hex(vel)
+    vhex = make4(vhex)
+
+    #radius
+    vrad = hex(rad)
+    vrad = make4(vrad)
+
+    # send to roomba
+    ser.write(vhex)
+    ser.write(vrad)
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2530" data-toggle = "popover">
+				<p>user name : Ian H</p>
+				<p> user reputation : 38</p>
+				<p class = "tagcontent" id = "usertaginfo-2530">{'None': 2, 'roomba': 0, 'raspberry-pi': 1, 'wheeled-robot': 2, 'mobile-robot': 3, 'serial': 0, 'irobot-create': 0, 'software': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2530" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2530" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2530">
+					<img id="start_img-2530" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2530">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-2537"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2537" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The spec says hex 8000 as in hexadecimal (which I usually write in C/Python notation as <code>0x8000</code>). Each byte is exactly two hexadecimal digits. So you can break <code>0x8000</code> into <code>0x80</code> and <code>0x00</code> and send them separately, which correspond to decimal numbers <code>128</code> and <code>0</code>.</p>
+
+<p>You also have to know which to send first (referred as little-endian vs big-endian). The spec says [radius high byte] [radius low byte], so high byte comes first (big-endian).</p>
+
+<p>Therefore send the sequence <code>[128, 0]</code> in order to transmit hex 8000.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2537" data-toggle = "popover">
+				<p>user name : DrRobotNinja</p>
+				<p> user reputation : 231</p>
+				<p class = "tagcontent" id = "usertaginfo-2537">{'None': 10}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2537">Load Comments</button></br>
+			<div id = "commentsection-2537" class = 'collapse'>
+			<div id = "comment-4889" class = "comment">
+				<p>Thanks! I was able to make some nice functions using Python's hex() function so I can put in easily-understandable numbers.</p>
+			</div>
+			</div>
+				<textarea id = "speech-2537" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2537">
+					<img id="start_img-2537" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2537">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

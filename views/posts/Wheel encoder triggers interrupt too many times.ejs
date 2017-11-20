@@ -1,0 +1,363 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Wheel encoder triggers interrupt too many times
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8950" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8950" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 408</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Wheel encoder triggers interrupt too many times</h2>
+<p>I am building a simple robot with two driving wheel.
+I want to control the wheel rotation using a wheel encoder like this <a href="http://www.tinyosshop.com/index.php?route=product/product&amp;product_id=541" rel="nofollow noreferrer">one</a>.</p>
+
+<p>Here is a code I have on Arduino to try to understand the problem I'm facing:</p>
+
+<pre class="lang-cc prettyprint-override"><code>int count = 0;
+void setup() {
+  Serial.begin(9600);
+  attachInterrupt(digitalPinToInterrupt(2), upL, RISING);
+  pinMode(2, INPUT);
+}
+
+void loop() {
+  Serial.println(String(digitalRead(2)) + "__" + String(count));
+}
+
+void upL(){
+  count++;
+}
+</code></pre>
+
+<p>What I notice is:<br>
+The interrupt is triggered <strong>multiple times</strong> when the sensor beam is cut <strong>once</strong>.<br>
+But when I <em>digitalRead</em> the pin, then there is only one change.  </p>
+
+<p>I also noticed that the interrupt is also triggered when going from HIGH to LOW.</p>
+
+<p>Here is an example of the ouput I have:</p>
+
+<pre><code>0__0
+0__0
+0__0
+0__0
+...
+...
+0__0
+0__0
+0__0   &lt;&lt;&lt; change from LOW to HIGH... 
+1__9   &lt;&lt;&lt; the interrupt must have incremented only once... 9 instead !
+1__9
+1__9
+1__9
+...
+...
+1__9
+1__9   &lt;&lt;&lt; change from HIGH to LOW. the interrupt shouldn't be triggered
+0__24  &lt;&lt;&lt; still... we have 15 increments
+0__24
+0__24
+0__24
+0__24
+...
+...
+0__24
+0__24   &lt;&lt;&lt; same here...
+1__51   &lt;&lt;&lt; 26 increments
+1__51
+...
+...
+1__51  &lt;&lt;&lt; same here...
+0__67  &lt;&lt;&lt; 16 increments
+0__67
+0__67
+</code></pre>
+
+<p>The only way I can explain that is that during a change of state, the signal received from the sensor is not really square, but somehow noisy.<br>
+Like in this image :<br>
+<a href="https://i.stack.imgur.com/DzMIK.gif" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/DzMIK.gif" alt="explanation?"></a><br>
+Therefore we would have, indeed, many RISING on one change....<br>
+<em>(However reading the output of the sensor on an analog pin shows a direct variation from 880(HIGH) to 22(LOW))</em></p>
+
+<p>Does anyone have another explanation? Or a solution to this problem ?</p>
+
+<hr>
+
+<p><strong>EDIT</strong></p>
+
+<p>Thanks to @TobiasK I know that this is called a <em>bouncing effect</em>. By doing further research I came across this solution:<br>
+playground.arduino.cc/Main/RotaryEncoders (Ctrl+F for rafbuff).<br>
+I'm trying it and i'll let you know.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8950" data-toggle = "popover">
+				<p>user name : ejalaa12</p>
+				<p> user reputation : 66</p>
+				<p class = "tagcontent" id = "usertaginfo-8950">{'wheel': 5, 'None': 4, 'two-wheeled': 5, 'interrupts': 5, 'arduino': 5}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8950">Load Comments</button></br>
+			<div id = "commentsection-8950" class = 'collapse'>
+			<div id = "comment-14742" class = "comment">
+				<p>This might be an effect called boucing. This is because switching a signal does not produce a perfect edge... It rather bounces a bit up and down. Anyway this is a common issue in electronics and there are plenty of solutions for this issue, including electronic approaches (like low-pass filter) and software approaches.</p>
+			</div>
+			<div id = "comment-14747" class = "comment">
+				<p>By the way normally they recommend the "Count" variable used in the routine should be declared Volatile. (I wonder if this might make a difference?)</p>
+			</div>
+			<div id = "comment-14750" class = "comment">
+				<p>@TobiasK For the electronic approach. Will adding a capacitor between the output of the sensor and the arduino solve this? What kind of software solution would you advise? I could disable the interrupt for a while after receiving the first RISING. but we don't want to miss a real rising due to the beam being cut off...</p>
+			</div>
+			<div id = "comment-14751" class = "comment">
+				<p>Try triggering on both edges</p>
+			</div>
+			<div id = "comment-14752" class = "comment">
+				<p>This will lead to higher processorload but ad hoc I cannot think of a sophisticated interrupt-based solution. Only polling-based.</p>
+			</div>
+			<div id = "comment-14753" class = "comment">
+				<p>@Andy thanks I added the `volatile`, but it didn't change anything.
+@TobiasK Do you mean trigger on a CHANGE instead of RISING? I don't understand how triggering on both edge would solve this. 
+Yeah I guess polling based is another solution, but I wanted to leave as a last resort.</p>
+			</div>
+			<div id = "comment-14760" class = "comment">
+				<p>That's a nice first question +1</p>
+			</div>
+			<div id = "comment-14762" class = "comment">
+				<p>Basically you cannot solve this problem with an interrupt based approach (at least in the arduino world). Because to remove the bouncing from the signal you need a filter (in this case a digital one). Digital filters are based upon multiple samples of a signal collected with a specific time between those sample points. With the interrupt approach you got no influence on the sampling interval nor the amoumt of collected samples, therefore this approach wont lead to a good result. Anyway triggering on both edges is also useless... my bad. I recommend using electrical low pass filter.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8950" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8950">
+					<img id="start_img-8950" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8950">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8956"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8956" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Your signal actual going back and forth like that; it's registering with the microcontroller because you're at an intermediate voltage. As @TobiasK mentions, this is called "bouncing". </p>
+
+<p>You're trying to use this for controlling tires, so I would suggest you do a little math to determine whether or not a "subsequent" signal could be considered valid or not.</p>
+
+<p>Distance traveled is <code>d = r*theta;</code>, where <code>r</code> is the wheel radius and <code>theta</code> is the angular distance (in radians) the wheel rotated. Your encoder has some number of pulses per revolution (ppr), so, at top speed, you can expect some number of pulses per minute, or pulses per second. You can either determine this with the maximum wheel speed in RPM or in maximum vehicle speed in [distance]per minute. </p>
+
+<p>Then, take the inverse of the maximum pulses per second to get the minimum seconds per pulse. Any pulse that you detect in a time period shorter than the minimum seconds per pulse is then invalid, so you can ignore it. </p>
+
+<p>Logically, some pseudo-code might look like:</p>
+
+<pre><code># Initialization:
+validPulse = 0;
+
+# In the loop:
+if (pulse detected)
+  if ( (currentTime) - validPulse ) &lt; ( pulseThreshold )
+    &lt;do nothing&gt;
+  else
+    validPulse = (currentTime);
+    &lt;do your thing here&gt;
+  end
+end
+</code></pre>
+
+<p>In thinking about this for a moment, I would actually caution you to double your pulses per second (halve the seconds per pulse) value because you're prone to bounce on the rising AND falling pulse, as your data above shows. </p>
+
+<p>Ultimately you're going to have to do something to filter the noise (bounce) out of your signal. You can either do this in a fixed manner, with electronic components (RC filter) or you can do it in software. I would always recommend software whenever possible because it's so easy to update or modify if you find your parameters change down the line, such as upgrading to faster motors, etc. </p>
+
+<p>You can even perform all of the calculations in your initialization section of your code, where the calculations are based on parameters you have. Then, if you swap motors, just update the motor top speed in the code and the bounce-checking duration updates automatically. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8956" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-8956">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8956">Load Comments</button></br>
+			<div id = "commentsection-8956" class = 'collapse'>
+			<div id = "comment-14757" class = "comment">
+				<p>Great reading. So basically, your idea is to obtain the minimum second per pulse by experience. And then ignore any interrupt that happen in less time than the minimum second per pulse? 
+Also, I have studied the example i gave in the **EDIT** of my question. It's a software solution. You may want to see it.</p>
+			</div>
+			<div id = "comment-14758" class = "comment">
+				<p>@ejalaa12 - Yes, you can obtain the pulse rate either experimentally or from the motor datasheet. It's also possible to setup lag filters or other low-pass filters, but you still need to know what the cutoff threshold is that you need, so this work all needs to get done.</p>
+			</div>
+			<div id = "comment-14759" class = "comment">
+				<p>I'll add too that you should really consider cutoff thresholds even when designing the RC filter, if you want to go that route. It makes a difference!</p>
+			</div>
+			</div>
+				<textarea id = "speech-8956" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8956">
+					<img id="start_img-8956" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8956">Comment</button>
+			<br><div id = "ans-8959"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8959" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>After studying the code I cited on the <strong>EDIT</strong> of my question.<br>
+I came up with this solution which is working so far
+</p>
+
+<pre><code># define encoderRight 2
+# define encoderLeft 3
+
+volatile int countR = 0;
+volatile int countL = 0;
+volatile boolean firstChangeR = true; // expecting the 1st change of the bounce
+volatile boolean firstChangeL = true; // same
+boolean right_set = true;
+boolean left_set = true;
+
+void setup() {
+  Serial.begin(9600);
+  // Right encoder
+  attachInterrupt(digitalPinToInterrupt(encoderRight), doEncoderRight, CHANGE);
+  pinMode(encoderRight, INPUT);
+  digitalWrite(encoderRight, HIGH);  // turn on pullup resistor
+
+  // Left encoder
+  attachInterrupt(digitalPinToInterrupt(encoderLeft), doEncoderLeft, CHANGE);
+  pinMode(encoderRight, INPUT);
+  digitalWrite(encoderLeft, HIGH);
+}
+
+void loop() {
+  firstChangeR = true; // we reset to true to expect next change triggered
+  firstChangeL = true; // by the interrupt
+  // printing
+  String txt = String(countL);
+  txt += "__";
+  txt += String(countR);
+  Serial.println(txt);
+}
+
+void doEncoderRight(){
+  if (firstChangeR) delay(1); // if this is the first detection then we wait
+                              // for the bounce to be over
+
+  // if the current state is different from the last saved state then:
+  // a real change happened and it's not part of the bouncing but 
+  // actually the real beginning of the change: the first bounce !
+  if (digitalRead(2) != right_set) {
+    right_set = !right_set; // so we change the real state
+    countR ++;  // we also increment the right encoder
+
+    // since this was the firstChange the next are part of bouncing, so:
+    firstChangeR = false;
+  }
+
+}
+
+void doEncoderLeft(){
+  if (firstChangeL) delay(1);
+
+  if (digitalRead(3) != left_set) {
+    left_set = !left_set;
+    countL ++;
+
+    firstChangeL = false;
+  }
+
+}
+</code></pre>
+
+<p>Tell me what do you think about it? Do you think it's reliable and is there any improvement you can propose?</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8959" data-toggle = "popover">
+				<p>user name : ejalaa12</p>
+				<p> user reputation : 66</p>
+				<p class = "tagcontent" id = "usertaginfo-8959">{'wheel': 5, 'None': 4, 'two-wheeled': 5, 'interrupts': 5, 'arduino': 5}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8959">Load Comments</button></br>
+			<div id = "commentsection-8959" class = 'collapse'>
+			<div id = "comment-14763" class = "comment">
+				<p>This is a question, not an answer. Please revise your original question or, better, make a new question and link to this question as a reference.</p>
+			</div>
+			<div id = "comment-14777" class = "comment">
+				<p>@Chuck I wasn't sure about the way to do this. But I see it as a proposition of answer that solves my problem. Do you still advice that I put it inside the question?</p>
+			</div>
+			<div id = "comment-14778" class = "comment">
+				<p>I would make a new question, but only if you're having some trouble with the code. Currently, if this code is working, then you can accept it as the answer to your original question. Because this site is for *problems you actually face* (and not a code review site), if you don't have a problem with the code you've written then there's probably not a lot of feedback you're going to get and the question is liable to get closed.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8959" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8959">
+					<img id="start_img-8959" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8959">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

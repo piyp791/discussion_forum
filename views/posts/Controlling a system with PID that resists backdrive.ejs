@@ -1,0 +1,374 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Controlling a system with PID that resists backdrive
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-3178" class = "post">
+			<h2>Question</h2>
+			<div id="vote-3178" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 377</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Controlling a system with PID that resists backdrive</h2>
+<p>I'm controlling the angular position of a pendulum using a DC motor with a worm gearbox. Mechanically, worm gears are impossible to backdrive.</p>
+
+<p>Using a PID controller on a pendulum system with a regular DC motor (no worm gear), the integrator would help the motor find the appropriate constant power setting to overcome gravity so the pendulum can hold any arbitrary position. With the worm gear, however, there is no need to apply constant power to the motor once the desired position is achieved. Power to the motor can be cut off and the worm gear will resist gravity's force to backdrive the pendulum to the lowest gravity potential.</p>
+
+<p>It seems to me, then, that the integrator of the PID algorithm will cause large overshoots once the desired position is achieved. I want the integrator initially to help control the pendulum to the desired position. But once the position is achieved, I'd need the integrator to turn off.</p>
+
+<p>The only solution I can come up with is to test for a special condition in the PID algorithm that checks if the position has been reached AND the angular speed is small, then instantaneously reset the integrator to zero. Is there a better way to handle the integrator in a system that resists backdrive?</p>
+
+<p><strong>** EDIT *</strong></p>
+
+<p>When I originally worded my question, I was mostly just interested in the academic approach of backdrive resistance in a PID loop. But it'll help if I explain the actual mechanism I'm building. The device is a robotic arm that rotates on a car window motor. It will also occasionally pick up and drop small weights at the end of the arm. Manufacturing variability in motors and the difference in drive torque when picking up the small weights led to me consider a PID loop.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-3178" data-toggle = "popover">
+				<p>user name : Dan Laks</p>
+				<p> user reputation : 121</p>
+				<p class = "tagcontent" id = "usertaginfo-3178">{'None': 0, 'pid': 4}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-3178">Load Comments</button></br>
+			<div id = "commentsection-3178" class = 'collapse'>
+			<div id = "comment-6700" class = "comment">
+				<p>What is your feedback?  What does your system look like exactly?  Whether or not you can backdrive the system shouldn't matter, i.e. it won't affect your overshoot.  What may matter is backlash if any (and that again does not related to back-driving).  What you're talking about is more overdamped vs. underdamped.</p>
+			</div>
+			<div id = "comment-6708" class = "comment">
+				<p>I'm using a hall-effect rotary sensor for feedback. I also edited my question to describe what my system looks like.</p>
+			</div>
+			<div id = "comment-6709" class = "comment">
+				<p>And yes, backlash is a problem I'm fighting. I'm hoping to design a sufficiently overdamped control system so that the pendulum doesn't overshoot due to slop in the gears when it slows down suddenly.</p>
+			</div>
+			</div>
+				<textarea id = "speech-3178" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-3178">
+					<img id="start_img-3178" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-3178">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-3180"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-3180" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I would find something like a <a href="http://en.wikipedia.org/wiki/Leaky_integrator" rel="nofollow">leaking integrator</a>. The primary component will integrate error but there is also another component that will always slowly decay the integral value over time.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-3180" data-toggle = "popover">
+				<p>user name : ryan0270</p>
+				<p> user reputation : 1814</p>
+				<p class = "tagcontent" id = "usertaginfo-3180">{'None': 133}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-3180" class = 'collapse'>
+			</div>
+				<textarea id = "speech-3180" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-3180">
+					<img id="start_img-3180" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-3180">Comment</button>
+			<br><div id = "ans-3182"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-3182" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Why not just have a deadband region?  (when position is close enough to target, stop controlling the motor).</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-3182" data-toggle = "popover">
+				<p>user name : Ben</p>
+				<p> user reputation : 3608</p>
+				<p class = "tagcontent" id = "usertaginfo-3182">{'None': 277, 'inverse-kinematics': 3, 'accelerometer': 5, 'calibration': 10, 'kinematics': 14, 'robotic-arm': 8, 'jacobian': 6, 'dh-parameters': 8, 'imu': 5, 'sensors': 5}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-3182" class = 'collapse'>
+			</div>
+				<textarea id = "speech-3182" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-3182">
+					<img id="start_img-3182" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-3182">Comment</button>
+			<br><div id = "ans-3186"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-3186" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>It sounds like you don't need a PID controller at all.  You're trying to move a worm gear until it reaches a given set point, then turn it off -- proportional control sounds like all you'd need.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-3186" data-toggle = "popover">
+				<p>user name : Ian</p>
+				<p> user reputation : 9640</p>
+				<p class = "tagcontent" id = "usertaginfo-3186">{'planning': 10, 'None': 809, 'power': 1, 'algorithm': 10, 'battery': 1, 'slam': 7, 'coverage': 10, 'mobile-robot': 9, 'sensors': 9}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-3186">Load Comments</button></br>
+			<div id = "commentsection-3186" class = 'collapse'>
+			<div id = "comment-6710" class = "comment">
+				<p>I edited my question above to clarify a bit. I'm mostly concerned about variability in motors (if I make more than one of these) and difference in required drive torque when it picks up the weights.</p>
+			</div>
+			<div id = "comment-6712" class = "comment">
+				<p>In that case, a PI controller might be more what you need.  The integral term should compensate for any extra torque that is needed.  (I assume you are talking about torque when you mention variability in motors, is that correct?)</p>
+			</div>
+			<div id = "comment-6717" class = "comment">
+				<p>yes, that is correct. The integral still confuses me a little though. I imagine the integrator spooling up as the arm approaches the setpoint. As the position error approaches zero, the force component from P will approach zero. Typically then, the force component from I will help resist gravity and other constant forces to keep the arm at the setpoint. But none of those forces apply because of the nature of a worm gear. Since the spooled-up I won't be resisting anything, but it still has a non-zero value, won't it cause an overshoot jump?</p>
+			</div>
+			<div id = "comment-6720" class = "comment">
+				<p>Maybe I'm still misunderstanding your question (or else you're trying to have it both ways).  If more torque is required to raise added weight -- constant force -- then the `I` term is the only way to achieve that.  Keep in mind that as you approach the setpoint, the `P` term is going to decrease while the `I` term remains the same; you should not overshoot the target in this case.  I think [ryan0270's answer](http://robotics.stackexchange.com/a/3180/350) might be the one you want.</p>
+			</div>
+			</div>
+				<textarea id = "speech-3186" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-3186">
+					<img id="start_img-3186" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-3186">Comment</button>
+			<br><div id = "ans-4964"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4964" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>This is a picture of my own PID-like regulator of the form:</p>
+
+<pre><code>out = feed + MaxMin(DiffMax, DiffMin, // limit the difference, add feed (can be removed)
+  + P*(E=setp-feed)                   // proportional factor, error calculation
+  + (A = MaxMin(AccuMax, AccuMin, A   // limit for accumulator
+  + I*E - D*(feed-prev)))             // joined integrator and derivator
+</code></pre>
+
+<p><strong>The big difference</strong> from regular PID regulators is <strong>in the way of using the accumulator for both I and D</strong> - which is a bit similar to that <em>leaking integrator</em> mentioned by ryan0270 (I was experimenting with similar thing as well). The derivator will decrease the accumulator (which can be limited as well to prevent windup and big value when set-point is greatly changed).</p>
+
+<p><img src="https://i.stack.imgur.com/malh3.png" alt="PID regulator with accumulated derivator"></p>
+
+<p>blue = output / control signal (force, input to boiler)<br>
+white = feedback (regulated value, actual temperature)<br>
+green/yellow = set-point (desired value)<br>
+red = state of accumulator (centered like being +50%)<br>
+navy/dark blue = proportional part</p>
+
+<p>I have designed it for temperature regulation, but it seems to be equally good for your problem. My <strong>fade</strong> factor of the system is simulating the temperature dissipation / error of equitherm regulator. Your gravity and variable small weights seems similar to me. The integrator can compensate for this, but would normally overshoot and cause oscillation. Derivator applied on the shared accumulator prevents that - it reduces the accumulated error by the change made.</p>
+
+<p>Proportional is strongest at the beginning (startup acceleration), Integrator comes next (error-correcting acceleration) and <strong>Derivator will slow it last</strong> (like a brake - preventing the overshoot by reducing the accumulator).</p>
+
+<h3>Regulator step:</h3>
+
+<pre><code>//  regulator step
+    float diff = setp - feed
+    float accu = 0
+    if pA &amp;&amp; !isnan(diff)
+    //  integrator
+        accu = *pA + I*diff
+    //  derivator
+        if pV
+            accu += D*(*pV - feed)
+            *pV = feed
+    //  accu limits
+        if accu &gt; aMax; accu = aMax
+        if accu &lt; aMin; accu = aMin
+    //  store back
+        *pA = accu
+//  proportional
+    diff = P*diff + accu
+//  diff limits
+    if diff &gt; dMax; diff = dMax
+    if diff &lt; dMin; diff = dMin
+</code></pre>
+
+<h3>Full code:</h3>
+
+<pre><code>#include &lt;math.h&gt;
+#include "mem/config.h"
+#include "device/analog.h"
+
+__packed struct PID
+    byte    type
+    char    name[9]
+    word    period
+    Timer   tmr
+    byte    feed, setp
+    word    flags
+    ANALOG  output
+    float   vals[9]
+
+enum
+    fP          = 1&lt;&lt;0
+    fI          = 1&lt;&lt;1
+    fD          = 1&lt;&lt;2
+    fDiffMax    = 1&lt;&lt;4
+    fDiffMin    = 1&lt;&lt;5
+    fAccuMax    = 1&lt;&lt;6
+    fAccuMin    = 1&lt;&lt;7
+
+void devPid()
+    PID *pid = (PID *)xpointer(DevAddr)
+    if !pid-&gt;tmr.reached(pid-&gt;period*10u)
+        return
+    pid-&gt;tmr.start()
+
+//  inputs
+    float feed = 0.0f
+    float setp = 0.0f
+    if pid-&gt;feed &lt; ainCount
+        feed = getxf(ains[pid-&gt;feed] + AIN_value)
+    if pid-&gt;setp &lt; ainCount
+        setp = getxf(ains[pid-&gt;setp] + AIN_value)
+
+//  PID factors (multiplicators)
+    float P = 0.0f
+    float I = 0.0f
+    float D = 0.0f
+//  difference limits (output-feedback)
+    float dMax = INFINITY
+    float dMin = -INFINITY
+//  accumulator limits (anti-windup)
+    float aMax = INFINITY
+    float aMin = -INFINITY
+
+//  flags and pointers
+    word flags = pid-&gt;flags
+    float __packed* pf = pid-&gt;vals
+    float __packed* pA = null   // accumulator
+    float __packed* pV = null   // previous feed
+
+//  parse variable object part
+    if flags &amp; fP
+        P = *pf++
+    if flags &amp; fI
+        I = *pf++
+        pA = pf++
+        if flags &amp; fD
+            D = *pf++
+            pV = pf++
+    if flags &amp; fDiffMax
+        dMin = -(dMax = *pf++)
+        if flags &amp; fDiffMin
+            dMin = *pf++
+    if flags &amp; fAccuMax
+        aMin = -(aMax = *pf++)
+        if flags &amp;fAccuMin
+            aMin = *pf++
+
+//  regulator step
+    float diff = setp - feed
+    float accu = 0
+    if pA &amp;&amp; !isnan(diff)
+    //  integrator
+        accu = *pA + I*diff
+    //  derivator
+        if pV
+            accu += D*(*pV - feed)
+            *pV = feed
+    //  accu limits
+        if accu &gt; aMax; accu = aMax
+        if accu &lt; aMin; accu = aMin
+    //  store back
+        *pA = accu
+//  proportional
+    diff = P*diff + accu
+//  diff limits
+    if diff &gt; dMax; diff = dMax
+    if diff &lt; dMin; diff = dMin
+
+//  final output
+    ainSet(DevAddr + offsetof(PID,output),
+      feed + diff)
+</code></pre>
+
+<p>You can tune it a bit and use the error, accumulator and feedback-change to detect the steady state to power it off.</p>
+
+<hr>
+
+<h3>Add-on</h3>
+
+<p>I have been experimenting with it a bit more - used the regulator with erroneous non-linear 7bit DAC (custom-made of few resistors and opto-transistors) with erroneous main regulation (basic conversion peformed very bad in high values) and observed the behaviour (good ADC was used as feedback). The regulator performed really well and quickly ended with 1-bit oscillation (which is inevitable). I have further enhanced my simulation with this gained knowledge and here is the picture:</p>
+
+<p><img src="https://i.stack.imgur.com/o1WuA.png" alt="PID regulation with digital granularity"></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4964" data-toggle = "popover">
+				<p>user name : firda</p>
+				<p> user reputation : 131</p>
+				<p class = "tagcontent" id = "usertaginfo-4964">{'None': 3}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-4964" class = 'collapse'>
+			</div>
+				<textarea id = "speech-4964" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4964">
+					<img id="start_img-4964" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4964">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

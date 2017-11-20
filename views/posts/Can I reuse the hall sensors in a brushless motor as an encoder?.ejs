@@ -1,0 +1,238 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Can I reuse the hall sensors in a brushless motor as an encoder?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2987" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2987" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 614</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Can I reuse the hall sensors in a brushless motor as an encoder?</h2>
+<p>I have upgraded the motors in my robotic arm to sensored, brushless RC car motors. The hope was to reuse the Hall sensors to double as a rotary encoder, by tapping 2 Hall sensors and treating the 2 bits as a quadrature signal (a crude quadrature since 2 of the 4 states will be longer than the other 2).</p>
+
+<p>This works when none of the motor phases are powered and I just rotate the motor manually. But once the stator coils are energized, the encoder no longer counts correctly: When running at low power, the counting is correct, but when running under high power, the count is monotonic (only increases or decreases) no matter if I run in reverse or forward.</p>
+
+<p>I'm almost certain this is because of the stator coils overpowering the permanent magnets on the rotors. So is there still a way to use the Hall sensors as an encoder?</p>
+
+<p>Sorry if this is an obvious question. I'd love to research this problem more if I had more time.</p>
+
+<p><strong>Update:</strong>
+I've measured the wave forms with my DSO quad and see the expected 120 degree separated signals (the measurement for phase C gets more inaccurate over time because I only had 2 probes, so I measured phases A &amp; B first, then A &amp; C, and then merged them.</p>
+
+<p>When ESC speed is 0.1:
+<img src="https://i.stack.imgur.com/tXBod.png" alt="speed = 0.1"></p>
+
+<p>When ESC speed is 0.3:
+<img src="https://i.stack.imgur.com/4D4Na.png" alt="speed = 0.3"></p>
+
+<p>Previously, I was using a hardware quadrature counter (EQEP module on a BeagleBone). At speed=0.3, this was counting backwards no matter if I do forward or reverse!</p>
+
+<p>I then implemented quadrature counting on an LPC1114FN28 uController. The result was still bad at high speeds (count didn't change at all). The logic was:</p>
+
+<pre><code>void HandleGPIOInterrupt()
+{
+  const uint8_t allowableTransitions[4][2] = {1, 2, 3, 0, 0, 3, 2, 1};
+  static int prevState = -1;
+  int state = phaseA | (phaseB * 2)
+  if (prevState != -1)
+  {
+    if (allowableTransitions[prevState][0] == state)
+    {
+       ++rotations;
+    }
+    else if (allowableTransitions[prevState][1] == state)
+    {
+      --rotations;
+    }
+  }
+  prevState = state;
+}    
+</code></pre>
+
+<p>Then I got the idea to change the code to not update prevState until an expected state happens (to deal with glitches):</p>
+
+<pre><code>  int state = phaseA | (phaseB * 2)
+  if (prevState != -1)
+  {
+    if (allowableTransitions[prevState][0] == state)
+    {
+       ++rotations;
+       prevState = state;
+    }
+    else if (allowableTransitions[prevState][1] == state)
+    {
+      --rotations;
+      prevState = state;
+    }
+    else
+    {
+        // assume transition was a glitch
+    }
+  }
+  else
+    prevState = state;
+</code></pre>
+
+<p>Now the counting finally is correct in both directions, even at speeds higher than 0.3!
+But are there really glitches causing this? I don't see any in the waveforms?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2987" data-toggle = "popover">
+				<p>user name : Yale Zhang</p>
+				<p> user reputation : 166</p>
+				<p class = "tagcontent" id = "usertaginfo-2987">{'brushless-motor': 11, 'None': 1, 'hall-sensor': 4, 'motor': 7, 'encoding': 4}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2987">Load Comments</button></br>
+			<div id = "commentsection-2987" class = 'collapse'>
+			<div id = "comment-5497" class = "comment">
+				<p>I've never heard of hall sensors not working at "high power"; that would defeat the purpose of being able to use them to commutate the motor.  I've never seen this in any motor I've used with hall sensors, and I've used many.  You're probably doing something wrong.</p>
+			</div>
+			</div>
+				<textarea id = "speech-2987" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2987">
+					<img id="start_img-2987" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2987">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-2993"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2993" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I would think you should be able to. I've used magnets and reed switches in a similar application for a speed sensor which uses the turns to calculate speed much like an encoder and it worked perfectly. The hall sensor should behave in a similar way.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2993" data-toggle = "popover">
+				<p>user name : user2201182</p>
+				<p> user reputation : 121</p>
+				<p class = "tagcontent" id = "usertaginfo-2993">{'None': 2}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2993" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2993" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2993">
+					<img id="start_img-2993" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2993">Comment</button>
+			<br><div id = "ans-4548"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4548" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I've figured out the problem a while ago. It turns out to be a power supply problem. I'm using a computer power supply (Antec HCG 850M) with the under voltage &amp; over current protections removed, so it doesn't trip.</p>
+
+<p>There was also another huge problem I didn't mention. The motor was randomly stopping and starting several times a second.</p>
+
+<p>Then I saw that the electronic speed controller I'm using only had a 330uF filter capacitor. It was also was very hot to touch, despite being a low resistance, electrolytic polymer capacitor. After replacing it with a similar 1000uF capacitor, the problems are gone.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4548" data-toggle = "popover">
+				<p>user name : Yale Zhang</p>
+				<p> user reputation : 166</p>
+				<p class = "tagcontent" id = "usertaginfo-4548">{'brushless-motor': 11, 'None': 1, 'hall-sensor': 4, 'motor': 7, 'encoding': 4}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-4548" class = 'collapse'>
+			</div>
+				<textarea id = "speech-4548" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4548">
+					<img id="start_img-4548" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4548">Comment</button>
+			<br><div id = "ans-10501"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10501" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Yes, I am a technician who works on stabilized camera gimbals for drones and we use hall effect sensors as encoders on our camera gimbals. You must mount the hall effect sensor IC facing toward the motor pole in the rear side of the motor as close as possible without touching. This will detect the magnetic flux as the motor shaft rotates. This works very well for DC brushless motors, I cannot guarantee that it will work as well for any other type of motor.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10501" data-toggle = "popover">
+				<p>user name : user2201182</p>
+				<p> user reputation : 121</p>
+				<p class = "tagcontent" id = "usertaginfo-10501">{'None': 2}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-10501" class = 'collapse'>
+			</div>
+				<textarea id = "speech-10501" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10501">
+					<img id="start_img-10501" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10501">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

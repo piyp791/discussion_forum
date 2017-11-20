@@ -1,0 +1,213 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Paradox: I can't use accelerometer measurements to obtain information about my states in a quadcopter?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11152" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11152" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">6</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 114</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Paradox: I can't use accelerometer measurements to obtain information about my states in a quadcopter?</h2>
+<p>I'm currently developing an EKF to estimate the position and orientation of a quadcopter. My state vector is comprised of 3D position, 3D velocity, 3 euler angles and the angular velocity vector. </p>
+
+<p>Right now I'm looking into the measurement equation for the accelerometer.</p>
+
+<p>If I understood correctly, <a href="https://en.wikipedia.org/wiki/Accelerometer" rel="nofollow noreferrer">an accelerometer measures "proper acceleration"</a>, instead of coordinate acceleration, that is, it measures the acceleration of the body w.r.t to a free-falling coordinate system.</p>
+
+<p>If this is the case, and supposing the only forces acting on the body are the upward thrust given by the propellers, $\vec{T}$, and earth's gravitational force, $m\vec{g}$, then I understand that the only acceleration that would be measured by the accelerometer is the one caused by $\vec{T}$ (since the free-falling frame has no way of measuring the acceleration caused by $m\vec{g}$, because it is also being accelerated by it).</p>
+
+<p>If this also the case, then I note that the vector $\vec{T}$, when expressed in the body coordinate frame (i.e. a coordinate frame fixed at the center of mass of the body, and always aligned with the body's orientation) does not depend on any of the states whatsoever. For example, if the propellers are assembled such that $\vec{T}$ is always perpendicular to the plane where the propellers are, then $\vec{T}$ in the body frame is specified as $(0,0,\alpha)^T$, where $\alpha$ is the magnitude of the thrust given. </p>
+
+<p>Which leads me to conclude that (since the measured acceleration doesn't depend on the states) I can't use accelerometer measurements to obtain more information about any of my states (??). This conclusion seems paradoxical to me, and that's why I ask this here. Could someone please point the mistake in my reasoning, or elucidate why this is not a paradox?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11152" data-toggle = "popover">
+				<p>user name : JLagana</p>
+				<p> user reputation : 185</p>
+				<p class = "tagcontent" id = "usertaginfo-11152">{'control': 2, 'quadcopter': 6, 'None': 0, 'computer-vision': 5, 'sensor-fusion': 2, 'accelerometer': 6, 'calibration': 5, 'ekf': 6, 'filter': 2, 'kalman-filter': 8, 'orientation': 6}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11152">Load Comments</button></br>
+			<div id = "commentsection-11152" class = 'collapse'>
+			<div id = "comment-20150" class = "comment">
+				<p>Comments are not for extended discussion; this conversation has been [moved to chat](http://chat.stackexchange.com/rooms/49495/discussion-on-question-by-jlagana-paradox-i-cant-use-accelerometer-measurement).</p>
+			</div>
+			</div>
+				<textarea id = "speech-11152" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11152">
+					<img id="start_img-11152" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11152">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-11153"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11153" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Accelerometers measure kinematic acceleration with the addition of gravity. So for an accel to measure 0, the vehicle would need to be accelerating downward at $g$. To get inertial acceleration out of an accel measurement one simply needs to subtract the acceleration measured by the IMU when the IMU is static. </p>
+
+<p>So, assuming the coordinate system of the drone is in line with the inertial coordinate system</p>
+
+<p>\begin{equation}
+\ddot r = z_{acc} - g
+\end{equation}</p>
+
+<p>where $\ddot r$ is acceleration  of the drone in inertial space, $z_{accel}$ is the vector of accelerations measured by the IMU, and $g$ is the vector of accelerations experienced when the vehicle is not accelerating relative to the inertial frame. </p>
+
+<p>Transformations need to get involved once the vehicle is not longer level but it's about the same. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11153" data-toggle = "popover">
+				<p>user name : holmeski</p>
+				<p> user reputation : 1338</p>
+				<p class = "tagcontent" id = "usertaginfo-11153">{'pose': 3, 'None': 101, 'computer-vision': 3, 'kalman-filter': 3}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11153">Load Comments</button></br>
+			<div id = "commentsection-11153" class = 'collapse'>
+			<div id = "comment-20085" class = "comment">
+				<p>Thank you for your time, but you neither addressed my argument nor explained the paradox.</p>
+			</div>
+			<div id = "comment-20090" class = "comment">
+				<p>"one simply needs to subtract the acceleration measured by the IMU when the IMU is static", unfortunately no, because orientation can change, for example the frame can be inverted and accelerating upwards at 2G. this would appear as though it were upright and stationary.</p>
+			</div>
+			</div>
+				<textarea id = "speech-11153" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11153">
+					<img id="start_img-11153" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11153">Comment</button>
+			<br><div id = "ans-11155"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11155" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">6</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>If the drone is not falling (holding height in the sky), and it's not accelerating in any particular direction, then the accelerometer should be reading:</p>
+
+<p>$$
+a = \left[ \begin{array}{}
+g_x \\
+g_y \\
+g_z
+\end{array}\right]
+$$</p>
+
+<p>where $g_N$ is the component of gravity along each axis. If the drone is <em>upright</em> and stationary, and the accelerometer is oriented such that the z-axis points up, then the accelerometer would read:</p>
+
+<p>$$
+a = \left[ \begin{array}{}
+0 \\
+0 \\
+g 
+\end{array}\right]
+$$</p>
+
+<p><strong>However</strong>, if the drone is tilted and not accelerating, then the gravity vector will appear in portions along the axes not orthogonal to gravity.</p>
+
+<p>The <a href="http://x-io.co.uk/open-source-imu-and-ahrs-algorithms/" rel="nofollow noreferrer">Madgwick filter</a> (which works pretty awesome by the way) utilizes this to determine the orientation of the accelerometer. The accelerometer is normalized and the component of acceleration on each axis gives the orientation. </p>
+
+<p>Given the orientation, subtract out gravity, you're left with the acceleration along each axis. Double integrate those accelerations and you get position.</p>
+
+<p>There are of course issues if you're accelerating in a particular direction that isn't in-line with gravity, because normalizing the acceleration will cause the "gravity vector" to skew towards the axis of motion. However, this is generally overcome by including gyroscope measurements with the orientation estimate.</p>
+
+<p>It's important to remember too that these are all <em>estimates</em>. Unless you have a <strong>position measurement</strong> or an <strong>orientation measurement</strong> device, you'll never actually get <em>measurements</em>; the best you can do is generate pose <em>estimates</em> because there's no way to correct any accumulated errors.</p>
+
+<p>Gyroscope readings are generally very accurate as a short-term orientation estimate and very poor as a long-term orientation estimate because of gyroscope drift. The accelerometer's gravitational orientation result, because it is affected by the motion of the sensor, generally results in poor short-term orientation measurements but very accurate long-term measurements.</p>
+
+<p>So, between the accelerometer and gyroscope, you should be able to get <a href="https://www.youtube.com/watch?v=BXsGWoOMtmU&amp;t=20s" rel="nofollow noreferrer">very good orientation estimates</a> (did I mention the Madgwick filter is really good? Don't kill yourself reinventing the wheel; the filter is open-source!). Again, once you have the orientation, subtract the gravity vector and you're left with only the accelerations caused by motion of the device. </p>
+
+<p>Accelerometers suffer from drift too, though, so you're not going to get any high-precision position <em>estimates</em> from an accelerometer over any significant period of time. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11155" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-11155">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11155">Load Comments</button></br>
+			<div id = "commentsection-11155" class = 'collapse'>
+			<div id = "comment-20148" class = "comment">
+				<p>Comments are not for extended discussion; this conversation has been [moved to chat](http://chat.stackexchange.com/rooms/49494/discussion-on-answer-by-chuck-paradox-i-cant-use-accelerometer-measurements-to).</p>
+			</div>
+			<div id = "comment-20149" class = "comment">
+				<p>On stack exchange, comments are not intended for extended discussions, for that use [chat]. Comments are for helping to improve questions and answers, and are distracting, so we try to keep them to a minimum. Comments should be considered ephemeral, any comment which no longer actively helps to improve a question or answer may be deleted at any time to *tidy up* a post.</p>
+			</div>
+			</div>
+				<textarea id = "speech-11155" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11155">
+					<img id="start_img-11155" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11155">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

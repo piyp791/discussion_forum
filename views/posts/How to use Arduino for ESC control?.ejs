@@ -1,0 +1,236 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to use Arduino for ESC control?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2091" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2091" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 10019</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to use Arduino for ESC control?</h2>
+<p>I am using an Arduino Uno to control an ESC for my (in progress) quadrocopter.  I am currently using the servo library to control the ESC, which works great.</p>
+
+<p>Except..</p>
+
+<p>A count of 100 is max speed, meaning I only have 10 speeds between 90 (stopped) and 100 (motor at full power) to correctly run my quadrocopter, I would like to have many more speed options.  Any ideas?  I'm having a hard time using a PWM signal, I might not be doing it right though.</p>
+
+<p>My current code is <a href="https://github.com/toozinger/Quad/blob/master/run_motor_as_servo.ino">here</a>:</p>
+
+<pre><code>#include &lt;Servo.h&gt;
+
+Servo myservo; // create servo object to control a servo
+                // a maximum of eight servo objects can be created
+
+int pos = 0; // variable to store the servo position
+
+void setup()
+{
+  myservo.attach(8); // attaches the servo on pin 8 to the servo object
+}
+
+void loop()
+{
+
+ int maxspeed=100;
+ int minspeed=0;
+ int delaytime=5;
+ int count;
+
+ for(count=0; count &lt;1; count+=1) {
+  for(pos = minspeed; pos &lt; maxspeed; pos += 1) // goes from 0 degrees to 180 degrees
+  { // in steps of 1 degree
+    myservo.write(pos); // tell servo to go to position in variable 'pos'
+    delay(delaytime); // waits 15ms for the servo to reach the position
+  }
+  for(pos = maxspeed; pos&gt;=minspeed; pos-=1) // goes from 180 degrees to 0 degrees
+  {
+    myservo.write(pos); // tell servo to go to position in variable 'pos'
+    delay(delaytime); // waits 15ms for the servo to reach the position
+  }
+  if(count&gt;1){
+    break;
+  }
+ }
+
+ myservo.write(92);
+ delay(100000);
+ myservo.write(90);
+ delay(10000000);
+}
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2091" data-toggle = "popover">
+				<p>user name : Toozinger</p>
+				<p> user reputation : 73</p>
+				<p class = "tagcontent" id = "usertaginfo-2091">{'control': 5, 'quadcopter': 5, 'None': 1, 'arduino': 12, 'microcontroller': 6, 'servomotor': 5, 'esc': 5, 'sensors': 1, 'gyroscope': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2091" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2091" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2091">
+					<img id="start_img-2091" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2091">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-2093"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2093" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Your code uses the typical <code>servo.attach(pin)</code> where you can use the overload of <code>servo.attach(pin, min, max)</code> to set the min and max microseconds of the pulse width to match the desired ranges for you ESC. Additionally to make it a bit more clear where <code>myservo.write(90);</code> is used to set the angle, you can use <code>myservo.writeMicroseconds(1500);</code> to set the duration of the pulse directly in microseconds. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2093" data-toggle = "popover">
+				<p>user name : mpflaga</p>
+				<p> user reputation : 326</p>
+				<p class = "tagcontent" id = "usertaginfo-2093">{'None': 18}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2093" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2093" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2093">
+					<img id="start_img-2093" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2093">Comment</button>
+			<br><div id = "ans-2094"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2094" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The servo.write(angle) function is designed to accept angles from 0 to 180.
+(The value 180 is significantly larger than 100).
+Could you tell me where in <a href="http://playground.arduino.cc/ComponentLib/Servo" rel="nofollow">the Servo documentation</a> you read "<em>100 (motor at full power)</em>", so we can fix that typo?</p>
+
+<p>Please change the line</p>
+
+<pre><code>int maxspeed=100; /* wrong */
+</code></pre>
+
+<p>to</p>
+
+<pre><code>int maxspeed=180;
+</code></pre>
+
+<p>Also, please run <code>servo.refresh()</code> periodically to keep the servos updated -- perhaps something like:</p>
+
+<pre><code>for(pos = maxspeed; pos&gt;=minspeed; pos-=1) // goes from 180 degrees to 0 degrees
+{
+    myservo.write(pos); // set the servo position
+    myservo.refresh(); // tell servo to go to the set position
+    delay(delaytime); // waits 15ms for the servo to reach the position
+};
+// ...
+myservo.write(92);
+for( long int delaytime = 0; delaytime &lt; 100000; delaytime+=10 ){
+    myservo.refresh(); // tell servo to go to the set position
+    delay(10);
+};
+</code></pre>
+
+<p>As mpflaga pointed out, you can get more precision by setting the pulse width directly in microseconds with</p>
+
+<pre><code>myservo.writeMicroseconds(1000); // typical servo minimum; some go down to 600 or less
+myservo.writeMicroseconds(2000); // typical servo maximum; some go up to 2500 or more
+</code></pre>
+
+<p>p.s.:
+Have you seen <a href="http://arduino.cc/en/Tutorial/BlinkWithoutDelay" rel="nofollow">"blink without delay"</a> ?
+That technique makes it much easier to read sensors and update servo positions with consistent heartbeat timing.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2094" data-toggle = "popover">
+				<p>user name : David Cary</p>
+				<p> user reputation : 3365</p>
+				<p class = "tagcontent" id = "usertaginfo-2094">{'quadcopter': 38, 'stepper-driver': 9, 'None': 256, 'multi-rotor': 2, 'force-sensor': 9, 'stability': 36, 'industrial-robot': 1, 'design': 18, 'motor': 2, 'stepper-motor': 9}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2094">Load Comments</button></br>
+			<div id = "commentsection-2094" class = 'collapse'>
+			<div id = "comment-4183" class = "comment">
+				<p>Thank you, I will look into each of those suggestions.  
+To answer your question:  I did not read in any doc that servo count 100 was the max power, I figured it out by testing the motor (https://www.hobbyking.com/hobbyking/store/__5688__Turnigy_2213_20turn_1050kv_19A_Outrunner.html) and finding that above servo count 100, the prop did not seem to spin any faster, giving me a very small operating range.</p>
+			</div>
+			<div id = "comment-18098" class = "comment">
+				<p>If that is the case then, you are either your battery cannot supply enough current(check C value), or your propellors are too large(too much load on the motor), or your esc cannot supply enough current(in which case it might get heated up). Please check for all of the above possibilities.</p>
+			</div>
+			</div>
+				<textarea id = "speech-2094" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2094">
+					<img id="start_img-2094" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2094">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

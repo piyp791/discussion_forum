@@ -1,0 +1,127 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>SLAM - odometry motion model
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-10115" class = "post">
+			<h2>Question</h2>
+			<div id="vote-10115" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 228</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>SLAM - odometry motion model</h2>
+<p>I am making a project with a 4 wheeled differential robot to make visual SLAM using a stereo rig. I have some encoders to measure de displacement and the steering angle of the robot and I want to use the <strong>odometry motion model</strong> in the fastSLAM algorithm.</p>
+
+<p>To use the odometry motion model you need to calculate the values it needs from the odometry reading (incremental encoders), $u_t=(\bar{x}_{t-1},\bar{x_t})$ where $\bar{x}_{t-1}=(\bar{x}\&gt;\bar{y}\&gt;\bar{\theta})$ and $\bar{x}_t=(\bar{x}'\&gt;\bar{y}'\&gt;\bar{\theta}')$ are the previous and the current pose extracted from the odometry of the vehicle.</p>
+
+<p>My question is about how to obtain those values from the encoders. I guess that in this case I would need to obtain the equations from the geometric model for the differential robot:</p>
+
+<p>$D_L=\frac{2\cdot\pi \cdot R_L}{N_c}\cdot N_L$</p>
+
+<p>$D_R=\frac{2\cdot\pi \cdot R_R}{N_c}\cdot N_R$</p>
+
+<p>$D_T=\frac{D_L+D_R}{2}$</p>
+
+<p>$\Delta\theta=\frac{D_L-D_R}{L}$</p>
+
+<p>where $D_L$ is the advance of the left wheel, $D_R$ is the advance of the right wheel, $R_L$ is the lecture from the left encoder, $R_R$ the lecture from the right encoder, $N_C$ the total number of pulses of the encoder type, $D$ is the total distance achieved by the robot and $\theta$ the angle steered. $L$ is the distance between the wheels.</p>
+
+<p>Using those equations is possible to obtain the pose in every time step:</p>
+
+<p>$\bar{x}_{t}=\bar{x}_{t-1}+D\cos(\theta_{t-1})$</p>
+
+<p>$\bar{y}_{t}=\bar{y}_{t-1}+D\sin(\theta_{t-1})$</p>
+
+<p>$\bar{\theta}_{t}=\bar{\theta}_{t-1}+\Delta\theta$</p>
+
+<p>So those last are the values I need to inject to the modometry motion model and then add gaussian noise to them.
+Am I right? Or is there another way of computing the pose from odometry for a differential 4-wheel robot?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10115" data-toggle = "popover">
+				<p>user name : osuarez</p>
+				<p> user reputation : 128</p>
+				<p class = "tagcontent" id = "usertaginfo-10115">{'control': 5, 'stereo-vision': 2, 'beginner': 3, 'pid': 3, 'uav': 5, 'slam': 3, 'robotic-arm': 0, 'mobile-robot': 7, 'forward-kinematics': 0, 'cameras': 2, 'kinect': 0, 'visual-servoing': 2, 'matlab': 1, 'motion-planning': 4, 'movement': 1, 'odometry': 1, 'None': 2, 'inverse-kinematics': 0, 'raspberry-pi': 7, '3d-reconstruction': 2, 'quadcopter': 9, 'computer-vision': 6, 'geometry': 3, 'c++': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10115">Load Comments</button></br>
+			<div id = "commentsection-10115" class = 'collapse'>
+			<div id = "comment-18000" class = "comment">
+				<p>Are you trying to *simulate* motion, or are you trying to get position and heading from actual data? What do you mean when you say "steering angle"? Does this vehicle use differential or Ackermann steering?</p>
+			</div>
+			<div id = "comment-18001" class = "comment">
+				<p>I am trying o get position and heading from odometry to use it inside the odometry motion model in SLAM. With steering angle I mean that I could compute the angle $\Delta\theta$ from the encoders. It is a differential 4-wheel robot.</p>
+			</div>
+			</div>
+				<textarea id = "speech-10115" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10115">
+					<img id="start_img-10115" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10115">Comment</button>
+
+<h1>Answers</h1>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

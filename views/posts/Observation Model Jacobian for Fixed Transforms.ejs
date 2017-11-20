@@ -1,0 +1,138 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Observation Model Jacobian for Fixed Transforms
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-3118" class = "post">
+			<h2>Question</h2>
+			<div id="vote-3118" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 84</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Observation Model Jacobian for Fixed Transforms</h2>
+<p>Let's say I have a hypothetical sensor that provides, for example, velocity estimates, and I affix that sensor at some non-zero rotational offset from the robot's base. I also have an EKF that is estimating the robot's velocity.</p>
+
+<p>Normally, the innovation calculation for an EKF looks like this:</p>
+
+<p>$$ y_k = z_k - h(x_k) $$</p>
+
+<p>In this case, $h$ would just be the rotation matrix of the rotational offset. What are the ramifications if instead, I pre-process the sensor measurement by rotating $z_k$ by the inverse rotation, which will put its coordinates in the frame of the robot? Can I then safely just make $h$ the identity matrix $I$?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-3118" data-toggle = "popover">
+				<p>user name : TheWumpus</p>
+				<p> user reputation : 141</p>
+				<p class = "tagcontent" id = "usertaginfo-3118">{'magnetometer': 1, 'None': 2, 'ekf': 2, 'platform': 0, 'imu': 1, 'kalman-filter': 18, 'ugv': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-3118">Load Comments</button></br>
+			<div id = "commentsection-3118" class = 'collapse'>
+			<div id = "comment-6630" class = "comment">
+				<p>The KF is a closed-form estimator. Without seeing equations, you can't really say if it's the same.</p>
+			</div>
+			</div>
+				<textarea id = "speech-3118" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-3118">
+					<img id="start_img-3118" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-3118">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-3129"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-3129" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The KF (EKF), even though it is closed form, does not require you to input directly what your sensors sense. Preprocessing is OK if you are doing it perfectly and not losing information. </p>
+
+<p>Consider GPS measurements, which may occur in a coordinate frame which is "rotated" with respect to the robot's base or the robot's map coordinate frame. The "rotation" (pre-processing) and scaling (to find x-y from long-lat), are typically not included in the Jacobian. </p>
+
+<p>In your example, if "rotating" the velocity sensor meant that it detected: $v+b$ for velcoity vector $v$ and some fixed bias $b$, then yes, simply removing the bias before incorporating the data is fine. Your innovation has the same value, since $h(x)$ is already the operation you described (applying the rotation).</p>
+
+<p>But if the velocity sensor now measured $v+f(x)$, as in it measured greater velocity if the robot was turning right than left (as is the case of optical flow calculations from a camera facing a little to the right instead of directly forward), then you'd have to be much more careful. (Update jacobians or have near-perfect pre-processing).</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-3129" data-toggle = "popover">
+				<p>user name : Josh Vander Hook</p>
+				<p> user reputation : 3960</p>
+				<p class = "tagcontent" id = "usertaginfo-3129">{'None': 345}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-3129">Load Comments</button></br>
+			<div id = "commentsection-3129" class = 'collapse'>
+			<div id = "comment-6632" class = "comment">
+				<p>Excellent, exactly what I wanted to know. Thank you!</p>
+			</div>
+			</div>
+				<textarea id = "speech-3129" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-3129">
+					<img id="start_img-3129" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-3129">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

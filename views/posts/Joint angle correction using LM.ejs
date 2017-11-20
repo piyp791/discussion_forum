@@ -1,0 +1,144 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Joint angle correction using LM
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-4946" class = "post">
+			<h2>Question</h2>
+			<div id="vote-4946" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 76</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Joint angle correction using LM</h2>
+<p>I have a camera mounted on a rotational joint. I need to calibrate the extrinsics of this camera. I can fix the camera at an estimated angle (facing the ceiling). Then I want to get the real angle.</p>
+
+<p>For that I track key-points in the ceiling while moving my robot forward. Supposing that odometry is perfect, I will see a difference between real key-points shift and estimated shift from the odometry.</p>
+
+<p>I thought about using <a href="https://en.wikipedia.org/wiki/Levenberg%E2%80%93Marquardt_algorithm" rel="nofollow">Levenberg Marquardt</a> to find the optimal solution which is the angle and of my camera in the robot frame but what would my equation look like?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4946" data-toggle = "popover">
+				<p>user name : Mehdi</p>
+				<p> user reputation : 394</p>
+				<p class = "tagcontent" id = "usertaginfo-4946">{'control': 1, 'odometry': 12, 'None': 15, 'computer-vision': 10, 'mobile-robot': 2, 'power': 1, 'battery': 1, 'navigation': 2, 'cameras': 7, 'torque': 1, 'lidar': 5, 'joint': 2, 'slam': 12, 'magnetometer': 2, 'laser': 1, 'speech-processing': 3, 'rangefinder': 4, 'actuator': 1, 'sensors': 4, 'digital-audio': 0, '3d-reconstruction': 5}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-4946" class = 'collapse'>
+			</div>
+				<textarea id = "speech-4946" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4946">
+					<img id="start_img-4946" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4946">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-5268"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-5268" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I assume you're provided with the following quantities:</p>
+
+<ul>
+<li>The <a href="http://en.wikipedia.org/wiki/Camera_resectioning#Intrinsic_parameters" rel="nofollow">intrinsic parameters</a> of the <em>pinhole camera model</em> in the conventional matrix format $\Pi \in \mathbb{R}^{3\times4}$.</li>
+<li>$n$ 3-D stationary points $P_i=(x_i,y_i,z_i)'$ you can track in the environment that are given in the fixed reference frame $O$ used by the odometry, whose projections in the camera image plane are $\pi_i(t_j)$. The camera is supposed to be rigidly attached to a moving robot (we keep the joint fixed), thus $\pi_i$ varies with the observations taken at discrete time instants $t_j$.</li>
+<li>$n$ 2-D points $p_i(t_j)$ estimated within the image plane by the tracking algorithm at the discrete instants $t_j$.</li>
+<li>The homogeneous transformation $H(x(t_j),\theta+\delta\theta) \in \mathbb{R}^{4\times4}$ describing the location of the camera frame mounted on the robot with respect to the root frame $O$, as provided by the odometry. $H$ depends on the location $x$ (comprising the translation and the rotation of the base) that varies over time so as the joint angle $\theta+\delta\theta$ which is kept fixed, instead, representing $\theta$ the initial estimate of the joint angle and $\delta\theta$ the unknown offset to be sought.</li>
+</ul>
+
+<p>We aim then at minimizing the following cost function:
+$$
+E=\frac{1}{2}\sum_{i=1}^{n} \sum_{t_j} \left\| p_i(t_j)-\tilde{\pi}_i(t_j) \right\|^2,
+$$
+where
+$$
+\pi_i(t_j)=\Pi\cdot H^{-1}(x(t_j),\theta+\delta\theta)\cdot P_i.
+$$</p>
+
+<p>It turns out that $\pi_i \in \mathbb{R}^3$ and specifically $\pi_i=\lambda_i\cdot(u_i,v_i,1)'$, so that we can set $\tilde{\pi}_i=(u_i,v_i)'$ to be used in $E$.</p>
+
+<p>The unknowns are $\delta\theta$ and $P_i$; the total number of key-points $n$ can be kept low (around 4$\div$5 non-coplanar points) as we benefit from the significantly higher number of observations at discrete instants $t_j$. The form of the cost function $E$ is suitable for the <em>LM</em> algorithm since the expression for the gradient $J$ is easy to be retrieved (we know how to write down $H$).</p>
+
+<p>A possible knowledge of the locations of the key-points $P_i$ specified in $O$ can be conveniently put inside $E$ to speed up convergence.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-5268" data-toggle = "popover">
+				<p>user name : Ugo</p>
+				<p> user reputation : 1482</p>
+				<p class = "tagcontent" id = "usertaginfo-5268">{'None': 99}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-5268" class = 'collapse'>
+			</div>
+				<textarea id = "speech-5268" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-5268">
+					<img id="start_img-5268" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-5268">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

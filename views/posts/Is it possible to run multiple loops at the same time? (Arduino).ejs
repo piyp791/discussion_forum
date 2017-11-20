@@ -1,0 +1,361 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Is it possible to run multiple loops at the same time? (Arduino)
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2028" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2028" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 20795</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Is it possible to run multiple loops at the same time? (Arduino)</h2>
+<p>I've got a code where I have a motor running back and forth and buttons connected to a scanner, when I press the buttons it causes the motor to stop  and over rides it. I would like them to run parallel to each other so the codes don't interrupt each other.</p>
+
+<p>Here is my code</p>
+
+<pre><code>#include &lt;AccelStepper.h&gt;
+
+// Define some steppers and the pins they will use
+
+AccelStepper stepper1(AccelStepper::FULL2WIRE, 2, 3);
+
+const int buttonPin = 4;
+const int button2Pin = 14;
+const int pulseopto1 = 9;
+const int startScan = 11;
+
+int buttonState = 0;
+long previousMillis = 0;
+long interval = 5;
+
+void setup()
+{
+    pinMode(buttonPin, INPUT);
+    pinMode(button2Pin, INPUT);
+    pinMode(pulseopto1, OUTPUT);
+    pinMode(startScan, OUTPUT); 
+    stepper1.setMaxSpeed(40000.0);
+    stepper1.setAcceleration(100000.0);
+    stepper1.moveTo(25000);
+}
+
+void loop()
+{
+    buttonState = digitalRead(buttonPin);
+
+    if (buttonState == LOW)
+    {
+        digitalWrite(startScan, HIGH);
+    }
+    else (buttonState == HIGH);
+    {
+        digitalWrite(startScan, LOW);
+    }
+
+    {
+        buttonState = digitalRead(button2Pin);
+
+        if (buttonState == LOW)
+        {
+            // turn LED on:
+            digitalWrite(pulseopto1, HIGH);
+            delay(5);
+            digitalWrite(pulseopto1, LOW);
+            delay(5);
+        }
+        else
+        {
+            // turn LED off:
+            digitalWrite(pulseopto1, LOW);
+        }
+    }
+
+    // Change direction at the limits
+    if (stepper1.distanceToGo() == 0)
+    {
+        stepper1.moveTo(-stepper1.currentPosition());
+    }
+
+    stepper1.run();
+}
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2028" data-toggle = "popover">
+				<p>user name : hollander</p>
+				<p> user reputation : 42</p>
+				<p class = "tagcontent" id = "usertaginfo-2028">{'control': 3, 'None': 0, 'arduino': 7, 'c': 2, 'sensors': 2, 'stepper-motor': 5}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2028">Load Comments</button></br>
+			<div id = "commentsection-2028" class = 'collapse'>
+			<div id = "comment-4076" class = "comment">
+				<p>What is the granularity of `delay`? Could it be that your `delay`s are making the motor stop?</p>
+			</div>
+			<div id = "comment-4078" class = "comment">
+				<p>I think the delays override the motor running, since when I push the button the motor stops, but I don't know how to solve it.</p>
+			</div>
+			<div id = "comment-4079" class = "comment">
+				<p>You would need a timer to keep track of time (or maybe there are already functions that give the "current time" in Arduino?) and a state machine to keep track of state. So what happens is that in your loop, upon button press, you go to for example WAIT_STATE_1 and set start time to current time, next time in the loop, you check if enough time has passed. If so, you go next state which writes tp `pulseopto1` and gotes to `WAIT_STATE_2` for example again setting start time to current time. Later again in the loop function, you check if enough time has passed to enter the next state (END_STATE)</p>
+			</div>
+			<div id = "comment-4083" class = "comment">
+				<p>The classic way for an Arduino to "do two things at once" is described as "[Blink Without Delay](http://arduino.cc/en/Tutorial/BlinkWithoutDelay)".</p>
+			</div>
+			</div>
+				<textarea id = "speech-2028" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2028">
+					<img id="start_img-2028" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2028">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-2029"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2029" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>What do you mean by override? Does the motor stop or does it start turning in the wrong direction?</p>
+
+<p>There is something weird going on with the brackets in the loop() function</p>
+
+<pre><code>if (buttonState == LOW)
+{
+    digitalWrite(startScan, HIGH);
+}
+else (buttonState == HIGH);  //This shouldn't be here. Just use else
+{
+    digitalWrite(startScan, LOW); 
+}
+</code></pre>
+
+<p>I'm not sure, but I don't think you need to call stepper1.run() in the loop function. Try placing it at the end of the setup() function instead.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2029" data-toggle = "popover">
+				<p>user name : TheRussian25</p>
+				<p> user reputation : 11</p>
+				<p class = "tagcontent" id = "usertaginfo-2029">{'None': 1}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2029">Load Comments</button></br>
+			<div id = "commentsection-2029" class = 'collapse'>
+			<div id = "comment-4077" class = "comment">
+				<p>The motor stops while I press the button for the blink function.</p>
+			</div>
+			</div>
+				<textarea id = "speech-2029" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2029">
+					<img id="start_img-2029" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2029">Comment</button>
+			<br><div id = "ans-2030"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2030" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I think you should look into the Arduino's attachInterrupt function. You would connect the buttons to a specific interrupt pin on the Arduino and then write a small simple interrupt handler that would be called when that interrupt fires. You can configure the interrupt to fire while low, on a rising edge, on a falling edge, or on a change of the interrupt pin. This way you don't have to poll your buttons, and it will make your main loop cleaner/easier to write.</p>
+
+<p>Here's the arduino webpage for attachInterrupt(): <a href="http://arduino.cc/en/Reference/attachInterrupt" rel="nofollow">http://arduino.cc/en/Reference/attachInterrupt</a></p>
+
+<p>edit: You should also comment your code so we know what you are trying to do, and possibly give us a description of your hardware setup (what are pins of Arduino actually connected to).</p>
+
+<p>Given the syntax error that TheRussian pointed out, I don't understand how this code compiles.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2030" data-toggle = "popover">
+				<p>user name : Andrew Capodieci</p>
+				<p> user reputation : 826</p>
+				<p class = "tagcontent" id = "usertaginfo-2030">{'None': 54}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2030" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2030" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2030">
+					<img id="start_img-2030" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2030">Comment</button>
+			<br><div id = "ans-2035"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2035" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The short answer is yes, but the long answer is that you're approaching the code the wrong way and will need to rewrite things a bit.</p>
+
+<p>It looks like you're attempting to read a button and have it flash some LEDs while at the same time having your stepper move back and forth.  The problem is your <code>delay(5);</code> commands, which pause the execution of your code.</p>
+
+<p>Instead, you'll have to make use of the <code>millis();</code> function to read the current time at each iteration through the loop.  Both the stepper movement and the LED flashes are functions of time, so just write those functions and set them on every iteration.</p>
+
+<pre><code>long stepperPosition(long t)
+{
+    // YOUR CODE GOES HERE, like a sine or triangular waveform
+    // it might also depend on stepper1.distanceToGo() == 0
+    return sine(t * TIME_SCALE_FACTOR) * MAGNITUDE;
+}
+
+bool ledState(long t)
+{
+    // return HIGH if we're in the first "interval" millis after pressing
+    // after that, return LOW to turn off the LED
+    if (t &lt; buttonPressTime + interval)
+        return HIGH;
+    else
+        return LOW;
+}
+
+void loop()
+{
+    long now = millis();
+
+    // set the LED directly from the button state
+    digitalWrite(startScan, LOW == digitalRead(buttonPin));
+
+    // record the time of the button press for use in our function
+    if (digitalRead(button2Pin) == LOW)
+        buttonPressTime = now;
+
+    // set LED based on time function
+    digitalWrite(pulseopto1, ledState(now));
+
+    // set stepper based on time function
+    stepper1.moveTo(stepperPosition(now));
+    stepper1.run();
+}
+</code></pre>
+
+<p>In this code, both the LED and stepper are controlled "in parallel" -- they are both set during each iteration, with no conditional delays.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2035" data-toggle = "popover">
+				<p>user name : Ian</p>
+				<p> user reputation : 9640</p>
+				<p class = "tagcontent" id = "usertaginfo-2035">{'planning': 10, 'None': 809, 'power': 1, 'algorithm': 10, 'battery': 1, 'slam': 7, 'coverage': 10, 'mobile-robot': 9, 'sensors': 9}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2035" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2035" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2035">
+					<img id="start_img-2035" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2035">Comment</button>
+			<br><div id = "ans-2038"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2038" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>It looks like the reason (one of) why the motor stops is due to the following code:-</p>
+
+<pre><code>if (buttonState == LOW)
+    {
+        digitalWrite(startScan, HIGH);
+    }
+    else (buttonState == HIGH); --&gt; this is a statement due to the semicolon.
+    {
+        digitalWrite(startScan, LOW); --&gt; this statement will get executed even when buttonState is LOW.
+    }
+</code></pre>
+
+<p>CHange this to the following and check.</p>
+
+<pre><code>if (buttonState == LOW)
+    {
+        digitalWrite(startScan, HIGH);
+    }
+    else if (buttonState == HIGH)
+    {
+        digitalWrite(startScan, LOW);
+    }
+</code></pre>
+
+<p>Try splitting the 2 activities using a task scheduler.
+My $0.02.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2038" data-toggle = "popover">
+				<p>user name : user2529340</p>
+				<p> user reputation : 21</p>
+				<p class = "tagcontent" id = "usertaginfo-2038">{'None': 2}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2038" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2038" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2038">
+					<img id="start_img-2038" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2038">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

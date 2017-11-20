@@ -1,0 +1,782 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Robot System Design Feedback and Advice
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-12099" class = "post">
+			<h2>Question</h2>
+			<div id="vote-12099" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 28</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Robot System Design Feedback and Advice</h2>
+<p>I have been working on a robot for a couple months now and would appreciate feedback on my hardware and software design, specifically with optimizing the motion.</p>
+
+<h2>Hardware</h2>
+
+<ol>
+<li><strong>Chasis:</strong> custom printed 3d quadbot using Autocad for Mac</li>
+<li><strong>Motors:</strong> 12 Standard Servos. (don't have specs, but cost about 5$ each, bought from hobbyking.com)</li>
+<li><strong>Power:</strong> Power delivered from power supply and regulated by DROK buck converter</li>
+<li><strong>Computer:</strong> On board Raspberry Pi 2+</li>
+<li><strong>Motor Controller:</strong> Adafruits <a href="https://www.adafruit.com/product/2327" rel="nofollow noreferrer">Raspberry Pi servo shield</a></li>
+</ol>
+
+<h2>Software</h2>
+
+<ol>
+<li><strong>User input:</strong> User input received through websocket between client and onboard Flask server. User can use slider or ps3/xbox controller through the Gamepad API (if connected)</li>
+<li><strong>Software design:</strong> Loosely designed off of a micro-service architecture. User input is fed to the Hypervisor (hypervisor.py), which receives user input data from the Flask server (app.py), and feeds commands to the MotionController (MotionController.py) which are then executed.</li>
+<li><strong>Multithreading:</strong> The server needs to send incoming data asynchronously (the server will fail if it has to wait for the hypervisor to take data), so the data is enqueued to global queue which is then read by the hypervisor is which manages a thread which checks for changes to the data queue. It is in this fashion that the server and robot software communicate.</li>
+</ol>
+
+<h2>My problem</h2>
+
+<ul>
+<li><strong>Walking Function Optimization:</strong> Currently, I am storing motion offsets in variables, for example:</li>
+</ul>
+
+<pre>
+    stepHeightMid = 60
+    stepHeightLeg = 5
+    velocity = 0.002
+</pre>
+
+<p>This works fine but is obviously terrible practice. I am wondering:</p>
+
+<ul>
+<li>What is the best way to go about setting the motion variables?</li>
+<li>How do I optimize the motion?</li>
+</ul>
+
+<p>I understand applying a neural net to a simulated robot would work but this seems to be outside the scope of this project.</p>
+
+<ul>
+<li><strong>Next Steps:</strong> I plan to implement OpenCV using an XBox kintect to enable gesture control and autonomous motion</li>
+</ul>
+
+<p>I have attached an image of the robot for reference.
+<a href="https://i.stack.imgur.com/DULz9.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/DULz9.jpg" alt="Robot"></a></p>
+
+<p>Additionally, several python files are included for reference</p>
+
+<p><strong>App.py</strong></p>
+
+<pre>
+#!/usr/bin/env python
+from flask import Flask,  render_template,  session,  request,  send_from_directory,  send_file
+from flask_socketio import SocketIO,  emit,  join_room,  leave_room,  close_room,  rooms,  disconnect
+import time
+import json
+import datetime
+import logging
+import platform
+import os
+import sys
+from bColors import bcolors
+from RobotSystem.Hypervisor import Hypervisor
+from RobotSystem.Services.Utilities.RobotUtils import RobotUtils
+
+async_mode = None
+app = Flask(__name__,  static_url_path='/static')
+app.config['SECRET_KEY'] = 'secret!'
+socketio = SocketIO(app,  async_mode=async_mode)
+log = logging.getLogger("werkzeug")
+log.setLevel(logging.ERROR)
+
+thread = None
+connections = 0
+
+@app.route('/',  methods=['GET',  'POST'])
+def index():
+    return render_template('index.html',  async_mode=socketio.async_mode)
+
+def background_thread():
+    while True:
+        socketio.sleep(1)
+
+@socketio.on('valueUpdate')
+def valueUpdateHandler(message):
+    RobotUtils.ColorPrinter("app.py",'Value update fired ', 'OKGREEN')
+    quadbot.inputData(message)
+    data = {}
+    data['Recieved'] = True
+    return json.dumps(data)
+
+
+@socketio.on('connect')
+def test_connect():
+    global connections
+    connections+=1
+    print_str = "Client connected. "+ str(connections)+  " current connections"
+    RobotUtils.ColorPrinter("app.py",print_str, 'OKGREEN')
+
+    global thread, quadbotThread
+    if thread is None:
+        print "init"
+        thread = socketio.start_background_task(target=background_thread)
+
+@socketio.on('disconnect')
+def test_disconnect():
+    global connections
+    connections -= 1
+    RobotUtils.ColorPrinter("app.py",str( 'Client disconnected. ' +str(connections)+ " current connections" ), 'OKGREEN')
+
+if __name__ == '__main__':
+    global quadbot
+    quadbot = Hypervisor()
+    try:
+
+        #quadbot.testSuite("TURN")
+        socketio.run(app,  debug=True,use_reloader=False)
+
+    except KeyboardInterrupt:
+        RobotUtils.ColorPrinter("app.py", "Server shutting down", 'FAIL')
+        quadbot.endHypervisor()
+        try:
+            sys.exit(0)
+        except SystemExit:
+            os._exit(0)
+
+</pre>
+
+<p><br>
+<strong>Hypervisor.py</strong></p>
+
+<pre>
+#!/usr/bin/python
+from Services import *
+import time
+import math
+import json
+import sys
+import threading
+import os
+from Queue import Queue,Empty
+
+class Hypervisor():
+
+    def __init__(self):
+
+        if RobotUtils.LIVE_TESTING:
+            self.pwm = PWM()
+            self.pwm.setPWMFreq(RobotUtils.FREQUENCY)
+        else:
+            self.pwm = None
+
+
+        self.agendaThreadAlive = True
+        self.inputQueue = Queue()
+        self.agendaThread = threading.Thread(group=None,target=self.updateAgendaLoop,name="agendaThread")
+        self.agendaThread.start()
+
+        self.data_file_name = RobotUtils.DATA_FILE
+
+        self.front_left = None
+        self.front_right = None
+        self.back_left = None
+        self.back_right = None
+
+        self.TURN_LEFT = RobotUtils.TURN_LEFT
+        self.TURN_RIGHT = RobotUtils.TURN_RIGHT
+        self.FORWARD = RobotUtils.FORWARD
+        self.BACKWARD = RobotUtils.BACKWARD
+        self.STOP = RobotUtils.STOP
+        self.AUTONOMOUS = RobotUtils.AUTONOMOUS
+        self.INVALID_DATA_ERROR = RobotUtils.INVALID_DATA_ERROR
+
+        self.horizVidMotor = Motor(50, RobotUtils.HORIZONTAL_VID_PIN, RobotUtils.HORIZONTAL_VID_MIN_VAL, RobotUtils.HORIZONTAL_VID_MAX_VAL, 0, "horizontal video motor", self.pwm)
+        self.vertVidMotor = Motor( 50, RobotUtils.VERTICAL_VID_PIN, RobotUtils.VERTICAL_VID_MIN_VAL, RobotUtils.VERTICAL_VID_MAX_VAL, 0, "vertical video motor", self.pwm)
+
+        self.setup()
+
+        self.motors = [self.front_left, self.front_right,self.back_left,self.back_right, self.horizVidMotor, self.vertVidMotor ]
+
+        self.MotionController = MotionController(self.TURN_LEFT,  self.TURN_RIGHT, self.FORWARD, self.BACKWARD, self.STOP,self.AUTONOMOUS,self.INVALID_DATA_ERROR,
+        self.motors, RobotUtils)
+
+        #self.MotionController.stand()
+        RobotUtils.ColorPrinter(self.__class__.__name__, '__init__() finished. Robot Created with id ' +str(id(self)), 'OKBLUE')
+
+    def testSuite(self,operation):
+
+        sleep_time_between_same_motions = 1
+        sleep_time_between_different_motions = 5
+
+        if operation == "TURN":
+            RobotUtils.ColorPrinter(self.__class__.__name__, "In testSuite(). Testing RIGHT turn command", 'OKBLUE')
+            for i in range(9):
+                self.MotionController.turn(1)
+                time.sleep(sleep_time_between_same_motions)
+
+            time.sleep(sleep_time_between_different_motions)
+
+            RobotUtils.ColorPrinter(self.__class__.__name__, "In testSuite(). Testing LEFT turn command", 'OKBLUE')
+            for i in range(9):
+                self.MotionController.turn(-1)
+                time.sleep(sleep_time_between_motions)
+
+        elif operation == "FORWARD":
+            RobotUtils.ColorPrinter(self.__class__.__name__, "In testSuite(). Testing RIGHT turn command", 'OKBLUE')
+            for i in range(9):
+                self.MotionController.forward()
+                time.sleep(sleep_time_between_same_motions)
+
+        else:
+            RobotUtils.ColorPrinter(self.__class__.__name__, "Invalid test suite input", 'FAIL')
+
+
+    # loads json data and creates Leg objects with add_leg()
+    def setup(self):
+
+        with open(self.data_file_name) as data_file:
+            data = json.load(data_file)
+            constants = data["constants"]
+            for i in range(len(data["legs"])):
+                self.add_leg(data["legs"][i],constants)
+
+    # reads dictuanary values from input, creates a Leg object, and adds it to leg variables
+    def add_leg(self,legData,constants):
+
+        leg_name = legData["name"]
+
+        body_pin                = legData["motors"]["body"]["pinValue"]
+        body_offset             = legData["motors"]["body"]["offset"]
+        body_center             = constants["bodyCenterValue"] + body_offset
+        body_min                = constants["bodyRange"]["min"]
+        body_max                = constants["bodyRange"]["max"]
+
+        mid_horiz_value         = legData["motors"]["middle"]["horizValue"]
+        middle_pin              = legData["motors"]["middle"]["pinValue"]
+        middle_min              = constants["middleRange"]["min"]
+        middle_max              = constants["middleRange"]["max"]
+        middle_offset_to_center = constants["midOffsetFromHoriz"]
+
+        leg_horiz_value         = legData["motors"]["leg"]["horizValue"]
+        leg_pin                 = legData["motors"]["leg"]["pinValue"]
+        leg_min                 = constants["legRange"]["min"]
+        leg_max                 = constants["legRange"]["max"]
+        leg_offset_to_center    = constants["legOffsetFromHoriz"]
+
+        leg = Leg( self.pwm, leg_name, body_pin,    body_min,   body_max,   body_center, mid_horiz_value,   middle_pin, middle_min, middle_max, middle_offset_to_center, leg_horiz_value, leg_pin, leg_min, leg_max, leg_offset_to_center)
+
+        if leg_name == "FR":
+            self.front_right = leg
+
+        elif leg_name == "FL":
+            self.front_left = leg
+
+        elif leg_name == "BL":
+            self.back_left = leg
+
+        elif leg_name == "BR":
+            self.back_right = leg
+
+        else:
+            print "ERROR: LEG CANNOT BE IDENTIFIED"
+
+    # Called by server when a change in user data is detected
+    def inputData(self,data):
+        self.inputQueue.put(data)
+
+    # Ends agenda loop thread
+    def endHypervisor(self):
+        RobotUtils.ColorPrinter(self.__class__.__name__,'Ending Agenda Thread', 'FAIL')
+        self.agendaThreadAlive = False
+
+    def updateAgendaLoop(self):
+        while True:
+            if not self.agendaThreadAlive:
+                self.agendaThread._Thread_stop()
+            try:
+                data = self.inputQueue.get_nowait()
+                self.updateAgenda(data)
+            except Empty:
+                pass
+
+            time.sleep(RobotUtils.AGENDA_UPDATE_SPEED)
+        print '\033[94m' + "Robot: QUEUE READING FINISHED" + '\033[0m'
+        sys.exit()
+
+    # acts as central coordinator for the robot - raeads incoming data + state of the bot and calls methods accordingly
+    def updateAgenda(self,data):
+        self.MotionController.updateCameras(data)
+        nextMove = self.MotionController.NextMove(data)
+        if nextMove == self.INVALID_DATA_ERROR:
+            print "Fix this"
+        else:
+            self.MotionController.MakeMove(nextMove)
+</pre>
+
+<p><br>
+<strong>MotionController.py</strong></p>
+
+<pre>
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+import sys
+import time
+
+class MotionController:
+
+    def __init__(
+        self,
+        TURN_LEFT,
+        TURN_RIGHT,
+        FORWARD,
+        BACKWARD,
+        STOP,
+        AUTONOMOUS,
+        INVALID_DATA_ERROR,
+        motors,
+        RobotUtils,
+        ):
+        self.TURN_LEFT = TURN_LEFT
+        self.TURN_RIGHT = TURN_RIGHT
+        self.FORWARD = FORWARD
+        self.BACKWARD = BACKWARD
+        self.STOP = STOP
+        self.AUTONOMOUS = AUTONOMOUS
+        self.INVALID_DATA_ERROR = INVALID_DATA_ERROR
+
+        self.front_left = motors[0]
+        self.front_right = motors[1]
+        self.back_left = motors[2]
+        self.back_right = motors[3]
+        self.horizVidMotor = motors[4]
+        self.vertVidMotor = motors[5]
+
+        self.RobotUtils = RobotUtils
+        self.MIN_MOVEMENT_THRESHOLD = \
+            self.RobotUtils.MIN_MOVEMENT_THRESHOLD
+
+    def MakeMove(self, move):
+        if move == self.TURN_LEFT:
+            self.turn(-1)
+        elif move == self.TURN_RIGHT:
+
+            self.turn(1)
+        elif move == self.FORWARD:
+
+            self.forward()
+        elif move == self.BACKWARD:
+
+            self.backward()
+        elif move == self.AUTONOMOUS:
+
+            self.autonomous()
+        elif move == self.STOP:
+
+            self.stop()
+        else:
+
+            print 'Invalid Command Recieved'
+
+    def updateCameras(self, data):
+        horizVidValue = float(data['data']['horizontalVideo'])
+        vertVidValue = float(data['data']['verticalVideo'])
+        self.horizVidMotor.moveTo(horizVidValue)
+        self.vertVidMotor.moveTo(vertVidValue)
+
+    def NextMove(self, data):
+        xMovement = float(data['data']['xMovement'])
+        yMovement = float(data['data']['yMovement'])
+        stop = data['data']['stop']
+        autonomous = data['data']['autonomous']
+
+        # Stop has higher precedence than any other command
+
+        if stop:
+            return self.STOP
+
+        if autonomous:
+            return self.AUTONOMOUS
+
+        #                   | y == forwards
+        #                   |
+        #                   |
+        #  -x == left       |                x == right
+        #  
+        #                   |
+        #                   |
+        #                   | -y == backwards
+
+        # magnitude is the intensity of the command, i.e. the distance the value is from 50 (baseline)
+
+        xMagnitude = abs(xMovement - 50)
+        yMagnitude = abs(yMovement - 50)
+
+        # filter out value fluctuation by ensuring movment commands are past a certain threshold. Movement commands must be greater than 50 +- threshold to perform a command
+
+        if xMagnitude > self.MIN_MOVEMENT_THRESHOLD or yMagnitude \
+            > self.MIN_MOVEMENT_THRESHOLD:
+
+            # command to move in the x axis rank higher in importance than command to move in y axis
+            if xMagnitude > yMagnitude:
+                # if xMovement is greater than 50 than we move left
+                if xMovement = 50:
+                    return self.TURN_RIGHT
+                else:
+                    self.RobotUtils.ColorPrinter(self.__class__.__name__,
+                            'Invalid Data Recieved from xMagnitude > yMagnitude branch of NextMove()'
+                            , 'FAIL')
+                return self.INVALID_DATA_ERROR
+            elif yMagnitude > xMagnitude:
+
+            # command to move in the y axis rank higher in importance than command to move in x axis
+
+                # move forward
+                if yMovement > 50:
+                    return self.FORWARD
+                elif yMovement  xMagnitude branch of NextMove()'
+                            , 'FAIL')
+                    return self.INVALID_DATA_ERROR
+        else:
+            return self.STOP
+
+    # ColorPrinter( caller, message, color):
+
+    def turn(self, direction):
+        if direction == 1:
+            self.RobotUtils.ColorPrinter(self.__class__.__name__,
+                    'Turning Right', 'OKBLUE')
+            turnDegree = 20
+
+        elif direction == -1:
+            self.RobotUtils.ColorPrinter(self.__class__.__name__,
+                    'Turning Left', 'OKBLUE')
+            turnDegree = -20
+
+        else:
+            self.RobotUtils.ColorPrinter(self.__class__.__name__,
+                    'Invalid input to turn command', 'FAIL')
+            sys.exit();
+
+        stepHeightMid = 60
+        stepHeightLeg = 5
+        velocity = 0.002
+        time_delay = 0
+
+        self.front_right.standardPivotStep(turnDegree, stepHeightMid, stepHeightLeg, velocity, time_delay)
+        time.sleep(time_delay)
+
+        self.back_left.standardPivotStep(turnDegree, stepHeightMid, stepHeightLeg, velocity, time_delay)
+        time.sleep(time_delay)
+
+        self.front_left.standardPivotStep(turnDegree, stepHeightMid, stepHeightLeg,velocity,time_delay)
+        time.sleep(time_delay)
+
+        self.back_right.standardPivotStep(turnDegree, stepHeightMid, stepHeightLeg, velocity, time_delay)
+        time.sleep(time_delay)
+        self.reset()
+
+    def lunge(self, FRB, FRM, FRL, FLB, FLM, FLL, BLB, BLM, BLL, BRB, BRM, BRL):
+        splitNum = 10
+        for x in range(splitNum):
+            self.front_right.body.moveOffset(FRB/splitNum)
+            self.front_right.middle.moveOffset(FRM/splitNum)
+            self.front_right.leg.moveOffset(FRL/splitNum)
+
+            self.front_left.body.moveOffset(FLB/splitNum)
+            self.front_left.middle.moveOffset(FLM/splitNum)
+            self.front_left.leg.moveOffset(FLL/splitNum)
+
+            self.back_left.body.moveOffset(BLB/splitNum)
+            self.back_left.middle.moveOffset(BLM/splitNum)
+            self.back_left.leg.moveOffset(BLL/splitNum)
+
+            self.back_right.body.moveOffset(BRB/splitNum)
+            self.back_right.middle.moveOffset(BRM/splitNum)
+            self.back_right.leg.moveOffset(BRL/splitNum)
+
+
+
+    def backward(self):
+        self.RobotUtils.ColorPrinter(self.__class__.__name__, 'Backward'
+                , 'OKBLUE')
+
+    def stop(self):
+        self.RobotUtils.ColorPrinter(self.__class__.__name__, 'Stop'
+                , 'OKBLUE')
+
+    def autonomous(self):
+        self.RobotUtils.ColorPrinter(self.__class__.__name__, 'Autonomous'
+                , 'OKBLUE')
+
+    def reset(self):
+        self.front_left.reset()
+        self.front_right.reset()
+        self.back_left.reset()
+        self.back_right.reset()
+
+
+
+    def forward(self):
+
+        self.RobotUtils.ColorPrinter(self.__class__.__name__, 'Forward', 'OKBLUE')
+
+        velocity = .01
+        time_delay = .025
+        std_piv_step_body_delta = -20
+        std_piv_step_middle_delta = 50
+        std_piv_step_leg_delta = 5
+
+        self.front_left.standardPivotStep(std_piv_step_body_delta, std_piv_step_middle_delta, std_piv_step_leg_delta,velocity,time_delay*.01)
+        time.sleep(time_delay)
+
+        self.back_right.standardPivotStep(-std_piv_step_body_delta, std_piv_step_middle_delta, std_piv_step_leg_delta,velocity,time_delay)
+        time.sleep(time_delay)
+
+        self.back_right.standardPivotStep(-std_piv_step_body_delta, std_piv_step_middle_delta, std_piv_step_leg_delta,velocity,time_delay)
+        time.sleep(time_delay)
+
+        leg_extend_body_delta   = 35
+        leg_extend_middle_delta = -5
+        leg_extend_leg_delta    = 28
+
+        self.front_right.legExtend( leg_extend_body_delta, leg_extend_middle_delta, leg_extend_leg_delta, velocity, time_delay)
+        time.sleep(time_delay)
+
+        splitNum = 10
+        leg_condense_FLbody_delta = 40/splitNum
+        leg_condense_BRbody_delta = -20/splitNum
+        leg_condense_FRmiddle_delta = 20/splitNum
+        leg_condense_FRleg_delta = -28/splitNum
+        leg_condense_BLbody_delta = 20/splitNum
+        leg_condense_BLmiddle_delta = -10/splitNum
+        leg_condense_BLleg_delta = 28/splitNum
+
+
+        # condense forward right
+        for x in range(0, splitNum):
+            self.front_left.body.moveOffset(leg_condense_FLbody_delta)
+            self.back_right.body.moveOffset(leg_condense_BRbody_delta)
+            self.front_right.middle.moveOffset(leg_condense_FRmiddle_delta)
+            self.front_right.leg.moveOffset(leg_condense_FRleg_delta)
+            self.back_left.body.moveOffset(leg_condense_BLbody_delta)
+            self.back_left.middle.moveOffset(leg_condense_BLmiddle_delta)
+            self.back_left.leg.moveOffset(leg_condense_BLleg_delta)
+
+        leg_step_BLbody_delta = -30
+        leg_step_BLmiddle_delta = 30
+        leg_step_BLleg_delta = -28
+        time.sleep(time_delay)
+
+        # back left standard pivot step with mid offset"
+        self.back_left.standardPivotStepWithMidMovement(leg_step_BLbody_delta, leg_step_BLmiddle_delta, leg_step_BLleg_delta,velocity,time_delay)
+
+        leg_step_FRbody_delta = -40
+        leg_step_FRmiddle_delta = 5
+        leg_step_FRleg_delta = 28
+
+        # front left standard pivot step with mid movement"
+        self.front_left.standardPivotStepWithMidMovement(leg_step_FRbody_delta, leg_step_FRmiddle_delta, leg_step_FRleg_delta, velocity,time_delay)
+        time.sleep(time_delay)
+
+        frontRightBodySplitDiff = self.front_right.body.center_value - self.front_right.body.value
+        frontRightMiddleSplitDiff =self.front_right.middle.value - self.front_right.middle.center_value
+        frontRightLegSplitDiff = self.front_right.leg.value - self.front_right.leg.center_value
+
+        frontLeftBodySplitDiff = self.front_left.body.center_value - self.front_left.body.value
+        frontLeftMiddleSplitDiff =self.front_left.middle.center_value  - self.front_left.middle.value
+        frontLeftLegSplitDiff = self.front_left.leg.center_value - self.front_left.leg.value
+
+        backRightBodySwing = -20/splitNum
+        backRightMiddleSwing = -10/splitNum
+        backRightLegSwing = 28/splitNum
+        backLeftBodySwing = 40/splitNum
+
+        # forward condence
+        for x in range(0, splitNum):
+            self.front_right.body.moveOffset(frontRightBodySplitDiff/splitNum)
+            self.front_right.middle.moveOffset(frontRightMiddleSplitDiff/splitNum)
+            self.front_right.leg.moveOffset(frontRightLegSplitDiff/splitNum)
+
+            #self.front_left.body.moveOffset(frontLeftBodySplitDiff/splitNum)
+            self.front_left.middle.moveOffset(frontLeftMiddleSplitDiff/splitNum)
+            self.front_left.leg.moveOffset(frontLeftLegSplitDiff/splitNum)
+
+            self.back_right.body.moveOffset(backRightBodySwing)
+            self.back_right.middle.moveOffset(backRightMiddleSwing)
+            self.back_right.leg.moveOffset(backRightLegSwing)
+            self.back_left.body.moveOffset(backLeftBodySwing)
+
+        time.sleep(time_delay)
+
+        leg_step_BRbody_delta = 30
+        leg_step_BRmiddle_delta = 30
+        leg_step_BRleg_delta = -28
+        time.sleep(time_delay)
+
+        self.back_right.standardPivotStepWithMidMovement(leg_step_BRbody_delta, leg_step_BRmiddle_delta, leg_step_BRleg_delta,velocity,time_delay)
+
+        leg_extend_body_delta = 35
+        leg_extend_middle_delta =-5
+        leg_extend_leg_delta = 28
+
+        self.front_right.legExtend( leg_extend_body_delta, leg_extend_middle_delta, leg_extend_leg_delta, velocity, time_delay)
+        time.sleep(time_delay)
+
+        RlungeFLbody= 40
+        RlungeBRbody= -20
+        RlungeFRmiddle = 30
+        RlungeFRleg = -28
+        RlungeBLmiddle = -10
+        RlungeBLleg = 28
+
+        self.lunge(0,RlungeFRmiddle,RlungeFRleg,RlungeFLbody,0,0, 0,RlungeBLmiddle,RlungeBLleg,RlungeBRbody,0,0)
+
+        leg_step_BLbody_delta = -30
+        leg_step_BLmiddle_delta = 30
+        leg_step_BLleg_delta = -28
+        time.sleep(time_delay)
+
+        self.back_left.standardPivotStepWithMidMovement(leg_step_BLbody_delta, leg_step_BLmiddle_delta, leg_step_BLleg_delta,velocity,time_delay)
+
+        self.front_left.legExtend( -leg_extend_body_delta, leg_extend_middle_delta, leg_extend_leg_delta, velocity, time_delay)
+        time.sleep(time_delay)
+
+        LlungeFRbody= -40
+        LlungeBLbody= 20
+        LlungeFLmiddle = 30
+        LlungeFLleg = -28
+        LlungeBRmiddle = -10
+        LlungeBRleg = 28
+
+        self.lunge(LlungeFRbody, 0,0,0,LlungeFLmiddle,LlungeFLleg, LlungeBLbody,0,0 ,0,LlungeBRmiddle, LlungeBRleg)
+        self.reset()
+        time.sleep(10)
+        self.forward()
+
+    # Refer to stand()
+    def reset(self):
+        self.stand()
+
+    # resets legs to default position
+    def stand(self):
+        self.front_left.reset()
+        self.front_right.reset()
+        self.back_left.reset()
+        self.back_right.reset()
+
+    def setAllHoriz(self):
+        self.front_right.setMidAndLegHoriz()
+        self.front_left.setMidAndLegHoriz()
+        self.back_right.setMidAndLegHoriz()
+        self.back_left.setMidAndLegHoriz()
+        time.sleep(5)
+
+    def setMidsToMin(self):
+        self.front_right.middle.moveTo(self.front_right.middle.min)
+        self.front_left.middle.moveTo(self.front_left.middle.min)
+        self.back_left.middle.moveTo(self.back_left.middle.min)
+        self.back_right.middle.moveTo(self.back_right.middle.min)
+        time.sleep(10)
+
+    def setMidsToMax(self):
+        self.front_right.middle.moveTo(self.front_right.middle.max)
+        self.front_left.middle.moveTo(self.front_left.middle.max)
+        self.back_left.middle.moveTo(self.back_left.middle.max)
+        self.back_right.middle.moveTo(self.back_right.middle.max)
+</pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12099" data-toggle = "popover">
+				<p>user name : JSMorgan</p>
+				<p> user reputation : 6</p>
+				<p class = "tagcontent" id = "usertaginfo-12099">{'python': 1, 'None': 0, 'microcontroller': 1, 'arduino': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-12099">Load Comments</button></br>
+			<div id = "commentsection-12099" class = 'collapse'>
+			<div id = "comment-21440" class = "comment">
+				<p>Welcome to *Robotics* JSMorgan, but I'm afraid that while your question is beautifully crafted, it is not clear what you are asking. We prefer *[practical, answerable questions based on actual problems that you face](http://robotics.stackexchange.com/help/dont-ask)*, so it's a good idea to include details of what you want to achieve, what you tried, what you saw & what you expected to see. Please take a look at [ask] & [about] for more information and work through the [*Robotics* question checklist](https://robotics.meta.stackexchange.com/q/1302/37) to edit your question to make it clearer.</p>
+			</div>
+			<div id = "comment-21442" class = "comment">
+				<p>I'll concur with what @MarkBooth said. There's not any question asked here, beyond just looking for advice (which is off topic - join us in [chat] for that!). Further, I wouldn't know where to start with advice for what you should do from here because you haven't stated any issues that you're having. I can't tell what problem you have, so I don't know what to say about it. Also as MarkBooth said, your question is beautifully written (except for the lack of a question), so thanks for that.</p>
+			</div>
+			<div id = "comment-21451" class = "comment">
+				<p>Hi @MarkBooth, Thanks for letting me know, and apologies for the original ambiguity. I have clarified my post by including my specific question.</p>
+			</div>
+			<div id = "comment-21452" class = "comment">
+				<p>I've tidied up your question a little, but it's still unclear what you are asking. You want to know how to optimise motion, but haven't explained what is sub-optimal about your current solution. A code dump is not the same as an explanation of "what you tried". If you describe what you tried in words, it would be easier for someone to comment on your technique rather than having to look through your code. Also it allows someone to cross reference what you think you are doing with what you're actually doing. Ultimately though, we aren't a code review site, so we need a little more explanation.</p>
+			</div>
+			<div id = "comment-21459" class = "comment">
+				<p>@MarkBooth OK thanks. Should I rewrite my question and post it as a bew question, or should I edit this post?</p>
+			</div>
+			<div id = "comment-21467" class = "comment">
+				<p>It's always better to edit. The whole history of the post is retained anyway so people can always go back and see what you originally asked. Thanks for your patience by the way. Asking a good Stack Exchange question is definitely a skill that needs to be learnt, but it is worth doing. The more complete the question, the better chance you have to get good answers and the more likely it is to help more people in the future.</p>
+			</div>
+			</div>
+				<textarea id = "speech-12099" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12099">
+					<img id="start_img-12099" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12099">Comment</button>
+
+<h1>Answers</h1>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

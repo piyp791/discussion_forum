@@ -1,0 +1,208 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Need help for a quadcopter PID
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8354" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8354" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 569</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Need help for a quadcopter PID</h2>
+<p>I'm trying to make a quadcopter with Arduino.
+I already have the angles (roll pitch and yaw) thanks to an IMU. They are in degrees and filtered with a complementary filter.
+I want to apply a PID algorithm for each axis but I dont know if the inputs should be angles (degrees) or angular velocities in degrees per second so as to calculate the errors with respect referencies.
+Which will be the difference? Which will be the best way? </p>
+
+<p>Finally, another question about a PID code: I have seen that many people don't include time in their codes. For example, their derivative term is kd (last error-actual error) instead kd (last error-actual error)/looptime and something similar with the integrative term. Which is the difference?</p>
+
+<p>Thank you in advanced.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8354" data-toggle = "popover">
+				<p>user name : Leyre</p>
+				<p> user reputation : 6</p>
+				<p class = "tagcontent" id = "usertaginfo-8354">{'quadcopter': 1, 'None': 0, 'pid': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8354" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8354" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8354">
+					<img id="start_img-8354" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8354">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8355"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8355" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>It depends on what you want to control, either position or velocity. Generally a PID for the position (angles) is implemented, but in case you would be interested in velocity control you can also find some good materials at the voice 'Velocity PID'.</p>
+
+<p>Regarding the second question, if the loop time is constant, it can be incorporated in the gain, that is:</p>
+
+<p>$k_d$ = $k_d'/T$</p>
+
+<p>So no differences, just a scaling factor.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8355" data-toggle = "popover">
+				<p>user name : charles</p>
+				<p> user reputation : 266</p>
+				<p class = "tagcontent" id = "usertaginfo-8355">{'None': 9, 'ekf': 3, 'frame': 3, 'slam': 3, 'imu': 4, 'kalman-filter': 3, 'mobile-robot': 4, 'gyroscope': 4}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8355">Load Comments</button></br>
+			<div id = "commentsection-8355" class = 'collapse'>
+			<div id = "comment-13413" class = "comment">
+				<p>The practice to incorporate the _sample time_ $T$ within the PID gains is very much discouraged, because - as you can easily figure out - it hides the two contributions. It happens indeed very frequently that the PID is designed in the _continuous time domain_ and only afterwards discretized. In this design process it is important to retain the information of the actual values of the gains (i.e. without the contribution of $T$).</p>
+			</div>
+			</div>
+				<textarea id = "speech-8355" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8355">
+					<img id="start_img-8355" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8355">Comment</button>
+			<br><div id = "ans-8563"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8563" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Making a quad with arduino is very difficult task. You will have to consider the delay taken by the reciever. For that you will have to use interupts to to collect the signals with out disturbing to process. And as you asked the input error will always be angles. You will have to change raw values to angles. And also before using pid, you will have to use the gyro values. You will have to use them in manner such that if angle of quad is disturbed in one axis then increase speed proportionaled to gyro out in that axis to react to the change. After that you will use pid. With out that. Its impossible. Ita my experience.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8563" data-toggle = "popover">
+				<p>user name : user10738</p>
+				<p> user reputation : 1</p>
+				<p class = "tagcontent" id = "usertaginfo-8563">{'quadcopter': 0, 'None': 0, 'pid': 0}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8563" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8563" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8563">
+					<img id="start_img-8563" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8563">Comment</button>
+			<br><div id = "ans-8903"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8903" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I have seen three implementations of PID controllers for quadcopters.
+<a href="https://i.stack.imgur.com/0hX96.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/0hX96.png" alt="enter image description here"></a></p>
+
+<ol>
+<li><p>Single PID control loop using only angle errors. (What I am currently using). I have heard people using this method with success. Example is this thread: ht tps://www . quora.com/What-is-rate-and-stabilize-PID-in-quadcopter-control.</p>
+
+<ul>
+<li>Very intuitive since you are only assigning angle setpoints.</li>
+<li>I have seen in my best tunings that there are still oscillations present which is about +-10degrees from the setpoint angle of zero. Though that is probably due to my lack of experience.</li>
+</ul></li>
+<li><p>Cascaded PID control loop using angular velocity for the Rate PID block and angle errors for the Stab (Stabilization) PID block. This is the most common implementation I've seen upon reading but I have difficulties in trying to find a suitable setup for tuning the Rate PID block since you are setting angular velocities instead of angle. (Will the same string on one axis setup suffice?)</p></li>
+</ol>
+
+<p><strong>EDIT:</strong> It is possible to "tune" the rate loop in the cascaded controller by setting first the angular velocity setpoint to zero and setting the inner loop PID gains until the quadcopter resists any change in motion (The quadcopter should when physically placed at any angle should resist motion or maintain that angle). After that a P-gain in the outer PID loop that would be responsible in translating the required angular velocity command to the inner PID loop to attain the user set angle setpoint/target from the outer PID loop</p>
+
+<ul>
+<li>I have read in <a href="https://controls.engin.umich.edu/wiki/index.php/CascadeControl" rel="nofollow noreferrer">https://controls.engin.umich.edu/wiki/index.php/CascadeControl</a> that cascaded control loops are used for their more responsive nature.</li>
+<li><p>The inner rate PID loop is for control in high frequencies while the outer loop is for lower frequencies</p>
+
+<ol start="3">
+<li>Additive PID control loop (What I'll be trying next)</li>
+</ol></li>
+<li><p>I have seen this implementation in the work for my senior who was creating a stabilization control for her quadcopter.</p></li>
+<li>She said that the Rate PID block is used to control sudden jerks while the quadcopter was hovering. She used only P and D.</li>
+<li>However the quadcopter becomes unstable after 15 seconds of hovering due to tipping to one side possibly due to the lack of yaw control.</li>
+</ul>
+
+<p>Regarding your question about PID controllers, you do need to take the loop time of your code into consideration. Here's a great read: <a href="http://brettbeauregard.com/blog/2011/04/improving-the-beginners-pid-introduction/" rel="nofollow noreferrer">http://brettbeauregard.com/blog/2011/04/improving-the-beginners-pid-introduction/</a></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8903" data-toggle = "popover">
+				<p>user name : user123456098</p>
+				<p> user reputation : 415</p>
+				<p class = "tagcontent" id = "usertaginfo-8903">{'control': 16, 'stereo-vision': 2, 'communication': 0, 'pid': 19, 'uav': 0, 'stability': 13, 'mobile-robot': 2, 'sensor-error': 0, 'tuning': 2, 'cameras': 0, 'integration': 0, 'opencv': 2, 'differential-drive': 0, 'motion-planning': 0, 'None': 13, 'raspberry-pi': 14, 'localization': 0, 'microcontroller': 0, 'mapping': 0, 'path-planning': 0, 'real-time': 1, 'sensors': 0, 'quadcopter': 19, 'computer-vision': 2, 'vfh': 0, 'c++': 2, 'filter': 0, 'dead-reckoning': 0, 'sensor-fusion': 5, 'sonar': 1}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8903" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8903" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8903">
+					<img id="start_img-8903" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8903">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

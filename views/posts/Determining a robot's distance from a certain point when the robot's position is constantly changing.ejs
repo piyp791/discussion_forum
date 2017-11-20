@@ -1,0 +1,208 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Determining a robot's distance from a certain point when the robot's position is constantly changing
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7128" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7128" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 109</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Determining a robot's distance from a certain point when the robot's position is constantly changing</h2>
+<p>I was wondering how I could determine a robot's distance from a fixed point when the robot itself is constantly changing positions. I can keep encoders on the wheels and can also get data from a gyroscope and an accelerometer.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7128" data-toggle = "popover">
+				<p>user name : Robotnewb</p>
+				<p> user reputation : 11</p>
+				<p class = "tagcontent" id = "usertaginfo-7128">{'None': 0, 'localization': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7128" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7128" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7128">
+					<img id="start_img-7128" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7128">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7131"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7131" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>If you know the position of the point at the begin, an easy solution would be to implement <a href="https://en.wikipedia.org/wiki/Dead_reckoning" rel="nofollow">Dead Reckoning</a> using the encoder value. Knowing the position of the robot at time <em>t</em>, compare it to its initial position and you can easily find where the fixed point is, in the robot frame (and thus calculate the distance).</p>
+
+<p>Then to compensate the drift create by the dead reckoning process, you can use the values given by your IMU (gyro and accelerometer).</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7131" data-toggle = "popover">
+				<p>user name : Malcolm</p>
+				<p> user reputation : 393</p>
+				<p class = "tagcontent" id = "usertaginfo-7131">{'communication': 1, 'None': 24, 'serial': 1}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7131" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7131" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7131">
+					<img id="start_img-7131" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7131">Comment</button>
+			<br><div id = "ans-7132"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7132" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>In addition to Malc's answer, a simple Dead Reckoning Algorythm might look like this:</p>
+
+<p>$$
+X_k = X_{k-1} + f(u)
+$$</p>
+
+<p>where:
+$$
+X=\left(\! \begin{array}{c}
+      PosX \\
+      PosY \\
+Heading
+    \end{array} \!\right) \phantom {AAAAA} u=\left(\! \begin{array}{c} EncLeft \\ EncRight \end{array} \!\right)
+$$</p>
+
+<p>$f(u)$ is the change of the state $X$ since the last measurement. To calculate this change you need the Measurement $u$, which is in the most simple version just your Encoder values. In this case the encoder values are already transformed to their respective distance, therefore the unit is in meters or something similar. <br>
+In addition you need your wheelbase $r$ and the SamplingTime $Ts$ of your algorythm.</p>
+
+<p>The update of $PosX$ might be:</p>
+
+<p>$$
+PosX_{(k)} =PosX_{(k-1)} + \cos {(Heading_{(k)})} \cdot  \frac{EncLeft_{(k)} +EncRight_{(k-1)}} 2
+$$</p>
+
+<p>Similar for $PosY$:</p>
+
+<p>$$
+PosY_{(k)} =PosY_{(k-1)} + \sin {(Heading_{(k-1)})} \cdot  \frac{EncLeft_{(k)} +EncRight_{(k)}} 2
+$$</p>
+
+<p>The change in heading might be expressed with:</p>
+
+<p>$$
+Heading_{(k)}=Heading_{(k-1)}+ \arctan \left(\! \frac{EncLeft-EncRight} r \!\right)
+$$</p>
+
+<p>Some Points, like the calculation of the heading, are pretty simplified, but may work in "homemade" application <br></p>
+
+<p>Further improvements might be done with feedback from the IMU sensor.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7132" data-toggle = "popover">
+				<p>user name : TobiasK</p>
+				<p> user reputation : 1572</p>
+				<p class = "tagcontent" id = "usertaginfo-7132">{'control': 1, 'None': 102, 'communication': 0, 'wireless': 0, 'imu': 0, 'sensor-fusion': 0, 'gps': 0}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7132" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7132" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7132">
+					<img id="start_img-7132" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7132">Comment</button>
+			<br><div id = "ans-7133"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7133" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p><a href="http://chess.eecs.berkeley.edu/eecs149/documentation/differentialDrive.pdf" rel="nofollow">This document</a> has a good overview of mobile robot kinematics which is required to perform dead reckoning.  </p>
+
+<p>Adding the IMU provides more information and can correct for drift of the encoders.  But now you need to fuse the data, typically with a kalman or particle filter.  Traditionally, mobile robots will also have a planar laser range finder (LIDAR) sensor such as a <a href="http://www.robotshop.com/en/hokuyo-urg-04lx-ug01-scanning-laser-rangefinder.html" rel="nofollow">Hokuyo</a>.  By doing <a href="http://wiki.ros.org/laser_scan_matcher" rel="nofollow">incremental scan matching</a> you can further improve accuracy.  In addition to now being able to map and such.  This is approaching SLAM.</p>
+
+<p>Additionally, determining "ground truth" location is achieved through the use of other sensor modalities.  For example a motion capture system like <a href="http://www.optitrack.com/" rel="nofollow">Optitrack</a>, or a webcam pointed at the ceiling with <a href="http://april.eecs.umich.edu/wiki/index.php/AprilTags" rel="nofollow">April tags</a> on it.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7133" data-toggle = "popover">
+				<p>user name : Ben</p>
+				<p> user reputation : 3608</p>
+				<p class = "tagcontent" id = "usertaginfo-7133">{'None': 277, 'inverse-kinematics': 3, 'accelerometer': 5, 'calibration': 10, 'kinematics': 14, 'robotic-arm': 8, 'jacobian': 6, 'dh-parameters': 8, 'imu': 5, 'sensors': 5}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7133" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7133" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7133">
+					<img id="start_img-7133" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7133">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

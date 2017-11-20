@@ -1,0 +1,210 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to track robot position
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-6662" class = "post">
+			<h2>Question</h2>
+			<div id="vote-6662" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 2636</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to track robot position</h2>
+<p>I'm a software researcher, who in my spare time mentors a robotics team, helping on the software side of things.  For years, I keep coming back to the same question.  How to determine the robots position, and heading during our competitions.  We have tried a number of things with varying degrees of success/failure. Encoders on the drive wheels, accelerometers, gyroscopes, etc.  I recently bought an IMU with a 3 axis accelerometer, 3 axis gyro, and 3 axis magnetometer, all preprocessed by an Arduino, and outputting the value to a serial port.  I thought surely there must be a way to take all these measurements, and get a composite view of position and heading.  We are using mechanum wheels on this particular robot, so wheel encoders are not particularly useful.  I've looked around and there's a lot of talk about orientation using quaternion with sensor fusion using similar boards, but it very unclear to me how to take the quaternion and the estimation and come up with x,y distance from the starting position.  Now my time window for these measurements is small, ~15 seconds, but I need it to be pretty accurate within that window.  I'm about ready to abandon using the IMU, and try something else.  One idea is to use a usb ball mouse to try and track robot motion but I'm certain that the mouse is going to get banged around way too much leading to noise and invalid results.  As a side note: robot's about 2ft x 3ft base weighting in at 120 lbs.  Any thoughts or suggestions appreciated.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6662" data-toggle = "popover">
+				<p>user name : Michael Coss</p>
+				<p> user reputation : 16</p>
+				<p class = "tagcontent" id = "usertaginfo-6662">{'None': 0, 'imu': 3, 'sensor-fusion': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-6662">Load Comments</button></br>
+			<div id = "commentsection-6662" class = 'collapse'>
+			<div id = "comment-9569" class = "comment">
+				<p>Have you tried a kalman filter?</p>
+			</div>
+			<div id = "comment-9570" class = "comment">
+				<p>I've read about Kalman filters, but have never written one.</p>
+			</div>
+			<div id = "comment-9573" class = "comment">
+				<p>If you have ~$1600 to spend, Analog Devices has a IMU with an embedded Extended Kalman Filter (I do not work for AD). [link](http://www.analog.com/en/products/sensors/isensor-mems-inertial-measurement-units/adis16480.html#product-overview)</p>
+			</div>
+			<div id = "comment-9598" class = "comment">
+				<p>I think that any mouse would measure the same kind of motion a ball mouse would. Is there any particular reason it should be a ball mouse? One with a red LED might get less noise due to physical jostling. Both would require physical contact (or near to it) with the road's surface. Mice might be good at linear translation, but they would likely miss out on rotational movements.</p>
+			</div>
+			</div>
+				<textarea id = "speech-6662" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6662">
+					<img id="start_img-6662" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6662">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-6665"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6665" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I am not allowed to comment, so I have to add a reply. By position, do you mean the location in space (so X, Y coordinates), or orientation (tilt, etc)?</p>
+
+<p>If position, you can use the accelerometer values and integrate acceleration to get distance traveled, though this is fairly inaccurate. We have tried to do this for a quadcopter, and the drift due to error is quite large. </p>
+
+<p>You can use an accelerometer with a gyroscope together, and a Kalman filter to get a better idea for how far the robot has moved in each direction. <a href="https://electronics.stackexchange.com/questions/4983/how-to-determine-position-from-gyroscope-and-accelerometer-input">Here is a previous discussion on this topic.</a></p>
+
+<p>The tilt you can calculate directly from accelerometer values (but filter them, even an FIR filter would work ok). </p>
+
+<p>Heading you can get from the gyroscope and/or the magnetometer. The gyroscope detects rotation, so make sure it is somewhere near the center of your robot (or whereever the axis of rotation is). </p>
+
+<p>I hope that helps. I have to go teach, but I'll come back in an hour and add some more info.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6665" data-toggle = "popover">
+				<p>user name : Mewa</p>
+				<p> user reputation : 149</p>
+				<p class = "tagcontent" id = "usertaginfo-6665">{'None': 4}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-6665">Load Comments</button></br>
+			<div id = "commentsection-6665" class = 'collapse'>
+			<div id = "comment-9571" class = "comment">
+				<p>I have looked at various documents on Kalman filters and this seems to be the general answer for reducing the noise in the accelerometer, but I've never written code for such a filter, and I'm not sure where to begin on integrating the other sensors.  It's not hard to see that just integrating the accelerometer twice will be pretty awful in the noisy, vibration filled environment of our robot.  Similarly, I would think that taking the other sensors into account would reduce the error, assuming proper calibration at the start.
+
+Primarily we just need x,y coordinates, and a directional heading.</p>
+			</div>
+			<div id = "comment-9575" class = "comment">
+				<p>@MichaelCoss: There is a lot of software available that implement kalman filters for you.  The main difficulty for the uninitiated novice is developing an appropriate motion model and characterizing the covariance in the sensor model.</p>
+			</div>
+			<div id = "comment-9576" class = "comment">
+				<p>@MichaelCoss, there is Arduino code available online for Kalman. [Here is a nice discussion of tuning a Kalman.](http://www.starlino.com/imu_kalman_arduino.html), and [Arduino code for gyro+accelerometer and guide here](http://forum.arduino.cc/index.php?topic=58048.0). You might have more luck if you look at Kalman filters for quadcopter code - it's pretty popular.</p>
+			</div>
+			<div id = "comment-9577" class = "comment">
+				<p>@MichaelCoss, also for [calculating heading with magnetometers](http://www51.honeywell.com/aero/common/documents/myaerospacecatalog-documents/Defense_Brochures-documents/Magnetic__Literature_Application_notes-documents/AN203_Compass_Heading_Using_Magnetometers.pdf), however I think motors & tilt in your robot will affect the accuracy of this measurement. In that case you might want to use an accelerometer to measure whether the robot is level (calibrate it to some level), and then [adjust your magnetometer readings to that.](http://cache.freescale.com/files/sensors/doc/app_note/AN4248.pdf)</p>
+			</div>
+			</div>
+				<textarea id = "speech-6665" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6665">
+					<img id="start_img-6665" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6665">Comment</button>
+			<br><div id = "ans-6671"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6671" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>How to estimate a robot's position depends on how <em>well</em> you'd like to estimate it. If you just need a rough guess, try odometry, it works OK. For better results, you have to incorporate more sensors. That's an incremental process that involves a lot of sensor fusion, and suddenly, you've built an Extended Kalman Filter.</p>
+
+<p>The best way, in my opinion, is to use each sensor to form it's own estimate. Then, take a weighted average of the resulting estimates. The weights correspond to the certainty associated with each estimate. This, in essence is the Kalman Filter. What is missing is how to estimate the certainties. This is the hard part of the KF. Try some ad hoc values as a start. You'd be surprised how well this can work.</p>
+
+<p>This is addressed as a first-principals question in any major robotics textbook and even here, on this site. </p>
+
+<p>On this site, we have addressed many questions related to this problem.</p>
+
+<ul>
+<li><a href="https://robotics.stackexchange.com/a/386/163">how to fuse linear and angular data in a KF</a>. This is probably a good starting point as it also covers the KF / EKF</li>
+<li><a href="https://robotics.stackexchange.com/questions/155/how-to-choose-a-good-imu-for-a-wheeled-robot?rq=1">how to choose a good imu for a wheeled robot</a></li>
+<li><a href="https://robotics.stackexchange.com/questions/2708/multiple-position-estimates-fusion?rq=1">how to fuse multiple position estimates</a></li>
+<li><a href="https://robotics.stackexchange.com/questions/277/why-do-i-need-a-kalman-filter/279#279">Why do I need a kalman filter</a></li>
+<li><a href="https://robotics.stackexchange.com/questions/106/what-is-a-suitable-model-for-two-wheeled-robots/134#134">what is a suitable model for two wheeled robots</a></li>
+</ul>
+
+<p>and many more I've missed.</p>
+
+<p>But honestly, these are heavy-handed approaches. You <em>must</em> understand the basics (estimating position from odometry, for example) to understand the rest. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6671" data-toggle = "popover">
+				<p>user name : Josh Vander Hook</p>
+				<p> user reputation : 3960</p>
+				<p class = "tagcontent" id = "usertaginfo-6671">{'None': 345}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-6671">Load Comments</button></br>
+			<div id = "commentsection-6671" class = 'collapse'>
+			<div id = "comment-9580" class = "comment">
+				<p>At a high level, I do understand the issues involved. And have tried this with various robots.  We've had encoders, and calculated speed, and distance traveled but found that slippage, and pushing from other robots distorted things.  We've done the double integration of an accelerometer, and found the compounded error pretty quickly makes the value useless.  We've had a gyro and found the drift of the relatively cheap components we used to be an issue.  So I bought something a little more expensive hoping that it might be better.  Thanks for the links, I'll take a look</p>
+			</div>
+			<div id = "comment-9581" class = "comment">
+				<p>Hi, I didn't mean to imply you didn't. Just that each sensor gives an *independent* estimate of position, and surprisingly, by fusing them, you can get a *combined* estimate which is better than the best. This is the basic concept that needs to be used if no individual sensor is good enough.</p>
+			</div>
+			<div id = "comment-9583" class = "comment">
+				<p>Agreed, and was the genesis of my question.  How to fuse them, and get a better result.  Bottomline is that how to derive the motion model, and covariance matrix is what I don't fully understand and why I've never gone down the path of implementing a Kalman filter for our robots.  Even just grabbing some code isn't going to help if I don't understand how to tune the gains on the filter.  Having an IMU that has an integrated Kalman filter might be a better solution.  I did see some other alternatives to Kalman, Madgwick's IMU/AHRS algo but that didn't look like it was what I wanted</p>
+			</div>
+			<div id = "comment-9584" class = "comment">
+				<p>The best way, in my opinion, is to use each sensor to form it's own estimate. Then, take a weighted average of the resulting estimates. The weights correspond to the certainty associated with each estimate. This, in essence is the Kalman Filter. What is missing is how to estimate the certainties. This is the hard part of the KF. Try some ad hoc values as a start. You'd be suprised how well this can work.</p>
+			</div>
+			</div>
+				<textarea id = "speech-6671" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6671">
+					<img id="start_img-6671" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6671">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

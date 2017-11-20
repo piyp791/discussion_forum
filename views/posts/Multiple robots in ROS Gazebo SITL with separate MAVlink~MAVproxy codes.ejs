@@ -1,0 +1,316 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Multiple robots in ROS Gazebo SITL with separate MAVlink~MAVproxy codes
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-10898" class = "post">
+			<h2>Question</h2>
+			<div id="vote-10898" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 646</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Multiple robots in ROS Gazebo SITL with separate MAVlink~MAVproxy codes</h2>
+<h2>Background:</h2>
+
+<p>This question is about simulating <a href="http://erlerobotics.com/docs/Simulation/Introduction.html" rel="nofollow noreferrer">one ErleCopter and one ErleRover</a> simultaneously for a non-commercial research. I would like to have the quadcopter follow a rover, which in turn is to be tasked with following a line. I am trying to spawn the vehicles in Gazebo and control them using MAVProxy.</p>
+
+<h2>The Problem:</h2>
+
+<p>Any time I try this, I run into one of two problems:</p>
+
+<ol>
+<li>Spawning the second vehicle terminates the first MAVProxy instance, or</li>
+<li>The second vehicle spawned cannot be linked to the second instance of MAVProxy. </li>
+</ol>
+
+<p>I'm not sure what to do about this because I am not sure if this problem is one problem or if it's composed of two sub-problems. The first problem is in spawning the robots and the second one is in controlling both independently (and obtain the state parameters of both vehicles and use that as feedback).</p>
+
+<p>I believe a contributing factor to this problem is that I'm trying to do the simulation and both MAVProxy instances on one computer, a Lenovo-y50-70 is being used with Ubuntu 14.04. Two computers are not easy to obtain immediately and there are network stability issues where I am.</p>
+
+<h2>The Question:</h2>
+
+<p>The entire question probably reduces to <strong>"How to link second robot spawned by rosrun to second MAVproxy instance?"</strong>.</p>
+
+<h2>Desired Outcome:</h2>
+
+<p>I would like help either getting the simulation to run as desired (two vehicles co-simulated in one virtual world with two MAVProxy instances, one linked to each vehicle), <strong>OR</strong> official documentation somewhere that this is not possible.</p>
+
+<h2>What I've Attempted:</h2>
+
+<p>Initial attempts can be seen in earlier edits of this question. For clarity, that information has been removed, but again, if interested, see an earlier version of this question. Fast-forwarding to the relevant:</p>
+
+<p>The second robot has been spawned successfully as mentioned in <a href="https://vimeo.com/190064306" rel="nofollow noreferrer">this video</a> by using the commands mentioned below.</p>
+
+<pre><code>cd path_to_urdf_model_files
+rosrun gazebo_ros spawn_model -file rover.urdf -urdf -model rover_object
+</code></pre>
+
+<p>Note: ROS Indigo is different; <a href="http://wiki.ros.org/simulator_gazebo/Tutorials/StartingGazebo" rel="nofollow noreferrer">gazebo_ros must be used instead of gazebo_worlds</a></p>
+
+<p>The weird behaviour of the robot rotating about itself is probably because of MAVproxy; I have <a href="http://forum.erlerobotics.com/t/mavproxy-issues-in-sitl-ros-gazebo/1744" rel="nofollow noreferrer">experienced this before</a>. Attempt to establish separate network connections to Copter and Rover has been successful so far. The original structure is as shown below: </p>
+
+<blockquote>
+  <p>rover_circuit.launch -> apm_sitl.launch -> node.launch (node name:
+  "mavros")</p>
+</blockquote>
+
+<p>The current architecture is as shown below:</p>
+
+<blockquote>
+  <p>copter_circuit.launch -> apm_sitl_copter.launch -> node_copter.launch
+  ("mavros_copter")</p>
+  
+  <p>rover_circuit1.launch -> apm_sitl_rover.launch -> node_rover.launch  ("mavros_rover")</p>
+</blockquote>
+
+<p>rover_ciruit1.launch is as shown below:</p>
+
+<pre><code>&lt;launch&gt;
+
+  &lt;include file="$(find mavros)/launch/apm_sitl_rover.launch"&gt;&lt;/include&gt;
+  &lt;arg name="enable_logging" default="true"/&gt;
+  &lt;arg name="enable_ground_truth" default="true"/&gt;
+  &lt;arg name="log_file" default="rover"/&gt;
+  &lt;arg name="tf_prefix" default="$(optenv ROS_NAMESPACE)"/&gt;
+  &lt;arg name="model" default="$(find ardupilot_sitl_gazebo_plugin)/urdf/rover.urdf"/&gt;
+
+  &lt;param name="robot_description" command="
+    $(find xacro)/xacro.py '$(arg model)'
+    enable_logging:=$(arg enable_logging)
+    enable_ground_truth:=$(arg enable_ground_truth)
+    log_file:=$(arg log_file)"
+  /&gt;
+  &lt;param name="tf_prefix" type="string" value="$(arg tf_prefix)" /&gt;
+
+  &lt;node name="spawn_rover" pkg="gazebo_ros" type="spawn_model"
+    args="-param robot_description -urdf -model 'rover' " respawn="false" output="screen"&gt;&lt;/node&gt;
+
+&lt;/launch&gt;
+</code></pre>
+
+<p>This is the minimal launch file, and it works. I had thought of rosrun apm_sitl_rover.launch followed by rosrun rover.urdf, but I have been unable to find a suitable package which launches apm_sitl_rover.launch directly. It is easy to roslaunch a launch file that has an  method appended. </p>
+
+<p>Naming issues and other network errors have been resolved. </p>
+
+<h2>Outstanding Problem Remaining:</h2>
+
+<p>I'm still having issues launching and linking the second vehicle, but now it seems like I've narrowed it down such that the only problem is with UDP bind port, which is 14555 by default, and this is crashing Gazebo for the second instance because the second instance is using the same bind port.</p>
+
+<p>It looks like libmavconn is getting called somehow, particularly interface.cpp which has <a href="http://docs.ros.org/indigo/api/libmavconn/html/interface_8cpp_source.html" rel="nofollow noreferrer">url_parse_host(bind_pair, bind_host, bind_port, "0.0.0.0", 14555);</a> and the udp.h included in interface.cpp has a function MAVConnUDP() which has bind_port=14555, and this has resulted in "udp1: Bind address: 14555" and <code>"GCS: DeviceError:udp:bind: Address already in use"</code>.</p>
+
+<p>Trying to assess the connection between sim_vehicle.sh, libmavconn, and Gazebo, I was able to figure out that sim_vehicle.sh calls mavproxy.py in one of the ending lines which in turn uses pymavlink. I have been unable to find further relationship currently.</p>
+
+<h2>Leading Questions / An Approach to the Solution</h2>
+
+<p>As I have a strong intuition that this is the final stage, I currently resolve to fix this by using interface_copter.cpp and interface_rover.cpp. I think, if I could get answers to the following questions, I can work out where the failure is in successfully launching and link the second (or subsequent) vehicles:</p>
+
+<ol>
+<li><p>How does sim_vehicle.sh trigger the libmavconn package and ultimately Gazebo?</p></li>
+<li><p>Is there a <a href="http://ardupilot.org/dev/_images/arducopter_sitl_ros.png" rel="nofollow noreferrer">software architecture diagram</a> which describes the complete structure from sim_vehicle.sh to joints and controllers?</p></li>
+</ol>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10898" data-toggle = "popover">
+				<p>user name : Prasad Raghavendra</p>
+				<p> user reputation : 146</p>
+				<p class = "tagcontent" id = "usertaginfo-10898">{'quadcopter': 3, 'None': 10, 'simulation': 3, 'ros': 3, 'gazebo': 3, 'software': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10898">Load Comments</button></br>
+			<div id = "commentsection-10898" class = 'collapse'>
+			<div id = "comment-19843" class = "comment">
+				<p>There's been quite a bit of back-and-forth between myself and Prasad, and I've done a pretty heavy edit of the question to try to get succinctly to the point, as best as I understand the problem at hand. @PrasadRaghavendra, if you think I've left something out or removed something that someone would need to help you *as the problem stands*, please let me know or edit the question to re-incorporate that.</p>
+			</div>
+			<div id = "comment-19844" class = "comment">
+				<p>I realize it can be kind of painful to leave off all of the comments about what things were tried that didn't work, but I'm viewing this like a technical paper - very, very few people have the time or desire to read about all the things that were tried and failed. What everyone wants to know is: Where are you **now**, what did you try that got you **here**, and what is the problem *you are currently facing*? Hopefully this edit reflects that.</p>
+			</div>
+			</div>
+				<textarea id = "speech-10898" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10898">
+					<img id="start_img-10898" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10898">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-10973"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10973" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I feel like I'm having to do a <strong>lot</strong> of work to understand this question. You are trying to simulate two vehicles, and... what's the issue? You are trying to simulate them in Gazebo, right?</p>
+
+<p>Have you seen <a href="http://answers.ros.org/question/41433/multiple-robots-simulation-and-navigation/" rel="nofollow noreferrer">this answer on the ROS website</a> that shows launching two robots in one simulation? As I mention, it's <strong>very difficult</strong> to read your post, which may explain why it's received such little attention. For instance, what is the first code block you show? What is the second code block? </p>
+
+<p>In both code blocks, you have the following lines:</p>
+
+<pre><code>&lt;arg name="model" default="$(find ardupilot_sitl_gazebo_plugin)/urdf/erlecopter_base.xacro"/&gt;
+&lt;arg name="model" default="$(find ardupilot_sitl_gazebo_plugin)/urdf/rover.urdf"/--&gt;
+</code></pre>
+
+<p>BOTH code blocks have these lines. That is, you have "model" assigned to the Erlecopter, then you have "model" assigned to the Rover. Both instances of "model" occur in the same namespace, so I'm not sure how they would be distinguished. </p>
+
+<p>Again I would refer you to the <a href="http://answers.ros.org/question/41433/multiple-robots-simulation-and-navigation/" rel="nofollow noreferrer">answer on the ROS forums</a></p>
+
+<p>I'll reproduce part of the article here for posterity for future visitors:</p>
+
+<blockquote>
+  <p>The answer is based on the turtlebot robot, but of course it can be used with any robot(s).</p>
+  
+  <p>For multiple robots <strong>the key point is to manage the namespaces and tf_prefixes.</strong> Although usually we will set them to the same value for each robot in this example I will you different for purpose.</p>
+  
+  <p>In setting up the navigation stack(s) each robot must operate in it's own namespace, but they do have to share the map (and usually robot_description).</p>
+</blockquote>
+
+<p>(emphasis added)</p>
+
+<blockquote>
+  <p>Simulation
+  First of all we have to launch the simulation, in our case gazebo. To make things more readable I split launch files in few files.</p>
+  
+  <p>Launch file for one robot. We name it one_robot.launch:</p>
+</blockquote>
+
+<pre><code>&lt;launch&gt;
+    &lt;arg name="robot_name"/&gt;
+    &lt;arg name="init_pose"/&gt;
+
+    &lt;node name="spawn_minibot_model" pkg="gazebo" type="spawn_model"
+     args="$(arg init_pose) -urdf -param /robot_description -model $(arg robot_name)"
+     respawn="false" output="screen" /&gt;
+
+    &lt;node pkg="robot_state_publisher" type="state_publisher" 
+          name="robot_state_publisher" output="screen"/&gt;
+
+    &lt;!-- The odometry estimator, throttling, fake laser etc. go here --&gt;
+    &lt;!-- All the stuff as from usual robot launch file --&gt;
+&lt;/launch&gt;
+</code></pre>
+
+<blockquote>
+  <p>Two things to mention for above launch file:</p>
+  
+  <ul>
+  <li>Create two arguments to pass for robot initialization: name and position</li>
+  <li>Notice that -param /robot_description is with the slash i.e. fully-qualified, as it will be shared.</li>
+  </ul>
+  
+  <p>Having the robot declaration we can now play with the namespaces. Your main launch file for multiple robots should look like (robots.launch):</p>
+</blockquote>
+
+<pre><code>&lt;launch&gt;
+  &lt;!-- No namespace here as we will share this description. 
+       Access with slash at the beginning --&gt;
+  &lt;param name="robot_description"
+    command="$(find xacro)/xacro.py $(find turtlebot_description)/urdf/turtlebot.urdf.xacro" /&gt;
+
+  &lt;!-- BEGIN ROBOT 1--&gt;
+  &lt;group ns="robot1"&gt;
+    &lt;param name="tf_prefix" value="robot1_tf" /&gt;
+    &lt;include file="$(find your_pkg)/launch/one_robot.launch" &gt;
+      &lt;arg name="init_pose" value="-x 1 -y 1 -z 0" /&gt;
+      &lt;arg name="robot_name"  value="Robot1" /&gt;
+    &lt;/include&gt;
+  &lt;/group&gt;
+
+  &lt;!-- BEGIN ROBOT 2--&gt;
+  &lt;group ns="robot2"&gt;
+    &lt;param name="tf_prefix" value="robot2_tf" /&gt;
+    &lt;include file="$(find your_pkg)/launch/one_robot.launch" &gt;
+      &lt;arg name="init_pose" value="-x -1 -y 1 -z 0" /&gt;
+      &lt;arg name="robot_name"  value="Robot2" /&gt;
+    &lt;/include&gt;
+  &lt;/group&gt;
+&lt;/launch&gt;
+</code></pre>
+
+<p>So I've reproduced here the steps up to launching both robots. The full answer goes into a lot more depth. </p>
+
+<h2>Just above the comments for the post is a link that says (more). It expands the rest of the answer.</h2>
+
+<p>Be sure to read the full answer as it goes into more detail about steps to take for setting up navigation and visualization. </p>
+
+<p>If you try these steps and get a specific error, please tell us <em>what exactly the error said</em>. Comments like, "This didn't work," or, "This had errors," are not helpful. </p>
+
+<p>I do hope this works for you! If I've missed the mark as to the scope/direction of your question then please try to clarify <em>the exact errors you're getting</em>. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10973" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-10973">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-10973" class = 'collapse'>
+			</div>
+				<textarea id = "speech-10973" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10973">
+					<img id="start_img-10973" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10973">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,200 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Arduino Operational Frequency
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2609" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2609" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 85</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Arduino Operational Frequency</h2>
+<p>Just wanted to clarify some pretty basic Arduino concept:</p>
+
+<p>If I put this code into an arduino board:</p>
+
+<pre><code>double start, endTime;
+long int counter = 0;
+
+void setup()
+{
+  Serial.begin(19200);
+start = micros();
+}
+
+
+void loop()
+{
+  endTime = micros();
+  counter++;
+
+  //Point A
+
+  if((endTime - start) &gt; 1000000)
+  {
+    Serial.println(counter);
+    counter = 0;
+    start = micros();
+  }
+
+}
+</code></pre>
+
+<p>...I see >38000 value in my serial monitor (for the 'counter' variable).</p>
+
+<p>However, the moment I put in some heavy calculation in 'Point A', the value drops to 150 - 170. This is expected, I guess.</p>
+
+<p>My question is: Is the only way to push up the operational frequency lies in optimising the code/calculation? Or, is there some other way I can get faster execution?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2609" data-toggle = "popover">
+				<p>user name : metsburg</p>
+				<p> user reputation : 269</p>
+				<p class = "tagcontent" id = "usertaginfo-2609">{'quadcopter': 15, 'None': 8, 'ardupilot': 6, 'accelerometer': 1, 'arduino': 13, 'ekf': 0, 'pid': 12, 'stability': 10, 'slam': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2609" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2609" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2609">
+					<img id="start_img-2609" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2609">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-2611"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2611" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Correct: you must optimize your code.  </p>
+
+<p>The Arduino can do a fixed number of machine instructions per second, so reducing the number of instructions required for the calculation will <em>increase</em> the number of calculations that can be done per second.</p>
+
+<p>$$\text{operational frequency} = \frac{\text{calculations}}{t} = \frac{\frac{\text{instructions}}{t}}{\frac{\text{instructions}}{\text{calculation}}} = \frac{\text{16 MHz}}{\frac{\text{instructions}}{\text{calculation}}}$$</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2611" data-toggle = "popover">
+				<p>user name : Ian</p>
+				<p> user reputation : 9640</p>
+				<p class = "tagcontent" id = "usertaginfo-2611">{'planning': 10, 'None': 809, 'power': 1, 'algorithm': 10, 'battery': 1, 'slam': 7, 'coverage': 10, 'mobile-robot': 9, 'sensors': 9}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2611" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2611" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2611">
+					<img id="start_img-2611" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2611">Comment</button>
+			<br><div id = "ans-2615"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2615" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The microcontroller you are using has a certain clock frequency. Every operation you make it compute takes a specific (but constant) number of clock cycles to perform. What your code does is it enters the loop function, it performs all the tasks within it and then it jumps back to it's beginning and does everything again.</p>
+
+<p>As you are limited by the number of <em>operations</em> you can perform per second and not the number of <em>loop iterations</em>, you need to either decrease the number of operations you are performing per loop iteration or find a way to increase the number of operations you can do per second.</p>
+
+<p>In order to increase the number of operations you can do per second you need to increase the clock frequency which might mean buying a new chip if the one you are using is already at it's maximum.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2615" data-toggle = "popover">
+				<p>user name : Damjan Dakic</p>
+				<p> user reputation : 650</p>
+				<p class = "tagcontent" id = "usertaginfo-2615">{'control': 6, 'None': 32, 'sensor-fusion': 5, 'localization': 5, 'rcservo': 3, 'pid': 6, 'automation': 0, 'servomotor': 3, 'differential-drive': 6, 'design': 3, 'kalman-filter': 5, 'sensors': 5, 'pwm': 3, 'navigation': 6}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2615">Load Comments</button></br>
+			<div id = "commentsection-2615" class = 'collapse'>
+			<div id = "comment-4950" class = "comment">
+				<p>Regarding the chip's max freq, most 5V Arduinos have 16MHz crystals or resonators.  The ATmega328 rated max freq (at 70C) is 20MHz but it can be overclocked at lower temperatures, [eg to about 30MHz](http://garagelab.com/profiles/blogs/atmega328-overclock-30mhz)</p>
+			</div>
+			<div id = "comment-4963" class = "comment">
+				<p>Ok, got the point. Very nicely explained. Just one more slightly related question: is there anything remotely resembling multi-threading in ATmega328?</p>
+			</div>
+			<div id = "comment-4978" class = "comment">
+				<p>You can implement concurrent algorithms by using timer interrupts for example and using them to share resources (work a bit on one task and a bit on another one). However, you do not have multiple cores which means you unfortunately cannot achieve real parallelism.</p>
+			</div>
+			<div id = "comment-5072" class = "comment">
+				<p>@metsburg: Please ask about multi-threading as a separate top-level question. Yes, there are several techniques resembling multi-threading that work great in a ATmega328. There's not enough room in this comment to mention even the few approaches I know. The [BlinkWithoutDelay](http://arduino.cc/en/Tutorial/BlinkWithoutDelay) approach to cooperative multithreading is very simple but often more than adequate.</p>
+			</div>
+			<div id = "comment-5080" class = "comment">
+				<p>@metsburg: Does ["How can I create multiple running threads?"](http://arduino.stackexchange.com/questions/286/how-can-i-create-multiple-running-threads) answer your question about multi-threading?</p>
+			</div>
+			</div>
+				<textarea id = "speech-2615" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2615">
+					<img id="start_img-2615" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2615">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

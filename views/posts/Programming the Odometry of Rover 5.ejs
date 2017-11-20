@@ -1,0 +1,219 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Programming the Odometry of Rover 5
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-4410" class = "post">
+			<h2>Question</h2>
+			<div id="vote-4410" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 145</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Programming the Odometry of Rover 5</h2>
+<p>I have started in the programming stage of my project , and my first step is to made and test the odometry of my Rover 5 robot on Arduino Uno by using encoders to determine position and orientation .</p>
+
+<p>I wrote this code and I don t know if that code right or there are some mistakes,  because I am novice to Arduino and Robotic field so I need for some suggestions and corrections if  there were . </p>
+
+<p>thanks a lot</p>
+
+<p>Arduino codes posted below.</p>
+
+
+
+<pre><code>#define encoder1A  0       //signal A of left encoder  (white wire)
+#define encoder1B  1      //signal B of left encoder  (yellow wire)
+#define encoder2A  2      //signal A of right encoder  (white wire)
+#define encoder2B  3      //signal B of right encoder  (yellow wire)
+
+volatile int encoderLeftPosition = 0;      // counts of left encoder
+volatile int encoderRightPosition = 0;     // counts of right encoder
+
+float  DIAMETER  = 61  ;         // wheel diameter (in mm)
+float distanceLeftWheel, distanceRightWheel, Dc, Orientation_change;
+float ENCODER_RESOLUTION = 333.3;      //encoder resolution (in pulses per revolution)  where in Rover 5,  1000 state changes per 3 wheel rotations
+
+int x = 0;           // x initial coordinate of mobile robot
+int y = 0;           // y initial coordinate of mobile robot
+float Orientation  = 0;       // The initial orientation of mobile robot
+float WHEELBASE=183  ;       //  the wheelbase of the mobile robot in mm
+float CIRCUMSTANCE =PI * DIAMETER  ;
+
+void setup()
+{
+  pinMode(encoder1A, INPUT);
+  digitalWrite(encoder1A, HIGH);       // turn on pullup resistor
+  pinMode(encoder1B, INPUT);
+  digitalWrite(encoder1B, HIGH);       // turn on pullup resistor
+  pinMode(encoder2A, INPUT);
+  digitalWrite(encoder2A, HIGH);       // turn on pullup resistor
+  pinMode(encoder2B, INPUT);
+  digitalWrite(encoder2B, HIGH);       // turn on pullup resistor
+  attachInterrupt(0, doEncoder, CHANGE);       // encoder pin on interrupt 0 - pin 3
+  Serial.begin (9600);
+}
+
+void loop()
+{
+  distanceLeftWheel = CIRCUMSTANCE * (encoderLeftPosition / ENCODER_RESOLUTION);       //  travel distance for the left and right wheel respectively
+  distanceRightWheel = CIRCUMSTANCE * (encoderRightPosition / ENCODER_RESOLUTION);     // which equal to pi * diameter of wheel * (encoder counts / encoder resolution )
+  Dc=(distanceLeftWheel + distanceRightWheel) /2 ;            // incremental linear displacement of the robot's centerpoint C
+  Orientation_change =(distanceRightWheel - distanceLeftWheel)/WHEELBASE;    // the robot's incremental change of orientation , where b is the wheelbase of the mobile robot ,
+  Orientation = Orientation + Orientation_change ;          //  The robot's new relative orientation
+  x = x + Dc * cos(Orientation);                            // the relative position of the centerpoint for mobile robot
+  y = y + Dc * sin(Orientation);
+}
+
+void doEncoder(){
+  //  ---------- For Encoder 1 (Left)  -----------
+  if (digitalRead(encoder1A) == HIGH) {   // found a low-to-high on channel A
+    if (digitalRead(encoder1B) == LOW) {  // check channel B to see which way
+                                             // encoder is turning
+      encoderLeftPosition = encoderLeftPosition - 1;         // CCW
+    }
+    else {
+      encoderLeftPosition = encoderLeftPosition + 1;         // CW
+    }
+  }
+  else                                        // found a high-to-low on channel A
+  {
+    if (digitalRead(encoder1B) == LOW) {   // check channel B to see which way
+                                              // encoder is turning
+     encoderLeftPosition = encoderLeftPosition + 1;          // CW
+    }
+    else {
+      encoderLeftPosition = encoderLeftPosition - 1;          // CCW
+    }
+  }
+  //  ------------ For Encoder 2 (Right)-------------
+  if (digitalRead(encoder2A) == HIGH) {   // found a low-to-high on channel A
+    if (digitalRead(encoder2B) == LOW) {  // check channel B to see which way  encoder is turning
+      encoderRightPosition = encoderRightPosition - 1;         // CCW
+    }
+    else {
+      encoderRightPosition = encoderRightPosition + 1;         // CW
+    }
+  }
+  else                                        // found a high-to-low on channel A
+  {
+    if (digitalRead(encoder2B) == LOW) {   // check channel B to see which way  encoder is turning
+     encoderRightPosition = encoderRightPosition + 1;          // CW
+    }
+    else {
+     encoderRightPosition = encoderRightPosition - 1;          // CCW
+    }
+  }
+}
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4410" data-toggle = "popover">
+				<p>user name : Maria88</p>
+				<p> user reputation : 43</p>
+				<p class = "tagcontent" id = "usertaginfo-4410">{'mobile-robot': 8, 'None': 0, 'wheeled-robot': 4, 'quadrature-encoder': 6}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-4410">Load Comments</button></br>
+			<div id = "commentsection-4410" class = 'collapse'>
+			<div id = "comment-10720" class = "comment">
+				<p>You've posted some code - do you have a specific question? Is there an issue you're having with the code?</p>
+			</div>
+			</div>
+				<textarea id = "speech-4410" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4410">
+					<img id="start_img-4410" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4410">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-6755"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6755" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Your code won't work as you expect. The problem is that you use only one external interrupt, when you need two - one for each encode. With only one interrupt you will miss pulses from the second motor (for example when you brake one motor and still rotate the second to make a turn). </p>
+
+<p>If you would like even better resolution, you can use two additinal interrupts, so you will have one for each encoder phase. If you are running short on external interrupt lines of uC, check out XOR logic ICs, or even dedicated quadrature decoders. </p>
+
+<p>BTW. Lenght of the edge of a circle is circumference, not circumstance :)</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6755" data-toggle = "popover">
+				<p>user name : mactro</p>
+				<p> user reputation : 925</p>
+				<p class = "tagcontent" id = "usertaginfo-6755">{'control': 1, 'None': 59, 'radio-control': 1, 'pid': 1, 'wifi': 1, 'wheeled-robot': 1, 'mechanism': 1, 'automation': 1, 'wireless': 1, 'industrial-robot': 2, 'design': 1, 'cnc': 2, 'actuator': 2, 'mobile-robot': 2}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-6755" class = 'collapse'>
+			</div>
+				<textarea id = "speech-6755" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6755">
+					<img id="start_img-6755" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6755">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

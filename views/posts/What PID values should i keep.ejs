@@ -1,0 +1,344 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>What PID values should i keep
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7968" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7968" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 119</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>What PID values should i keep</h2>
+<p>I have built quadcopter but the problem is of balancing. It doesnt goes up. I am using PID techniqe for balancing. But i am not finding the suitable values for PID tuning. I am using mpu6050 as a sensor. I get the accelerometer values of x and y axis and find the error from them. That is lets say if accel on x is not zero then it error cause it should be zero if balanced. I am using +-2g sensitivity scale of accelerometer. The motors i am using are dji 920 kva. What values for kp, ki and kd should i set. I cant set them while in flight cause it completely out of balance.</p>
+
+<p><a href="https://i.stack.imgur.com/3d4Jm.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/3d4Jm.jpg" alt="Quadcopter"></a></p>
+
+<p>This is the design. Completely home made. I have modified it a little after this photo. Accelerometer is at 2g so at balance z will be 32768/2 .</p>
+
+<pre><code>short PID()
+{
+short error,v;
+error = desired-current; 
+//error/=390;
+integ += error;
+der = error - perror;
+x=error; 
+x2=integ; 
+x3=der; 
+x*=kp;
+x2*=ki;
+x3*=kd; 
+v=kpi;x/=100;
+v=kii;x2/=1000;
+v=kdi;x3/=1000;
+x=x+x2+x3; 
+//x/=390; 
+perror = error;
+return x;
+}
+</code></pre>
+
+<p>There are also few more questions, should i scale error or pid output, because error is from ranging from 0 to 16380 at 2g setting, so i am scaling it from 0 to 42. So should i divide error or pid by some value?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7968" data-toggle = "popover">
+				<p>user name : Sulaiman Ayub</p>
+				<p> user reputation : 1</p>
+				<p class = "tagcontent" id = "usertaginfo-7968">{'quadcopter': -2, 'None': 0, 'battery': 0, 'pid': -2, 'lithium-polymer': 0, 'balance': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7968">Load Comments</button></br>
+			<div id = "commentsection-7968" class = 'collapse'>
+			<div id = "comment-11703" class = "comment">
+				<p>What have you tried for PID gains already? Can you post your code? Can you post a drawing of your quad copter? You say, "the problem is of balancing," but then you say, "it doesn't go up." What do you mean?</p>
+			</div>
+			<div id = "comment-11707" class = "comment">
+				<p>By saying "it doesnt goes up" means that due to unbalanced it doesnt goes up and goes drfting. And the missing part in question is that i control the motor speed with 42 values. That is it has 42 speed steps. On 42 it is at maximum speed.</p>
+			</div>
+			<div id = "comment-11733" class = "comment">
+				<p>On stack exchange, it is better to edit your question to add information requested in comments, rather than adding more comments. Comments are for helping to improve questions and answers, and are distracting, so we try to keep them to a minimum. If all of the information needed to answer the question is contained within it, the comments can be tidied up (deleted).</p>
+			</div>
+			<div id = "comment-11735" class = "comment">
+				<p>What are the `v=kpi`, `v=kii` and `v=kdi` statements intended to do?</p>
+			</div>
+			</div>
+				<textarea id = "speech-7968" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7968">
+					<img id="start_img-7968" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7968">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7977"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7977" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I'm sorry but it is absolutely impossible to tell you what values you should put based on the information you gave. Actually to give a real answer we would need a complete model of the system (or an approximation at least...). There are some generic models for quadcopters but parameters depend on your own system.</p>
+
+<p>If you want to really understand the command of a quadcopter I recommend to read some articles like <a href="http://andrew.gibiansky.com/downloads/pdf/Quadcopter%20Dynamics,%20Simulation,%20and%20Control.pdf" rel="nofollow">this one</a> (I found it very quickly, maybe some others are better, but it explains how to control a quadcopter with a PID). Or at least watch <a href="https://youtu.be/wbmEUi2p-nA" rel="nofollow">this video</a> to understand what is a PID controler.</p>
+
+<p>However, if you don't want to find a model for your system, the best way to find PID parameters is empirically. You just need to know what are the consequences of each coefficient, and try to adapt them according to your system's behaviour.
+There is a very quick explanation for each coeff :</p>
+
+<ul>
+<li>P : is mainly for response speed. Too low = correction will be to slow. Too high : correction will be very fast and oversized, and your system will probably oscillate.</li>
+<li>I : is mainly used to cancel static error. Too low : your response will never reach the order. Too high : oscillations.</li>
+<li>D : is... more complex to understand. It will impact your response variation. Look at the video to have a good explanation.</li>
+</ul>
+
+<p>Good luck !</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7977" data-toggle = "popover">
+				<p>user name : Arlakt</p>
+				<p> user reputation : 11</p>
+				<p class = "tagcontent" id = "usertaginfo-7977">{'None': 1}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7977" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7977" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7977">
+					<img id="start_img-7977" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7977">Comment</button>
+			<br><div id = "ans-7979"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7979" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I asked for your code because I've found people tend to implement PID controllers incorrectly. It doesn't really matter what your gains are, if you're not calculating the error terms correctly and/or you're not applying the gains correctly, you'll probably never get the system to work right. </p>
+
+<p>That said, as <a href="https://robotics.stackexchange.com/a/7977/9720">Arlakt</a> mentioned, your best bet for PID control with no system model is to try different gains. There are <a href="https://en.wikipedia.org/wiki/PID_controller#Loop_tuning" rel="nofollow noreferrer">several methods for tuning</a> the PID controller, but all of these methods rely on you to calculate the error terms correctly and apply the gains correctly. </p>
+
+<h2>:EDIT:</h2>
+
+<p>You are not calculating your error terms correctly. </p>
+
+<p>You have:</p>
+
+<pre><code>error = desired-current; 
+//error/=390;
+integ += error;
+der = error - perror;
+</code></pre>
+
+<p>Your <code>integ</code> error term is not an integral and your <code>der</code> error term is not a derivative because you have not incorporated a sample time into your calculation. You need:</p>
+
+<pre><code>integ += error*sampleTime;
+der = (error - perror)/sampleTime;
+</code></pre>
+
+<p>Later, you have:</p>
+
+<pre><code>v=kpi;x/=100;
+v=kii;x2/=1000;
+v=kdi;x3/=1000;
+</code></pre>
+
+<p>Which I am assuming is interpreted as:</p>
+
+<pre><code>v=kpi;
+x/=100;
+v=kii;
+x2/=1000;
+v=kdi;
+x3/=1000;    
+</code></pre>
+
+<p>I do not know why you are dividing your error terms by 100 or 1000, but this is incorrect. I also do not know what <code>v</code> is; it is not a term used anywhere else in the function and is not returned by the function. <code>kpi</code>,<code>kii</code>,<code>kdi</code> are also not defined. </p>
+
+<p>In any event, your entire PID controller should be:</p>
+
+<pre><code>short PID()
+{
+short error;
+error = desired-current; 
+integ += error*sampleTime;
+der = (error - perror)/sampleTime;
+x=error; 
+x2=integ; 
+x3=der; 
+x*=kp;
+x2*=ki;
+x3*=kd; 
+x=x+x2+x3; 
+perror = error;
+return x;
+}
+</code></pre>
+
+<p>See <a href="https://robotics.stackexchange.com/questions/7959/tuning-pd-for-line-follower/7961#7961">this post I wrote yesterday</a> on nearly identical flaws in a PID controller. In short, get <code>sampleTime</code> with either a <code>delay</code>/<code>pause</code> or by setting/using a timer. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7979" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-7979">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7979">Load Comments</button></br>
+			<div id = "commentsection-7979" class = 'collapse'>
+			<div id = "comment-11725" class = "comment">
+				<p>Is sample time a must. And how much delay for sampletime is fine. I am using 8051uc. And the term kp/100, ki/1000 means that i am dividng the kp and ki,. It means that if kp is 1 so it is .01.  I used this code for to have more kp samples, when i increase kp through remote so it will increase .01 not 1.  Because in ucontrollers floating values are hard to implement. So to make kp foating i used this division</p>
+			</div>
+			<div id = "comment-11726" class = "comment">
+				<p>And in the other post you have mentioned that higher sampletime will have bad result and lower will have good result. So then not using it will be best, correct me if i am wrong.</p>
+			</div>
+			<div id = "comment-11734" class = "comment">
+				<p>The /=100 and /=1000 is just a rudimentary way to implement gains as a fixed point value. Unless you have a pretty beefy microcontroller with fast floating point support you want to use integer arithmetic for your PID loop. Similarly, if sample time is fixed, you should be able to avoid dividing by the sample time too, it just makes your gains less obvious, and invalidates them if you *do* change your sample time.</p>
+			</div>
+			<div id = "comment-11736" class = "comment">
+				<p>Dividing a gain does not get you "more samples". I believe if you are wanting to define a variable as a float you can either type cast it as a float or I *think* you can add a ".0" to the end of a number defining it - so where "1" might be integer "1.0" would be a float.</p>
+			</div>
+			<div id = "comment-11737" class = "comment">
+				<p>I believe @SulaimanAyub is misunderstanding the use of the sample time - you *need* to divide by the sample time in order to calculate the derivative error correctly. The derivative error "tells" the controller how quickly the error is changing - if the error is increasing quickly, then the P and I terms aren't doing enough so the derivative term picks up to help out. Similarly, when error starts decreasing quickly, the controller is about to overshoot the setpoint, so the derivative term tries to start the controller "backing off" so it hits the setpoint with no error.</p>
+			</div>
+			<div id = "comment-11738" class = "comment">
+				<p>@MarkBooth is saying that instead of taking `(error - perror)/sampleTime` and then multiplying that by `kd`, you can take `(error - perror)` and multiply that by `kd/sampleTime`, then if `sampleTime` is constant then the effective derivative gain becomes `kd_eff = kd/sampleTime`. HOWEVER, you *need to know* what the sample time is, AND this trick only works for the integral and proportional gains - you should *not* be trying to modify the proportional gain term this way because the proportional term is time-independent.</p>
+			</div>
+			<div id = "comment-11739" class = "comment">
+				<p>If you are deriving your gains empirically then sampleTime is irrelevant (it isn't mentioned in the [Manual Tuning](https://en.wikipedia.org/wiki/PID_controller#Manual_tuning) section of the wiki article you linked to). Only if you are trying to set gains based on something like the Ziegler Nichols method would you need to factor in time constants directly. Also, you are assuming floating point arithmetic is always better. If you have a low end microcontroller, an integer arithmetic loop at a higher rate will be better than a floating point loop at a rate which is too low to achieve stability.</p>
+			</div>
+			<div id = "comment-11740" class = "comment">
+				<p>Ok sample time will be in secs, millisecond or what.</p>
+			</div>
+			<div id = "comment-11741" class = "comment">
+				<p>If you are deriving your gains empirically *and your sample time is constant* then it is irrelevant. If you can't keep a steady sample time, however, then your error terms are going to be inconsistent. The sample time should be measured in seconds - 0.01 for 10ms, etc. I don't know how you can do PID control with integer-only math. That said, if floating point operations are especially expensive, you can [clock your process for a while](http://forum.arduino.cc/index.php?topic=98735.0) and evaluate the mean and standard deviation of the result.</p>
+			</div>
+			<div id = "comment-11742" class = "comment">
+				<p>If your standard deviation is large (more than a few percent) relative to the mean, then you probably need to run the clock all the time and use an exact sample time. 99 percent of samples should fall within +/- 3 standard deviations, so if your standard deviation is, say, 2 percent of your mean, then that means that your sample time varies by +/- 6 percent of your mean, for a total sample-to-sample variation of up to 12%.</p>
+			</div>
+			<div id = "comment-11745" class = "comment">
+				<p>Oh dear, I feel an 'Ah, kids these days' welling up. *8') If you don't have deterministic, no jitter, constant time PID loop handling then you have more problems than calculating your per cycle sample time. Sample time should be as close to constant as is possible, the softer the real time requirements of your system are the further away it can be from constant, but the less aggressively you can tune your system.</p>
+			</div>
+			<div id = "comment-11746" class = "comment">
+				<p>Anyway, this probably isn't helping to improve your answer, so we should take this to [chat]. I would suggest that you incorporate any thought which might be useful into your answer and we can tidy up (delete) these comments.</p>
+			</div>
+			<div id = "comment-11747" class = "comment">
+				<p>I am not taking derivative into account. Just using pi.  And i think sample time can doesnt matter when you carefully select kp,ki.</p>
+			</div>
+			<div id = "comment-11748" class = "comment">
+				<p>Nope, I'm good. I don't know that any of these comments added much that I haven't already written. Feel free to delete away.</p>
+			</div>
+			<div id = "comment-11749" class = "comment">
+				<p>Last comment - @SulaimanAyub - you are using derivative. That's your x3 term. I started writing in Robotics chat.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7979" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7979">
+					<img id="start_img-7979" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7979">Comment</button>
+			<br><div id = "ans-7982"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7982" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Okay, so developed a flight controller for this project 
+<a href="http://kevinsheridan.info/highly-autonomous-aerial-reconnaissance-robot-proof-of-concept/" rel="nofollow">http://kevinsheridan.info/highly-autonomous-aerial-reconnaissance-robot-proof-of-concept/</a></p>
+
+<p>I spent 4 months trying to figure out "the right pid values". However in the end it turned out that I was implementing pid incorrectly. </p>
+
+<p>Here is how to implement it. If you are trying to get the quad to stabilize itself at an angle you need to use TWO Pid controllers per axis. </p>
+
+<p>Requested angle &amp; Angle -> PID1 -> rate + requested rate into PID2-> motors</p>
+
+<p>Basically use a pid for rate and for angle feeding into eachother</p>
+
+<p>have a look at my code: <a href="http://kevinsheridan.info/highly-autonomous-aerial-reconnaissance-robot-proof-of-concept/haarr-code/low-level-flight-controller-code/" rel="nofollow">http://kevinsheridan.info/highly-autonomous-aerial-reconnaissance-robot-proof-of-concept/haarr-code/low-level-flight-controller-code/</a></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7982" data-toggle = "popover">
+				<p>user name : Trexter</p>
+				<p> user reputation : 1</p>
+				<p class = "tagcontent" id = "usertaginfo-7982">{'None': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7982">Load Comments</button></br>
+			<div id = "commentsection-7982" class = 'collapse'>
+			<div id = "comment-11712" class = "comment">
+				<p>Actually that is what i am doing.</p>
+			</div>
+			<div id = "comment-12935" class = "comment">
+				<p>I added a link to the code for my flight controller. it might help with the rate PID values.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7982" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7982">
+					<img id="start_img-7982" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7982">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

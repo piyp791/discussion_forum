@@ -1,0 +1,250 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>What is a suitable model for two-wheeled robots?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-106" class = "post">
+			<h2>Question</h2>
+			<div id="vote-106" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">20</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 4554</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>What is a suitable model for two-wheeled robots?</h2>
+<p>What is a suitable model for two-wheeled robots? That is, what equations of motion describe the dynamics of a two-wheeled robot.</p>
+
+<p>Model of varying fidelity are welcome. This includes non-linear models, as well as linearized models.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-106" data-toggle = "popover">
+				<p>user name : ronalchn</p>
+				<p> user reputation : 2449</p>
+				<p class = "tagcontent" id = "usertaginfo-106">{'None': 187, 'two-wheeled': 20, 'inverse-kinematics': 15, 'interrupts': 5, 'microcontroller': 13, 'wiring': 7, 'c': 8, 'avr': 5, 'brushless-motor': 2, 'joint': 15, 'kinematics': 15, 'hall-sensor': 2, 'mobile-robot': 20, 'arm': 15}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-106">Load Comments</button></br>
+			<div id = "commentsection-106" class = 'collapse'>
+			<div id = "comment-146" class = "comment">
+				<p>This question seems very broad. It would help if you link "equations of motion" to a wikipedia article (for example) that describes what it is. Also, you should specify the robot more specifically. For example, are there passive wheels? What are the types of the two wheels? etc.</p>
+			</div>
+			<div id = "comment-18007" class = "comment">
+				<p>Bicycle style or segway style?  You should be more specific.</p>
+			</div>
+			</div>
+				<textarea id = "speech-106" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-106">
+					<img id="start_img-106" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-106">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-134"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-134" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">16</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>There isn't a lot of information here. Let's fix the wheels as separated by distance $b$, and each wheel has orientation $\theta_i$ with respect to the line joining them.  Then assume each wheel can be independently driven with an angular velocity $v_i$. </p>
+
+<p>If the wheels are independently driven, but fixed in direction, $\theta_1=\theta_2=90^\circ$, you have something like a differential drive (tank treads). 
+It's worth noting that, assuming the wheels do not slip perpandicular to their orientation, you can solve for the motion of the robot base in closed form given velocity commands which are fixed over a small time duration (as is usually the case with robots under software control). The iCreate is such a platform, as are the smaller pioneers, and the Husky by Clearpath.
+Then the change in orientation of the base, labelled $\theta$ below, can be found in closed form.</p>
+
+<p><img src="https://rossum.sourceforge.net/papers/DiffSteer/Image47.gif" alt="..."></p>
+
+<p>The usual model for these things, where $v_b$ is the base velocity and $\omega_b$ is the angular velocity of the base, is:</p>
+
+<p>$$v_b = \frac{1}{2}\cdot(v_1+v_2)$$
+$$\omega_b=\frac{1}{b}(v_2-v_1)$$</p>
+
+<p>For a fixed time increment, $\delta t$, you can find the change in orientation, and linear distance traveled using these. Note that the robot travels along a circle in this time window. The distance along the circle is exactly $\delta t\cdot v_b$, and the radius of the circle is  $R=\frac{b}{2}\cdot\frac{v_1+v_2}{v_2-v_1}$.  That's enough to plug into these equations: <a href="https://mathworld.wolfram.com/CircularSegment.html" rel="nofollow noreferrer">circular segments</a> -- particularly the chord length equation, which describes the distance the robot displaces from its original location. We know $R$ and $\theta$, solve for $a$. </p>
+
+<p>So assuming the robot starts with orientation $0$, and position $(0,0)$, and moves along time window $\delta t$ with velocities $v_1$ (left wheel) and $v_2$ (right wheel), it's orientation will be: $$\theta_1=\frac{\delta t}{b}(v_2-v_1)$$ with position:
+$$p_x=\cos\left(\frac{\theta_1}{2}\right)\cdot\left(2 R \sin\left(\frac{\theta_1}{2}\right)\right)$$
+$$p_y=\sin\left(\frac{\theta_1}{2}\right)\cdot\left(2 R \sin\left(\frac{\theta_1}{2}\right)\right)$$</p>
+
+<p>Note that as $v_1\to v_2=v$ the limit is
+$$p_x=\delta t \cdot v$$
+$$p_y=0$$</p>
+
+<p>as expected.</p>
+
+<p><strong>Update</strong> why?.</p>
+
+<p>Rearrange $p_x$ so that:</p>
+
+<p>$$ p_x = cos \left( \frac{v_2-v_1}{2b} \right)
+* 2 * \left( b\frac{v_1+v_2}{2(v_2-v1)} \right)
+* sin\left( \frac{v_2-v_1}{2b} \right)
+$$</p>
+
+<p>$$ p_x = cos \left( \frac{v_2-v_1}{2b} \right)
+* \frac{(v_2+v_1)}{2}* \frac{sin\left( \frac{v_2-v_1}{2b} \right)}
+{\frac{v_2-v_1}{2b}}
+$$</p>
+
+<p>Now note that we have three limits as $v_2 \rightarrow v_1$. </p>
+
+<p>$$cos \left( \frac{v_2-v_1}{2b} \right)\rightarrow 1$$</p>
+
+<p>$$ \frac{(v_2+v_1)}{2} \rightarrow v_1 == v_2$$</p>
+
+<p>$$ \frac{sin\left( \frac{v_2-v_1}{2b}\right)}{\frac{v_2-v_1}{2b}}
+ \rightarrow 1 \text{  (see sinc function)}$$</p>
+
+<p>This is covered all over the internet, but you might start here: <a href="https://rossum.sourceforge.net/papers/DiffSteer/" rel="nofollow noreferrer">https://rossum.sourceforge.net/papers/DiffSteer/</a> or here: <a href="https://web.cecs.pdx.edu/~mperkows/CLASS_479/S2006/kinematics-mobot.pdf" rel="nofollow noreferrer">https://web.cecs.pdx.edu/~mperkows/CLASS_479/S2006/kinematics-mobot.pdf</a></p>
+
+<p>If the wheels are not fixed in direction, as in you can vary the speed and orientation, it gets more complicated. In that sense, a robot can become essentially holonomic (it can move in arbitrary directions and orientations on the plane). However, I bet for fixed orientation, you end up with the same model.</p>
+
+<p>There are other models for two wheels, such as a bicycle model, which is easy to imagine as setting the velocities, and only varying one orientation.  </p>
+
+<p>That's the best I can do for now.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-134" data-toggle = "popover">
+				<p>user name : Josh Vander Hook</p>
+				<p> user reputation : 3960</p>
+				<p class = "tagcontent" id = "usertaginfo-134">{'None': 345}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-134">Load Comments</button></br>
+			<div id = "commentsection-134" class = 'collapse'>
+			<div id = "comment-21117" class = "comment">
+				<p>Maybe I am a bit late but can not see why `Px=dt*v` if `v1 = v2`. We have `sin(theta/2)` as a part of multiplication therefore, when `v1=v2 -> theta = 0`, we get  `sin(0/2)=0` and as a consequence `Px = 0`. What I am missing?</p>
+			</div>
+			<div id = "comment-21601" class = "comment">
+				<p>In practice, just use the equations if $\theta \neq 0$. To answer your question, I've updated the answer.</p>
+			</div>
+			</div>
+				<textarea id = "speech-134" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-134">
+					<img id="start_img-134" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-134">Comment</button>
+			<br><div id = "ans-510"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-510" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>If you really want to dive into the mathematics of it, <a href="http://web.cecs.pdx.edu/~mperkows/CLASS_479/S2006/kinematics-mobot.pdf" rel="nofollow">here</a>'s the seminal paper that unified and categorized most models for wheeled robots.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-510" data-toggle = "popover">
+				<p>user name : georgebrindeiro</p>
+				<p> user reputation : 1266</p>
+				<p class = "tagcontent" id = "usertaginfo-510">{'computer-vision': 9, 'None': 98, 'slam': 9}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-510">Load Comments</button></br>
+			<div id = "commentsection-510" class = 'collapse'>
+			<div id = "comment-596" class = "comment">
+				<p>I'm sorry, link-only answers are discouraged on StackExchange. Could you perhaps condense the content of that link into a few paragraphs and keep it here (along with the actual link, of course). This helps prevent link rot.</p>
+			</div>
+			<div id = "comment-605" class = "comment">
+				<p>Sure thing, I'll do that as soon as I have enough time for it this week. Sorry about that, I wasn't aware about this policy and thought the link would be useful as is.</p>
+			</div>
+			</div>
+				<textarea id = "speech-510" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-510">
+					<img id="start_img-510" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-510">Comment</button>
+			<br><div id = "ans-10123"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10123" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The answer to this is simple, but the other answers obfuscate the dynamics.</p>
+
+<p>Differential drive robots can be modeled with unicycle dynamics of the form: $$\left[\begin{matrix}\dot{x}\\ \dot{y} \\ \dot{\theta} \end{matrix}\right] = \left[\begin{matrix}cos(\theta)&amp;0\\sin(\theta)&amp;0\\0&amp;1\end{matrix}\right] \left[\begin{matrix}v\\\omega\end{matrix}\right],$$ where $x$ and $y$ are Cartesian coordinates of the robot, and $\theta \in (-\pi,\pi]$ is the angle between the heading and the $x$-axis. The input vector $\left[v, \omega \right]^T$ consists of linear and angular velocity inputs.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10123" data-toggle = "popover">
+				<p>user name : NBCKLY</p>
+				<p> user reputation : 741</p>
+				<p class = "tagcontent" id = "usertaginfo-10123">{'None': 44, 'roomba': 4, 'irobot-create': 4, 'arduino': 2}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10123">Load Comments</button></br>
+			<div id = "commentsection-10123" class = 'collapse'>
+			<div id = "comment-18009" class = "comment">
+				<p>-1 This is merely a transformation between different coordinates. It doesn't model the dynamics of the robot at all as requested in the question. The "*obfuscation*" of the other answers is because they take into account that there are two wheels to control and not some abstract input vector. Such a vector could be the result of a model as requested in the question.</p>
+			</div>
+			<div id = "comment-18028" class = "comment">
+				<p>The model that I have presented addresses the prompt, adds to the discussion, and is, in fact, a model of the dynamics of a non-holonomic differential drive robot (though not necessarily two-wheeled, which is a strength). While the input velocity vector (aka twist) may be an abstraction, using the twist input is standard for many two-wheeled platforms. This does, however, highlight the fact that state space representations are arbitrary. Controlling wheel velocities is an abstraction from controlling wheel torques, which is itself an abstraction from controlling motor currents.</p>
+			</div>
+			</div>
+				<textarea id = "speech-10123" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10123">
+					<img id="start_img-10123" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10123">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

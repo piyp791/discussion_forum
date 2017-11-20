@@ -1,0 +1,156 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Issue with open loop gain computation
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11149" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11149" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 34</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Issue with open loop gain computation</h2>
+<p><a href="https://i.stack.imgur.com/Gm869.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/Gm869.jpg" alt="Open loop schematic"></a></p>
+
+<p>Is (G1(z)*C1(z))+(G2(z)*C2(z))+(G3(z)*C3(z))  the right way of computing open loop gain for the attached block diagram. The system order differs from the order achieved using series(G(z),C(z)). Could any one help?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11149" data-toggle = "popover">
+				<p>user name : GKY1980</p>
+				<p> user reputation : 18</p>
+				<p class = "tagcontent" id = "usertaginfo-11149">{'control': 3, 'None': 0, 'kinematics': 0, 'matlab': 3, 'dynamics': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11149">Load Comments</button></br>
+			<div id = "commentsection-11149" class = 'collapse'>
+			<div id = "comment-20077" class = "comment">
+				<p>You can find a good example [here][1] on how different systems can be serialized. 
+
+I am not sure why yuo consider your inputs on the graphic independent of eachother. I think it would be helpful to post the system equations either in time or in frequency domain. That would help better understanding what are you trying to do
+
+  [1]: http://ctms.engin.umich.edu/CTMS/index.php?example=Suspension&section=ControlPID</p>
+			</div>
+			<div id = "comment-20078" class = "comment">
+				<p>Or are these feed forward values for compensation?</p>
+			</div>
+			</div>
+				<textarea id = "speech-11149" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11149">
+					<img id="start_img-11149" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11149">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-11150"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11150" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>No, for reasons I explained in the <a href="https://robotics.stackexchange.com/a/11145/9720">other question you asked</a>, that is not the correct way to calculate the open-loop gain. </p>
+
+<p>At-a-glance I can tell you it's wrong because it doesn't take the correct form. It's like asking if 50 miles is too fast or if &lt;13,20> gives you a 3D coordinate - your output form isn't of a type that satisfies the question.</p>
+
+<p>You are asking for an open-loop <em>gain</em>, like it's a singular value, when you should be asking for the open-loop gain<strong>s</strong>, because you need an open-loop gain between each input and each output.</p>
+
+<p>I would suggest you look at <a href="http://reference.wolfram.com/applications/pcs/Frequency-DomainDesignMethods/PCS5.1.html" rel="nofollow noreferrer">relative gain arrays</a> if this is what you're interested in. You haven't clarified what your equations are, what your controller is, what your plant is, what your application is, etc., so it's not really possible to give too much help beyond this. </p>
+
+<p>I will point out that it looks like you're setting yourself up for conflicting or contradictory control by having position, speed, and torque be inputs. What if the user wants zero position and 100% speed? What if the user wants zero speed and 100% torque? </p>
+
+<p>If I had to guess, I'd say your application is more like a position-controlled servo, where you want to <em>limit</em> torque and speed. You probably don't actually care about <em>controlling</em> torque and speed as long as they don't exceed specific thresholds. In that case, you <em>would</em> have one open-loop gain - the input position reference to the output position feedback.</p>
+
+<p>But, that's all speculation. Until you <em>clarify what you're trying to do</em>, it's hard to give meaningful assistance.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11150" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-11150">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11150">Load Comments</button></br>
+			<div id = "commentsection-11150" class = 'collapse'>
+			<div id = "comment-20159" class = "comment">
+				<p>Thank you Chuck for your valuable inputs. The issue seems that the OLTF is computed between the plant and controller hence making a SISO. However, if the Controller is made to precede plant, then the OLTF results as a MIMO with 9 loop interactions of which only 3 are dominant and others neglected. Is it right to neglect other loop interactions? and is it accountable to have Plant preceeding controller for a closed loop system?</p>
+			</div>
+			<div id = "comment-20167" class = "comment">
+				<p>@GKY1980 - No, it is not okay to have the plant precede the controller. If your input is $r(t)$, then the output of your plant is $Gr(t)$, which is then the input to your controller (as opposed to the actual input of $r(t)$). I'm assuming you're using feedback, so where does the feedback tap? You have to account for all of this when you make the controller, and you're making it all needlessly complex. You will also need to multiply by the inverse of the plant to get $(1/G)Gr(t) = r(t)$, but that requires perfect knowledge of the plant.</p>
+			</div>
+			<div id = "comment-20168" class = "comment">
+				<p>Additionally, whether or not you can neglect the "other loop interactions" is a choice for you to make, but if you *can* neglect the interactions and still adequately model the system then you *don't* have a MIMO system and you'd be better off (control-wise) using three distinct SISO systems. Just because a system is co-located with another system doesn't make it *coupled*, and it's the *cross-coupling* between systems that results in a MIMO system as opposed to a group of SISO systems.</p>
+			</div>
+			<div id = "comment-20180" class = "comment">
+				<p>Thank you Chuck.I concur with you.I have already expressed the same view with the component developer about the issue with their approach. Hope, they revert with  corrected configuration.sorry, everyone that I could not share the detailed information of the system owing to official restrictions. Thank you so much everyone for your valuable support to controls community</p>
+			</div>
+			</div>
+				<textarea id = "speech-11150" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11150">
+					<img id="start_img-11150" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11150">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -10,7 +10,7 @@ module.exports = {
 	doSearch: function(query){
 
 		query = query.replace("," , " ")
-		//console.log('query -->' +query)
+		console.log('query -->' +query)
 		return new Promise(function(resolve, reject){
 			// Retrieve an access token
 			client.search({index: 'df', q: 'content:' + query})

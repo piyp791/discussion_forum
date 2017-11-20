@@ -1,0 +1,291 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Using vision for Monte-Carlo localization
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2373" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2373" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 437</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Using vision for Monte-Carlo localization</h2>
+<p>From each step of my vision code I am able to get around 400 coordinates of where the robot thinks the walls are</p>
+
+<p>I want to integrate this into Monte-Carlo observation step.</p>
+
+<p>I'm storing the map of the maze as a set of Line segments. What would be a nice way to implement the sensor update, i.e. given the position (x,y) of the robot what is the probability that it is found there given the above described coordinates of the walls.</p>
+
+<hr>
+
+<p>The main idea I currently have:</p>
+
+<p>Transform points in polar coordinates. Then for each point (from vision output) compute a ray with this angle and find the first intersection with the maze. Now we have the predicted distance and real distance and we can compute the probability that this measurement is right. </p>
+
+<p>The main drawback is that this is slow. For each point from vision output I have to iterate over all line segments to find the one with the closest intersection. The line segments number is around 50. So it gets to O(400*50*Particle number).</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2373" data-toggle = "popover">
+				<p>user name : Andrei Ivanov</p>
+				<p> user reputation : 36</p>
+				<p class = "tagcontent" id = "usertaginfo-2373">{'None': 0, 'computer-vision': 1, 'localization': 7, 'sonar': 6, 'mobile-robot': 1, 'motion-planning': 6}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2373">Load Comments</button></br>
+			<div id = "commentsection-2373" class = 'collapse'>
+			<div id = "comment-4646" class = "comment">
+				<p>What about using quadtree, KD tree, or some simillar structure to store the maze? This could get the wall intersection test from O(n) to something like O(log(n)). Although 50 lines might not be enough for the advantage to show.</p>
+			</div>
+			<div id = "comment-4669" class = "comment">
+				<p>Can you describe in more detail what the sensor's measurements are?</p>
+			</div>
+			<div id = "comment-4696" class = "comment">
+				<p>I'm unclear on the problem that you're currently facing.  Can you try to focus it a bit?  It seems to be something about how to store your map in a way that provides more efficient access by your algorithm.</p>
+			</div>
+			</div>
+				<textarea id = "speech-2373" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2373">
+					<img id="start_img-2373" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2373">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-2441"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2441" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I have done this with a kinect and it wasn't slow.</p>
+
+<p>So Give more details about:</p>
+
+<ol>
+<li>Sensor output sample </li>
+<li>the system you are running on</li>
+</ol>
+
+<p>In monte carlo you have to traverse all the points one way or another to get a Posterior distribution from the Prior.</p>
+
+<p>If the System has a GPU you can parallel process the whole array at once.</p>
+
+<p>What you are saying is one of the Cons of Monte Carlo Localization it doesn't scale well for bigger problems specially for 3-dimensional spaces.</p>
+
+<p>there are other continous models which scale better than it</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2441" data-toggle = "popover">
+				<p>user name : Neo</p>
+				<p> user reputation : 119</p>
+				<p class = "tagcontent" id = "usertaginfo-2441">{'None': 1}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2441" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2441" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2441">
+					<img id="start_img-2441" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2441">Comment</button>
+			<br><div id = "ans-2881"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2881" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I assume you're doing this inside a loop. Make sure that you look at your computations and PRECOMPUTE everything you can before the loop starts. When you're multiplying matrices and doing other math operations 400*50*particle# times, it adds up very quickly. I remember I was doing a calculation for a transform between frames, which boiled down to multiplying 3 matrices together, and doing this inside the loop instead of precomputing made the difference of 3 seconds of computation time per iteration of my algorithm.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2881" data-toggle = "popover">
+				<p>user name : Andrew Capodieci</p>
+				<p> user reputation : 826</p>
+				<p class = "tagcontent" id = "usertaginfo-2881">{'None': 54}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2881" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2881" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2881">
+					<img id="start_img-2881" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2881">Comment</button>
+			<br><div id = "ans-2893"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2893" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>What kind of CPU or GPU power do you have available? A GPU might be able to do a large chunk of those calculations in parallel, and all of them in a single calculate call, which would complete in a few milliseconds.</p>
+
+<p>Also, with proper spatial partitioning, SIMD implementation, and using coherency where you know that close rays are likely to have the same result, you should be able to optimize this even on a regular CPU.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2893" data-toggle = "popover">
+				<p>user name : Jon Watte</p>
+				<p> user reputation : 645</p>
+				<p class = "tagcontent" id = "usertaginfo-2893">{'None': 43, 'cooling': 7, 'servos': 7, 'heat-management': 7}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2893" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2893" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2893">
+					<img id="start_img-2893" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2893">Comment</button>
+			<br><div id = "ans-4368"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4368" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Wow, walls, mazes, casting rays. Does anyone have <a href="http://en.wikipedia.org/wiki/Wolfenstein_3D" rel="nofollow noreferrer">Wolfenstein</a>/<a href="http://en.wikipedia.org/wiki/Doom_(video_game)" rel="nofollow noreferrer">Doom</a> deja vu?</p>
+
+<p><img src="https://i.stack.imgur.com/TH1Qv.jpg" alt="Doom"></p>
+
+<p>Back in the day, these games had to solve similar problems, calculating the intersection between lines (of fire or movement) and the walls of the map. For Wolfenstein, it was fairly easy because the map was arranged in a grid, and they used <a href="http://en.wikipedia.org/wiki/Ray_casting" rel="nofollow noreferrer">Ray Casting</a>.</p>
+
+<p>For Doom, it was a little harder, since there was no grid. So they used something called a <a href="https://en.wikipedia.org/wiki/Binary_space_partitioning" rel="nofollow noreferrer">Binary Space Partitioning Tree</a> (BSP Tree):</p>
+
+<p><img src="https://i.stack.imgur.com/GGjOZ.png" alt="BSP Tree"></p>
+
+<p>This recursively divides the map in a way that makes it easy to perform geometrical queries on it. In computer graphics, this would usually mean rendering the surfaces in such a way that there was no overlap, but it could also mean performing efficient collision detection.</p>
+
+<p>The BSP Tree works well if your walls are defined by nice large lines/planes. However, if your walls consist of thousands point cloud samples or something, then the tree will be inappropriate.</p>
+
+<p>In the case of point cloud (or tiny line cloud) data, I would recommend a <a href="http://en.wikipedia.org/wiki/Quadtree" rel="nofollow noreferrer">quadtree</a>. Again, this divides space recursively in such a way that you can easily find the set of points that are close to your robot, or close to some line.</p>
+
+<p><img src="https://i.stack.imgur.com/psJVI.png" alt="Quadtree"></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4368" data-toggle = "popover">
+				<p>user name : Rocketmagnet</p>
+				<p> user reputation : 4235</p>
+				<p class = "tagcontent" id = "usertaginfo-4368">{'control': 31, 'force': 8, 'multi-agent': 5, 'pid': 29, 'air-muscle': 6, 'uav': 52, 'stepper-driver': 3, 'reliability': 5, 'motor': 12, 'esc': 1, 'mobile-robot': 6, 'ros': 35, 'stepper-motor': 3, 'tuning': 12, 'swarm': 10, 'research': 5, 'platform': 17, 'imu': 4, 'kalman-filter': 49, 'hri': 4, 'None': 266, 'raspberry-pi': 24, 'localization': 7, 'python': 7, 'torque': 3, 'brushless-motor': 28, 'failure': 5, 'force-sensor': 15, 'sensors': 20, 'pwm': 10, 'wireless': 10, 'servos': 7, 'wifi': 24, 'simulation': 6, 'servomotor': 11, 'particle-filter': 0, 'sensor-fusion': 4, 'automatic': 12, 'software': 17}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-4368" class = 'collapse'>
+			</div>
+				<textarea id = "speech-4368" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4368">
+					<img id="start_img-4368" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4368">Comment</button>
+			<br><div id = "ans-4373"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4373" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The term you are looking for is "<a href="http://en.wikipedia.org/wiki/Viewing_frustum" rel="nofollow noreferrer">frustrum</a>", and the algorithm you want is "<a href="https://groups.csail.mit.edu/graphics/classes/6.837/F98/Lecture17/lecture17.html" rel="nofollow noreferrer">frustrum culling</a>".
+<a href="https://groups.csail.mit.edu/graphics/classes/6.837/F98/Lecture17/lecture17.html" rel="nofollow noreferrer"><img src="https://groups.csail.mit.edu/graphics/classes/6.837/F98/Lecture17/hierfrustumculling.gif" alt="frustrum culling"></a></p>
+
+<p>Check out <a href="https://gamedev.stackexchange.com/q/14713">this answer for how one would implement culling in a 2D game</a>.  </p>
+
+<p>If performance is still an issue, remember that you don't need to consider all 400 "possible wall coordinates" every time.  If you try to determine your exact position in a single step, you're trying to outsmart the particle filter; you don't need to do this.</p>
+
+<p>Think of it this way: your robot is not randomly teleporting from place to place -- it's in one position now, and it will be in a very similar position at the next time step or sensor reading.  Just evaluate as many coordinates as you can in the available time (for each particle), then do it again; your particles will doing the work.  Obviously, you will converge faster if you can evaluate more coordinates at each step... but there are diminishing returns to adding more accuracy to each particle.  This simulation shows that using only 20-ish measurements will still give you decent results:</p>
+
+<p><a href="http://www.cs.washington.edu/robotics/mcl/animations/global-floor.gif" rel="nofollow noreferrer">particle filter http://www.cs.washington.edu/robotics/mcl/animations/global-floor.gif</a></p>
+
+<p>I'd imagine your code looks like this:</p>
+
+<pre><code>foreach particle
+    foreach coordinate
+        foreach segment
+            see if a ray through coordinate intersects segment
+</code></pre>
+
+<p>You may want to try structuring it like this:</p>
+
+<pre><code>while there is still time before the next sensor measurement
+    pick a coordinate that's far away from the coordinates that have been tried already
+    foreach particle
+        foreach segment_in_frustrum
+            see if a ray through coordinate intersects segment_in_frustrum
+</code></pre>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4373" data-toggle = "popover">
+				<p>user name : Ian</p>
+				<p> user reputation : 9640</p>
+				<p class = "tagcontent" id = "usertaginfo-4373">{'planning': 10, 'None': 809, 'power': 1, 'algorithm': 10, 'battery': 1, 'slam': 7, 'coverage': 10, 'mobile-robot': 9, 'sensors': 9}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-4373" class = 'collapse'>
+			</div>
+				<textarea id = "speech-4373" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4373">
+					<img id="start_img-4373" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4373">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,348 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Possible stabilize Crazyflie 2.0 drone autonomous flight without additional sensors?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11304" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11304" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 338</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Possible stabilize Crazyflie 2.0 drone autonomous flight without additional sensors?</h2>
+<p>I just bought the <a href="https://www.bitcraze.io/crazyflie-2/" rel="nofollow noreferrer">Crazyflie 2.0</a> drone. This is my first drone, and it is my first time programming a drone.</p>
+
+<p>My first goal is simple: <em>Make the drone hover in place stably for 10 seconds.</em></p>
+
+<p>I found a simple example script that turns up the thrust and then lands the drone. I modified this to 1) extend the time to 10 seconds, 2) reverse thrust if the drone starts tipping, and 3) constantly display the roll, pitch, and yaw in the console.</p>
+
+<p>When I run this, the drone often flies randomly around the room and runs into things; it does not just lift up and hover stably. Why is this? How can I improve things so that it's much more stable? Do I need more sensors, or can I pull this off with just programming?</p>
+
+<pre><code>"""
+Simple example that connects to the first Crazyflie found, hovers, and disconnects.
+"""
+
+import time
+import sys
+from threading import Thread
+import logging
+
+import cflib  # noqa
+from cfclient.utils.logconfigreader import LogConfig  # noqa
+from cflib.crazyflie import Crazyflie  # noqa
+
+logging.basicConfig(level=logging.ERROR)
+
+
+class HoverTest:
+    """Example that connects to the first Crazyflie found, hovers, and disconnects."""
+
+    def __init__(self, link_uri):
+        """ Initialize and run the example with the specified link_uri """
+
+        self._cf = Crazyflie()
+
+        self._cf.connected.add_callback(self._connected)
+        self._cf.disconnected.add_callback(self._disconnected)
+        self._cf.connection_failed.add_callback(self._connection_failed)
+        self._cf.connection_lost.add_callback(self._connection_lost)
+
+        self._cf.open_link(link_uri)
+
+        self._status = {}
+        self._status['gyro.x'] = 0
+        self._status['gyro.y'] = 0
+        self._status['gyro.z'] = 0
+
+        print("Connecting to %s" % link_uri)
+
+    def _connected(self, link_uri):
+        """ This callback is called form the Crazyflie API when a Crazyflie
+        has been connected and the TOCs have been downloaded."""
+        print("Connected to %s" % link_uri)
+
+        # The definition of the logconfig can be made before connecting
+        self._lg_gryo = LogConfig(name="gyro", period_in_ms=10)
+        self._lg_gryo.add_variable("gyro.x", "float")
+        self._lg_gryo.add_variable("gyro.y", "float")
+        self._lg_gryo.add_variable("gyro.z", "float")
+
+        # Adding the configuration cannot be done until a Crazyflie is
+        # connected, since we need to check that the variables we
+        # would like to log are in the TOC.
+        try:
+            self._cf.log.add_config(self._lg_gryo)
+            # This callback will receive the data
+            self._lg_gryo.data_received_cb.add_callback(self._gryo_log_data)
+            # This callback will be called on errors
+            self._lg_gryo.error_cb.add_callback(self._gryo_log_error)
+            # Start the logging
+            self._lg_gryo.start()
+        except KeyError as e:
+            print("Could not start log configuration,"
+                  "{} not found in TOC".format(str(e)))
+        except AttributeError:
+            print("Could not add gyro log config, bad configuration.")
+
+        # Start a separate thread to do the motor test.
+        # Do not hijack the calling thread!
+        Thread(target=self._hover).start()
+
+    def _connection_failed(self, link_uri, msg):
+        """Callback when connection initial connection fails (i.e no Crazyflie
+        at the specified address)"""
+        print("Connection to %s failed: %s" % (link_uri, msg))
+
+    def _connection_lost(self, link_uri, msg):
+        """Callback when disconnected after a connection has been made (i.e
+        Crazyflie moves out of range)"""
+        print("Connection to %s lost: %s" % (link_uri, msg))
+
+    def _disconnected(self, link_uri):
+        """Callback when the Crazyflie is disconnected (called in all cases)"""
+        print("Disconnected from %s" % link_uri)
+
+    def _gryo_log_error(self, logconf, msg):
+        """Callback from the log API when an error occurs"""
+        print("Error when logging %s: %s" % (logconf.name, msg))
+
+    def _gryo_log_data(self, timestamp, data, logconf):
+        """Callback froma the log API when data arrives"""
+        # print("[%d][%s]: %s" % (timestamp, logconf.name, data))
+
+        self._status['gyro.x'] = data['gyro.x']
+        self._status['gyro.y'] = data['gyro.y']
+        self._status['gyro.z'] = data['gyro.z']
+
+    def _hover(self):
+        start_time = time.time()
+        run_time = 7
+
+        thrust_multiplier = 1
+        thrust_step = 500
+        thrust = 20000
+        max_thrust = 39000
+        roll = -1.00
+        pitch = -2.00
+        yaw = 0
+
+        # Unlock startup thrust protection.
+        self._cf.commander.send_setpoint(0, 0, 0, 0)
+
+        # Turn on altitude hold.
+        self._cf.param.set_value("flightmode.althold","True")
+
+        while thrust &gt;= 20000:
+            # Update the position.
+            self._cf.commander.send_setpoint(roll, pitch, yaw, thrust)
+
+            time.sleep(0.01)
+
+            if thrust &gt;= max_thrust and time.time() - start_time &gt;= run_time:
+                # Reverse thrust
+                thrust_multiplier = -1
+
+            if thrust &lt;= max_thrust or thrust_multiplier == -1:
+                thrust += thrust_step * thrust_multiplier
+
+            # Reverse thrust if the drone tips over.
+            if abs(self._status['gyro.x']) &gt;= 75 or abs(self._status['gyro.y']) &gt;= 75:
+                print('Aborting')
+                thrust_multiplier = -2
+
+            print(self._status['gyro.x'], self._status['gyro.y'], self._status['gyro.z'])
+
+        self._cf.commander.send_setpoint(0, 0, 0, 0)
+
+        # Make sure that the last packet leaves before the link is closed
+        # since the message queue is not flushed before closing
+        time.sleep(0.1)
+        self._cf.close_link()
+
+
+if __name__ == '__main__':
+    # Initialize the low-level drivers (don't list the debug drivers)
+    cflib.crtp.init_drivers(enable_debug_driver=False)
+    # Scan for Crazyflies and use the first one found
+    print("Scanning interfaces for Crazyflies...")
+    available = cflib.crtp.scan_interfaces()
+    print("Crazyflies found:")
+    for i in available:
+        print(i[0])
+
+    if len(available) &gt; 0:
+        le = HoverTest(available[0][0])
+    else:
+        print("No Crazyflies found, cannot run example")
+</code></pre>
+
+<p>As you can see, I tried simply adjusting the roll and pitch (to -1.00 and -2.00), but that did not help much. When I use the GUI and a joystick to control the drone and I adjust the roll and pitch trim values to -1.00 and -2.00, this definitely helps stabilize the drone.</p>
+
+<p>Any ideas are welcome. Thank you!</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11304" data-toggle = "popover">
+				<p>user name : Chad Johnson</p>
+				<p> user reputation : 106</p>
+				<p class = "tagcontent" id = "usertaginfo-11304">{'quadcopter': 1, 'None': 0, 'uav': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11304" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11304" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11304">
+					<img id="start_img-11304" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11304">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-11321"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11321" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>tl;dr - You can't control the aircraft's side-to-side motion because you are only modifying "thrust", which controls the up-and-down motion. If you want to control roll and pitch (side-to-side motion), then you need to write to each motor individually. There are other problems, too - read on for more. </p>
+
+<hr>
+
+<p>In looking at your code, I found a couple points where you might be having issues:</p>
+
+<ol>
+<li>You initialize <code>thrust</code> to 20000, which means you enter the loop in the code. This locks you in the <code>while</code> loop for an indeterminate amount of time. This is because you stay locked in the loop until you can get <code>thrust</code> below 20000. The only way that you can decrement thrust is if you <em>both</em> are at or above <code>max_thrust</code> <em>and</em> you have exceeded your time limit <code>run_time</code>. If you just exceed <code>run_time</code> but you are <em>not</em> at or above <code>max_thrust</code>, then you do <em>not</em> decrement thrust. This is problematic because...</li>
+<li>You don't have any bounds checking on <code>thrust</code>. The way your code is currently set up, you check if <code>thrust &lt;= max_thrust</code>, which means that if <code>thrust == max_thrust</code>, you <em>enter</em> the case and proceed to tack on another <code>thrust_step</code> to your current <code>thrust</code> value, putting <code>thrust = max_thrust + thrust_step</code>. From that point on, your thrust is <em>strictly greater than</em> <code>max_thrust</code> and thus you cannot enter that <code>if</code> statement ever again <em>unless</em> your <code>thrust_multiplier</code> is <em>exactly -1</em>. This is an issue where...</li>
+<li>Say you detect the the aircraft is tipping and now your <code>thrust_multiplier</code> is negative two. Well, you only modify <code>thrust</code> if your current thrust is <code>&lt;= max_thrust</code> <em>OR</em> your <code>thrust_multiplier == -1</code>. As I state above, your code <em>will</em> wind up with a <code>thrust</code> value of <code>max_thrust + thrust_step</code> and, with <code>thrust_multiplier = -2</code>, you will not enter the statement that modifies thrust again. You will stay "locked out" of that statement until your elapsed time exceeds <code>run_time</code>, at which point <code>thrust_multiplier</code> gets set to <code>-1</code>, which then "unlocks" that <code>if</code> statement and (presumably) allows you to land. </li>
+</ol>
+
+<p>So, these are code issues right now. To summarize, you can exceed <code>max_thrust</code> because you don't have bounds checking on <code>thrust</code>, which then locks you out of being able to modify thrust again until you get <code>thrust_multiplier</code> set to <em>exactly -1</em>, which then only happens when you exceed the time limit. </p>
+
+<p>Now, even if you fix this (add bounds checking to <code>thrust</code> after you modify it!), you are still not likely to get the "hover in place" performance that you're looking for. </p>
+
+<p>To be explicitly clear, I'm assuming you are actually <em>writing</em> thrust correctly. I don't see where thrust is used beyond your modifying the value. I <em>do</em> see that you wrote <code>self._cf.commander.send_setpoint(0, 0, 0, 0)</code>; I'm not sure if that's the correct command or if you need to include <code>thrust</code> somewhere in there or not. </p>
+
+<p>Anyways, back to flight - you're not going to get the hover in place functionality you want for several reasons:</p>
+
+<ol>
+<li>Biggest reason is that you appear to only be modifying the <em>total</em> thrust. You check if the x gyro <em>OR</em> the y gyro are reading over 75 and take the <strong>same action</strong> regardless of which axis is rotating. If you wanted to "correct" the tip, then you need to modify the thrust about the particular axis that is "tipping". <strong>SIDE NOTE</strong> - You just check if the readings are "over 75" but there aren't any units there. Sub-problem (A) here is that a gyro outputs an angular <em>velocity</em>, not an <em>angle</em>, so you might not even be measuring the angle about that axis, and sub-problem (B) is those units might be <em>degrees</em> or <em>radians</em>. 75 radians is almost 4,300 degrees, or almost 12 revolutions. </li>
+<li>The next problem is that you just appear to "land quickly" if you detect a tipping condition. Once you set the <code>thrust_multiplier</code> to <code>-2</code>, there's no way in your loop to ever set it positive again. If you did modify your code to counter-act roll or pitch, you have no way of resetting it once you stabilized (or got close to stabilized).</li>
+</ol>
+
+<p>My advice:</p>
+
+<ol>
+<li>Print the value of <code>thrust</code> to your monitor and verify that it does exceed <code>max_thrust</code> then enforce limit checking that caps <code>thrust</code> at <code>max_thrust</code>. </li>
+<li>Verify that <code>thrust</code> is actually being used correctly. Can you hard-code a different value for thrust? Does that actually appear to make the change you expected?</li>
+<li>If you want to control roll and pitch, you need to write to the individual motors, not overall thrust.</li>
+<li>For roll and pitch control, you'll want something more sophisticated than just incrementing/decrementing the thrust by fixed amounts. Look up some flight controller PID control examples. If this is an open-source quadcopter then there should be a tutorial/manual published for the unit that would show you how to access those control gains. </li>
+<li>Even if you can get everything setup to control roll and pitch, your quality of control is really only ever as good as your feedback. If you are using a low-quality IMU then you'll get some pretty significant drift and there really isn't much you can do about it.</li>
+</ol>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11321" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-11321">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11321" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11321" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11321">
+					<img id="start_img-11321" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11321">Comment</button>
+			<br><div id = "ans-11627"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11627" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You will not be able to achieve stable horizontal flight without external sensors. The reason is that the Crazyflie 2.0 quadcopter does not have sensors to know where it is in the room, it only has sensor to know its orientation and its altitude (using a pressure sensor).</p>
+
+<p>Chuck is correct in saying that a quadcopter only pushed thrust downwards. The crazyflie runs a stabilisation loop that uses Gyroscope and Accelerometer to measure and correct its orientation. There is also an altitude-hold loop that uses the pressure sensor and accelerometer to keep a stable altitude. This also means that you do not need to care about the current orientation: just send the wanted orientation setpoint and the onboard control loop will do its best to keep the platform at the given setpoint.</p>
+
+<p>To have a stable horizontal flight you should be able to ask for roll and pitch of 0, and alt-hold with a rising rate of 0m/s (this is encoded with thrust=32568 for the moment in the Crazyflie when alt-hold is enabled).  In theory this should result in zero horizontal acceleration since the propeller would only push downwards. Unfortunately, practically this is not working because this is open-loop control and any imperfection in the sensors, motors, motor orientation, or anything else physical, will result in the quadcopter drifting away.</p>
+
+<p>The only way against this drift is to have another sensor, aware of the environment, that can correct this physical imperfection thus closing the position loop. This could be anything from onboard motion sensor to external positioning or camera systems.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11627" data-toggle = "popover">
+				<p>user name : Arnaud Taffanel</p>
+				<p> user reputation : 21</p>
+				<p class = "tagcontent" id = "usertaginfo-11627">{'None': 2}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11627" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11627" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11627">
+					<img id="start_img-11627" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11627">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

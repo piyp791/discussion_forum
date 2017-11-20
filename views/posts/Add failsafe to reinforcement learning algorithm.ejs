@@ -1,0 +1,153 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Add failsafe to reinforcement learning algorithm
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-12320" class = "post">
+			<h2>Question</h2>
+			<div id="vote-12320" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 21</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Add failsafe to reinforcement learning algorithm</h2>
+<p>I'm working on a hexapod that uses A3C to learn how to walk. Ideally I would test it all in a simulator for some structure to the weights/policy but I don't have enough time for that. Obviously there are specific degrees of freedom that would hit each other at certain points, so how could I implement a failsafe that stopped certain movements without messing up the algorithm? If I were to just not allow a movement if I thought it would be dangerous after the algorithm but before the movement, would that disrupt it?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12320" data-toggle = "popover">
+				<p>user name : traw1234</p>
+				<p> user reputation : 5</p>
+				<p class = "tagcontent" id = "usertaginfo-12320">{'python': 0, 'reinforcement-learning': 0, 'None': 0, 'imu': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-12320" class = 'collapse'>
+			</div>
+				<textarea id = "speech-12320" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12320">
+					<img id="start_img-12320" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12320">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-12322"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-12322" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>If I understand correctly, you are planning to use a real structure, instead of a simulation and you are woried about collisions of the legs of the robot during locomotion learning. </p>
+
+<p>Yes, failsafes can and should be implemented. Workspace limits for each leg should be added to the control system. </p>
+
+<p>A conservative and simple approach would be to add joint limits to each leg joints in a way that no collision in possible for any joint values. This would essentially mean that the volumes inside which the legs can move do not intersect eachother. Depending on the size (length) of your hexapod, this might mean serious restrictions or might not make a difference.</p>
+
+<p>You can define joint limits dynamically, based on current values of the adjoining legs. I.e if the left forward legs first joint (I assume only first joints are mainly responsible for collisions) has a certain current (measured) value, the joint limits of the left middle legs first joint (again assuming these are mainly responsible for collisions) has a motion range expressed (restricted) in function of the first leg (and vice versa). If the front leg is in a frontal position the middle leg can move freely forward, however, if the first leg is in a rear position the middle leg can only move a limited amount forward. And vice-versa. </p>
+
+<p>These dynamic limits will affect the RI algorithm, since there are motions which cannot be executed these have to be penalized by the loss function. I assume this will cause longer learning times. Furthermore it will also mean the your loss function will not only contain the reward for reaching the goal, but has to either model the joint limits exactly as your control system or get a feedback from your control system that the RI algorithm issued a command (action) which cannot be executed (woud lead to collision) and has to be penalized. I assume if the loss function takes care of the penalties, and the penalties are high enough, these limtis will not affect the state transitions of the robot, since these actions will never be further explored, since the penalty on them is so high. </p>
+
+<p>There is however a different challenge, not just collisions. Your hexapod can fall down. Now this is a bit more harder to detect by the control system then the adding joint limits. It basically means that your control system will have to calculate the CoG of the robot and make sure that its projection remains inside the support polygon. This means that the control system wil have to simulate the robot motion, before carring out the action. If the action would lead to the robot falling down, again the control system will have to signal this to the loss function and the loss function has to penalize the actions.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12322" data-toggle = "popover">
+				<p>user name : 50k4</p>
+				<p> user reputation : 2800</p>
+				<p class = "tagcontent" id = "usertaginfo-12322">{'geometry': 0, 'None': 193, 'kinematics': 0, 'robotic-arm': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-12322">Load Comments</button></br>
+			<div id = "commentsection-12322" class = 'collapse'>
+			<div id = "comment-21692" class = "comment">
+				<p>A dynamic failsafe is exactly what I'm looking for. I've never thought about the balance of the robot though, that seems like a serious issue. Would implementing a gyro help at all with that/would I have to create a formula to calculate the CoG?</p>
+			</div>
+			<div id = "comment-21693" class = "comment">
+				<p>a gyro would tell you that the robot fell. However in that case you would need to interween (or implement a standup procedure). If you do not want to execute motions that would lead to the robot falling, I do not think there is a way around simulating the CoG motions before the step is taken. Maybe you could further add restriction about the number of legs in the air and their sequence to make sure that the support polygon is large enough, but those are a lot of artificial rules.</p>
+			</div>
+			<div id = "comment-21696" class = "comment">
+				<p>The one rule I was going to add was that only 3 legs could be in the air at a time (because that's the basis of hexapods). Falling down would also mess with the RL algo so I think simulations are a must. Would that be using Inverse Kinematics? Because I thought about doing something similar before but realized that I would just be writing the code for the robot to be able to manually walk, defeating the purpose of the RL.</p>
+			</div>
+			<div id = "comment-21697" class = "comment">
+				<p>3 legs in the air for not falling sound like a combined rule. There are more 3 leg combinations that can be lifted. However this will limit the full potential of the hexapod. If the body is pushed fully forward and one of the middle legs is pushed back there may be other possiblities for liftign legs</p>
+			</div>
+			<div id = "comment-21698" class = "comment">
+				<p>Depending of what is your purpose, Ik might help or not. IK doe snot tell you where to put your leg down, it just tells you which joint angles you need of you decided where to put the leg down. Why let RI learn the IK when it can be developed?</p>
+			</div>
+			<div id = "comment-21699" class = "comment">
+				<p>RI can also learn sequencing of the legs. That might be the easies. Just definea set of actions the legs can take. Lift, forward, back put down. and leg the RI learn the sequencing... There are a lot of options...</p>
+			</div>
+			<div id = "comment-21701" class = "comment">
+				<p>I think I'll start with sequencing just so that it can actually move and then, if that works, move onto some more complex learning (and deal with the balance problems). All of your help is much appreciated.</p>
+			</div>
+			<div id = "comment-21702" class = "comment">
+				<p>Good luck and have fun with it</p>
+			</div>
+			</div>
+				<textarea id = "speech-12322" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12322">
+					<img id="start_img-12322" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12322">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

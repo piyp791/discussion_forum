@@ -1,0 +1,143 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to use the Homogeneous transformation matrix?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8053" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8053" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 236</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to use the Homogeneous transformation matrix?</h2>
+<p>I am trying to understand how to use, what it requires compute the homogenous transformation matrix. </p>
+
+<p>I know 2 points from 2 different frames, and 2 origins from their corresponding frames. </p>
+
+<p>I how transformation matrix looks like, but whats confusing me is how i should compute the (3x1) position vector which the matrix needs.  As i understand is, this vector a origin of the old frame compared to the new frame.  But how to calculate it, the obvious answer (I think) would be to subtract both ($O_{new} - O_{old}$ ), but it does not feel right. </p>
+
+<p>I know its a simple question but my head cannot get around this issue, and how can i prove it the right way, with the information i know?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8053" data-toggle = "popover">
+				<p>user name : Carlton Banks</p>
+				<p> user reputation : 102</p>
+				<p class = "tagcontent" id = "usertaginfo-8053">{'control': 1, 'None': 0, 'inverse-kinematics': 11, 'frame': 2, 'joint': 1, 'visual-servoing': 1, 'kinematics': 2, 'robotic-arm': 5, 'jacobian': 5, 'rotation': 0, 'motion-planning': 2, 'forward-kinematics': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8053" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8053" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8053">
+					<img id="start_img-8053" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8053">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8055"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8055" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>A homogeneous transformation matrix $H$ is often used as a matrix to perform transformations from one frame to another frame, <em>expressed in the former frame</em>. The translation vector thus includes [x,y(,z)] coordinates of the latter frame expressed in the former. Perhaps that this already answers your question, but below is a more elaborate explanation.</p>
+
+<p>The transformation matrix contains information about both rotation and translation and belongs to the special Eucledian group $SE(n)$ in $n$-D. It consists of a rotation matrix $R$ and translation vector $r$. If we permit no shear, the rotation matrix contains only information about the rotation and belongs to the orthonormal group $SO(n)$. We have:</p>
+
+<p>$$H=\begin{bmatrix} R &amp; r \\ \bar{0} &amp; 1 \end{bmatrix}$$</p>
+
+<p>Let's define  $H^a_b$ the transformation matrix that expresses coordinate frame $\Phi_b$ in $\Phi_a$, expressed in $\Phi_a$. $\Phi_a$ can be your origin, but it can also be an other frame.</p>
+
+<p>You can use the transformation matrix to express a point $p=[p_x\ p_y]^\top$ (vectors) in another frame:
+$$P_a = H^a_b\,P_b$$
+$$P_b = H^b_c\,P_c$$
+with
+$$P = \begin{bmatrix} p \\ 1 \end{bmatrix}$$
+The best part is that you can stack them as follows:
+$$P_a = H^a_b H^b_c\,P_c = H^a_c\,P_c $$ 
+Here a small 2 D example. Consider a frame $\Phi_b$ translated $[3\ 2]^\top$ and rotated $90^\circ$ degrees with respect to $\Phi_a$.
+$$H^a_b = \begin{bmatrix}\cos(90^\circ) &amp; -\sin(90^\circ) &amp; 3 \\ \sin(90^\circ) &amp; \cos(90^\circ) &amp; 2 \\ 0 &amp; 0 &amp; 1   \end{bmatrix}=\begin{bmatrix}0 &amp; -1 &amp; 3 \\ 1 &amp; 0 &amp; 2 \\ 0 &amp; 0 &amp; 1   \end{bmatrix}$$
+A point $p_b=[3\ 4]^\top$ expressed in frame $\Phi_b$ is 
+$$\begin{bmatrix}p_{a,x} \\ p_{a,y} \\ 1 \end{bmatrix} = \begin{bmatrix}0 &amp; -1 &amp; 3 \\ 1 &amp; 0 &amp; 2 \\ 0 &amp; 0 &amp; 1   \end{bmatrix}\begin{bmatrix}3 \\ 4 \\ 1  \end{bmatrix}=\begin{bmatrix}-1 \\5 \\1 \end{bmatrix} \to p_a = \begin{bmatrix}-1\\5\end{bmatrix}$$
+Try to make a drawing to improve your understanding.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8055" data-toggle = "popover">
+				<p>user name : JJM Driessen</p>
+				<p> user reputation : 422</p>
+				<p class = "tagcontent" id = "usertaginfo-8055">{'battery': 1, 'None': 22, 'driver': 3}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8055" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8055" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8055">
+					<img id="start_img-8055" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8055">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

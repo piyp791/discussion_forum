@@ -1,0 +1,240 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>What's an efficient way to visit every reachable space on a grid with unknown obstacles?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-952" class = "post">
+			<h2>Question</h2>
+			<div id="vote-952" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">10</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 2335</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>What's an efficient way to visit every reachable space on a grid with unknown obstacles?</h2>
+<p>I'm trying to create a map of the obstacles in a fairly coarse 2D grid space, using exploration.  I detect obstacles by attempting to move from one space to an adjacent space, and if that fails then there's an obstacle in the destination space (there is no concept of a rangefinding sensor in this problem).</p>
+
+<p><a href="http://www.eriding.net/resources/general/prim_frmwrks/images/asses/asses_y3_5d_3.gif" rel="nofollow noreferrer">example grid http://www.eriding.net/resources/general/prim_frmwrks/images/asses/asses_y3_5d_3.gif</a> (for example)</p>
+
+<p>The process is complete when all the reachable squares have been visited.  In other words, some spaces might be completely unreachable even if they don't have obstacles because they're surrounded.  This is expected.</p>
+
+<p>In the simplest case, I could use <a href="https://stackoverflow.com/a/11556238/2063546">a DFS algorithm</a>, but I'm worried that this will take an excessively long time to complete &mdash; the robot will spend more time backtracking than exploring new territory.  I expect this to be especially problematic when attempting to reach the unreachable squares, because the robot will exhaust every option.</p>
+
+<p>In the more sophisticated method, the proper thing to do seems to be <a href="http://en.wikipedia.org/wiki/Boustrophedon_cell_decomposition" rel="nofollow noreferrer">Boustrophedon cell decomposition</a>.<br>
+<a href="http://planning.cs.uiuc.edu/img2836.gif" rel="nofollow noreferrer">Boustrophedon cell decomposition http://planning.cs.uiuc.edu/img2836.gif</a></p>
+
+<p>However, I can't seem to find a good description of the Boustrophedon cell decomposition algorithm (that is, a complete description in simple terms).  There are resources like <a href="http://planning.cs.uiuc.edu/node352.html" rel="nofollow noreferrer">this one</a>, <a href="http://planning.cs.uiuc.edu/node262.html" rel="nofollow noreferrer">or this more general one on vertical cell decomposition</a> but they don't offer much insight into the high-level algorithms nor the low-level data structures involved.</p>
+
+<p>How can I visit (map) this grid efficiently?  If it exists, I would like an algorithm that performs better than $O(n^2)$ with respect to the total number of grid squares (<em>i.e.</em> better than $O(n^4)$ for an $n*n$ grid).</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-952" data-toggle = "popover">
+				<p>user name : Ian</p>
+				<p> user reputation : 9640</p>
+				<p class = "tagcontent" id = "usertaginfo-952">{'planning': 10, 'None': 809, 'power': 1, 'algorithm': 10, 'battery': 1, 'slam': 7, 'coverage': 10, 'mobile-robot': 9, 'sensors': 9}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-952">Load Comments</button></br>
+			<div id = "commentsection-952" class = 'collapse'>
+			<div id = "comment-2253" class = "comment">
+				<p>Very interesting problem. For clarity, are you defining "efficient" as fewest repeated visits to any given cell?</p>
+			</div>
+			<div id = "comment-2255" class = "comment">
+				<p>That might be one way to say it.  Really, I'm trying to avoid algorithms that are $O(n^2)$ or worse with respect to the total number of grid squares.</p>
+			</div>
+			<div id = "comment-2262" class = "comment">
+				<p>I guess this is a similar problem to that faced by CNC machining software which must remove material by visiting it with the cutting tool.</p>
+			</div>
+			<div id = "comment-2263" class = "comment">
+				<p>@Rocketmagnet: not quite, since the CNC machine knows the "obstacles" *a priori*, whereas I am detecting them while I move.</p>
+			</div>
+			<div id = "comment-2268" class = "comment">
+				<p>Yes, this is an online search of a bounded environment where the robot knows its location.  The quantity, locations, and shapes of the obstacles is completely unknown -- they might not be convex.</p>
+			</div>
+			<div id = "comment-2278" class = "comment">
+				<p>I think this should be restated specifically as: How can I do a boustrophedon decomposition. Then in another question, we can discuss the online problem of exploring a map. Just my thought for people who might visit at a later time, as this question is well researched, but asks two separate things.</p>
+			</div>
+			<div id = "comment-2302" class = "comment">
+				<p>I'm considering editing the question in one of a few ways.  Based on what I'm seeing here, Boustrophedon decomposition is not an online algorithm. Is that correct?</p>
+			</div>
+			</div>
+				<textarea id = "speech-952" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-952">
+					<img id="start_img-952" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-952">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-958"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-958" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">8</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Boustrophedon cell decomposition is simply sub-dividing an environment into areas which can be efficiently covered by a boustrophedon path. A trapezoidal decomposition will do, and can be accomplished using a line-sweep algorithm.
+See [Choset 2000], <a href="http://www.personal.kent.edu/~rmuhamma/Compgeometry/MyCG/PolyPart/polyPartition.htm" rel="noreferrer">This web site</a>
+, or (I recommend!) the excellent book "Computational Geometry" by Mark de Berg, et. al, for a complete description of the data structures and algorithms required.</p>
+
+<p>Choset, Howie. "Coverage of Known Spaces: The Boustrophedon Cellular Decomposition" <em>Autonomous Robots</em>, 2000.</p>
+
+<hr>
+
+<p>For example, consider the set of obstacles as edges and vertices. Let's say the environment is also bounded by a special polygon. We have something like the following. To decompose this space, we simply add vertical edges between every vertex and the nearest line or vertex.</p>
+
+<p><a href="http://www.jvanderhook.info/images/slabs/drawing_1.png" rel="noreferrer">http://www.jvanderhook.info/images/slabs/drawing_1.png</a>
+<a href="http://www.jvanderhook.info/images/slabs/drawing_2.png" rel="noreferrer">http://www.jvanderhook.info/images/slabs/drawing_2.png</a></p>
+
+<p><a href="http://www.jvanderhook.info/images/slabs/drawing_3.png" rel="noreferrer">http://www.jvanderhook.info/images/slabs/drawing_3.png</a>
+<a href="http://www.jvanderhook.info/images/slabs/drawing_4.png" rel="noreferrer">http://www.jvanderhook.info/images/slabs/drawing_4.png</a></p>
+
+<p>To accomplish this in code, you need only a line-segment intersection test, a sorted list of edges, and a sorted list of vertices. </p>
+
+<ol>
+<li>From every vertex $v_i$ in left-to-right order,</li>
+<li>Create a vertical line $l_i$ at each $v_i$, extended until the first edge or vertex it intersects</li>
+<li>At each intersection, create a new vertex. </li>
+</ol>
+
+<hr>
+
+<p>When this is done, the set of new edges and vertices encloses only trapezoids. But I emphasize, you can't do this <em>online</em> (without prior knowledge of the obstacles). If you want to do robust coverage without prior knowledge, you might look at "bug algorithms." In particular, here's a simple algorithm, assuming the environment is bounded.</p>
+
+<hr>
+
+<ol>
+<li><p>From the start position, move up and left until you reach the upper-left corner of the environment. If you encounter an obstacle first, you must travel around it. You know something is an obstacle if it can be circumnavigated (bump and move).</p></li>
+<li><p>From the upper left, move right until you encounter the boundary. Then move down and left (We're doing a boustrophedon of the entire space).</p></li>
+<li><p>When you are on a left-right line and encounter an obstacle, you have two options.  (i) We can circumnavigate until we reach the left-right line we are trying to cover, then continue.  (ii), We can turn around and cover a new left-right line until we find our way past the obstacle or end up in this situation again.  I'll illustrate. </p></li>
+</ol>
+
+<p><a href="http://www.jvanderhook.info/images/bou_cart2.png" rel="noreferrer">Option 2 http://www.jvanderhook.info/images/bou_cart2.png</a>
+<a href="http://www.jvanderhook.info/images/bou_cart.png" rel="noreferrer">Option 2 http://www.jvanderhook.info/images/bou_cart.png</a></p>
+
+<p>On the left, we move around the obstacle until we can return to the "line" we were trying to follow. On the right, we continue covering the (smaller) area on the one side of the obstacle.</p>
+
+<p>The advantage of the first method is you always map out the obstacle completely before you make a decision about how to get around it, thus you can take the shorter path. The advantage of the second method is you don't have to get around the obstacle at all, you can just proceed to cover the area you are in. </p>
+
+<p><em>Note that this defines your boustrophedon decomposition in an online way</em>: You cover the area between the obstacles or between the obstacles and the boundary.</p>
+
+<p>However, as far as I know, the first method is easier to analyze. The more complicated algorithms (like BFS, etc), are chosen either because the environment is unbounded (you don't want to spend forever looking for a boundary), or there is a really nasty obstacle in the way that basically partitions the environment.  Why is this bad? look at this example:</p>
+
+<p><a href="http://www.jvanderhook.info/images/bou_cart3.png" rel="noreferrer">http://www.jvanderhook.info/images/bou_cart3.png</a></p>
+
+<p>Moving left-right, then circling each obstacle produces <em>way</em> too many covers of the small parts between each obstacle. In fact, without global path planning, you can make this as bad as the resolution of your grid by placing these columns 1 px wide, as tall as the entire environment and 1 px apart. Then you'd have to move around the obstacle each time you hit it.</p>
+
+<p>This is why I asked if you had some idea of where you were in the environment or could do global path planning. But the <em>online</em> vs <em>offline</em> discussion and optimal algorithms for this is not what you really wanted.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-958" data-toggle = "popover">
+				<p>user name : Josh Vander Hook</p>
+				<p> user reputation : 3960</p>
+				<p class = "tagcontent" id = "usertaginfo-958">{'None': 345}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-958">Load Comments</button></br>
+			<div id = "commentsection-958" class = 'collapse'>
+			<div id = "comment-2269" class = "comment">
+				<p>Just finding a description (in simple terms) of the Boustrophedon decomposition algorithm would be sufficient.  Failing that, a simple description of an algorithm with similar performance is fine.</p>
+			</div>
+			<div id = "comment-2273" class = "comment">
+				<p>I've added a simple boustrophedon decomposition example.</p>
+			</div>
+			</div>
+				<textarea id = "speech-958" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-958">
+					<img id="start_img-958" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-958">Comment</button>
+			<br><div id = "ans-7904"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7904" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>In the end, I found that the best way to do this was to employ a very simple concept: <a href="https://en.wikipedia.org/wiki/Flood_fill" rel="nofollow">Flood Fill</a>.  I used a <a href="https://en.wikipedia.org/wiki/Flood_fill#Alternative_implementations" rel="nofollow">stack-based iterative approach</a> instead of the recursive option, and modified it for physical space by using an A* search to find a path from the current location to the next location in the stack (using only those grid squares that have already been visited, since I'm guaranteed to have a path between them).</p>
+
+<p>The efficiency seems fairly reasonable.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7904" data-toggle = "popover">
+				<p>user name : Ian</p>
+				<p> user reputation : 9640</p>
+				<p class = "tagcontent" id = "usertaginfo-7904">{'planning': 10, 'None': 809, 'power': 1, 'algorithm': 10, 'battery': 1, 'slam': 7, 'coverage': 10, 'mobile-robot': 9, 'sensors': 9}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7904">Load Comments</button></br>
+			<div id = "commentsection-7904" class = 'collapse'>
+			<div id = "comment-19883" class = "comment">
+				<p>Like me, you have discovered frontier-based exploration http://www.cs.cmu.edu/~motionplanning/papers/sbp_papers/integrated1/yamauchi_frontiers.pdf and it indeed works well</p>
+			</div>
+			</div>
+				<textarea id = "speech-7904" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7904">
+					<img id="start_img-7904" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7904">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

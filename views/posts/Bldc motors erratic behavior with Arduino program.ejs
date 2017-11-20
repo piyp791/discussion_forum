@@ -1,0 +1,315 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Bldc motors erratic behavior with Arduino program
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-10154" class = "post">
+			<h2>Question</h2>
+			<div id="vote-10154" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 78</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Bldc motors erratic behavior with Arduino program</h2>
+<p>I've been making my own quadcopter flight controller using <strong>Arduino Mega</strong>. This is the sample code I wrote in order to <strong>test the esc timers and motors</strong>:</p>
+
+<pre><code>byte channelcount_1, channelcount_2, channelcount_3, channelcount_4;  
+int receiverinput_channel_1, receiverinput_channel_2, receiverinput_channel_3, receiverinput_channel_4, start;  
+unsigned long channel_timer_1, channel_timer_2, channel_timer_3, channel_timer_4, current_time, esc_looptimer;  
+unsigned long zero_timer, timer_1, timer_2, timer_3, timer_4;  
+void setup() {  
+  // put your setup code here, to run once:  
+  DDRC |= B11110000; //Setting digital pins 30,31,32,33 as output  
+  DDRB |= B10000000;; //Setting LED Pin 13 as output  
+  //Enabling Pin Change Interrupts  
+  PCICR |= (1 &lt;&lt; PCIE0);  
+  PCMSK0 |= (1 &lt;&lt; PCINT0); //Channel 3 PIN 52  
+  PCMSK0 |= (1 &lt;&lt; PCINT1); //Channel 4 PIN 53  
+  PCMSK0 |= (1 &lt;&lt; PCINT2); //Channel 2 PIN 51  
+  PCMSK0 |= (1 &lt;&lt; PCINT3); //Channel 1 PIN 50  
+  //Wait till receiver is connected
+  while (receiverinput_channel_3 &lt; 990 || receiverinput_channel_3 &gt; 1020 || receiverinput_channel_4 &lt; 1400) {  
+    start++;  
+    PORTC |= B11110000;  
+    delayMicroseconds(1000); // 1000us pulse for esc  
+    PORTC &amp;= B00001111;  
+    delay(3); //Wait 3 ms for next loop  
+    if (start == 125) { // every 125 loops i.e. 500ms  
+      digitalWrite(13, !(digitalRead(13))); //Change LED status  
+      start = 0; //Loop again  
+    }  
+  }  
+  start = 0;  
+  digitalWrite(13, LOW); //Turn off LED pin 13  
+  zero_timer = micros();  
+}  
+void loop() {  
+  // put your main code here, to run repeatedly:  
+  while (zero_timer + 4000 &gt; micros());  
+  zero_timer = micros();  
+  PORTC |= B11110000;  
+  channel_timer_1 = receiverinput_channel_3 + zero_timer; //Time calculation for pin 33  
+  channel_timer_2 = receiverinput_channel_3 + zero_timer; //Time calculation for pin 32  
+  channel_timer_3 = receiverinput_channel_3 + zero_timer; //Time calculation for pin 31  
+  channel_timer_4 = receiverinput_channel_3 + zero_timer; //Time calculation for pin 30  
+  while (PORTC &gt;= 16) //Execute till pins 33,32,31,30 are set low  
+  {  
+    esc_looptimer = micros();  
+    if (esc_looptimer &gt;= channel_timer_1)PORTC &amp;= B11101111; //When delay time expires, pin 33 is set low  
+    if (esc_looptimer &gt;= channel_timer_2)PORTC &amp;= B11011111; //When delay time expires, pin 32 is set low  
+    if (esc_looptimer &gt;= channel_timer_3)PORTC &amp;= B10111111; //When delay time expires, pin 31 is set low  
+    if (esc_looptimer &gt;= channel_timer_4)PORTC &amp;= B01111111; //When delay time expires, pin 30 is set low  
+  }  
+}  
+//Interrupt Routine PCI0 for Receiver  
+ISR(PCINT0_vect)  
+{  
+  current_time = micros();  
+  //Channel 1  
+  if (PINB &amp; B00001000)  
+  {  
+    if (channelcount_1 == 0 )  
+    {  
+      channelcount_1 = 1;  
+      channel_timer_1 = current_time;  
+    }  
+  }  
+  else if (channelcount_1 == 1 )  
+  {  
+    channelcount_1 = 0;  
+    receiverinput_channel_1 = current_time - channel_timer_1;  
+  }  
+  //Channel 2  
+  if (PINB &amp; B00000100)  
+  {  
+    if (channelcount_2 == 0 )  
+    {  
+      channelcount_2 = 1;  
+      channel_timer_2 = current_time;  
+    }  
+  }  
+  else if (channelcount_2 == 1)  
+  {  
+    channelcount_2 = 0;  
+    receiverinput_channel_2 = current_time - channel_timer_2;  
+  }  
+
+  //Channel 3  
+  if (PINB &amp; B00000010)  
+  {  
+    if (channelcount_3 == 0 &amp;&amp; PINB &amp; B00000010)  
+    {  
+      channelcount_3 = 1;  
+      channel_timer_3 = current_time;  
+    }  
+  }  
+  else if (channelcount_3 == 1)  
+  {  
+    channelcount_3 = 0;  
+    receiverinput_channel_3 = current_time - channel_timer_3;  
+  }  
+  //Channel 4  
+  if (PINB &amp; B00000001) {  
+    if (channelcount_4 == 0 )  
+    {  
+      channelcount_4 = 1;  
+      channel_timer_4 = current_time;  
+    }  
+  }  
+  else if (channelcount_4 == 1)  
+  {  
+    channelcount_4 = 0;  
+    receiverinput_channel_4 = current_time - channel_timer_4;  
+  }  
+}
+</code></pre>
+
+<p>However, my issue here is that the <strong>bldc motors i'm using don't work smoothly when connected to the Arduino.</strong> They <strong>erratically stop and even change direction of rotation</strong> at the same throttle input. I've tested them by connecting them directly to the transmitter and they work fine there with perfect rotation and speed. Can someone please help me out and tell me where I might be going wrong? </p>
+
+<p>EDIT: I do realize posting the entire Arduino code might be overkill, but I've been trying to solve this problem for three days (as of 22nd June,16) and I really do hope someone can point out any improvements/corrections in my code.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10154" data-toggle = "popover">
+				<p>user name : Sandesh</p>
+				<p> user reputation : 52</p>
+				<p class = "tagcontent" id = "usertaginfo-10154">{'quadcopter': 1, 'None': 4, 'raspberry-pi': 1, 'arduino': 1, 'brushless-motor': 0, 'esc': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10154">Load Comments</button></br>
+			<div id = "commentsection-10154" class = 'collapse'>
+			<div id = "comment-18079" class = "comment">
+				<p>You might improve your question with changing the title to your specific problem, and making the code more readable. Also, try to isolate your problem. Simplify to one channel a.s.o.</p>
+			</div>
+			<div id = "comment-18080" class = "comment">
+				<p>3 * 125 != 500.  Also you have a busy wait at the start of the loop function, that will cause a nice bit of un-smoothness.  In loop the if(esc_looptimer) statements will all be true at the same time, because channel_timer_n are all set to the same value(?).</p>
+			</div>
+			<div id = "comment-18081" class = "comment">
+				<p>@sandesh you wanna look into this code if you are looking for flight controller code -https://github.com/baselsw/BlueCopter/tree/master/BlueCopter</p>
+			</div>
+			</div>
+				<textarea id = "speech-10154" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10154">
+					<img id="start_img-10154" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10154">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-10161"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10161" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Can you make a written description (comments, text, or block diagram) of what you think the code is supposed to be doing?</p>
+
+<p>I can't figure out what your whole timer scheme is supposed to do. Here's what happens when you execute it, though (assuming you make it to the main <code>loop</code> okay):</p>
+
+<ol>
+<li><code>void loop() {</code>
+
+<ul>
+<li>So here you start a loop. By definition, it loops. </li>
+</ul></li>
+<li><code>while (zero_timer + 4000 &gt; micros());<br>
+zero_timer = micros();</code>
+
+<ul>
+<li>Here you set a while loop based on the condition <code>(some starting time + constant) &gt; current time</code>, but then on <em>the next line</em> you declare <code>(some starting time) = current time</code>. So this looks like you're setting up an infinite loop... inside the infinite loop.</li>
+</ul></li>
+<li><code>PORTC |= B11110000;</code>
+
+<ul>
+<li>You set the four output pins to <code>ON</code>, but then:</li>
+</ul></li>
+<li><code>channel_timer_1 = receiverinput_channel_3 + zero_timer;</code>
+
+<ul>
+<li>Here you set <code>channel_time_N</code> equal to <code>receiverinput_channel_3</code> (note you do this for all of the channel timers - they're all set equal to channel_3) plus <code>zero_timer</code>. Zero timer was <em>just set</em> one line ago equal to the current time. </li>
+<li>What is <code>receiverinput_channel_3</code>? Well, it's not initialized, so it's either <em>whatever was in the allocated memory when the function was declared</em>, or:</li>
+<li><code>receiverinput_channel_3 = current_time - channel_timer_3</code>, which evaluates to whatever the interrupt time step is for the first interrupt.</li>
+<li><strong><code>receiverinput_channel_3</code> gets locked in to the interrupt time interval.</strong> This is because it *only gets updated if <code>channelcount_3</code> is equal to one. However, when you set the value for <code>receiverinput_channel_3</code>, you set <code>channelcount_3</code> equal to zero, meaning that it never gets updated until the interrupt gets called again. At that point, <em>if the other criteria are met</em>, you set <code>channel_timer_3</code> equal to <code>current_time</code> and toggle <code>channelcount_3</code> again. </li>
+<li>Now that <code>channelcount_3</code> has been toggled, <em>on the next interrupt call</em>, you again define <code>receiverinput_channel_3 = current_time - channel_timer_3</code>, <strong>but channel_timer_3 was set equal to the current_time on the previous interrupt, so receiverinput_channel_3 is always equal to the interrupt interval.</strong></li>
+</ul></li>
+<li>So now, realizing that <code>channel_timer_1</code> is set to the almost-current time (zero_timer) plus the interrupt interval (now + a very small value), we continue:</li>
+<li><code>while (PORTC &gt;= 16) {</code>
+
+<ul>
+<li>Okay, start a loop to basically pause execution until all of the timers expire, BUT:</li>
+</ul></li>
+<li><code>esc_looptimer = micros();</code> 
+
+<ul>
+<li>Set another constant equal to the now-current time, and THEN:</li>
+</ul></li>
+<li><code>if (esc_looptimer &gt;= channel_timer_1)PORTC &amp;= B11101111;</code>
+
+<ul>
+<li>As soon as the current time (as continuously defined by <code>esc_looptimer</code>) is greater than the start time outside this inner loop (<code>zero_time</code>) plus the <em>interrupt interval</em>, (<code>channel_timer_1</code> as defined above), you turn the output pin off. </li>
+<li>If you manage to hit the timing such that you invoke an interrupt before you hit the <code>esc_looptimer &gt;= channel_timer_1</code> criteria for turning the output, then you set <code>channel_timer_1 = current_time</code>, meaning that <strong>on the next loop iteration</strong>, you declare <code>esc_looptimer = (current time)</code> and then you meet the criteria and immediately turn the output off. </li>
+</ul></li>
+</ol>
+
+<p><strong>So, the tl;dr version of this is that you are turning your ESCs on then immediately back off, probably before the ESCs get a chance to evaluate the timing on the motors.</strong> Depending on the BLDC motors you're using, they may not have shaft position encoders ("sensorless" BLDC), <a href="http://www.digikey.com/en/articles/techzone/2013/mar/an-introduction-to-brushless-dc-motor-control" rel="nofollow">meaning that</a>:</p>
+
+<blockquote>
+  <p>"A stationary motor generates no back EMF, <strong>making it impossible for the microcontroller to determine the position of the motor parts at start-up.</strong> The solution is to start the motor in an open loop configuration until sufficient EMF is generated for the microcontroller to take over motor supervision. These so-called  sensorless  BLDC motors are gaining in popularity. </p>
+</blockquote>
+
+<p>So you turn the ESC on, then before it has a chance to start the motor to the point it has adequate control, you turn the ESC back off again. Once all the ESCs are off you turn them back on then immediately back off again. This process repeats. </p>
+
+<p>With a BLDC motor, the <a href="https://en.wikipedia.org/wiki/Commutator_(electric)" rel="nofollow">commutator</a> is removed. The commutator was what had previously provided the electrical current to the correct coils at the right time. Instead, a BLDC motor relies on electronic commutation, meaning you have to <em>sequence the coils in the correct order, <strong>at the correct time</em></strong>.</p>
+
+<p>If you turn the ESC on and then off again before it has a chance to determine the correct timing for energizing the coil then you would get erratic behavior from the motors because they're not being controlled properly. </p>
+
+<p>I really have no idea what your whole interrupt sequence is supposed to be doing, but I can pretty much guarantee it's not doing what you intended. If you just want the motor to be on for some period of time, then my suggestion would be to hard-code that run time as a constant and wait for it to elapse. </p>
+
+<p>As @Jakob mentioned, the code is made more difficult to read because you're trying to control all four ESCs at once. Try getting one to work as desired first, then try to encapsulate the code for that into a function, then invoke that function for each ESC you want to run.</p>
+
+<p>As a final note, I'd say that I'm dubious as to what the output of <code>PINB &amp; B00000100</code> and similar lines would evaluate to: true or false? I thought PINB was one pin - how do you AND one pin with 8? What is the output of that function?. Also, you don't appear to really initialize anything equal to zero. This means that you're stuck with whatever is in the allocated memory when the program starts - if this isn't a 1 or a 0 in your <code>channelcount_N</code> variables, then your code never does anything.  </p>
+
+<p>If you revamp the code and it still doesn't work, <em>please post a wiring diagram</em> showing how everything is connected. But again, as it stands I don't think your code is doing what you think it's doing.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10161" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-10161">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10161">Load Comments</button></br>
+			<div id = "commentsection-10161" class = 'collapse'>
+			<div id = "comment-18100" class = "comment">
+				<p>Thanks so much Chuck :D Your observation helped me figure out where I went wrong. Turns out, the channel_timer_* variable i was using to power the esc signal, was also being used in the interrupt to get input from the transmitter box. So effectively, the value of the channel_timer_* variables kept changing continuously, which was causing the erratic behavior of the motor. I corrected that and now its working so smooth :D 
+Thanks a lot :)</p>
+			</div>
+			</div>
+				<textarea id = "speech-10161" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10161">
+					<img id="start_img-10161" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10161">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

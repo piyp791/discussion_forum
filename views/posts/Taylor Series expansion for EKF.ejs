@@ -1,0 +1,194 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Taylor Series expansion for EKF
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-1006" class = "post">
+			<h2>Question</h2>
+			<div id="vote-1006" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">7</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 554</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Taylor Series expansion for EKF</h2>
+<p>In <a href="http://www.probabilistic-robotics.org/" rel="nofollow">Probablistic Robotics by S. Thrun</a>, in the first section on the Extended Kalman Filter, it talks about linearizing the process and observation models using first order Taylor expansion.  </p>
+
+<p>Equation 3.51 states:</p>
+
+<p>$g(u_t,x_{t-1}) \approx g(u_t,\mu_{t-1}) + g\prime(u_t, \mu_{t-1})(x_{t-1} - \mu_{t-1})$</p>
+
+<p>I think $\mu_{t-1}$ is the state estimate from the last time step.  My question is: what is $x_{t-1}$?  </p>
+
+<p>Also, the EKF algorithm following this (on table 3.3) does not use the factor $(x_{t-1} - \mu_{t-1})$ anywhere, only $g\prime(u_t, \mu_{t-1})$.  So after being confused about $x_{t-1}$, I'm left wondering where it went in the algorithm.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1006" data-toggle = "popover">
+				<p>user name : munk</p>
+				<p> user reputation : 406</p>
+				<p class = "tagcontent" id = "usertaginfo-1006">{'None': 2, 'noise': 7, 'theory': 7, 'ekf': 14, 'mapping': 13, 'slam': 41, 'kalman-filter': 26}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-1006" class = 'collapse'>
+			</div>
+				<textarea id = "speech-1006" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1006">
+					<img id="start_img-1006" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1006">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-1007"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1007" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>$\mu_{t-1}$ is the state estimate from the last time step, $x_{t-1}$ is the actual state (a random variable) in the last time step. </p>
+
+<p>Basically it goes like this: in the traditional Kalman filter, you have linear models that tells us how states evolve and measurements are made. In the EKF you have non-linear models but want to use the Kalman filter equations, so you use the first order Taylor expansion as the KF linear model. That way you can still propagate covariances appropriately.</p>
+
+<p>Note that state and measurement predictions still use the non-linear models. So linearization "only" affects covariance propagation -- which affects everything really, because that regulates how certain you are about your estimates and the relative trust you place on your state estimate vs your measurements.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1007" data-toggle = "popover">
+				<p>user name : georgebrindeiro</p>
+				<p> user reputation : 1266</p>
+				<p class = "tagcontent" id = "usertaginfo-1007">{'computer-vision': 9, 'None': 98, 'slam': 9}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1007">Load Comments</button></br>
+			<div id = "commentsection-1007" class = 'collapse'>
+			<div id = "comment-2362" class = "comment">
+				<p>That makes sense, but what happens with the $(x_{t 1} _{t 1})$ from the Taylor expansion?  Line 3 of the EKF only uses the Jacobian:  $\Sigma_t = G_t \Sigma_{t-1} G_t^T R_r$</p>
+			</div>
+			</div>
+				<textarea id = "speech-1007" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1007">
+					<img id="start_img-1007" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1007">Comment</button>
+			<br><div id = "ans-1008"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1008" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>After the propagation step, we need to find the parameters of the Gaussian which describe our new estimate. These are, the mean $\mu$, and the co-variance $\Sigma$. You asked about the mean specifically, so here we go.</p>
+
+<p>Note that the definition of the mean of the propagated state is the expectation of the propagated state. Taking the expectation of the Taylor series expansion, we have (note I'm using shorter notation of superscript - for prior):</p>
+
+<p>$$x = g(x^-, u) $$</p>
+
+<p>And by Taylor series expansion,</p>
+
+<p>$$x \approx g(x^-, u) + g^\prime(x^- , u) (x-x^-)$$</p>
+
+<p>Evaluating the approximate function $g()$ at the mean of the prior yeilds:</p>
+
+<p>$$x \approx g(\mu, u) + g^\prime(\mu , u) (x-\mu)$$</p>
+
+<p>So, let's use $\mathbb{E}$ as the expectation operator to find the expected value of the output (which is the mean of our posterior estimate.</p>
+
+<p>$$\mu = \mathbb{E}[x]$$
+$$\mu = \mathbb{E}[g(\mu^-,u)]$$
+$$\mu \approx \mathbb{E}[g(x^-, u) + g^\prime(x^- , u) (x-\mu^-)]$$</p>
+
+<p>$$\mu \approx \mathbb{E}[g(x^-, u)] + \mathbb{E}[g^\prime(x^- , u) (x-\mu^-)]$$</p>
+
+<p>Now substitute in $G$, the Jacobian of the function $g$ also evaluated at the mean.</p>
+
+<p>$$\mu \approx \mathbb{E}[g(x^-, u)] + \mathbb{E}[G\cdot (x-\mu^-)]$$
+$$\mu \approx \mathbb{E}[g(x^-, u)] + \mathbb{E}[G\cdot x - G\cdot \mu^- ]$$
+And by linearity of expectation:
+$$\mu \approx \mathbb{E}[g(x^-, u)] + G\cdot \mathbb{E}[x] - G\cdot \mathbb{E}[\mu^- ]$$</p>
+
+<p>And guess what? The expected value of both of those things on the right is zero. (why? because we assumed they were Gaussian).** </p>
+
+<p>Now, we have to compute the co variance, defined as $\mathbb{E}\left[ (x-\mathbb{E}[x])(x-\mathbb{E}[x])^T\right]$. You can easily derive this by following the same steps. First expand the terms inside the first expectation, then substitute the linear approximation of $g$ as before. Some matrix algebra will yield the EKF co-variance update. Note that you have to include the "white noise" Jacobian. </p>
+
+<p>See <a href="http://services.eng.uts.edu.au/~sdhuang/Extended%20Kalman%20Filter_Shoudong.pdf" rel="nofollow">here</a> for a possibly better derivation.</p>
+
+<hr>
+
+<p>**The real lie the EKF tells you is that the term, $\mathbb{E}[g(x^-, u)]$ is the same as $g(\mu^-,u)$, which holds as long as the function $g()$ isn't too crazy.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1008" data-toggle = "popover">
+				<p>user name : Josh Vander Hook</p>
+				<p> user reputation : 3960</p>
+				<p class = "tagcontent" id = "usertaginfo-1008">{'None': 345}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-1008" class = 'collapse'>
+			</div>
+				<textarea id = "speech-1008" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1008">
+					<img id="start_img-1008" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1008">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

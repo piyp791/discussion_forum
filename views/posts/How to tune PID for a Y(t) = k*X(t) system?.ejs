@@ -1,0 +1,353 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to tune PID for a Y(t) = k*X(t) system?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7853" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7853" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 428</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to tune PID for a Y(t) = k*X(t) system?</h2>
+<p>Could I have your opinions on PID type selection?</p>
+
+<p><a href="https://i.stack.imgur.com/rrB8u.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/rrB8u.png" alt="Plant with a PID controller"></a>
+<strong>System description</strong></p>
+
+<ol>
+<li>Here comes a very simple system: $\mbox{Output}(t) = k * (\mbox{Input}(t) + \mbox{systemVariable}(t))$. $k$ is constant and $\mbox{systemVariable}(t)$ is a system variable which may change according to time.</li>
+<li>The goal of the whole system is to maintain system output at $0$. It has to be as close to zero as possible. The controller has to compensate the $\mbox{systemVariable}$.</li>
+<li>The change ($\mbox{systemVariable}$ ) is modeled by a very slow ramp.</li>
+</ol>
+
+<p><strong>Controller description</strong></p>
+
+<ol>
+<li><p>The controller's input is the output of the system. However, the measurements are always noisy, and I modeled Band-Limited White Noise into the measurements.</p></li>
+<li><p>After PID controller, the output goes into an integrator, since the PID controller always calculates the "change" of the plant input. </p></li>
+</ol>
+
+<p><strong>Questions</strong></p>
+
+<ol>
+<li><p>My original thoughts: Add a PID controller with P=1/k is enough. Since every time the controller gets an error $e$, it can be calculated back that the compensation on controller output shall be $e/k$. However, Matlab auto-tuning always give me a PID. Why is that?</p></li>
+<li><p>What is the relation between P of PID and measurement noises? If P is large, the system will tend to be rambling largely, due to the noises. If P is small, the system will tend not to converge to the correct value or very slow. How to make the trade-offs? Or how to prevent system from rambling largely and get quick system responses? </p></li>
+</ol>
+
+<p>Thanks a lot!</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7853" data-toggle = "popover">
+				<p>user name : richieqianle</p>
+				<p> user reputation : 113</p>
+				<p class = "tagcontent" id = "usertaginfo-7853">{'control': 2, 'None': 0, 'pid': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7853">Load Comments</button></br>
+			<div id = "commentsection-7853" class = 'collapse'>
+			<div id = "comment-11421" class = "comment">
+				<p>Why do you have the "integrator" block in the last step of your controller? Why do you have the band-limited white noise in your controller? I understand that, because it's white noise (presumably zero-mean), that it doesn't truly make a difference where you put it, but for clarity it should be a summation block on your feedback line, as the noise is injected in your feedback, and as a note, you are adding the noise instead of subtracting it, which you should do if it is, in fact, feedback noise (if it were not zero-mean this would make a big difference!).</p>
+			</div>
+			<div id = "comment-11422" class = "comment">
+				<p>As an edit to the above, I just re-read your question. As noted in my answer below, you **should not** be using the integrator after your PID controller.</p>
+			</div>
+			<div id = "comment-11433" class = "comment">
+				<p>Can you explain what the underlying system is and why there is a ramp?</p>
+			</div>
+			<div id = "comment-11435" class = "comment">
+				<p>The system is drifting slowly, and the controller shall compensate the drift. The drift is modeled, if correct, by a drift..</p>
+			</div>
+			<div id = "comment-11437" class = "comment">
+				<p>What is the system? What is the drift? Is the drift bounded? Is it linear? The more information you can give the more helpful we can be.</p>
+			</div>
+			<div id = "comment-11439" class = "comment">
+				<p>The system is y=k*x system as described. The drift has a direction, but move in a random way: move forward 1mV and move back 0.5mV afterwards. The drift is bounded. After maybe 50 hours of operation, the drift stops.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7853" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7853">
+					<img id="start_img-7853" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7853">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7854"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7854" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I just re-read your question again, and I realized that you are mistaken about the output of the PID controller. The PID controller, like most controllers, provide exactly the signal that should be sent to the plant. You should <strong>NOT</strong> be integrating the output of the controller. The PID controller does look at the output error (input - output), but it acts on that output error to provide the appropriate plant input to drive that output error to zero (to get the output to equal the input). Again, <strong>DO NOT</strong> integrate the output. </p>
+
+<p>If your only issue with this system is the noise coming off of your feedback, then why not just use a filter and be done with it? You haven't stated what your plant is, so I don't know why your system variable would be a (unbounded?) ramp.  Even if you are going to decide you need a PID controller, you should still use a filter if you are expecting noisy feedback. </p>
+
+<p>Regarding measurement noise and PID, typically in industry the controllers are only PI, not PID, because a noise spike causes a big derivative term to be erroneously added. That is, all other things in equilibrium, $D = (noise/dT)$, where $P = noise$ and $I = noise*dT$. So, assuming you have a small sample time, noise causes usually no problems on the $I$ term, some on the $P$ term, and a lot on the $D$ term. The best way to mitigate noise is to not introduce it. Use a filter!</p>
+
+<p>Matlab auto-tuning is always going to give you PID because it is stupid in that it does not understand how to exploit specific information about your plant. It provides a system capable of controlling any (SISO) plant. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7854" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-7854">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7854">Load Comments</button></br>
+			<div id = "commentsection-7854" class = 'collapse'>
+			<div id = "comment-11423" class = "comment">
+				<p>Hi Chuck thanks for your reply. 1. In my case, the controller contains a PID controller and an integrator. The reason is as following: An error measured by the controller is based on previous controller output. 2. Yes we are using filters and there are still noises. As for the ramp, it is system property. The system keeps drifting as time goes by. 3. Yeah, it seems that auto-tuning does not work perfectly. Shall I consider using a relatively small P and a relatively larger I?</p>
+			</div>
+			<div id = "comment-11424" class = "comment">
+				<p>@richieqianle I do not understand your reasoning for having an additional integrator at all. The input of the controller is **always** based on previous controller output in a **closed loop control**, so according to your logic, every controller of any kind has to have an additional integrator. Which is not true.</p>
+			</div>
+			<div id = "comment-11425" class = "comment">
+				<p>@BendingUnit22 Sorry I did not reason it clearly. As can be seen that there is a ramp in the plant. The purpose of the controller is to compensate the ramp. At t1, ramp = r and keeps going up. At this point, the output of the controller cannot be zero. Is has to be r+PID_output. And r comes from the integrator.</p>
+			</div>
+			<div id = "comment-11427" class = "comment">
+				<p>The PID controller does not care what the plant is doing. At all. The PID controller looks at the output, looks at the input, and provides a signal to your plant to drive the error to zero. You **SHOULD NOT** put an integrator after your PID controller. If you really want to exploit some knowledge of your plant to create a controller, you should look at implementing a [state space controller](http://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlStateSpace).</p>
+			</div>
+			<div id = "comment-11428" class = "comment">
+				<p>@Chuck I agree with you, the PID controller does not have an integrator. Could I have a controller, which composes of a PID controller and an integrator? Or could I just regard the integrator as a part of the plant?</p>
+			</div>
+			<div id = "comment-11429" class = "comment">
+				<p>What is your insistence on using an integrator? I'm telling you, the output of your PID controller should be the input to your plant. There should not be anything between the PID controller and the plant. Your plant can ramp, squiggle, whatever the plant is going to do, and the PID controller will send a signal to drive output error to zero. You should not try to account for anything your plant is going to do, that's the controller's job. Again, as I've mentioned, PID control is a dumb/sub-optimal control scheme because it cannot exploit knowledge of your plant. That's what state space is for.</p>
+			</div>
+			<div id = "comment-11434" class = "comment">
+				<p>I think my case is similar to this one: https://www.youtube.com/watch?v=XfAt6hNV8XM  At 2'40'', the video connects the PID controller with an integrator. For the ramp, it is a model for system disturbance. The controller needs to compensate for the ramp, which keeps growing.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7854" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7854">
+					<img id="start_img-7854" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7854">Comment</button>
+			<br><div id = "ans-7858"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7858" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I had problems understanding the diagram and the question. It might be because you didn't explain every step to keep the question short or just because I use some terminology differently so I'd like to go through this slowly. This is not to say that this is the right way to do it, but so that everybody is on the same page. The comments imply that others are also confused. Essentially, I would identify things differently and in control theory giving something a different name can be a major part of the solution.</p>
+
+<p>I was pretty much in WTF? mode until I saw this in the comments: <code>r+PID_output</code>, which gave me a hint on how this came to be. Well, at least I think.</p>
+
+<h2>The ramp is <em>not</em> part of the plant</h2>
+
+<p>No, not even if it is part of the plant. The reason is that adding the ramp makes the plant nonlinear. An LTI system is a <strong>L</strong>inear <strong>T</strong>ime <strong>I</strong>nvariant system. That means (among other things) shifting the input by some amount of time, should only result in a time shifted output, without changing the input value. The ramp breaks that rule.</p>
+
+<p>For the sake of some more confusion, $y = mx + n$ is also nonlinear<sup>1</sup>.</p>
+
+<p>I could come up with some gruesome simile about how you'd want to rather choke on your own innards than doing nonlinear control theory, but instead I'd say let's try to do this with linear control theory. It is able to handle the situation.</p>
+
+<p>The plant is just $k$, it's transfer function (which can be calculated now, just another benefit of kicking the ramp out) is simply:</p>
+
+<p>$$ output (t) = input(t) \cdot k \\ Output(s) = Input(s)\cdot k \\ \frac{Output(s)}{Input(s)} = k$$</p>
+
+<h2>Neither noise nor integrator are part of the controller</h2>
+
+<p>As you say, the noise isn't created in the controller, so why model it there?
+And the mysterious integrator is removed in a <strong>coincidently</strong> similar way to the ramp. * cough *</p>
+
+<p>We are left with the bog standard control loop without a sensor. (a sensor will never be present in this answer, the sensor in the image simply has a transfer function of 1)
+<a href="https://en.wikipedia.org/wiki/File:Feedback_loop_with_descriptions.svg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/FvFIU.png" alt="open loop block diagram"></a></p>
+
+<h2>Finding a suitable controller for the system</h2>
+
+<blockquote>
+  <p>$P=\frac{1}{k}$ is enough. Since every time the controller gets an error e, it can be calculated back that the compensation on controller output shall be $\frac{e}{k}$. However, Matlab auto-tuning always give me a PID. Why is that?</p>
+</blockquote>
+
+<p>It's tempting to use the inverse of the transfer function of the system as a controller.</p>
+
+<p>That would compensate the system exactly, if you are a glas-half-full kind of person. On the other hand, if you are a glas-already-empty-again-damnit-gotta-order-another-one kind of person, it <em>only</em> compensates the system exactly. The subtle difference is that a model is never exact. With slight inaccuracies in the model due to real world stuff, compensating the system transfer function exactly is not a good idea.</p>
+
+<p>Adding an integral part for good measure is usually a good idea, one reason is stated <a href="https://en.wikipedia.org/wiki/PID_controller#Integral_term" rel="nofollow noreferrer">here</a>:</p>
+
+<blockquote>
+  <p>The integral term accelerates the movement of the process towards setpoint and eliminates the residual steady-state error that occurs with a pure proportional controller. </p>
+</blockquote>
+
+<h2>For those about to ramp, we compensate you<sup>2</sup></h2>
+
+<p>The existence of the ramp cannot be denied. Instead of modelling it as part of the system, let's model it as the disturbance variable as can be seen in the following image named $W$</p>
+
+<p><a href="http://ctms.engin.umich.edu/CTMS/index.php?example=Suspension&amp;section=ControlPID" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/idIrE.png" alt="closed loop block diagram with disturbance"></a>
+<em>hint: a click on the image leads you to the source of the image which is an article on how to simulate disturbance transfer functions with matlab</em></p>
+
+<p>Two important properties of a system are:</p>
+
+<ol>
+<li>how quickly it follows a change of the input, which is kinda moot, because that's constant $0$  in your case</li>
+<li>how quickly it can compensate a disturbance</li>
+</ol>
+
+<p>It's usually a trade-off between both. You can compare them by looking at their transfer functions.</p>
+
+<p>There's a great image showing that on a non English Wikipedia article. This is optional, so feel free to just skip this.</p>
+
+<p>Trouble is that the variables used there have different names. The block diagram with controller $G_R(s)$, system $G_S(s)$ and disturbance $D(s)$ looks like this:</p>
+
+<p><a href="https://de.wikipedia.org/wiki/Datei:Control_structure_B.svg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/FVO7H.png" alt="yet another closed loop diagram with disturbance"></a></p>
+
+<p>The disturbance transfer function is thus given as:</p>
+
+<p>$$\frac{Y(s)}{D(s)}=\frac{G_S(s)}{1+G_R(s)G_S(s)}$$</p>
+
+<p>Ok, ready? Here it comes:
+<a href="https://de.wikipedia.org/wiki/Datei:Sprungantwort_der_st%C3%B6rgr%C3%B6%C3%9Fe_mit_angriffspunkt_auf_streckeneingang.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/7Ajsc.png" alt="German plot of responses from different transfer functions"></a></p>
+
+<p>Don't worry if you don't have the Sauerkraut to read it, because I do.</p>
+
+<p>There are 4 plots displaying unit jumps of disturbance and input and the output responses to these using two different controllers (both PID controllers but different parameters):</p>
+
+<ol>
+<li>the $\color{blue}{\text{thin blue}}$ line is the plot of the input $w(t)$ jumping to $1$ at $t = 0$, it's basically just a horizontal line at 1</li>
+<li>the $\color{green}{\text{thin green}}$ line is the plot of the disturbance $d(t)$ jumping to $1$ at $t = 10$</li>
+<li>the <strong>$\color{blue}{\text{thick blue}}$</strong> line is the response of the output controlled by a controller tuned for quickly adopting changes in the input. As you can see it takes the jump of the input rather well without overshooting much. The disturbance however is not compensated quickly. It causes a huge bump in the plot(up to 1.3) which never fully recovers back to 1 (where it should be) within the visible area of the diagram. <strong>You certainly don't want that.</strong></li>
+<li>the <strong>$\color{red}{\text{thick red}}$</strong> line shows the response of the output controlled by a controller tuned to quickly compensate disturbances. The response to the input jump is a disaster, but the response to the disturbance jump at $t = 10$ is barely visible. The disturbance jumps from 0 to 1, but the output only climbs to roughly 1.05 because of that. <strong>This is what you want</strong></li>
+</ol>
+
+<p>The only difference between the two is what PID parameters were used:</p>
+
+<p>$$\color{blue}{G_R(s) = \frac{0.8(2s+1)(s+1)}{s}}$$
+$$\color{red}{G_R(s) = \frac{10(2s+1)(s+1)}{s}}$$</p>
+
+<p>There's some factor that should be rather big (10 vs. 0.8) in order to compensate disturbance well, let's call this factor $a$:</p>
+
+<p>$$G_R(s) = \frac{a(2s+1)(s+1)}{s}$$</p>
+
+<p>The generic PID controller has the transfer function</p>
+
+<p>$$G_{PID}(s) = K_p + K_i\frac{1}{s} + K_ds$$</p>
+
+<p>I conclude that multiplying all 3 PID parameters by some factor improves how well the system can handle disturbance. </p>
+
+<p>Your system is different and your disturbance is a ramp instead of a jump. But the example shows how to analyse a system, which should help you tune your controller.</p>
+
+<p>The disturbance is also what I'd add the noise to.</p>
+
+<h2>The mysterious integrator</h2>
+
+<p>Now that's all nice, but what the heck is this integrator thingy supposed to be? And how is <code>r+PID_output</code> a hint?</p>
+
+<p>It's a feed forward compensation of the disturbance. <code>r+PID_output</code> is a hint because it contains the <strong>+</strong>, which indicates that this is supposed to be a feed forward. The problem is that in the block diagram, it is a separate block <strong>after</strong> the PID controller, which means in the block diagram, it is actually $r \cdot PID_{output}$, which is <strong>not</strong> how feed forward should be.</p>
+
+<p>The following image shows how a feed forward compensates disturbance: (with yet again differently named variables)</p>
+
+<p><a href="http://www.atp.ruhr-uni-bochum.de/rt1/syscontrol/node88.html" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/XuQU2.gif" alt="feed forward"></a></p>
+
+<p>The compensation of the disturbance is indeed added <strong>after</strong> the controller. As can be seen in the image, it is added via a negative summation node.</p>
+
+<p>As seen above, the controller itself should be able to handle disturbance, because it is tuned to do only that in your use case.</p>
+
+<p>A feed forward can take some workload off the controller. If you really think this is neccessary, go ahead and add the feed forward. I would keep it separate from the controller, for better readability, although adding the feed forward will basically just change some parameters of the PID controller.</p>
+
+<hr>
+
+<p><sup>1</sup> <a href="https://electronics.stackexchange.com/questions/29636/how-i-can-set-up-a-transfer-function-of-y-mxc">check this proof on electronics.SE</a></p>
+
+<p><sup>2</sup> with apologies to AC/DC</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7858" data-toggle = "popover">
+				<p>user name : Bending Unit 22</p>
+				<p> user reputation : 1335</p>
+				<p class = "tagcontent" id = "usertaginfo-7858">{'None': 93}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7858">Load Comments</button></br>
+			<div id = "commentsection-7858" class = 'collapse'>
+			<div id = "comment-11436" class = "comment">
+				<p>Wonderful explanation! I have been studying in German speeking area of Switzerland and your style reminds me friends in that area. 1. What does Z' stand for? Do you mean ramp disturbance? If so, Im afraid that it cannot be observed by the controller. So I doubt if it can be substract from the output of the controller directly. 
+2. Why do you think output of the integrator is r*PIDoutput? Shall not it be r+PIDoutput for an integrator? 
+Thanks again!</p>
+			</div>
+			<div id = "comment-11440" class = "comment">
+				<p>@richieqianle **1)** it is indeed the disturbance. While it's true that you cannot measure it, you can still estimate it very well (at least you claim that you can). Think of a $Z'_1$ that is the real disturbance going into your plant (which you can neither prevent nor measure) and a $Z'_2$, being your estimate of the disturbance subtracted from your controller output, directly compensating the disturbance. Again, the feed forward is just an optional helper, the controller alone should be able to handle the disturbance, but given that you know the disturbance, FF gives you an advantage.</p>
+			</div>
+			<div id = "comment-11441" class = "comment">
+				<p>@richieqianle **2)** Sorry if I'm not being clear here. Compare the block diagram that you posted with the last one in my answer. Your integrator is directly connected to the output of the controller. For block diagrams, which consist of transfer functions, that means multiplication. In the block diagram that I posted, the feed forward is going into a summation node. The difference is that your integrator will integrate everything, whereas the idea of the FF is to compensate the known disturbance directly.</p>
+			</div>
+			<div id = "comment-11445" class = "comment">
+				<p>@ BendingUnit  Great explanation again... I think I know what you mean, PID without an integrator is sufficient. Do you think adding an integrator is wrong?</p>
+			</div>
+			<div id = "comment-11459" class = "comment">
+				<p>@richieqianle the purpose of the FF is to take advantage of knowledge of the disturbance. You state in another comment that "_The drift has a direction, but move in a random way_". If it's random, you don't really know it or you'd only have some probabilistic model, which is not easily directly compensated. I suggest to try it out. After all, this is the purpose of tools like Matlab and simulink. Throw everything at it that you can think of and compare the results. How much better is the controller with the FF? How much effort is it to implement the FF? Then you can make a decision.</p>
+			</div>
+			<div id = "comment-11462" class = "comment">
+				<p>@ BendingUnit I tried the direct PID approach and the PID-integrator approach. It seems that PID-integrator approach is slower however is less sensitive to noises. Probably I will stick to the PID-integrator approach.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7858" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7858">
+					<img id="start_img-7858" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7858">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

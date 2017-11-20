@@ -1,0 +1,213 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to implement Bounded Angle Vision in Particle Filter?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-1525" class = "post">
+			<h2>Question</h2>
+			<div id="vote-1525" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 93</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to implement Bounded Angle Vision in Particle Filter?</h2>
+<p>I have built a <a href="http://sourceforge.net/projects/r-localization/" rel="nofollow">Particles Filter simulator</a> and I wanted to add the following functionalities.</p>
+
+<ol>
+<li>Limited Range Vision (Robot can see up to 50 meters)</li>
+<li>Limited Angle Vision (Robot can see within a certain angle w.r.t its current orientation.  <em>e.g.</em> If the current orientation is 30 degree then it can see in the range from 0 to 60 degree.)</li>
+</ol>
+
+<p>I have managed to add the Limited Range Vision functionality but unable to add Limited Angle Vision.</p>
+
+<p><em>Method to Sense the landmarks distance within the range</em></p>
+
+
+
+<pre><code>public double[] sense(boolean addNoise) {
+    double[] z = new double[World.getLandmark().getLandmarks().size()];
+    for (int i = 0; i &lt; z.length; i++) {
+        Point lm = World.getLandmark().getLandmarks().get(i);
+        double dx = x - lm.getX();
+        double dy = y - lm.getY();
+        double dist = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+        if (addNoise) {
+            dist += Util.nextGaussian(0, sense_noise);
+        }
+        if (isBoundedVision()) {
+            // TODO Limited angle vision
+            // if robot can see within 60 degree angle w.r.t its orientation
+            if (dist &lt;= laserRange) {
+                z[i] = dist;
+            }
+        } else {
+            z[i] = dist;
+        }
+    }
+    return z;
+}
+</code></pre>
+
+<p><em>Method to calculate the probability of this particle</em></p>
+
+<pre><code>@Override
+public double measurement_prob(double[] measurements) {
+    double prob = 1.0;
+    int c = 0;
+    double[] myMeasurements = sense(false);
+    for (int j = 0; j &lt; measurements.length; j++) {
+        if (measurements[j] != 0) {
+            prob *= Util.gaussian(myMeasurements[j], sense_noise, measurements[j]);
+            c++;
+        }
+    }
+    if (isBoundedVision()) {
+        if (c &gt; 0) {
+            // increase the probability if this particle can see more landmarks
+            prob = Math.pow(prob, 1.0 / c);
+        } else {
+            prob = 0.0;
+        }
+    }
+    return prob;
+}
+</code></pre>
+
+<p>Coordinates are relative to the robot and for distance calculation I am using the Euclidean Distance method and my Robot gets localized correctly. </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1525" data-toggle = "popover">
+				<p>user name : M Faisal Hameed</p>
+				<p> user reputation : 106</p>
+				<p class = "tagcontent" id = "usertaginfo-1525">{'visualization': 1, 'None': 0, 'particle-filter': 1, 'algorithm': 0, 'localization': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1525">Load Comments</button></br>
+			<div id = "commentsection-1525" class = 'collapse'>
+			<div id = "comment-3198" class = "comment">
+				<p>Welcome to *robotics* M Faisal Hameed, could you explain what coordinate frames you are using here? Is everything relative to the robot coordinate frame, if so you should be able to use [basic trig](https://en.wikipedia.org/wiki/Trigonometry#Overview) to calculate the angle of each particle & gate according to the boundaries, as [Ian suggests](http://robotics.stackexchange.com/a/1526/37). If your particles are in a World coordinate frame, but your robot is viewing in its own coordinate frame, then the answer will be rather different (and your existing distance calculation will need work too).</p>
+			</div>
+			<div id = "comment-3204" class = "comment">
+				<p>Coordinates are relative to the robot and for distance calculation what you will suggest? Because I am using Euclidean Distance method and my Robot gets localized correctly.</p>
+			</div>
+			<div id = "comment-3208" class = "comment">
+				<p>Thanks for the information M Faisal Hameed, but on stack exchange it is better to add information requested in comments by editing your question, that way the comments can be tidied up (deleted) and so they no longer distract people from the question.</p>
+			</div>
+			</div>
+				<textarea id = "speech-1525" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1525">
+					<img id="start_img-1525" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1525">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-1526"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1526" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>It looks like you're missing the angle that the robot is currently looking, e.g. <code>robot_angle_radians</code>.</p>
+
+<p>Once you know where the robot is looking, you just use the <a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Math.html#atan2&#40;double,&#32;double&#41;" rel="nofollow">atan2 function</a> (see also: <a href="http://www.tutorialspoint.com/java/lang/math_atan2.htm" rel="nofollow">example usage</a>) on each point:</p>
+
+<pre><code>point_angle = Math.atan2(dy, dx); // in radians
+</code></pre>
+
+<p>Then you want to check whether the angle is <a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Math.html#abs&#40;double&#41;" rel="nofollow">not more than</a> 30&deg; off of the robot's angle:</p>
+
+<pre><code>offset = Math.abs(robot_angle_radians - point_angle) % (2 * Math.PI); 
+if (Math.toRadians(30) &lt; offset) // then it's out of +/- 30 degree range
+</code></pre>
+
+<p>Make sure you are consistent between <a href="http://nautilus.baruch.sc.edu/CSV/explain_coord_sys_diagram.pdf" rel="nofollow">a polar coordinate system and a compass rose coordinate system</a>.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1526" data-toggle = "popover">
+				<p>user name : Ian</p>
+				<p> user reputation : 9640</p>
+				<p class = "tagcontent" id = "usertaginfo-1526">{'planning': 10, 'None': 809, 'power': 1, 'algorithm': 10, 'battery': 1, 'slam': 7, 'coverage': 10, 'mobile-robot': 9, 'sensors': 9}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1526">Load Comments</button></br>
+			<div id = "commentsection-1526" class = 'collapse'>
+			<div id = "comment-3207" class = "comment">
+				<p>Yes my robot has a heading direction (orientation).    What do dx,dy representing here. Is it robot coordinates or landmark coordinates? I modified your formula a little bit. I think it should be as                             **( dy = landmark.y   robot.y; dx = landmark.x   robot.x;point_angle = Math.atan2(dy, dx);)** Please correct me if I am wrong.</p>
+			</div>
+			<div id = "comment-3209" class = "comment">
+				<p>@MFaisalHameed This information doesn't seem to fit with your earlier comment that *Coordinates are relative to the robot*. Could you edit your question with some examples of `x`, `lm.getX();`, `y`, `lm.getY();` for a two particles with the robot at two different positions? That should only be a table with 4 rows and 5 columns and will tell us if you have misunderstood what we mean by coordinate frame.</p>
+			</div>
+			<div id = "comment-3214" class = "comment">
+				<p>My `dx` and `dy` are taken from your code: `double dx = x - lm.getX();` and `double dy = y - lm.getY();`.  I assumed that `x` and `y` represent the robot position, is that not the case?</p>
+			</div>
+			</div>
+				<textarea id = "speech-1526" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1526">
+					<img id="start_img-1526" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1526">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

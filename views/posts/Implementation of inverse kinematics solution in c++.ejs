@@ -1,0 +1,853 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Implementation of inverse kinematics solution in c++
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9700" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9700" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 239</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Implementation of inverse kinematics solution in c++</h2>
+<p>I am having some issue with implementing a least square solution of the inverse kinematics problem. </p>
+
+<p>The q configuration I get are rather large, or makes no sense, so I was hoping someone here could help me find my error in my program. </p>
+
+<pre><code>rw::math::Q pathPlanning::invKin(double dx, double dy , double dz)
+{
+
+    rw::kinematics::State state =  this-&gt;state;
+    rw::math::Transform3D&lt;&gt; t_tool_base =  this-&gt;device.get()-&gt;baseTend(state);
+
+
+    cout &lt;&lt; t_tool_base.R().e() &lt;&lt; endl;
+    cout &lt;&lt; endl;
+    cout &lt;&lt; t_tool_base.P().e() &lt;&lt; endl;
+    cout &lt;&lt; endl;
+
+    Eigen::MatrixXd jq(this-&gt;device.get()-&gt;baseJend(state).e().cols(), this-&gt;device.get()-&gt;baseJend(state).e().rows());
+    jq =  this-&gt;device.get()-&gt;baseJend(state).e();
+
+
+    //Least square solver - dq = [j(q)]T (j(q)[j(q)]T) 1 du  &lt;=&gt; dq = A*du
+    Eigen::MatrixXd A (6,6);
+    //A = jq.transpose()*(jq*jq.transpose()).inverse();
+    A = (jq*jq.transpose()).inverse()*jq.transpose();
+
+    std::vector&lt;rw::math::Transform3D&lt;&gt; &gt; out = sphere(dx,dy,dz);
+
+    std::ofstream outfile;
+    outfile.open("q_conf.txt", std::ios_base::app);
+
+    for(unsigned int i = 0; i &lt;= out.size() ; ++i )
+    {
+        rw::math::Vector3D&lt;&gt; dif_p = out[i].P()-t_tool_base.P();
+
+        Eigen::Matrix3d dif = out[i].R().e()- t_tool_base.R().e();
+        rw::math::Rotation3D&lt;&gt; dif_r(dif);
+        rw::math::RPY&lt;&gt; dif_rot(dif_r);
+
+        Eigen::VectorXd du(6);
+        du(0) = dif_p[0];
+        du(1) = dif_p[1];
+        du(2) = dif_p[2];
+
+        du(3) = dif_rot[0];
+        du(4) = dif_rot[1];
+        du(5) = dif_rot[2];
+
+        Eigen::VectorXd q(6);
+        q = A*du;
+
+        rw::math::Q q_current;
+        q_current = this-&gt;device-&gt;getQ(this-&gt;state);
+        rw::math::Q dq(q);
+        rw::math::Q q_new = q_current+ dq;
+
+        //cout &lt;&lt; jq &lt;&lt; endl;
+        //cout &lt;&lt; endl;
+        //std::string text = "setQ{"  + to_string(q_new[0])  + ", " + to_string(q_new[1]) + ", " + to_string(q_new[2]) + ", " + to_string(q_new[3]) + ", " + to_string(q_new[4]) + ", " + to_string(q_new[5]) + "}";
+        //cout &lt;&lt; text &lt;&lt; endl;
+        //outfile &lt;&lt; text &lt;&lt; endl;
+
+    }
+
+    rw::math::Q bla(6); //Just used the text file for debugging purposes,  Which why I just return a random Q config.
+    return bla;
+}
+
+
+rw::math::Transform3D&lt;&gt; pathPlanning::transform(double obj_x, double obj_y, double obj_z, double sphere_x, double sphere_y ,double sphere_z)
+{
+    // Z-axis should be oriented towards the object.
+    // Rot consist of 3 direction vector [x,y,z] which describes how the axis should be oriented in the world space.
+    // Looking at the simulation the z-axis is the camera out. X, and Y describes the orientation of the camera.
+    // The vector are only for direction purposes, so they have to be normalized....
+    // TODO: case [0  0 -1]... Why is it happening at what can be done to undo it?
+
+    rw::math::Vector3D&lt;&gt; dir_z((obj_x - sphere_x), (obj_y - sphere_y), (obj_z - sphere_z));
+    dir_z = normalize(dir_z);
+    rw::math::Vector3D&lt;&gt; downPlane(0.0,0.0,-1.0);
+    rw::math::Vector3D&lt;&gt; dir_x = cross(downPlane,dir_z);
+    dir_x = normalize(dir_x);
+    rw::math::Vector3D&lt;&gt; dir_y = cross(dir_z,dir_x);
+    dir_y = normalize(dir_y);
+
+    rw::math::Rotation3D&lt;&gt; rot_out (dir_x,dir_y,dir_z);
+
+    rw::math::Vector3D&lt;&gt; pos_out(sphere_x,sphere_y,sphere_z);
+
+    rw::math::Transform3D&lt;&gt; out(pos_out,rot_out);
+    return out;
+}
+
+std::vector&lt;rw::math::Transform3D&lt;&gt;&gt; pathPlanning::sphere(double dx, double dy, double dz)
+{
+    double r = 0.50; // Radius of the sphere -  set to 0.50 cm (TODO: has to be checked if that also is accurate)
+    cout &lt;&lt; "Create a sphere" &lt;&lt; endl;
+
+    double current_x = this-&gt;device-&gt;baseTend(this-&gt;state).P()[0];
+    double current_y = this-&gt;device-&gt;baseTend(this-&gt;state).P()[1];
+    double current_z = this-&gt;device-&gt;baseTend(this-&gt;state).P()[2];
+
+    rw::math::Vector3D&lt;&gt; center(current_x + dx, current_y + dy , current_z + dz);
+
+    // Formula for sphere (x-x0) +(y-y0) +(z-z0) =r 
+    // x: x = x_0 + rcos(theta)sin(phi)
+    // y: y = y_0 + rsin(theta)sin(phi)
+    // z: z = z_0 + rcos(phi)
+    // Angle range: 0 &lt;= theta &lt;= 2M_PI ; 0 &lt;= phi &lt;= M_PI
+
+    double obj_x = current_x + dx;
+    double obj_y = current_y + dy;
+    double obj_z = current_z + dz;
+
+    ofstream positions;
+    ofstream rotations_z;
+    ofstream rotations_y;
+    ofstream rotations_x;
+    positions.open ("sphere_positions.csv");
+    rotations_z.open("z_dir.csv");
+    rotations_y.open("y_dir.csv");
+    rotations_x.open("x_dir.csv");
+    std::vector&lt;rw::math::Transform3D&lt;&gt;&gt; out;
+
+    int count = 32;
+    for(double theta = 0; theta &lt;= 2*M_PI ; theta+=0.1 )
+    {
+
+        for(double phi = 0; phi &lt;= M_PI ; phi+=0.1)
+        {
+
+            double sphere_x = obj_x + r*cos(theta)*sin(phi);
+            double sphere_y = obj_y + r*sin(theta)*sin(phi);
+            double sphere_z = obj_z + + r*cos(phi);
+
+            string text = to_string(sphere_x) + " , " + to_string(sphere_y)+ " , " + to_string(sphere_z);
+            positions &lt;&lt; text &lt;&lt; endl;
+
+            rw::math::Transform3D&lt;&gt; transformation_matrix = transform(obj_x,obj_y,obj_z,sphere_x,sphere_y,sphere_z);
+
+            string text2 = to_string(transformation_matrix.R().e()(0,2)) + " , "  + to_string(transformation_matrix.R().e()(1,2)) + " , " + to_string(transformation_matrix.R().e()(2,2));
+            string text1 = to_string(transformation_matrix.R().e()(0,1)) + " , "  + to_string(transformation_matrix.R().e()(1,1)) + " , " + to_string(transformation_matrix.R().e()(2,1));
+            string text0 = to_string(transformation_matrix.R().e()(0,0)) + " , "  + to_string(transformation_matrix.R().e()(1,0)) + " , " + to_string(transformation_matrix.R().e()(2,0));
+
+            rotations_z &lt;&lt; text2 &lt;&lt; endl;
+            rotations_y &lt;&lt; text1 &lt;&lt; endl;
+            rotations_x &lt;&lt; text0 &lt;&lt; endl;
+
+            if(count == 32) //TODO: Why...... is this occuring?
+            {
+                //cout &lt;&lt; "Theta: " &lt;&lt; theta &lt;&lt; " Phi: " &lt;&lt; phi &lt;&lt; endl;
+                //cout &lt;&lt; sphere_x &lt;&lt; " , " &lt;&lt; sphere_y &lt;&lt;" , "&lt;&lt; sphere_z &lt;&lt; endl;
+                count = 0;
+            }
+            else
+            {
+                count++;
+            }
+
+            out.push_back(transformation_matrix);
+        }
+    }
+
+    positions.close();
+    rotations_z.close();
+    rotations_y.close();
+    rotations_x.close();
+    cout &lt;&lt; endl;
+    cout &lt;&lt;"Object at: " &lt;&lt; obj_x &lt;&lt; "," &lt;&lt; obj_y &lt;&lt; "," &lt;&lt; obj_z &lt;&lt; endl;
+    cout &lt;&lt; "done " &lt;&lt; endl;
+    return out;
+}        
+</code></pre>
+
+<p>What am I trying to do, I am trying to orbit a robot endeffector  around an object in the center. The trajectory of the endeffector is an sphere where the endeffector should always point in to the object.  The sphere function should compute all transformation matrices which move the robot arm to the different position on the sphere with a given rotation, and the inverse kinematics should compute all the different Q-states, given an <code>x,y,z</code> which is the actual displacement to the object itself.</p>
+
+<p>I am not quite sure where my error could be at, but I think it might either be at <code>transform</code> function where I generate my desired transformation matrix, or in <code>invKin</code> where I create <code>du</code>, I think I might have made an mistake in creating <code>du(3)</code>,  <code>du(4)</code>, <code>du(5)</code></p>
+
+<p>The libraries I've been using is Eigen, <a href="http://www.robwork.dk/apidoc/nightly/rw/" rel="nofollow">robwork</a> (basically all rw::) if anyone want to look syntax through. </p>
+
+<p><strong>Update</strong></p>
+
+<p>Based on @ghanimmukhtar I began checking for singularities for the jacobian.. Which seems in general supringsly low. I computed it for a list of random Q configurations which resulted into this...</p>
+
+<pre><code>Determinant: -0.0577779
+Determinant: -0.0582286
+Determinant: 0.0051402
+Determinant: -0.0498886
+Determinant: 0.0209685
+Determinant: 0.00372222
+Determinant: 0.047645
+Determinant: 0.0442362
+Determinant: -0.0799746
+Determinant: 0.00194714
+Determinant: 0.0228195
+Determinant: 0.096449
+Determinant: -0.0339612
+Determinant: -0.00365521
+Determinant: -0.030022
+Determinant: 0.021347
+Determinant: 0.0413364
+Determinant: 0.0041136
+Determinant: -0.0151192
+Determinant: 0.0682926
+Determinant: -0.0657176
+Determinant: 0.0915473
+Determinant: -0.00516008
+Determinant: -0.0394664
+Determinant: -0.00469664
+Determinant: 0.0494431
+Determinant: -0.00156804
+Determinant: -0.0402393
+Determinant: -0.0141511
+Determinant: 0.0203508
+Determinant: -0.0368337
+Determinant: -0.0313431
+Determinant: -0.0566811
+Determinant: -0.00766113
+Determinant: -0.051767
+Determinant: -0.00815555
+Determinant: 0.0564639
+Determinant: 0.0764514
+Determinant: -0.0501299
+Determinant: -0.00056537
+Determinant: -0.0308103
+Determinant: -0.0091592
+Determinant: 0.0602148
+Determinant: -0.0051255
+Determinant: 0.0426342
+Determinant: -0.0850566
+Determinant: -0.0353419
+Determinant: 0.0448761
+Determinant: -0.0103023
+Determinant: -0.0123843
+Determinant: -0.00160566
+Determinant: 0.00558663
+Determinant: 0.0173488
+Determinant: 0.0170783
+Determinant: 0.0588363
+Determinant: -0.000788464
+Determinant: 0.052941
+Determinant: 0.064341
+Determinant: 0.00084967
+Determinant: 0.00716674
+Determinant: -0.0978426
+Determinant: -0.0585773
+Determinant: 0.038732
+Determinant: -0.00489957
+Determinant: -0.0460029
+Determinant: 0.00269656
+Determinant: 0.000600619
+Determinant: -0.0408527
+Determinant: -0.00115296
+Determinant: 0.013114
+Determinant: 0.0366423
+Determinant: 0.0495209
+Determinant: -0.042201
+Determinant: -0.036663
+Determinant: -0.103452
+Determinant: -0.0119054
+Determinant: 0.0692284
+Determinant: -0.00717832
+Determinant: 0.00729104
+Determinant: 0.0126415
+Determinant: -0.00515246
+Determinant: -0.0556505
+Determinant: 0.000670701
+Determinant: -0.0545629
+Determinant: 0.00251946
+Determinant: 0.0405189
+Determinant: 0.010928
+Determinant: -0.00101032
+Determinant: 0.0308612
+Determinant: 0.0536183
+Determinant: -0.0439223
+Determinant: -0.0113453
+Determinant: -0.0193872
+Determinant: 0.0660165
+Determinant: -0.00184695
+Determinant: -0.106904
+Determinant: 0.01246
+Determinant: -0.00883772
+Determinant: 0.0601036
+Determinant: 0.0468602
+Determinant: 0.0513812
+Determinant: -0.000663089
+Determinant: -0.00392395
+Determinant: 0.0710837
+Determinant: 0.0629583
+Determinant: -0.0464579
+Determinant: 0.0257618
+Determinant: -0.0193227
+Determinant: 0.00388693
+Determinant: -0.02003
+Determinant: 0.0191158
+Determinant: -0.00159198
+Determinant: -0.0702308
+Determinant: -0.0242876
+Determinant: -0.00934638
+Determinant: -0.00221986
+Determinant: -0.0268925
+Determinant: 0.0596055
+Determinant: -0.00925273
+Determinant: -0.0167357
+Determinant: 0.0596476
+Determinant: -0.00515798
+Determinant: -0.00324081
+Determinant: -0.00321565
+Determinant: 0.0669645
+Determinant: -0.0342913
+Determinant: -0.000342155
+Determinant: -0.0104422
+Determinant: -0.0410489
+Determinant: -0.0246036
+Determinant: 0.0208562
+Determinant: -0.0692963
+Determinant: 0.000839091
+Determinant: -0.049308
+Determinant: -0.0349338
+Determinant: 0.0016057
+Determinant: -0.00214381
+Determinant: -0.0332965
+Determinant: 0.0168007
+Determinant: -0.0748581
+Determinant: -0.00864737
+Determinant: -0.0638044
+Determinant: -0.00103911
+Determinant: -0.00690918
+Determinant: 0.000285789
+Determinant: 0.0215414
+Determinant: 0.0560827
+Determinant: -0.0063201
+Determinant: -0.00677609
+Determinant: -0.00686829
+Determinant: 0.0591599
+Determinant: 0.0112705
+Determinant: 0.0874784
+Determinant: -0.0146124
+Determinant: -0.0133718
+Determinant: -0.0203801
+Determinant: -0.0150386
+Determinant: -0.102603
+Determinant: -0.077111
+Determinant: 0.021146
+Determinant: 0.089761
+Determinant: -0.0532867
+Determinant: -0.0620632
+Determinant: -0.0165414
+Determinant: -0.0461426
+Determinant: 0.00144256
+Determinant: 0.00844777
+Determinant: 0.0893306
+Determinant: -0.0814478
+Determinant: -0.0890507
+Determinant: -0.0472091
+Determinant: 0.0186799
+Determinant: -0.00224087
+Determinant: -0.0242662
+Determinant: -0.00195303
+Determinant: 0.014432
+Determinant: 0.00185717
+Determinant: -0.0354357
+Determinant: -0.0427957
+Determinant: -0.0380409
+Determinant: 0.0627548
+Determinant: 0.0397546
+Determinant: 0.0570439
+Determinant: 0.106265
+Determinant: 0.0382001
+Determinant: -0.0240826
+Determinant: -0.0866264
+Determinant: 0.024184
+Determinant: 0.0841286
+Determinant: -0.0303611
+Determinant: -0.0337029
+Determinant: -0.0202875
+Determinant: 0.0643731
+Determinant: -0.0475265
+Determinant: -0.00928736
+Determinant: -0.00373402
+Determinant: 0.0636828
+Determinant: 0.0122532
+Determinant: 0.0398141
+Determinant: -0.0563998
+Determinant: -0.0778303
+Determinant: 0.0164747
+Determinant: 0.0314815
+Determinant: 0.0744507
+Determinant: -0.0897675
+Determinant: 0.0260324
+Determinant: -0.0734512
+Determinant: 0.000234548
+Determinant: -0.0238522
+Determinant: -0.0849523
+Determinant: 0.0204877
+Determinant: -0.0715147
+Determinant: 0.0703858
+Determinant: -0.0142186
+Determinant: -0.101503
+Determinant: 0.03966
+Determinant: 4.69111e-05
+Determinant: 0.0394428
+Determinant: 0.0409131
+Determinant: 8.90995e-05
+Determinant: -0.00841189
+Determinant: -0.0671323
+Determinant: 0.00805167
+Determinant: -0.00292435
+Determinant: 0.0507716
+Determinant: 0.0493995
+Determinant: 0.00629414
+Determinant: -0.0428982
+Determinant: -0.0446924
+Determinant: 0.0776236
+Determinant: 0.00440478
+Determinant: -0.0463321
+Determinant: -0.00247224
+Determinant: -0.0199861
+Determinant: 0.0267022
+Determinant: 0.0184179
+Determinant: 0.0104588
+Determinant: 0.116535
+Determinant: -0.0857382
+Determinant: -0.0477216
+Determinant: 0.0286968
+Determinant: 0.0387932
+Determinant: 0.042856
+Determinant: -0.0964
+Determinant: 0.0320456
+Determinant: -0.0676327
+Determinant: 0.0156632
+Determinant: 0.0548582
+Determinant: 0.0394791
+Determinant: 0.0863353
+Determinant: -0.0568753
+Determinant: -0.00953039
+Determinant: -0.0534666
+Determinant: 0.0506779
+Determinant: 0.00521034
+Determinant: 0.0353338
+Determinant: 0.0845463
+Determinant: -0.00847695
+Determinant: 0.015726
+Determinant: -0.0648035
+Determinant: 0.0170917
+Determinant: 0.0045193
+Determinant: -0.0195397
+Determinant: 0.00630076
+Determinant: -0.0137401
+Determinant: 0.0209229
+Determinant: 0.00382077
+Determinant: -0.0588661
+Determinant: -0.0923883
+Determinant: -0.00726003
+Determinant: -0.0411533
+Determinant: 0.00544489
+Determinant: 0.0101791
+Determinant: 0.0903306
+Determinant: -0.0590416
+Determinant: -0.0377112
+Determinant: -0.0150455
+Determinant: 0.0793066
+Determinant: 0.0425759
+Determinant: -0.040728
+Determinant: -0.0376792
+Determinant: -0.0387703
+Determinant: -0.0232208
+Determinant: 0.0506747
+Determinant: -0.0284409
+Determinant: 0.000536999
+Determinant: -0.0289103
+Determinant: -0.00586449
+Determinant: -0.0805586
+Determinant: 0.0133906
+Determinant: -0.00311773
+Determinant: 0.0184798
+Determinant: -0.00981978
+Determinant: -0.0491601
+Determinant: 0.0452526
+Determinant: 0.00411708
+Determinant: -0.0515142
+Determinant: 0.0121114
+Determinant: 0.00636972
+Determinant: -0.0126048
+Determinant: -0.0412662
+Determinant: 0.00195264
+Determinant: -0.0726478
+Determinant: 0.0692254
+Determinant: -0.0256477
+Determinant: 0.0702529
+Determinant: -0.0052493
+Determinant: 0.0625172
+Determinant: 0.00282606
+Determinant: 0.0229033
+Determinant: 0.0558893
+Determinant: 0.0766217
+Determinant: -0.00388679
+Determinant: -0.0193821
+Determinant: -0.00718189
+Determinant: -0.0864566
+Determinant: 0.0809026
+Determinant: -0.0398232
+Determinant: -0.00224801
+Determinant: 0.0333072
+Determinant: -0.0212002
+Determinant: 0.00371396
+Determinant: 0.0162035
+Determinant: -0.0811845
+Determinant: 0.0148128
+Determinant: 0.0372953
+Determinant: 0.00351286
+Determinant: -0.00103575
+Determinant: 0.0384813
+Determinant: 0.00752738
+Determinant: -0.0248252
+Determinant: -0.106768
+Determinant: -0.0192333
+Determinant: -0.026543
+Determinant: -0.0222608
+Determinant: -0.0487862
+Determinant: 0.00376402
+Determinant: -0.0329469
+Determinant: 0.00266775
+Determinant: 0.0762491
+Determinant: 0.0159609
+Determinant: -0.0190175
+Determinant: -0.0338969
+Determinant: -0.0631867
+Determinant: -0.0238901
+Determinant: 0.107709
+Determinant: -7.74935e-05
+Determinant: -0.0468996
+Determinant: 0.0462787
+Determinant: 0.0387825
+Determinant: 0.0753388
+Determinant: -0.000279933
+Determinant: 0.00638663
+Determinant: -0.00458034
+Determinant: 0.0185849
+Determinant: -0.00543503
+Determinant: -0.0520309
+Determinant: -0.0234638
+Determinant: 0.0593986
+Determinant: -0.00036774
+Determinant: 0.00960819
+Determinant: -0.00685314
+Determinant: -0.000176925
+Determinant: 0.0207583
+Determinant: -0.0337003
+Determinant: -0.0534818
+Determinant: 0.0142158
+Determinant: -0.0728077
+Determinant: 0.0246877
+Determinant: -0.0660952
+Determinant: -0.0466
+Determinant: 0.0915457
+Determinant: -0.00340539
+Determinant: 0.00815076
+Determinant: -0.0751806
+Determinant: -0.00617677
+Determinant: 0.0019761
+Determinant: -0.0016673
+Determinant: 0.0310364
+Determinant: 0.0483121
+Determinant: -0.00664964
+Determinant: 0.0659273
+Determinant: -0.019015
+Determinant: 0.0087627
+Determinant: 0.0267279
+Determinant: 0.0253497
+Determinant: 0.00246292
+Determinant: -0.0684746
+Determinant: -0.0234524
+Determinant: -0.0197933
+Determinant: 0.0120796
+Determinant: -0.0192703
+Determinant: 0.0853956
+Determinant: 0.0388196
+Determinant: -0.0599305
+Determinant: -0.0626148
+Determinant: 0.0258541
+Determinant: -0.0341273
+Determinant: 0.0972889
+Determinant: -0.0306585
+Determinant: 0.0188553
+Determinant: 0.00247702
+Determinant: -0.00368989
+Determinant: -0.0951982
+Determinant: 0.0113578
+Determinant: 0.000762509
+Determinant: -0.0225219
+Determinant: 0.0414059
+Determinant: -0.0244409
+Determinant: -0.0425728
+Determinant: 0.04275
+Determinant: -0.0413427
+Determinant: -0.00556264
+Determinant: -0.0894398
+Determinant: -0.0193197
+Determinant: -0.00788038
+Determinant: -0.00455421
+Determinant: -0.0788177
+Determinant: 0.0415381
+Determinant: -0.0346766
+Determinant: -0.0748027
+Determinant: 0.0087688
+Determinant: -0.0968796
+Determinant: 0.0683526
+Determinant: -0.00996678
+Determinant: 0.00955922
+Determinant: -0.0914706
+Determinant: 0.0728304
+Determinant: 0.0541784
+Determinant: 0.0457072
+Determinant: -0.0299529
+Determinant: -0.0096473
+Determinant: -0.0142643
+Determinant: -0.0684794
+Determinant: 0.00281004
+Determinant: -0.03252
+Determinant: -0.0144637
+Determinant: 0.0294154
+Determinant: 0.00574353
+Determinant: -0.019569
+Determinant: 0.00492446
+Determinant: -0.0526394
+Determinant: -0.000870143
+Determinant: -0.0180984
+Determinant: -0.0144104
+Determinant: 0.0456077
+Determinant: -0.0113433
+Determinant: 0.00377549
+Determinant: -0.0775854
+Determinant: -0.0336789
+Determinant: -0.0744995
+Determinant: -0.0427397
+Determinant: 0.0300061
+Determinant: -0.0326518
+Determinant: -0.0333735
+Determinant: -0.0284057
+Determinant: -0.00999835
+Determinant: -0.0380404
+Determinant: 0.00648521
+Determinant: 0.0449298
+Determinant: 0.0120318
+Determinant: -0.0230653
+Determinant: -0.00934067
+Determinant: -0.0175326
+Determinant: -0.0799447
+Determinant: 0.0679027
+Determinant: -0.00670324
+Determinant: -0.0841748
+Determinant: 0.0236213
+Determinant: 0.0386624
+Determinant: -0.0239495
+Determinant: 0.076976
+Determinant: -0.00997484
+Determinant: 0.025157
+Determinant: -0.0654046
+Determinant: 0.0090564
+Determinant: 0.00129045
+Determinant: -0.105119
+Determinant: 0.0976925
+Determinant: -0.105149
+Determinant: -0.0465851
+Determinant: 0.00237453
+Determinant: -0.0456927
+Determinant: 0.0328236
+Determinant: -0.0914691
+Determinant: -0.0157904
+Determinant: -0.00170804
+Determinant: -0.014797
+Determinant: 0.00464912
+Determinant: -0.035118
+Determinant: -0.0242306
+Determinant: 0.0081405
+Determinant: 0.0733502
+Determinant: -0.0860252
+Determinant: -0.0511219
+Determinant: -0.0925647
+Determinant: 0.0495087
+Determinant: -0.0515914
+Determinant: -0.044318
+Determinant: 0.000900043
+Determinant: 0.0632521
+Determinant: 0.00957955
+Determinant: 0.00598059
+Determinant: 0.0179513
+Determinant: 0.0952263
+</code></pre>
+
+<p><code>dx,dy,dz</code> is a is the distance between tcp and an object i want to keep in sight. The sphere is like a safety zone, but is mainly used to compute the orientation of the tool. </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9700" data-toggle = "popover">
+				<p>user name : James potter</p>
+				<p> user reputation : 226</p>
+				<p class = "tagcontent" id = "usertaginfo-9700">{'stereo-vision': 3, 'visualization': 1, 'None': 0, 'inverse-kinematics': 11, 'algorithm': 5, 'c++': 4, 'kinematics': 5, 'matlab': 1, 'robotic-arm': 18, 'jacobian': 3, 'motion-planning': 8}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9700">Load Comments</button></br>
+			<div id = "commentsection-9700" class = 'collapse'>
+			<div id = "comment-18239" class = "comment">
+				<p>If the sign of determinant of the Jacobian is changing, it is likely that you have a singularity in between. Note that the "smallness" of the value of determinant is a relative term.</p>
+			</div>
+			</div>
+				<textarea id = "speech-9700" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9700">
+					<img id="start_img-9700" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9700">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9717"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9717" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>It is a bit hard to know the exact cause of the error without having the (RobWork), I tried to install it following the link your provided, but I ran into some problems and I don't have the time to fix them at the moment. But I can point you to some issues that might be the source of your problem:</p>
+
+<ol>
+<li>The <code>transform</code> method you are given in this code doesn't have a return statement, though you have declared it to return a <code>rw::math::Transform3D&lt;&gt;</code>. </li>
+<li>If you are near a singularity the inverse kinematics will normally return high values. The singularities depend on the robot structure you are using. You can detect this by seeing the determinant of your jacobian matrix, the closer it is to zero the closer you are to a singularity.</li>
+<li>Also I don't understand why you use the line <code>rw::math::Q dq(q)</code>, because normally the inverse kinematic should return <code>dq</code> if your desired displacement is small enough (i.e. <code>du</code>) so normally you should be able to add it directly to add <code>q</code> directly to the <code>q_current</code>, so may be it could be of interest to check the raw values for these variables.</li>
+</ol>
+
+<p>Also may be it could be more accurate to use a polynomial interpolater to produce the <code>du</code> and then run the whole inverse kinematic in a while loop with a <code>boos::timer</code> for instance. I have actually developed and inverse kinematic for Crustcrawler arm that does that, but I use joint velocity control directly since the output of the inverse kinematic is actually joints velocity, also I am not binding myself to move in sphere I just give a goal position and duration and the model drive the end effecter nicely to it via joints velocities.</p>
+
+<p>If you have more details please share them, it could help in identifying the issue more effectively. Like how <code>invKin</code> is called? and what exactly are those parameters passed to it (i.e. <code>x, y, z</code>)? </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9717" data-toggle = "popover">
+				<p>user name : ghanimmukhtar</p>
+				<p> user reputation : 116</p>
+				<p class = "tagcontent" id = "usertaginfo-9717">{'None': 10}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9717">Load Comments</button></br>
+			<div id = "commentsection-9717" class = 'collapse'>
+			<div id = "comment-17340" class = "comment">
+				<p>Thanks for the feedback. I have been debugging it myself a bit, (After a bit of a break) and found the error with the `transform` you mention in 1) and `dq` in3). The library itself is pretty tricky to install, and might tends to be troublesome, I realize in retrospect that a install guide would be have been ideal here.. But yeah. I didn't think anyone would try to run it.. Thanks for trying :). I have been debugging the math (visulizing vectors and such stuff) for the `sphere` and `transform` function, and they seem to be correct. I think my error must be due to the way I compute `du` (...)</p>
+			</div>
+			<div id = "comment-17341" class = "comment">
+				<p>I am not sure how I should compute the difference between rotation vector as a 3 numeric values?... Taking the difference between the two 3d vectors would result in one vector, and not a numeric number describing the rotation from the current state to the desired state.</p>
+			</div>
+			<div id = "comment-17342" class = "comment">
+				<p>The determinant were computed to Determinant: 2.67004e-40...
+Probably a singularity...</p>
+			</div>
+			<div id = "comment-17344" class = "comment">
+				<p>hmm... It seems pretty hard to find a start configuration which jacobian doesn't entail in to a singularity...?</p>
+			</div>
+			<div id = "comment-17348" class = "comment">
+				<p>Moving it to a position with less singularity computes reasonable Q's.. but the trajectory isn't spheric as hoped. ...
+
+I think i might be because of the start configuration, and the large displacement it has to make to reach the goal.</p>
+			</div>
+			<div id = "comment-17359" class = "comment">
+				<p>So.. I think basically my issue has been that the distance i wanted to travel was too large, and singularities.. So i tried to fix them.. but things still doesn't seem right..</p>
+			</div>
+			<div id = "comment-17366" class = "comment">
+				<p>the axis is pointing in the wrong direction..</p>
+			</div>
+			<div id = "comment-17367" class = "comment">
+				<p>@James potter, sorry I can't get back to you now, but I will do ASAP.</p>
+			</div>
+			<div id = "comment-17369" class = "comment">
+				<p>Example can be seen here: https://giphy.com/gifs/l4HojuDYt0UtdM4Cc</p>
+			</div>
+			</div>
+				<textarea id = "speech-9717" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9717">
+					<img id="start_img-9717" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9717">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

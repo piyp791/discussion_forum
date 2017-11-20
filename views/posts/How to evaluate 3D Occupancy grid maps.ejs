@@ -1,0 +1,183 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to evaluate 3D Occupancy grid maps
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11630" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11630" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 211</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to evaluate 3D Occupancy grid maps</h2>
+<p>I would like to know how to go about evaluating 3D occupancy grid maps.</p>
+
+<p>I have a SLAM system that produces a 3D OGM (in .bt format using octomap/octovis)</p>
+
+<p>I also have a ground truth OGM in same .bt format.</p>
+
+<p>How do I compare the accuracy of my map to the ground truth map in a qualitative and quantitative way?</p>
+
+<p>Important notes:</p>
+
+<ul>
+<li>The two maps may not be the same scale.</li>
+<li>One map may be less dense than the other.</li>
+</ul>
+
+<p>One method I have thought about using is <a href="http://www.mrpt.org/paper-occupancy-grid-matching/" rel="nofollow noreferrer" title="MRPT&#39;s occupancy grid matching application">MRPT's occupancy grid matching application</a>
+This would require me to send both 3d maps as a message to the octomap_server node in ROS, get the resulting map in Rviz, save the image 2D image of each separately, and then somehow convert the images to MRPT's .simplemap file format, and then run MRPT's grid matching program on the two files.</p>
+
+<p>Surely there is a better/more accurate way?</p>
+
+<p>EDIT:
+So I did more research and another route I could go is Matthew's Correlation Coefficient (<a href="https://en.wikipedia.org/wiki/Matthews_correlation_coefficient" rel="nofollow noreferrer">MCC</a>). I could compare two maps and iterate over each cell to compare my result to a ground truth, counting the True and False Positives and Negatives. 
+Only problem with this is that I have to assume that the two maps are the same scale, and also in the same orientation.</p>
+
+<p>If you have any ideas on solving these scale and orientation issues don't be shy.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11630" data-toggle = "popover">
+				<p>user name : Grim</p>
+				<p> user reputation : 16</p>
+				<p class = "tagcontent" id = "usertaginfo-11630">{'pose': 0, 'None': 0, 'slam': 0, 'mapping': 3, 'occupancygrid': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11630" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11630" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11630">
+					<img id="start_img-11630" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11630">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-11864"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11864" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I'd be (pleasantly) surprised to hear that there is a way to get the output you want based on your available inputs, but this problem seems incomplete. </p>
+
+<p>The most accurate map is the one that gets you to your precise destination. To quantitatively measure that accuracy, you'd have to use your map to navigate from point A to point B, then compare that final position to the one you'd get with the ground-truth map.  It sounds like you only have point A (the origin) defined for both maps, so you have no way to measure point B's error.</p>
+
+<p>At the very least, you would need to start with a set of points that are defined on both maps. (I say "points" meaning "2 or more"; I can't convince myself that a round-trip measurement -- starting and ending at the origin -- would properly explore the space.)</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11864" data-toggle = "popover">
+				<p>user name : Ian</p>
+				<p> user reputation : 9640</p>
+				<p class = "tagcontent" id = "usertaginfo-11864">{'planning': 10, 'None': 809, 'power': 1, 'algorithm': 10, 'battery': 1, 'slam': 7, 'coverage': 10, 'mobile-robot': 9, 'sensors': 9}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11864">Load Comments</button></br>
+			<div id = "commentsection-11864" class = 'collapse'>
+			<div id = "comment-21245" class = "comment">
+				<p>I think I understand what you're saying, but I don't think successful navigation is evidence enough of an accurate map. Because to get from point A to point B in a room, becomes an odometry problem. Encoders could achieve a good result. There are too many variables to use 'error in trajectory' to evaluate the accuracy of a map, in my opinion. Because even if you use the depth sensor on the robot, it is still only the belief of what the robot sees. I think the best method for map evaluation is comparison to ground truth.</p>
+			</div>
+			<div id = "comment-21249" class = "comment">
+				<p>I assume that when the robot says "I am at point A (the origin) according to my map", that the robot is at ground-truth A.  I also assume that if your robot leaves point A, and (using its map) is able to return to where it thinks point A is, that it is still at ground-truth A.  (Otherwise, you have a localization problem.)  Given those assumptions: the difference between a ground-truth point B and the ground-truth position of the robot when it thinks it is at B indicates the error in the map.  In effect, you are using the robot to measure the error.</p>
+			</div>
+			</div>
+				<textarea id = "speech-11864" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11864">
+					<img id="start_img-11864" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11864">Comment</button>
+			<br><div id = "ans-13998"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-13998" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Actually, evaluating maps with different scales and densities happens to be part of my research for my PhD so here goes the two ways I can think of on the top of my head:</p>
+
+<ul>
+<li><p>Visually: it is always the first step but not the only one ;).</p></li>
+<li><p>Map matching methods as in <a href="https://link.springer.com/article/10.1007/s10514-015-9493-5" rel="nofollow noreferrer">this paper</a> by S ren Schwertfeger. That sounds like the idea you had first and I think it would probably be the best way to go about it.</p></li>
+</ul>
+
+<p>S ren Schwertfeger's method is based on the Voronoi diagram and thus goes away your scale and density problem by have some fuzzy limits on the angle and length of the edges of the Voronoi diagram. I used <a href="https://malcolmmielle.wordpress.com/2017/08/11/drawing-to-get-a-robot-where-you-want-it-to-be/" rel="nofollow noreferrer">a similar method</a> to match hand drawn sketch maps onto ground truth maps using Voronoi diagrams, and I did not consider <em>at all</em> the angle and length of Voronoi edges, just their order. That's probably the worst case of "maps with different scale and density you can have" and the matching was <a href="https://mro.oru.se/wp-content/material/pdf/1054805.pdf" rel="nofollow noreferrer">not half bad</a>. Thus, I believe that should be a pretty solid solution, especially if you have occupancy grid maps; you'll be able to take in account angles in between Voronoi edges to get a better precision.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-13998" data-toggle = "popover">
+				<p>user name : Malcolm</p>
+				<p> user reputation : 393</p>
+				<p class = "tagcontent" id = "usertaginfo-13998">{'communication': 1, 'None': 24, 'serial': 1}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-13998" class = 'collapse'>
+			</div>
+				<textarea id = "speech-13998" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-13998">
+					<img id="start_img-13998" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-13998">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

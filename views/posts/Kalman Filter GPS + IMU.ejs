@@ -1,0 +1,359 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Kalman Filter GPS + IMU
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11178" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11178" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 831</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Kalman Filter GPS + IMU</h2>
+<p>I know this probably has been asked a thousand times but I'm trying to integrate a GPS + Imu (which has a gyro, acc, and magnetometer) with an Extended kalman filter to get a better localization in my next step. I'm using a global frame of localization, mainly Latitude and Longitude. I kinda 'get' the kalman equations but I'm struggling in what should be my actual state and what should be my sensor prediction.</p>
+
+<p>I have in one hand the latitude and longitude of my GPS and in euler degrees the roll, pitch and yaw of my IMU (which is already fused by some algorithm on board the chip I think) in euler degrees. I think I can throw the pitch and roll away.</p>
+
+<p>And I know I have to show a function for my state $$ x_t =  f (x_{t-1}, \mu_{t-1}) $$ and a function that predicts what my sensor is seing at the step $t$
+$$ \mu_{t} = h(x_t)$$</p>
+
+<p>The thing is I dont know on what these functions should depend on, should my state be about the gps? In that case how can I predcit the next yaw read since I don't think I can get the rotation from a difference from gps location.</p>
+
+<p>On the other side if my state is the yaw, I need some kind of speed, which the GPS is giving me, in that case would kalman work? Since I'm using the speed from the GPS to predict the next GPS location.</p>
+
+<p><a href="https://i.stack.imgur.com/aqCPW.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/aqCPW.jpg" alt="enter image description here"></a></p>
+
+<p>Long story short I dont know what my state and sensor prediction should be in this case.</p>
+
+<p>Thanks In advance.</p>
+
+<p>Edit: I have an ackerman steering mobile robot with no encoders which has mounted a GPS and and IMU (gyr acc and mag). The imu fuses thes values into euler degrees and the GPS gives me lat and longitude.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11178" data-toggle = "popover">
+				<p>user name : Aram</p>
+				<p> user reputation : 103</p>
+				<p class = "tagcontent" id = "usertaginfo-11178">{'magnetometer': 0, 'None': 0, 'localization': 0, 'imu': 0, 'kalman-filter': 0, 'gps': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11178">Load Comments</button></br>
+			<div id = "commentsection-11178" class = 'collapse'>
+			<div id = "comment-20176" class = "comment">
+				<p>you can only throw roll and pitch away if you are sure your vehicle will always be level</p>
+			</div>
+			</div>
+				<textarea id = "speech-11178" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11178">
+					<img id="start_img-11178" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11178">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-11179"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11179" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>id recommend estimating position, velocity, and bias in the yaw reading from the imu. You'd assume the yaw bias is a first order system driven by zero mean Gaussian noise. You can also estimate biases in your accel readings if you expect significant drift during operation. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11179" data-toggle = "popover">
+				<p>user name : holmeski</p>
+				<p> user reputation : 1338</p>
+				<p class = "tagcontent" id = "usertaginfo-11179">{'pose': 3, 'None': 101, 'computer-vision': 3, 'kalman-filter': 3}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11179" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11179" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11179">
+					<img id="start_img-11179" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11179">Comment</button>
+			<br><div id = "ans-11180"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11180" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>This is a complete re-working of the answer I had originally provided. If you're curious, you can check the edit history and see what was posted earlier. </p>
+
+<p>In comments to this question, OP stated that they might be able to get throttle and steering angles for the robot, but they probably wouldn't be accurate. That's okay; it's better than nothing.</p>
+
+<p>OP also stated that the IMU outputs a fused orientation, where the fused orientation is from the accelerometer, gyro, and magnetometer. </p>
+
+<p>The accelerometer output of the IMU may or may not be corrected by the orientation. If it is, great. If not, it's a straightforward conversion <a href="https://en.wikipedia.org/wiki/Euler_angles#Rotation_matrix" rel="nofollow noreferrer">provided you pick the correct form</a>; I think generally what you would want is the XYZ Tait-Bryan rotation matrix, but definitely check with the manufacturer and absolutely run through copious amounts of test data to check the results yourself. </p>
+
+<hr>
+
+<p>Side note here, I build quick visualizers for myself all the time and <strong>highly recommend</strong> you do it for yourself, too. Here's a quick Matlab snippet to use, assuming you have a variable <code>time</code> that has all of your time indices. If you just have the sample intervals, you can make time as the cumulative sum of the sample intervals; <code>time = cumsum(sampleIntervals);</code>.</p>
+
+<pre class="lang-matlab prettyprint-override"><code>width = 1;
+length = 2;
+height = 0.5;
+shapeTop = [...
+    -width/2, -length/2; ...
+    -width/2, length/2; ...
+    width/2, length/2; ...
+    width/2, -length/2];
+shapeTop(:,3) = ones(4,1)*height/2;
+shapeBottom = shapeTop;
+shapeBottom(:,3) = shapeBottom(:,3) - ones(4,1)*height;
+shapeVertices = [shapeTop;shapeBottom];
+shapeFaces = [...
+    1,2,3,4,1; ...
+    5,6,7,8,5; ...
+    8,5,1,4,8; ...
+    7,6,2,3,7; ...
+    5,6,2,1,5; ...
+    8,7,3,4,8];
+shapeColor = [0.6 0.6 1]; % Light blue
+
+figure(1)
+shapePatch = patch(...
+    'Faces', shapeFaces, ...
+    'Vertices', shapeVertices, ...
+    'FaceColor', shapeColor);
+axis equal;
+xlabel('X-Axis')
+ylabel('Y-Axis')
+zlabel('Z-Axis')
+view([60,20]);
+
+tic
+while true
+    elapsedTime = toc;
+    if elapsedTime &gt; time(end)
+        break;
+    end
+    currentSample = find(time&gt;=elapsedTime,1);
+    rotMatrix = EulerToRotationMatrix(...
+        EulerX(currentSample) , ...
+        EulerY(currentSample) , ...
+        EulerZ(currentSample));
+    tempVertices = shapeVertices;
+    tempVertices = (rotMatrix*tempVertices.').';
+    set(shapePatch,'Vertices',tempVertices);
+    drawnow;
+    pause(0.01);
+end
+</code></pre>
+
+<p>This code runs through all of your sample data, at a 1:1 playback speed, and updates a shape's orientation according to your X/Y/Z angles. <code>EulerToRotationMatrix</code> is a function you make yourself that accepts your Euler x/y/z angles and returns the appropriate rotation matrix. That's the part you need to play around with, but again I'm pretty sure you want Tait-Bryan XYZ.</p>
+
+<p>Record multiple test data sets of you moving your IMU from one starting pose to another starting pose, and take different paths to end at the same orientation. When you watch the playback you'll see pretty much immediately if you're doing the rotation matrix stuff correctly. </p>
+
+<p>So anyways, once you're sure you've got your rotation matrix, if you need to correct the accelerometer data, it's just <code>accNew = rotMatrix*accOld;</code>. </p>
+
+<hr>
+
+<p>Now, there are four possible ways to update yaw information:</p>
+
+<ol>
+<li>From a model using inputs (throttle and steering angle).</li>
+<li>Magnetometer for angle relative to magnetic North.</li>
+<li>Gyro readings from IMU</li>
+<li>Heading required to move in a straight line from the previous GPS fix to the current GPS fix. </li>
+</ol>
+
+<p>The GPS location is a <a href="https://www.mathworks.com/matlabcentral/answers/uploaded_files/28102/gaussian16.png" rel="nofollow noreferrer">Gaussian distribution</a> about your actual location, so I would be very reluctant to use option 4 above for anything. </p>
+
+<p>The IMU already fuses the magnetometer and gyro data into one yaw reading, so then the only thing that you can do to improve your yaw estimate is with the model. If you can't get access to the inputs (throttle/steering angle) then you're stuck with the yaw angle the IMU gives you. </p>
+
+<p>If you <em>do</em> get access to the inputs, then you can <a href="https://pdfs.semanticscholar.org/5849/770f946e7880000056b5a378d2b7ac89124d.pdf" rel="nofollow noreferrer">model the x/y/$\theta$ rates</a> as follows:</p>
+
+<p>$$
+\dot{x} = v\cos(\frac{\pi}{2} - \theta) \\
+\dot{y} = v\sin(\frac{\pi}{2} - \theta) \\
+\dot{\theta} = \frac{v}{L}\tan(\delta) \\
+$$</p>
+
+<p>where $\theta$ is the heading, measured positive CW from the +y-axis; $\delta$ is the steering angle, measured positive CW from the forward vehicle direction, $L$ is the wheel base, the distance between the front and rear axles, and $v$ is the speed of the vehicle. </p>
+
+<p>The model of how your vehicle parameters (position/heading) update are nonlinear to the point that I wouldn't try to put it in state space form. You really <em>do</em> need the actual $\cos$ and $\sin$ functions; the small-angle approximations wouldn't really work here. That's okay! You're using the extended Kalman filter, so you don't need to try to linearize the model. </p>
+
+<p>I think I'd probably try to model the throttle signal as a first-order speed regulator, such that:</p>
+
+<p>$$
+\dot{v} = \frac{c\left(\mbox{throttle}\right) - v}{\tau} \\
+$$</p>
+
+<p>where $\tau$ is the time constant and $c$ is a value that scales the throttle to a speed. Start a test with the vehicle stationary, then give a step command for throttle. The long-term, stable speed can be used to determine $c$. Then you can figure, given a particular speed "request" (throttle position), what the time constant was. </p>
+
+<p>The relationship between step input and system response is <a href="https://en.wikipedia.org/wiki/Time_constant#Step_response_with_arbitrary_initial_conditions" rel="nofollow noreferrer">well known</a>; 63.2% of final value at one time constant, 95.0% at three time constants, etc. I'd run multiple tests at each of a variety of throttle inputs and average the results.</p>
+
+<p>Now, your more complete model for the system would be:</p>
+
+<p>$$
+\dot{v} = \frac{c\left(\mbox{throttle}\right) - v}{\tau} \\
+v = v + \dot{v}\Delta T \\
+$$
+$$
+\dot{x} = v\cos(\frac{\pi}{2} - \theta) \\
+\dot{y} = v\sin(\frac{\pi}{2} - \theta) \\
+\dot{\theta} = \frac{v}{L}\tan(\delta) \\
+$$
+$$
+x = x + \dot{x}dT \\
+y = y + \dot{y}dT \\
+\theta = \theta + \dot{\theta}dT \\
+$$</p>
+
+<hr>
+
+<p>The generic Kalman model. </p>
+
+<p>You're using the extended Kalman filter which, unlike the regular ("classic"?) Kalman filter, doesn't require a linear system. This is great because the system model is right above. Your states are position, speed, and yaw angle. </p>
+
+<p>So you do your predict steps:</p>
+
+<ul>
+<li>Predict the state estimate:</li>
+</ul>
+
+<p>$$
+\hat{x}_{t|t-1} = f\left(\hat{x}_{t-1} , u_{t-1}\right) \\
+$$</p>
+
+<p>Here $\hat{x}_{t|t-1}$ is your <em>prediction</em> of the state vector $x$, which is what the hat $\hat{ }$ means, for the current time step given the state vector at the previous time step, which is what the ${t|t-1}$ means.</p>
+
+<ul>
+<li>Predict the error covariance estimate:</li>
+</ul>
+
+<p>$$
+P_{t|t-1} = F_k P_{t-1} F_k^T + Q_k \\
+$$</p>
+
+<p>Here $F_k$ is the Jacobian $\left.\frac{\partial f}{\partial x}\right|_{\hat{x}_{t-1},u_{t-1}}$, $P$ is the error covariance (how much you "trust" the state estimate; smaller = more faith), $Q_k$ is the process noise matrix, which is typically a diagonal matrix of [numbers]. How do you measure process noise? There's a bunch of papers on the subject and you should check them out. Try putting 0.1 on the diagonal and see how that works. Generally the process noise is how you tune the filter. Again, the $t$ and $t|t-1$ mean the same as they did (current and current given the past). </p>
+
+<p>Then you do the update steps:</p>
+
+<p>Here's the tricky-ish thing for you. You have multiple sensors - a GPS and an IMU. What to do? If you had independent sensors, the answer would be update, then update again. For example, if you were using the IMU only for speed and yaw angle, and you were using the GPS only for position, then you would have the following residuals/innovations:</p>
+
+<p>$$
+\tilde{y}_{\mbox{IMU}} = \left[\begin{matrix}{}
+\mbox{speed measurement} \\
+\mbox{yaw angle measurement}
+\end{matrix} \right] - \left[\begin{matrix}{}
+0 &amp; 1 &amp; 0 \\
+0 &amp; 0 &amp; 1
+\end{matrix} \right] \left[\begin{matrix}{}
+\mbox{position state prediction} \\
+\mbox{speed state prediction} \\
+\mbox{yaw angle state prediction}
+\end{matrix} \right]
+$$ 
+$$
+\tilde{y}_{\mbox{GPS}} = \left[\begin{matrix}{}
+\mbox{position measurement} 
+\end{matrix} \right] - \left[\begin{matrix}{}
+1 &amp; 0 &amp; 0 
+\end{matrix} \right] \left[\begin{matrix}{}
+\mbox{position state prediction} \\
+\mbox{speed state prediction} \\
+\mbox{yaw angle state prediction}
+\end{matrix} \right]
+$$ </p>
+
+<p>You can then go on calculating the residual covariances and Kalman gains without worry because those measurements are independent and don't "overwrite" each other. </p>
+
+<p>You're not so lucky; you have to deal with the fact that you've got two redundant measurements - IMU position and GPS position. The common way to handle the redundancy is to average the sensors before you send them to the filter. This works fine for two identical sensors, but that's not what you have. </p>
+
+<p>A better way <a href="https://stackoverflow.com/a/25586369/5171120">might be to weight the measurements by their covariances</a> such that more "trustworthy" sensors get a bigger weight. </p>
+
+<p>All that said, the two don't <em>have</em> to conflict; the IMU technically outputs an acceleration. If you just integrate one time to get speed and leave it at that, then suddenly the IMU and the GPS <em>don't</em> conflict and you can leave their measurements separate and not have to worry about conflict. <em>This is the route I would take</em>. If you find it unsatisfactory you can try integrating the IMU output again and blending it with the GPS data, but I don't think that's going to make things any better. </p>
+
+<p>Hopefully I've made things much more clear. </p>
+
+<p>A final note, you'll probably find also that your GPS and IMU don't update at the same rate. What to do then? There's a lot of papers about that, but they basically boil down to downsampling the higher frequency data or faking the low frequency data. Downsampling can be done dumb (discarding data) or smart (filtering data), just like faking the data can be done dumb (repeating the same value) or smart (some manner of extrapolating a projected sensor reading). </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11180" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-11180">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11180">Load Comments</button></br>
+			<div id = "commentsection-11180" class = 'collapse'>
+			<div id = "comment-20191" class = "comment">
+				<p>You should also double check that you are getting Euler **angles** from the IMU and not Euler **rates**. Gyroscopes need to be numerically integrated one time to get angles and accelerometers need to be numerically integrated two times to get positions.</p>
+			</div>
+			<div id = "comment-20238" class = "comment">
+				<p>@Aram - I rewrote the answer. Hopefully this helps. I deleted all of the comments except the one about checking for Euler angles or rates; you didn't reply specifically about it and I wanted to make sure you saw it.</p>
+			</div>
+			</div>
+				<textarea id = "speech-11180" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11180">
+					<img id="start_img-11180" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11180">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,162 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Question about EKF covariance equations
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11547" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11547" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 86</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Question about EKF covariance equations</h2>
+<p>I am trying to perform uncertainty aware planning, where my planner tries to connect start and goal in such a way that the resultant path provides the least covariance at the end. This is inspired by techniques such as LQG. </p>
+
+<p>The way I 'estimate' what covariance would result from a certain path is by using the EKF equations while assuming maximum likelihood observations, and I am trying to test what's called the 'light-dark' scenario that was used in many papers: where a 2D robot is traversing the environment, and there's a specific region where it would receive measurements that would reduce the covariance greatly. Hence, the uncertainty aware planner tries to take the robot to this 'light' area, receive good measurements, and then proceed to the goal. As seen in this picture from [1], the final covariance drops significantly by using this modified path, than the shortest path from start to goal (ignore the red line).</p>
+
+<p><a href="https://i.stack.imgur.com/dPYDC.jpg" rel="nofollow noreferrer">https://i.stack.imgur.com/dPYDC.jpg</a></p>
+
+<p>I am trying to replicate similar behavior with my planner, which does result in covariance reduction compared to some other path that doesn't visit the good area, but the reduction isn't significant at all. In my sample environment, which is a 20x20 grid, the X coordinate of 17 represents the 'light' area, so I express the environmental noise as a matrix which is written as 
+$\begin{bmatrix} x-17+0.01 &amp;&amp; 0 \\ 0 &amp;&amp; x-17+0.01 \end{bmatrix}$,</p>
+
+<p>, hence would get a (0.01,0.01) matrix whenever I'm precisely at the x=17 column in the grid. Problem is, my result looks something like this, with the covariance ellipses plotted in red (the span of which I obtain from the Eigen values of the matrix). </p>
+
+<p><a href="https://i.stack.imgur.com/PMv5n.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/PMv5n.png" alt="enter image description here"></a></p>
+
+<p>Although the robot does visit the good area thanks to the planner, my covariance still increases rapidly once I leave: so I'm guessing I am making a mistake in my EKF equations. This is how I am 'simulating' the covariance at coordinates x2, when stepping from x1 to x2 with P1 being the covariance at x1 (adapted from equations in some open source code).</p>
+
+<pre><code>function P2 = predictCovariance(P1, x1, x2)
+H = eye(2);
+u = x2-x1; 
+
+G = [u(1) 0 ; 0 u(2)];
+Q = eye(2);
+R = eye(2);
+M = [(x2(1)-17 + 0.01) 0 ; 0 (x2(1)-17 + 0.01)];
+P = P1 + G*Q*G';
+S = H*P*H' + M*R*M';
+K = (P*H')/S;
+P2 = (eye(2)-K*H)*P;
+end
+</code></pre>
+
+<p>[1] Van Den Berg, Jur, Sachin Patil, and Ron Alterovitz. "Motion planning under uncertainty using iterative local optimization in belief space." The International Journal of Robotics Research 31.11 (2012): 1263-1278.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11547" data-toggle = "popover">
+				<p>user name : Combat Convention</p>
+				<p> user reputation : 6</p>
+				<p class = "tagcontent" id = "usertaginfo-11547">{'None': 0, 'kalman-filter': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11547" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11547" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11547">
+					<img id="start_img-11547" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11547">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-11594"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11594" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>There seem to be several problems with the EKF equations in the code snippet: which I've come across before as part of an LQG related code available online. I am by no means an authoritative reference on filtering equations, but this is out of my own experience working in belief space and the 'light-dark' scenario.</p>
+
+<ol>
+<li>That's not how the $G$ matrix works in the prediction equation. $G$ is the process noise Jacobian. $G$ could literally just be an identity matrix, with the predicted covariance equation reading</li>
+</ol>
+
+<p>$ \bar{P} = A*P_{prev}*A^T + Q $</p>
+
+<p>where $Q$ is the process noise covariance matrix.</p>
+
+<ol start="2">
+<li>Exactly similar to point 1: the $M$ matrix does not represent what you've coded it to: it's the measurement <em>noise Jacobian</em>. The measurements are encoded in the $H$ matrix, which is the measurement Jacobian: hence, how far you are from your 'light' area needs to be represented in the $H$ matrix, not the noise matrices. Hence $M$ can be set to $I$, and $R$ can be any Gaussian noise you choose. </li>
+</ol>
+
+<p>Once you fix these problems and obtain right values for $H$, $\bar{P}$ and $S$, rest of the equations should be fairly straightforward, and are correctly written in the code.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11594" data-toggle = "popover">
+				<p>user name : HighVoltage</p>
+				<p> user reputation : 398</p>
+				<p class = "tagcontent" id = "usertaginfo-11594">{'stereo-vision': 2, 'probability': 10, 'multi-agent': 4, 'planning': 10, 'manipulator': 2, 'cameras': 1, 'matlab': 1, 'kalman-filter': 7, 'None': 19, 'noise': 3, 'inverse-kinematics': 2, 'localization': 8, 'pose': 4, 'mapping': 0, 'rotation': 1, '3d-reconstruction': 0, 'computer-vision': 8, 'algorithm': 3, 'c++': 3, 'slam': 2, 'exploration': 0, 'path-planning': 3}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11594" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11594" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11594">
+					<img id="start_img-11594" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11594">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,196 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>What algorithm can I use for constructing a map of an explored area using a number of ultrasound sensors?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-53" class = "post">
+			<h2>Question</h2>
+			<div id="vote-53" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">7</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 1193</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>What algorithm can I use for constructing a map of an explored area using a number of ultrasound sensors?</h2>
+<p>Ultrasound sensors are incredibly cheap these days which makes them a popular choice for many hobbyist robotic applications, and I'd like to use a bunch of them (say 10) around a robot with an algorithm to build a rough map of an area (as the robot explores it.) I'm not interested in dealing with moving objects at this stage, just pinpointing stationary ones, and I'll be using GPS for location. I realise that other components such as a laser scanner would produce much more accurate results, however such devices are also astronomically more expensive.</p>
+
+<p>Does an algorithm exist for this purpose?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-53" data-toggle = "popover">
+				<p>user name : berry120</p>
+				<p> user reputation : 640</p>
+				<p class = "tagcontent" id = "usertaginfo-53">{'control': 22, 'battery': 16, 'slam': 7, 'design': 8, 'motor': 11, 'underwater': 24, 'kinect': 4, 'auv': 24, 'input': 4, 'electronics': 10, 'gyroscope': 22, 'gps': 17, 'wheel': 9, 'None': 3, 'localization': 17, 'mapping': 7, 'failure': 11, 'protection': 10, 'sensors': 11, 'two-wheeled': 22, 'balance': 22, 'acoustic-rangefinder': 7}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-53" class = 'collapse'>
+			</div>
+				<textarea id = "speech-53" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-53">
+					<img id="start_img-53" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-53">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-72"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-72" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">6</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>There is a whole area of literature on this topic. The most general idea is that of Simultaneous Localization and Mapping (<a href="http://en.wikipedia.org/wiki/Simultaneous_localization_and_mapping">SLAM</a>), where the robot must build a map at the same time as it locating itself in that map. Depending on how accurate you want your maps to be, you can attempt a simpler problem of creating an <a href="http://en.wikipedia.org/wiki/Occupancy_grid_mapping">occupancy grid map</a>, which assumes you know the location of the robot.</p>
+
+<p>In general, GPS is pretty horrible, so generating an occupancy grid just using GPS as your primary location source will generate pretty fuzzy maps. However, it is possible to integrate GPS with acceleration, gyroscopes, compasses, cameras, wheel encoders and other sensors to approximate a good position in the world. Otherwise, you will need to look into a simple SLAM system to handle your problems. </p>
+
+<p>A nice open-source package <a href="http://openslam.org/g2o.html">g2o</a>, for so-called GraphSLAM, allows you to put in constraints like GPS and relative position to walls. It may not be an exact fit, but it is pretty general.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-72" data-toggle = "popover">
+				<p>user name : Chris Mansley</p>
+				<p> user reputation : 464</p>
+				<p class = "tagcontent" id = "usertaginfo-72">{'odometry': 15, 'None': 24, 'kalman-filter': 15, 'localization': 15}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-72">Load Comments</button></br>
+			<div id = "commentsection-72" class = 'collapse'>
+			<div id = "comment-148" class = "comment">
+				<p>An additional thought would be to collect all of the data, using basic avoidance behaviors to make sure that the robot doesn't crash into anything, and then use a post processing graph SLAM. This can leverage all of the data captured, as opposed to only the prior data for a point. You might wish to check out: http://openslam.org/ssa2d.html or http://robots.stanford.edu/papers/thrun.graphslam.html</p>
+			</div>
+			</div>
+				<textarea id = "speech-72" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-72">
+					<img id="start_img-72" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-72">Comment</button>
+			<br><div id = "ans-73"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-73" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The algorithms are essentially the same regardless of what sensors you are using.</p>
+
+<p>The real issue, which <a href="https://robotics.stackexchange.com/a/72/37">Chris touched upon</a>, is that SLAM is hard even with very good sensors.</p>
+
+<p>I would consider GPS, wheel odometry, and an IMU to be necessary to even attempt slam with ultrasound.</p>
+
+<p>If you are just looking for cheap localization I recommend taking a look at vision/kinect based slam as well.  Both webcams and the kinect are very cheap and visual slam has come a long way.</p>
+
+<p>The kinect is pretty much the holy grail in terms of sensor performance/cost as long as you are indoors.</p>
+
+<p>Here is an example of a kinect on a robot plus a lot of math: <a href="http://www.youtube.com/watch?v=9Y4RQVpp-BY" rel="nofollow noreferrer">http://www.youtube.com/watch?v=9Y4RQVpp-BY</a></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-73" data-toggle = "popover">
+				<p>user name : user65</p>
+				<p> user reputation : 2041</p>
+				<p class = "tagcontent" id = "usertaginfo-73">{'None': 174, 'localization': 16}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-73" class = 'collapse'>
+			</div>
+				<textarea id = "speech-73" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-73">
+					<img id="start_img-73" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-73">Comment</button>
+			<br><div id = "ans-102"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-102" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>To do SLAM, you will need a relatively good estimate of position.</p>
+
+<p>Robots that use laser scanners can make do with just odometry, because the data is relatively accurate, and the scanner data can be used to help localize in subsequent time steps.</p>
+
+<p>Ultrasound sensors are very fuzzy, they generally have a direction fuzziness of 20+ degrees, and anything in the general direction will be detected.</p>
+
+<p>Thus, they are of negligible help in helping to localize (except in very structured environments).</p>
+
+<p>A GPS/IMU combination can be used to get reasonable localization. Of course, this depends on the scale of the robot, and if it is indoors, GPS may not be practical.</p>
+
+<p>If you are able to carefully control wheel slippage, wheel odometry can significantly improve localization in the short term (although an absolute method of localization is preferred). Without an absolute reference (eg. GPS), even with a laser scanner, you will need to be able to solve the problem of "closing the loop".</p>
+
+<p>Structured environments may have a lower accuracy requirement. For example, a maze-like environment with walls at regular square grid distances, where it is simple to detect the presence of a wall in each direction of a grid cell.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-102" data-toggle = "popover">
+				<p>user name : ronalchn</p>
+				<p> user reputation : 2449</p>
+				<p class = "tagcontent" id = "usertaginfo-102">{'None': 187, 'two-wheeled': 20, 'inverse-kinematics': 15, 'interrupts': 5, 'microcontroller': 13, 'wiring': 7, 'c': 8, 'avr': 5, 'brushless-motor': 2, 'joint': 15, 'kinematics': 15, 'hall-sensor': 2, 'mobile-robot': 20, 'arm': 15}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-102" class = 'collapse'>
+			</div>
+				<textarea id = "speech-102" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-102">
+					<img id="start_img-102" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-102">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

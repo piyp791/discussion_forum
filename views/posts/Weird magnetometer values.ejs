@@ -1,0 +1,183 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Weird magnetometer values
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8732" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8732" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 69</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Weird magnetometer values</h2>
+<p>I bought a 3-axis magnetometer (Similar to <a href="https://www.adafruit.com/products/1746" rel="nofollow noreferrer">this one</a> ) And plugged into an Arduino in order to read the heading value.
+I mounted it on my robot and I drove with the robot for around 30 meters, turned 180 degrees and drove back to my starting position. I plotted the heading value and it shows inconsistent values. The 180 degrees turn started at sec 55, the rest is driving in one direction using a joystick and following a wall as reference so small deviations are expected but not that big as in the image.</p>
+
+<p><a href="https://i.stack.imgur.com/wWHaz.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/wWHaz.png" alt="enter image description here"></a></p>
+
+<p>When the robot is turning in-place, there is no such problem and the heading variation follows the rotation of the robot. The robot (Turtlebot) is a little bit shaky such that the magnetometer doesn't always have the x and y axes parallel to the floor but I don't think few degrees of offset can cause such a huge difference. I calculate the heading as follows:</p>
+
+<blockquote>
+  <p>heading = atan2(y field intensity, x field intensity)</p>
+</blockquote>
+
+<p>Why does this happen? Could it be form some metals or electric wires under the floor?
+Can you suggest a more robust method/sensor for estimating the heading in indoor environments?</p>
+
+<p>EDIT:</p>
+
+<p>I drove the same path again and the pattern similarity is making it even weirder
+<a href="https://i.stack.imgur.com/G5eeT.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/G5eeT.png" alt="enter image description here"></a></p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8732" data-toggle = "popover">
+				<p>user name : Mehdi</p>
+				<p> user reputation : 394</p>
+				<p class = "tagcontent" id = "usertaginfo-8732">{'control': 1, 'odometry': 12, 'None': 15, 'computer-vision': 10, 'mobile-robot': 2, 'power': 1, 'battery': 1, 'navigation': 2, 'cameras': 7, 'torque': 1, 'lidar': 5, 'joint': 2, 'slam': 12, 'magnetometer': 2, 'laser': 1, 'speech-processing': 3, 'rangefinder': 4, 'actuator': 1, 'sensors': 4, 'digital-audio': 0, '3d-reconstruction': 5}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8732" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8732" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8732">
+					<img id="start_img-8732" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8732">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8733"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8733" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Everything looks fine to me. </p>
+
+<p>Imagine if you kept driving in clockwise circles. Would you want your heading to be 18064? Would that mean anything to you? Which direction are you facing? </p>
+
+<p>No, instead whenever you <em>would</em> go below 0 it puts you up to 359, because counter clockwise of North is North-Northwest. </p>
+
+<p>Similarly, clockwise of North is North-Northeast, so instead of going from 359 to 361 you go to 1 instead. </p>
+
+<p>All you are seeing is the output giving you a useful heading, which means "wrapping" from 0 to 360 because these are actually the same values. Similar to how a clock "jumps" from 12 to 1 (or 23 to 1, depending on your background).</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8733" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-8733">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8733">Load Comments</button></br>
+			<div id = "commentsection-8733" class = 'collapse'>
+			<div id = "comment-14303" class = "comment">
+				<p>What about the "driving in ONE direction"?</p>
+			</div>
+			<div id = "comment-14304" class = "comment">
+				<p>Ah my fault; I misread the question. The plot looks normal for an arbitrary drive cycle, but incorrect for your straight-180-straight cycle. In that case I would agree with your answer, that you're passing magnetic fields such as power wiring that are interfering with your reading. The simple way to verify this is to go outside and see if your data looks worse, the same, or better.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8733" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8733">
+					<img id="start_img-8733" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8733">Comment</button>
+			<br><div id = "ans-8734"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8734" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Apparently a magnetometer is useless in indoor environments like man made buildings. I cite from this paper
+<a href="http://plan.geomatics.ucalgary.ca/papers/afzal%20et%20al_navigation_2011c.pdf" rel="nofollow">Multi-Magnetometer Based Perturbation Mitigation for Indoor Orientation Estimation</a></p>
+
+<blockquote>
+  <p>Nevertheless, the success of these sensors for orientation estimation
+  is conditioned by their capacity to sense Earth s magnetic field in
+  environments full of magnetic anomalies like urban canyons and
+  indoors. These artificial fields contaminate Earth s magnetic field
+  measurements, making orientation estimation very difficult in heavily
+  perturbed areas.</p>
+</blockquote>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8734" data-toggle = "popover">
+				<p>user name : Mehdi</p>
+				<p> user reputation : 394</p>
+				<p class = "tagcontent" id = "usertaginfo-8734">{'control': 1, 'odometry': 12, 'None': 15, 'computer-vision': 10, 'mobile-robot': 2, 'power': 1, 'battery': 1, 'navigation': 2, 'cameras': 7, 'torque': 1, 'lidar': 5, 'joint': 2, 'slam': 12, 'magnetometer': 2, 'laser': 1, 'speech-processing': 3, 'rangefinder': 4, 'actuator': 1, 'sensors': 4, 'digital-audio': 0, '3d-reconstruction': 5}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8734" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8734" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8734">
+					<img id="start_img-8734" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8734">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

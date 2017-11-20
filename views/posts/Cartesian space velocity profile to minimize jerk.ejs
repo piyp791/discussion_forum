@@ -1,0 +1,133 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Cartesian space velocity profile to minimize jerk
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9239" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9239" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 108</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Cartesian space velocity profile to minimize jerk</h2>
+<p>I am working with a 6 DOF manipulator. Currently I have implemented a simple velocity controler along a fixed direction on xyz space. I control the xyz space velocity (xdot) by using a predefined velocity profile against time. 
+Joint values are updated based on the defined velocity profile.</p>
+
+<p>Assume I want to move robot along a direction parallel to z axis, I define a trapezoidal velocity profile (z dot) over time as following, <a href="https://i.stack.imgur.com/0DgId.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/0DgId.jpg" alt="enter image description here"></a></p>
+
+<p>In the robot controller program, I convert this (z dot) to velocity at a time in joint space by multiplying by inverse of jacobian. In this way I can move robot as needed.</p>
+
+<p><strong>My question is how we can define the above velocity profile over time, so that the <em>total jerk in joints</em> over time is minimized ?</strong></p>
+
+<p>Your help is really appreciated.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9239" data-toggle = "popover">
+				<p>user name : Dinesh</p>
+				<p> user reputation : 11</p>
+				<p class = "tagcontent" id = "usertaginfo-9239">{'control': 0, 'None': 1, 'manipulator': 0, 'robotic-arm': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9239">Load Comments</button></br>
+			<div id = "commentsection-9239" class = 'collapse'>
+			<div id = "comment-16339" class = "comment">
+				<p>Searching (eg google) for 'minimum jerk trajectory' will give you lots of results on how to do the raw calculation. Are you asking about something different than that?</p>
+			</div>
+			<div id = "comment-16340" class = "comment">
+				<p>I found results on joint space planning, But in this case I want to design a velocity profile in xyz space (to a fixed direction), that will minimize the jerk in joint motion. Thanks for your idea.</p>
+			</div>
+			<div id = "comment-16341" class = "comment">
+				<p>You'll need to add more information or detail. A velocity profile in 6DOF task space will fix the velocities in 6DOF joint space. Do you mean a 3DOF trajectory? Do you mean a 6DOF path in task space with some other constraints for which you want to create a trajectory that minimizes joint jerk?</p>
+			</div>
+			<div id = "comment-16360" class = "comment">
+				<p>I add some more on problem definition, sorry for being unclear. Actually In this case velocity profile is designed on cartesian space (In this case robot is moving parallel to z axis, hence only (z dot) is defined).  Using defined profile joints are controlled in run time based on the jacobian at that time. My idea is to design the above velocity profile so that total jerk in joints are minimized.</p>
+			</div>
+			<div id = "comment-16383" class = "comment">
+				<p>I think you may be missing @hauptmech 's point: If you define a 6 degree of freedom velocity profile for the end effector, and that end effector is moved by a 6 degree of freedom robot arm, there are zero degrees of freedom left over to adjust the velocity profile in the individual joints. You could instead specify a start and end location and calculate a velocity profile that minimizes jerk, but you can't tell it to move at one speed and then want to change that speed to minimize jerk.</p>
+			</div>
+			<div id = "comment-16385" class = "comment">
+				<p>@dinesh You'll need to add a bit more for us to understand. What I understand now is that you have a trapazoidal profile in the z dimension only and you want to minimize the jerk of the joints. So theoretically, assuming the profile is inside the workspace of the robot, there could be 5DOF of null space where you can look for a minimum jerk profile. Is that what you are looking for?</p>
+			</div>
+			<div id = "comment-16388" class = "comment">
+				<p>Adding to @Chuck and hauptmech's statements, Dinesh, the Jacobian is not going to give you what you're looking for.  The Jacobian is an approximation - a first-order partial derivative.  You're calculating a 3rd order function (side note, calculating the 5th and 6th orders are common and also lead to a simplified min jerk).  Here's the article that explained it to me best in grad school: http://www.shadmehrlab.org/book/minimum_jerk/minimumjerk.htm</p>
+			</div>
+			<div id = "comment-16389" class = "comment">
+				<p>Thanks for being this much supportive. @hauptmech , In this case I have to move the manipulator only along z axis, hence all other velocities in remaining 5DOF are set to zero and can't change over time. Based on a defined z velocity profile, I can move the manipulator and record actual joint angles over time. Based on that joint angles I could calculate the total jerk over time say **sigma(J)**. 
+All I want to do is design the z velocity profile, so that **sigma(J)** is minimize.</p>
+			</div>
+			<div id = "comment-16392" class = "comment">
+				<p>@Dinesh, "total jerk over time" has too many interpretations in english and none of them make sense to me. Perhaps if you share with us the **reason** you want to calculate this we'll better understand **what** you want to calculate? There is one interpretation of your question that would make a great trick question on a test and we would not want to ruin the fun of solving it if that's the case. Also, you can use [latex](http://robotics.stackexchange.com/editing-help#latex) to add equations to your question. For instance, did you mean $\sigma J$ or $\Sigma J$?</p>
+			</div>
+			</div>
+				<textarea id = "speech-9239" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9239">
+					<img id="start_img-9239" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9239">Comment</button>
+
+<h1>Answers</h1>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

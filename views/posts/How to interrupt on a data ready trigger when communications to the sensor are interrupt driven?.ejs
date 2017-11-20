@@ -1,0 +1,241 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to interrupt on a data ready trigger when communications to the sensor are interrupt driven?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9232" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9232" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 571</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to interrupt on a data ready trigger when communications to the sensor are interrupt driven?</h2>
+<p><strong>Background:</strong> I'm using the L3GD20H MEMS gyroscope with an Arduino through a library <a href="https://github.com/pololu/l3g-arduino" rel="nofollow">(Pololu L3G)</a> that in turn relies on interrupt-driven I2C (Wire.h); I'd like to be able to handle each new reading from the sensor to update the calculated angle in the background using the data ready line (DRDY). Currently, I poll the STATUS register's ZYXDA bit (which is what the DRDY line outputs) as needed.</p>
+
+<p><strong>General question:</strong> With some digital output sensors (I2C, SPI, etc.), their datasheets and application notes describe using a separate (out-of-band) hardware line to interrupt the microcontroller and have it handle new sets of data. But on many microcontrollers, retrieving data (let alone clearing the flag raising the interrupt line) requires using the normally interrupt-driven I2C subsystem of a microcontroller. <strong>How can new sensor data be retrieved from the ISR for the interrupt line when also using the I2C subsystem in an interrupt-driven manner?</strong></p>
+
+<p>Possible workarounds:</p>
+
+<ol>
+<li><p>Use nested interrupts (as @hauptmech mentioned): re-enable I2C interrupt inside of ISR. Isn't this approach discouraged?</p></li>
+<li><p>Use non-interrupt-driven I2C (polling)--supposedly a dangerous approach inside of ISRs. The sensor library used depends on the interrupt-driven Wire library.</p></li>
+<li><p>[Edit: professors' suggestion] Use a timer to interrupt set to the sample rate of the sensor (which is settable and constant, although we measure it to be e.g. 183.3Hz rather than 189.4Hz per the datasheet). Handling the I2C transaction still requires re-enabling interrupts, i.e. nested interrupts or performing I2C reads from the main program.</p></li>
+</ol>
+
+<p>[Edit:] Here's a comment I found elsewhere on a similar issue that led me to believe that the hang encountered was from I2C reads failing inside an interrupt handler: <a href="https://www.sparkfun.com/tutorials/326#comment-4f4430c9ce395fc40d000000" rel="nofollow">https://www.sparkfun.com/tutorials/326#comment-4f4430c9ce395fc40d000000</a> </p>
+
+<blockquote>
+  <p> during the ISR (Interrupt Service Routine) I was trying to read the
+  device to determine which bit changed. Bad idea, this chip uses the
+  I2C communications which require interrupts, but interrupts are turned
+  off during an ISR and everything goes kinda south.</p>
+</blockquote>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9232" data-toggle = "popover">
+				<p>user name : chrstphrchvz</p>
+				<p> user reputation : 8</p>
+				<p class = "tagcontent" id = "usertaginfo-9232">{'None': 0, 'arduino': 1, 'interrupts': 1, 'microcontroller': 1, 'i2c': 1, 'gyroscope': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-9232" class = 'collapse'>
+			</div>
+				<textarea id = "speech-9232" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9232">
+					<img id="start_img-9232" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9232">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9238"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9238" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I think you have a false assumption somewhere. A very quick scan through the atmel datasheet and arduino twi.c does not show any problems.</p>
+
+<p>Why do you think the microcontroller can't handle the interrupt from an ISR using an interrupt-driven I2C subsystem?</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9238" data-toggle = "popover">
+				<p>user name : hauptmech</p>
+				<p> user reputation : 2621</p>
+				<p class = "tagcontent" id = "usertaginfo-9238">{'battery': 2, 'None': 220, 'lithium-polymer': 2}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9238">Load Comments</button></br>
+			<div id = "commentsection-9238" class = 'collapse'>
+			<div id = "comment-16357" class = "comment">
+				<p>I'll need to provide a more thorough response to your answer later, but I've included a link to a similar case where someone claims I2C reads fail inside of ISRs because the I2C is interrupt driven, if that helps.</p>
+			</div>
+			<div id = "comment-16358" class = "comment">
+				<p>Hard to tell the exact details but that poster did not seem to understand that if you want to nest interrupts you need to explicitly enable it on the Atmel. However, in this case you wouldn't want to nest the interrupts directly anyway, but use a couple bit flags to communicate between the interrupt handlers. Anyway, not a problem with the microcontrollers interrupt system.</p>
+			</div>
+			<div id = "comment-16785" class = "comment">
+				<p>The problem should only be in my understanding of the sensor interrupt's theory of operation. Is the suspected faulty assumption that nested interrupts aren't possible? They are possible, but are discouraged; should I have rephrased the question as "how to use gyro in interrupt-driven manner, but without nested interrupts"? As it is, I poll the STATUS register of the sensor; does the method you suggest do the same but by polling a variable instead, or does it enable handling gyro data in the background?</p>
+			</div>
+			<div id = "comment-16787" class = "comment">
+				<p>You should be able to solve your problem with either nested interrupts or a sequential interrupts. Either way this is a use case not planned for by the arduino twi authors. You will have to create your own twi that adds the functionality you need (responding to sensor interrupts). @david-carey gave some hints in his 'difficult' method.</p>
+			</div>
+			<div id = "comment-16788" class = "comment">
+				<p>Keep in mind that "in the background" is not what interrupts do. Interrupts disrupt and stop current processing to do something that is time sensitive. If your sensor data is time sensitive then an interrupt handler is the way to go. If you want to merely want to make programming and task organization easy (at the expense of performance) then you should look at using a multitasking OS.</p>
+			</div>
+			<div id = "comment-17616" class = "comment">
+				<p>I am accepting nested interrupts as the answer, since (1) I actually implemented it and (2) the non-trivial organization of the program (i.e. not something that goes through a single loop frequently) and choice of libraries both limit the practicality of suggested alternatives. I would like to discuss the issues/precautions with the approach further (i.e. why it is discouraged in general but acceptable in this case), and do so elsewhere since outright rephrasing the question as "without nested interrupts" would be moving the goalpost.</p>
+			</div>
+			<div id = "comment-17617" class = "comment">
+				<p>The short answer is for the same reason 'goto' statements are discouraged in high level programming. Nested interrupts are more difficult to think about and get right. http://electronics.stackexchange.com/ is probably a better place to get more info.</p>
+			</div>
+			</div>
+				<textarea id = "speech-9238" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9238">
+					<img id="start_img-9238" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9238">Comment</button>
+			<br><div id = "ans-9291"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9291" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><blockquote>
+  <p>I'm using the L3GD20H MEMS gyroscope with an Arduino ...
+  How is the sensor's interrupt line intended to be used if the
+  microcontroller can't handle the interrupt from an ISR using an
+  interrupt-driven I2C subsystem?</p>
+</blockquote>
+
+<p>I'm assuming you've already looked at <a href="http://www.adafruit.com/datasheets/L3GD20H.pdf" rel="nofollow">the L3GD20H datasheet</a> and the <a href="http://www.st.com/web/catalog/sense_power/FM89/SC1288/PF254039" rel="nofollow">L3GD20H errata sheet</a>,
+and you understand that the data-ready pin (DRDY) is sometimes called an interupt pin (INT2), not to be confused with "the" programmable interrupt pin (INT1).
+In particular,
+p. 45 of the datasheet says that reading the IG_SRC register clears the interrupt signal on INT1.</p>
+
+<p>If I were you, my next step would be to look at Arduino software for the L3GD20H and see how they handled it.
+(If someone has already done it, it must be possible, right?)</p>
+
+<ul>
+<li><a href="http://learn.adafruit.com/adafruit-triple-axis-gyro-breakout/programming" rel="nofollow">The Adafruit L3GD20 Library for the Arduino</a></li>
+<li><a href="https://www.nordevx.com/content/l3gd20h-gyro" rel="nofollow">The NorDevX L3GD20H Gyro Arduino Code Using I2C</a></li>
+<li><a href="https://www.pololu.com/product/2468" rel="nofollow">The Pololu L3GD20 Arduino library</a></li>
+</ul>
+
+<h2>easy method</h2>
+
+<p>Perhaps the easiest method is polling: connect the interrupt pin of the L3GD20H up to some general-purpose digital input pin of the Arduino.
+Then write a function to check that pin and do the appropriate things.
+Then call that function every time through the main <code>loop()</code>.</p>
+
+<p>Just because a pin is labeled "interrupt" doesn't mean it has to be handled by an interrupt routine.</p>
+
+<h2>currently more difficult method</h2>
+
+<p>Several people have requested that someone improve the Wire library to make it non-blocking
+(
+<a href="http://forum.arduino.cc/index.php?topic=37822.0" rel="nofollow">"Wire library and blocking"</a>;
+<a href="https://github.com/arduino/Arduino/issues/1476" rel="nofollow">"Make Wire library non-blocking"</a>;
+<a href="http://diydrones.com/forum/topics/i2c-wiring-library-lockup?id=705844%3ATopic%3A720939" rel="nofollow">"I2C Wiring Library - Lockup"</a>;
+etc.
+).</p>
+
+<p>With such a theoretical future Wire library,
+you could write one interrupt handler that handles a pin-change interrupt of some Arduino pin connected to the interrupt pin of the L3GD20H.
+On a low-to-high change, that interrupt handler would do nothing and immediately return.
+On a high-to-low change, that interrupt handler would call the (non-blocking)
+functions of the Wire library that
+appends the appropriate message to the end of a queue in a RAM buffer.
+If the I2C hardware was idle at that instant (i.e., it wasn't already in the middle of sending out a byte, possibly in the middle of a message to some other device on the I2C bus),
+that (non-blocking) function would pull the first byte of the next message in the queue and start sending it out the I2C hardware.</p>
+
+<p>Much later, after that interrupt handler returned to the main <code>loop()</code>,
+the I2C hardware would finish transmitting a byte (the first byte of this message, or some byte in some previous message),
+and that I2C hardware would trigger a different interrupt handler (internal to the improved Wire library) that would pull the next byte from the queue in RAM and start sending that byte out the I2C hardware, check for and buffer up any incoming byte in the I2C hardware, etc.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9291" data-toggle = "popover">
+				<p>user name : David Cary</p>
+				<p> user reputation : 3365</p>
+				<p class = "tagcontent" id = "usertaginfo-9291">{'quadcopter': 38, 'stepper-driver': 9, 'None': 256, 'multi-rotor': 2, 'force-sensor': 9, 'stability': 36, 'industrial-robot': 1, 'design': 18, 'motor': 2, 'stepper-motor': 9}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9291">Load Comments</button></br>
+			<div id = "commentsection-9291" class = 'collapse'>
+			<div id = "comment-16786" class = "comment">
+				<p>None of those implementations do this already (I am using Pololu's L3G library), so I'll keep looking for an example where this has been done. "Non-blocking" refers to making sure the Wire library doesn't hang when certain faults occur; I have encountered that issue, but it is separate from this one. The Wire library will still be partly interrupt driven, so using it inside an ISR requires nested interrupts, otherwise it will hang, but not as  described by that issue.</p>
+			</div>
+			<div id = "comment-16901" class = "comment">
+				<p>I think I understand the suggestion now basically, split apart the I2C transactions into separate interrupt handlers for each "stage", indeed doing away with the assumptions made by Wire, or by libraries depending on Wire. twi.c may have the means for this; it would be an interesting project, mainly if it can be done in a way that is (1) easily adapted to any model sensor and (2) allows other non-gyro I2C devices to be used simultaneously.</p>
+			</div>
+			</div>
+				<textarea id = "speech-9291" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9291">
+					<img id="start_img-9291" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9291">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

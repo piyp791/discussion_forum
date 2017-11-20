@@ -1,0 +1,225 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Covariance and optimization
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8116" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8116" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 288</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Covariance and optimization</h2>
+<p>I am trying to build a map containing lamps as landmarks. I drive around with a robot and a monocular camera looking to the ceiling.</p>
+
+<p>The first step is detect the edges of each observed rectangular lamp and save the position in pixels and also the current position from odometry of the robot. After the lamp disappears from the field of view, there is enough base-line to do a 3D reconstruction based on structure from motion. Once this reconstruction is done there will be uncertainty in the position of the lamps that can be modelled by covariance. Imagine if the robot was driving for a while, its own position estimated from odometry will also have a relatively high incertitude, how can I integrate all of those incertitudes together in the final covariance matrix of the position of each lamp?</p>
+
+<p>If I understand well there would be the following covariances:</p>
+
+<ul>
+<li>noise from camera</li>
+<li>Inaccurate camera calibration matrix</li>
+<li>inaccurate result from optimization</li>
+<li>drift in odometry</li>
+</ul>
+
+<p>My goal is to manually do loop closure using for example g2o (graph optimization) and for that I think correct covariances are needed for each point.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8116" data-toggle = "popover">
+				<p>user name : Mehdi</p>
+				<p> user reputation : 394</p>
+				<p class = "tagcontent" id = "usertaginfo-8116">{'control': 1, 'odometry': 12, 'None': 15, 'computer-vision': 10, 'mobile-robot': 2, 'power': 1, 'battery': 1, 'navigation': 2, 'cameras': 7, 'torque': 1, 'lidar': 5, 'joint': 2, 'slam': 12, 'magnetometer': 2, 'laser': 1, 'speech-processing': 3, 'rangefinder': 4, 'actuator': 1, 'sensors': 4, 'digital-audio': 0, '3d-reconstruction': 5}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8116" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8116" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8116">
+					<img id="start_img-8116" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8116">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8119"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8119" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>This is the basic slam problem. You have to find out (model) how the uncertainty of the robot affects the uncertainty of the landmarks, and visa-versa. This is done using the cross-correlation terms of the uncertainty. Or, the <em>covariance</em>. Those four things you referred to as covariances are actually <em>variances</em>. The covariance describes how the uncertainties in one thing bleed over to create uncertainty in the other things. This sounds terrible, but actually, if you reduce uncertainty in one thing, then the fact that two things <em>co-vary</em> allows you to reduce uncertainty in two things. </p>
+
+<p>See, when you discuss covariance of the robot's position, what you mean is something like a 2x2 matrix. The matrix has multiple terms, two variances in the principal x-y directions, and the covariance of the x uncertainty and the y uncertainty. So you're already doing SLAM. Sorta.</p>
+
+<p>What you have to do for $N$ lamps in $2D$ space and 1 robot moving in $2D$, is construct the giant $2\times (N+1)$ by $2\times (N+1)$ matrix.  <em>How</em> to do this is mechanically straightforward, but an intuitive understanding is difficult to build up. I'm sure someone will come along that has a better mechanical answer for you. But until then, you might check out Probabilistic Robotics, by Thrun.</p>
+
+<p><strong>UPDATE</strong>:</p>
+
+<p>For example. Let's say you have one landmark, and one robot. Both are on the line, and so the state is simply their $x$ position. (This greatly simplifies the problem). Then, let's say the robot measures the distance (with direction) to the landmark. The the <em>measurement function</em> (which describes what the robot measures) is 
+$$h=x_l - x_r$$.</p>
+
+<p>We'll use the EKF update equations to find the covariance of the robot-landmark state. Note, this will be a $2\times 2$ matrix, given the discussion above. We're not really limited to the EKF update equations. Most estimators use the same equation to estimate the covariance of the state. If you really want to know more about this, read up on the Fisher Information Matrix, which is the gold standard for covariance estimation. </p>
+
+<p>Back to the topic at hand.</p>
+
+<p>The full state covariance matrix after the robot moves with some uncertain actuation is given by:</p>
+
+<p>$$ P = F^T P F + G $$</p>
+
+<p>and after the measurement, is given by</p>
+
+<p>$$ P = \left( P^{-1} + H^T R^{-1} H \right)^{-1} $$</p>
+
+<p>Here, $R$ is the measurement noise, $H$ is the jacobian of the measurement function with respect to the state, $F$ is the jacobian of the update function (the kinematics) with respect to the state, and $G$ is the noise matrix for the controls.</p>
+
+<p>In our case, </p>
+
+<p>$$H 
+=\begin{bmatrix} \frac{\partial h}{x_r}, \frac{\partial h}{x_l} \end{bmatrix}\\
+=\begin{bmatrix} -1, 1 \end{bmatrix}\\
+$$</p>
+
+<p>Suppose the robot's position is known up to variance $\sigma_r^2$ and the measurement is corrupted by zero-mean noise with variance $\sigma_s^2$. Then, when the landmark is measured, (assuming a diagonal starting covariance)</p>
+
+<p>$$ P^{-1} = 
+\begin{bmatrix} 
+\frac{1}{\sigma_r^2}, 0\\ 
+0, \frac{1}{\sigma_l^2}
+\end{bmatrix}
++
+\begin{bmatrix} -1\\ 1 \end{bmatrix}
+\frac{1}{\sigma_s^2}
+\begin{bmatrix} -1, 1 \end{bmatrix}
+$$</p>
+
+<p>Simplifying,
+$$
+P^{-1}=
+\begin{bmatrix} 
+\frac{1}{\sigma_r^2}, 0\\ 
+0, \frac{1}{\sigma_l^2}
+\end{bmatrix}+
+\frac{1}{\sigma_s^2}
+\begin{bmatrix} 1, -1\\-1,1 \end{bmatrix}
+$$
+Implying,
+$$
+P=
+\begin{bmatrix} 
+\frac{1}{\sigma_r^2} +\frac{1}{\sigma_s^2}&amp; 
+-\frac{1}{\sigma_s^2}\\ 
+-\frac{1}{\sigma_s^2}&amp; 
+\frac{1}{\sigma_l^2}+\frac{1}{\sigma_s^2}
+\end{bmatrix}^{-1}
+$$</p>
+
+<p>The previous defines a <em>computational</em> way to calculate the covariance after a measurement. A similar method using the control function to get the matrix $F$ will get you the update step.</p>
+
+<p>To get this in closed form, just carry the partial derivatives through. </p>
+
+<p>Or, a better way:
+In general, the matrix on the right is known as the Fisher Information, with the caveat that the matrix $H$ is not linearized at the true target location. To construct an arbitrary covariance matrix from scratch, you can do so by noting that the FIM has each i,j element given by (assuming gaussian noise), for state vector $x$.</p>
+
+<p>$$
+\begin{bmatrix}
+\frac{\partial h}{x(i)}\ln \mathcal{L}(x)
+\frac{\partial h}{x(j)}\ln \mathcal{L}(x)
+\end {bmatrix}
+$$</p>
+
+<p>In the previous, $\mathcal{L}(\cdot)$ is the liklihood function of the measurements. In this case, a Gaussian.
+This derivation is covered in <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.58.5090&amp;rep=rep1&amp;type=pdf" rel="nofollow">this thesis</a> and also <a href="http://josh.vanderhook.info/media/pdf/thesis.pdf" rel="nofollow">this one</a> (with the full disclosure that the second one is mine).</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8119" data-toggle = "popover">
+				<p>user name : Josh Vander Hook</p>
+				<p> user reputation : 3960</p>
+				<p class = "tagcontent" id = "usertaginfo-8119">{'None': 345}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8119">Load Comments</button></br>
+			<div id = "commentsection-8119" class = 'collapse'>
+			<div id = "comment-12978" class = "comment">
+				<p>Thanks for the explanation. I have been reading the book again and again, it is very helpful but it doesn't really show how to construct such matrices. As for me it is not yet mechanically straightforward, do you have any resources that help understanding these matrices?</p>
+			</div>
+			<div id = "comment-12980" class = "comment">
+				<p>Yeah sure! I'll update the answer shortly</p>
+			</div>
+			<div id = "comment-13208" class = "comment">
+				<p>Thanks. In my case, I can't really observe directly the position of the marker and that is why I observe it from multiple positions and then do structure from motion to get the depth information and then finally x and y. How could I fit this extra step into the whole thing. Or should I just ignore it for now and try to describe it implicitely as extra noise in R?</p>
+			</div>
+			<div id = "comment-13210" class = "comment">
+				<p>Of course you can't observe directly. Structure from motion *should* output co variances. If not, use the selected viewpoints and some estimate of sensor noise to estimate the resulting co variances.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8119" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8119">
+					<img id="start_img-8119" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8119">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

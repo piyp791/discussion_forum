@@ -1,0 +1,331 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>L293D won't turn motor backwards
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9048" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9048" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">6</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 805</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>L293D won't turn motor backwards</h2>
+<p>My small robot has two motors controlled by an L293D and that is controlled via a Raspberry Pi. They will both go forwards but only one will go backwards. </p>
+
+<p>I've tried different motors and tried different sockets in the breadboard, no luck. Either the L293D's chip is broken (but then it wouldn't go forwards) or I've wired it wrong. </p>
+
+<p>I followed the tutorial, <a href="http://computers.tutsplus.com/tutorials/controlling-dc-motors-using-python-with-a-raspberry-pi--cms-20051" rel="nofollow noreferrer">Controlling DC Motors Using Python With a Raspberry Pi</a>, exactly.</p>
+
+<p>Here is a run down of what works. Let the 2 motors be A and B:</p>
+
+<p>When I use a python script (see end of post) both motors go "forwards". When I change the values in the Python script, so the pin set to HIGH and the pin set to LOW are swapped, motor A will go "backwards", this is expected. However, motor B will not move at all. </p>
+
+<p>If I then swap both motors' wiring then the original python script will make both go backwards but swapping the pins in the code will make motor A go forwards but motor B won't move.</p>
+
+<p>So basically, motor A will go forwards or backwards depending on the python code but motor B can only be changed by physically changing the wires.</p>
+
+<p>This is <code>forwards.py</code></p>
+
+<pre><code>import RPi.GPIO as GPIO
+from time import sleep
+
+GPIO.setmode(GPIO.BOARD)
+
+Motor2A = 23
+Motor2B = 21
+Motor2E = 19
+
+Motor1A = 18
+Motor1B = 16
+Motor1E = 22
+
+GPIO.setup(Motor1A, GPIO.OUT)
+GPIO.setup(Motor1B, GPIO.OUT)
+GPIO.setup(Motor1E, GPIO.OUT)
+
+GPIO.setup(Motor2A, GPIO.OUT)
+GPIO.setup(Motor2B, GPIO.OUT)
+GPIO.setup(Motor2E, GPIO.OUT)
+
+print("ON")
+GPIO.output(Motor1A, GPIO.HIGH)
+GPIO.output(Motor1B, GPIO.LOW)
+GPIO.output(Motor1E, GPIO.HIGH)
+
+GPIO.output(Motor2A, GPIO.HIGH)
+GPIO.output(Motor2B, GPIO.LOW)
+GPIO.output(Motor2E, GPIO.HIGH)
+</code></pre>
+
+<p>And this is <code>backwards.py</code></p>
+
+<pre><code>import RPi.GPIO as GPIO
+from time import sleep
+
+GPIO.setmode(GPIO.BOARD)
+
+Motor2A = 21
+Motor2B = 23
+Motor2E = 19
+
+Motor1A = 16
+Motor1B = 18
+Motor1E = 22
+
+GPIO.setup(Motor1A, GPIO.OUT)
+GPIO.setup(Motor1B, GPIO.OUT)
+GPIO.setup(Motor1E, GPIO.OUT)
+
+GPIO.setup(Motor2A, GPIO.OUT)
+GPIO.setup(Motor2B, GPIO.OUT)
+GPIO.setup(Motor2E, GPIO.OUT)
+
+print("ON")
+GPIO.output(Motor1A, GPIO.HIGH)
+GPIO.output(Motor1B, GPIO.LOW)
+GPIO.output(Motor1E, GPIO.HIGH)
+
+GPIO.output(Motor2A, GPIO.HIGH)
+GPIO.output(Motor2B, GPIO.LOW)
+GPIO.output(Motor2E, GPIO.HIGH)
+</code></pre>
+
+<p>If you see this diff <a href="https://www.diffchecker.com/skmx6084" rel="nofollow noreferrer">https://www.diffchecker.com/skmx6084</a>, you can see the difference:</p>
+
+<blockquote>
+  <p><a href="https://i.stack.imgur.com/q2YDS.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/q2YDS.png" alt="Screenshot of code diff"></a></p>
+</blockquote>
+
+<p>Below are some pictures. You can use the colour of the cables to link them between pictures</p>
+
+<p><a href="https://i.stack.imgur.com/Ke9VG.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/Ke9VG.jpg" alt="enter image description here"></a>
+<a href="https://i.stack.imgur.com/W9gbw.jpg" rel="nofollow noreferrer">enter image description here</a>
+<a href="https://i.stack.imgur.com/VcWml.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/VcWml.jpg" alt="enter image description here"></a>
+<a href="https://i.stack.imgur.com/Oq9ho.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/Oq9ho.jpg" alt="enter image description here"></a></p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9048" data-toggle = "popover">
+				<p>user name : Hamzah Malik</p>
+				<p> user reputation : 83</p>
+				<p class = "tagcontent" id = "usertaginfo-9048">{'None': 0, 'wheeled-robot': 6, 'raspberry-pi': 6}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9048">Load Comments</button></br>
+			<div id = "commentsection-9048" class = 'collapse'>
+			<div id = "comment-14903" class = "comment">
+				<p>Either you have a bug in your code or check the wiring between the Raspi and the L293D. Everything else literally makes no sense.</p>
+			</div>
+			<div id = "comment-14904" class = "comment">
+				<p>@TobiasK I've checked the wiring and the code is the same code but GPIO the other way round (so the one that was HIGH us now LOW)</p>
+			</div>
+			<div id = "comment-14905" class = "comment">
+				<p>Maybe one pin does not work and the L293D is reading the floating pin as a low-level and therefor switching it correctly. Swap the two controller wires from the raspi (and let the enable) and see wether the motor is now able to drive only backwards.</p>
+			</div>
+			<div id = "comment-14906" class = "comment">
+				<p>@TobiasK Yes it now goes only backwards</p>
+			</div>
+			<div id = "comment-14918" class = "comment">
+				<p>So your L293D chip is working but there is either the wire connection on the raspberry bad or you selected the wrong pin in our code.</p>
+			</div>
+			<div id = "comment-14919" class = "comment">
+				<p>@TobiasK there is nothing different about the code, i simply changed which was HIGH and which was LOW</p>
+			</div>
+			<div id = "comment-14932" class = "comment">
+				<p>@HamzahMalik - Twice you have said that you have changed the GPIO, so that what was HIGH is now LOW. Can you **edit your answer**, to show exactly what part of the code you have changed, please? In addition, if you follow the instructions _exactly_, and do not reverse the HIGH and LOW of the GPIO, as you have done, does it work correctly then?</p>
+			</div>
+			<div id = "comment-14933" class = "comment">
+				<p>@Greenonline I'll post the code when I get home. I basically used the code in the tutorial, set 1E and 2E to HIGH (the enable PINS) and switched around 2A and 1A with 2B and 1B respectively. That made motor 1 go backwards but motor 2 did nothing. When I changed the physical wires the same situation occurred, but reversed, they would go backwards noe but only one would go forwards.</p>
+			</div>
+			<div id = "comment-14939" class = "comment">
+				<p>@Greenonline I've added much more detail, and code, into the question</p>
+			</div>
+			<div id = "comment-14990" class = "comment">
+				<p>Don't test with the motors connected.  Unhook those wires and check each pin of the chip for the voltage that you're expecting.  It sounds like you might have already tested the motors by connecting them directly to the DC supply (in both directions), but if you haven't then you should do that as well.</p>
+			</div>
+			</div>
+				<textarea id = "speech-9048" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9048">
+					<img id="start_img-9048" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9048">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9075"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9075" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">6</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The motor driver chip you state you are using, the <a href="http://www.ti.com/lit/ds/symlink/l293.pdf" rel="nofollow noreferrer">L293D</a>, is a "quadruple <strong>half H</strong> driver." This means that, instead of two <a href="https://en.wikipedia.org/wiki/H_bridge" rel="nofollow noreferrer">full H circuits</a> capable of driving a motor forward and reverse, you have four <em>half H</em> circuits, which are only capable of driving a motor <em>in one direction</em>. </p>
+
+<p>You even speculate in your post, </p>
+
+<blockquote>
+  <p>Either the L293D's chip is broken (but then it wouldn't go forwards) or <strong>I've wired it wrong.</strong></p>
+</blockquote>
+
+<p>I'm going to guess that you have not wired the motors to the driver chip correctly. This is just a guess, though, because <em>you haven't posted pictures or schematics of your wiring</em>. </p>
+
+<p>In looking at a diagram of the chip, it looks like maybe an easy place to go wrong would be to wire into a ground pin on the chip instead of to one of the motor outputs. </p>
+
+<p><a href="https://i.stack.imgur.com/F937S.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/F937S.png" alt="L293D Chip Overview"></a></p>
+
+<p>You can see in the picture above from the datasheet (linked above) that the "heat sink and ground" pins are <em>right beside</em> the driver output pins. If you happened to wire one of your motor leads to pins 4, 5, 12, or 13 instead of 3, 6, 11, or 14, then the motor would still turn one direction (HIGH to LOW), but would not turn in another direction (LOW to LOW) because it's not connected to the driver pin that should be HIGH. </p>
+
+<p>Again, pure speculation on my part, but it would seem to explain all of your symptoms. Please take a picture of your wiring and edit your question to include it. </p>
+
+<h2>:EDIT:</h2>
+
+<p>It's hard to tell in your pictures, and I can't see which way the chip is oriented, but it looks like:</p>
+
+<ol>
+<li>Gold wires are Vcc</li>
+<li>The <a href="https://s.graphiq.com/sites/default/files/2307/media/images/Teal_429721_i0.png" rel="nofollow noreferrer">teal</a> wire is <a href="http://pinout.xyz/" rel="nofollow noreferrer">Pin 19</a>, which you have as "Motor 2E" - or motor 2 enable, <strong>HOWEVER</strong>, it's not plugged in to the (3,4EN) or (1,2EN) pin on the L293D chip. Those are pins 9 and 1, respectively, and <em>they are located on the corners of the chip</em>. It looks like it's maybe plugged in to 4A (or 2A, again I can't tell the orientation of the chip). </li>
+<li>Purple with maybe a white stripe is Pin 23, which you have listed as "Motor 2B", but <strong>that</strong> wire goes to a corner of the chip, which is where the motor enable is located. </li>
+</ol>
+
+<p>So it looks like to me that when you set "Motor 2E", to enable motor 2, you are actually <strong>NOT</strong> enabling motor two, but instead you are setting maybe what you're calling 2A in your code. Then, when you think you are going "forward", you set "2A" LOW and "2B" high - what you're calling "2B" is actually the motor enable, and that's why it's turning on.</p>
+
+<p>When you try to turn the other way, it looks like you're setting "2A" HIGH and "2B" LOW, but again what you're calling "2B" is actually the motor enable pin, so you're disabling the motor. </p>
+
+<p>Try swapping 2B and 2E in your code (swap 23 and 19). </p>
+
+<p><em>If that doesn't work</em>, please post clearer pictures and we can troubleshoot some more. Particularly, I'm looking to see the chip's orientation and a better (crisper and better lit) shot of the wires where the enter the Raspberry Pi. Also, you have 3 white wires or very light gray and it's hard to tell where they're going. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9075" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-9075">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9075">Load Comments</button></br>
+			<div id = "commentsection-9075" class = 'collapse'>
+			<div id = "comment-14977" class = "comment">
+				<p>Ive added pictures</p>
+			</div>
+			<div id = "comment-14995" class = "comment">
+				<p>I'll type up a list of which pin I've connected to what</p>
+			</div>
+			<div id = "comment-14998" class = "comment">
+				<p>Switching 2A and E fixed it. Thanks for the help</p>
+			</div>
+			</div>
+				<textarea id = "speech-9075" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9075">
+					<img id="start_img-9075" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9075">Comment</button>
+			<br><div id = "ans-9076"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9076" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>There are a few tests that will help in this sort of situation.  Try either of these.</p>
+
+<p>Test 1.  Get a logic probe (a simple low-cost device that will serve you for many years!) and use it <strong>carefully</strong> on the L293D.  Test each of the two Enable pins and each of the four Input pins, and make sure each of those pins reads either High or Low as you would expect.  This is the most certain way to find a poor connection or incorrect wires.</p>
+
+<p>(Note about the logic probe: always make sure the probe tip is placed centrally and firmly on top of the IC pin you are testing; if you slip sideways and "short" the probe tip between two pins, you could damage an output pin on the Raspberry Pi, depending on the situation.)</p>
+
+<p>Test 2.  First disconnect the Raspberry Pi completely and put it aside.  Take the wires that go to the motor controller inputs, and physically connect each of these to power, either zero volts or the VCC connection.  You are effectively sending the signals by hand instead of by software. If the motor now works as expected, then perhaps your Raspberry Pi has a damaged output pin.  If not, either you have misunderstood the connections of there is a problem with the driver.</p>
+
+<p>(As you probably don't have a logic prove, I suggest you at least try test 2 in the first instance. That alone will probably help.)</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9076" data-toggle = "popover">
+				<p>user name : Andy</p>
+				<p> user reputation : 796</p>
+				<p class = "tagcontent" id = "usertaginfo-9076">{'None': 59}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9076">Load Comments</button></br>
+			<div id = "commentsection-9076" class = 'collapse'>
+			<div id = "comment-14960" class = "comment">
+				<p>I'm not home right now but I have tried different pins on the Pi (and obviously changed my code to reflect that) and I've tried different pins in the same breadboard.</p>
+			</div>
+			<div id = "comment-14961" class = "comment">
+				<p>Another possibility is to try just one motor - try it on one side of the controller, checking both directions. Then swap the same motor to the other side and try in both directions there. (To see if there is a problem either with the driver chip, or one of the motors...)</p>
+			</div>
+			<div id = "comment-14976" class = "comment">
+				<p>I've added pictures to the question. I'll try what you said in a bit. I've also realised it could be the cables, so I'll mess with those too</p>
+			</div>
+			<div id = "comment-14996" class = "comment">
+				<p>Hard to tell exactly what's wrong from the pictures, but I can't see any obvious problems. I recommend rewiring everything to connect up only one half of the driver - to drive just one motor. Then tear it all down and rewire for the other half, again only one motor. In each case check forward/reverse operation...</p>
+			</div>
+			<div id = "comment-14997" class = "comment">
+				<p>ALSO with thin wires and breadboards, sometimes current gets limited and only one motor in a pair appears to work properly... so I strongly recommend trying with just one motor, if you haven't tried it yet. (As I mentioned earlier.) This test really is worthwhile...</p>
+			</div>
+			</div>
+				<textarea id = "speech-9076" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9076">
+					<img id="start_img-9076" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9076">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

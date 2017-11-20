@@ -1,0 +1,130 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Duty cycle mapping
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7766" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7766" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 85</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Duty cycle mapping</h2>
+<p>I need to build a conversion/mapping algorithm from a controller (PID etc.) output to the duty cycle in order to command my bldc motor via esc. I couldn't do it yet because l think l dont know the meaning of controller output. Anybody highlights my way?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7766" data-toggle = "popover">
+				<p>user name : lsn</p>
+				<p> user reputation : 34</p>
+				<p class = "tagcontent" id = "usertaginfo-7766">{'quadcopter': 0, 'filter': 2, 'None': 0, 'noise': 2, 'arduino': 2, 'microcontroller': 0, 'embedded-systems': 2, 'brushless-motor': 1, 'esc': 1, 'matlab': 4, 'motor': 0, 'imu': 2, 'electronics': 3, 'sensors': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7766" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7766" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7766">
+					<img id="start_img-7766" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7766">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7768"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7768" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Usually you would use a PID controller's output as a "substitute" for your (the operator's) output. If you bypassed the PID controller, what signal would you be providing to the ESC? It is easiest to put the input to the PID controller and the feedback to the PID controller in the same units as you would like the output to be. </p>
+
+<p>In your case, I would use a input and feedback as speeds in percent, then the output of the PID controller should be speed in percent, which is easy to provide in PWM form. If you try to compare speeds in km/hr or m/s or something else like that, then you wind up having to convert that speed into a percentage anyways because you don't send "2 m/s" to a speed controller, you send a speed setpoint - either in rpm or percentage. Again, whatever units the ESC is using are the units you should be using for your PID control. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7768" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-7768">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7768">Load Comments</button></br>
+			<div id = "commentsection-7768" class = 'collapse'>
+			<div id = "comment-11279" class = "comment">
+				<p>How are you getting speed feedback? What units is the feedback in?</p>
+			</div>
+			<div id = "comment-11287" class = "comment">
+				<p>The ESC already has its own internal PID controller and it usually uses [back EMF](https://en.wikipedia.org/wiki/Counter-electromotive_force) as speed feedback. So, do you need motor feedback? Yes and no; I'm not sure what your application is. If you are trying to do process control, assuming some variable load after the motor, then you *will* need motor feedback, but if you're trying to do something like a quadcopter, then you should have a stability/flight controller that gives you a reference speed that you can pass directly to the ESC.</p>
+			</div>
+			<div id = "comment-11288" class = "comment">
+				<p>You are correct in that, if you do need feedback, it will be in RPM or rad/s or some other rotational speed units, in which case you will need to calibrate your feedback. In general, though, I believe that if you multiply the [kV rating by the nominal battery voltage](http://www.rcgroups.com/forums/showthread.php?t=588177) you get the motor's top speed in RPM. Using this value as a max, whatever you get from feedback can give you a percentage, which is equivalent to the duty cycle.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7768" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7768">
+					<img id="start_img-7768" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7768">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

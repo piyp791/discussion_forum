@@ -1,0 +1,138 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Kalman filter for estimating position with  direction  measurements
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7832" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7832" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 182</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Kalman filter for estimating position with  direction  measurements</h2>
+<p>I am currently working on a pose estimation problem for which I would like to use filtering. To explain the system briefly, it consists of two cameras and each has its own GPS/IMU module. The main assumption is that Camera1 is fixed and stable, whereas camera2 has a noisy pose in 3D. I am using computer vision to obtain the pose (metric translation and rotation) of camera2 w.r.t. camera1, so that I can improve upon the inherent noise of GPS/IMU modules.</p>
+
+<p>The problem here is that the translation obtained through the vision method is only up to an arbitrary scale, i.e. at any given instant, I can only obtain a unit vector that specifies the "direction" of the translation and not absolute metric translation. The camera based estimation, although accurate, has no idea about how much actual distance is between the cameras, which is why I have the GPS, which gives me position data with some noise.</p>
+
+<p>Example: camera 2 is 5 m to the east of camera 1, the pose from my vision algorithm would say [1, 0, 0] ; 1 m north-east to camera 1, it would be something like [0.7, 0.7, 0]</p>
+
+<p>Hence, would it be possible to consider the GPS estimate of the metric translation as well as its covariance ellipse, and somehow link it with the normalized camera measurements to obtain a final, more accurate estimate of metric translation? I am not sure what kind of filters would be happy to use a measurement that has no absolute value in it.</p>
+
+<p>Thanks!</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7832" data-toggle = "popover">
+				<p>user name : HighVoltage</p>
+				<p> user reputation : 398</p>
+				<p class = "tagcontent" id = "usertaginfo-7832">{'stereo-vision': 2, 'probability': 10, 'multi-agent': 4, 'planning': 10, 'manipulator': 2, 'cameras': 1, 'matlab': 1, 'kalman-filter': 7, 'None': 19, 'noise': 3, 'inverse-kinematics': 2, 'localization': 8, 'pose': 4, 'mapping': 0, 'rotation': 1, '3d-reconstruction': 0, 'computer-vision': 8, 'algorithm': 3, 'c++': 3, 'slam': 2, 'exploration': 0, 'path-planning': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7832" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7832" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7832">
+					<img id="start_img-7832" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7832">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7834"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7834" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>First, a point of terminology - I believe when you say "direction" what you mean is what is commonly called a <a href="https://en.wikipedia.org/wiki/Course_(navigation)" rel="nofollow">heading</a>. That is, when you say "direction" what you mean is the angle between an arbitrary line from camera 1 (usually straight forward) and the line between camera 1 and camera 2.</p>
+
+<p>Assume camera 2 starts at a known distance from camera 1 (sufficiently long for a good filtered GPS location, hand placed, etc.) and assume you know the initial heading. </p>
+
+<p>Call the initial distance between camera 1 and camera 2 $a$.</p>
+
+<p>Now camera 2 moves. Your IMU reports the distance traveled. Call this distance $b$.</p>
+
+<p>Camera 1 reports the change in heading between the initial and second location, this is an angle (from the arc tangent of your camera 1 output). Call this angle $B$.</p>
+
+<p>Now you have an $a$, a $b$, and a $B$. Use the <a href="https://en.wikipedia.org/wiki/Law_of_sines" rel="nofollow">Law of Sines</a> to calculate the distance between camera 1 and camera 2 - this will be $c$.</p>
+
+<p>You can now use a basic Kalman filter to filter the IMU distance output to get a better $b$, and thus a better $c$, and you can use another to combine this reading with your noisy GPS position. The method I've described should give you better short term results than the GPS, and the GPS should correct any drift caused by long term error accumulation. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7834" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-7834">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7834" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7834" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7834">
+					<img id="start_img-7834" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7834">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

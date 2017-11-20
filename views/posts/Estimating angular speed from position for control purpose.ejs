@@ -1,0 +1,140 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Estimating angular speed from position for control purpose
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7146" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7146" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 329</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Estimating angular speed from position for control purpose</h2>
+<p>I am new to robotics, however I am designing a PID to control the angular velocity (azimuth, elevation) of a couple of Faulhaber motors.
+The input to the PID control is the actual angular velocity, which is not observed though, since it is derived from the position of each motor at time $t$.</p>
+
+<p>The PID sample period is aprox. <code>30 ms</code>, whereas the input data rate from the joystick is aprox. <code>300 samples/s</code>, corresponding to a sample period of <code>3.33 ms</code>. The joystick input gets transformed into the desired angle speed, that the PID will control.</p>
+
+<p>I was initially filtering position data using a normal 2D linear <strong>Kalman Filter</strong>, but the angular velocity is not linear (by formula), hence I switched to <strong>Extended Kalman</strong> filtering.</p>
+
+<p>My questions are the following:</p>
+
+<ol>
+<li>Is this latter approach that makes use of EKF correct?</li>
+<li>Which are the parameters that I have to check in order to properly set the update rate of the PID loop?</li>
+</ol>
+
+<p>Thx in advance!</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7146" data-toggle = "popover">
+				<p>user name : Ricardo_arg</p>
+				<p> user reputation : 105</p>
+				<p class = "tagcontent" id = "usertaginfo-7146">{'ekf': 0, 'None': 0, 'pid': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7146">Load Comments</button></br>
+			<div id = "commentsection-7146" class = 'collapse'>
+			<div id = "comment-10174" class = "comment">
+				<p>Something  doesn't make sense... Is your system nonlinear?  If so, how could you possibly manage to exploit the standard KF?  If not. Then would you expect EKF to give you anything different from KF?</p>
+			</div>
+			</div>
+				<textarea id = "speech-7146" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7146">
+					<img id="start_img-7146" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7146">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7147"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7147" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Why did you switch to <strong>EKF</strong>? <strong>KF</strong> is standard for estimating the angular rate of a electrical motor, whose transfer function is linear indeed. You might want to consider exploring also the <strong>Savitzky-Golay</strong> filter as a valid alternative, which is not model based.</p>
+
+<p>Concerning the sample period of the controller, it is normally a good rule to take a frequency separation of one decade, at least, between the rate of the system and the bandwidth of the input signal. Therefore, the actual sample rate of the joystick input is an overkill.</p>
+
+<p>A sample period for the PID of <code>5-10 ms</code> is usually fine, given the low mechanical cut-off frequency of the motor (higher rates are better, but not required). Then, acquire the joystick at <code>&gt;50 ms</code>.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7147" data-toggle = "popover">
+				<p>user name : Ugo</p>
+				<p> user reputation : 1482</p>
+				<p class = "tagcontent" id = "usertaginfo-7147">{'None': 99}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7147" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7147" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7147">
+					<img id="start_img-7147" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7147">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

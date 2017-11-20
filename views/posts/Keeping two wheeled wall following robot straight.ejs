@@ -1,0 +1,200 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Keeping two wheeled wall following robot straight
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-4967" class = "post">
+			<h2>Question</h2>
+			<div id="vote-4967" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 333</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Keeping two wheeled wall following robot straight</h2>
+<p>I have a two-wheeled (two DC motors) robot that needs to follow the wall beside the robot.</p>
+
+<p>The issue is that the DC motors spin at different rates (because they are not identical, of course), so the robot does not go straight when the same voltage is provided to each motor.</p>
+
+<p>How can I use IR distance sensors (and op-amps) to keep the distance from the wall constant?</p>
+
+<p>(the robot must travel parallel to the wall)</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4967" data-toggle = "popover">
+				<p>user name : Jaysbays</p>
+				<p> user reputation : 106</p>
+				<p class = "tagcontent" id = "usertaginfo-4967">{'None': 0, 'two-wheeled': 0, 'motor': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-4967" class = 'collapse'>
+			</div>
+				<textarea id = "speech-4967" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4967">
+					<img id="start_img-4967" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4967">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-4968"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4968" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You can use the principle of proportional error control.
+Do the IR sensors have an analog output? If so, you can build an entirely analog control loop using op amps.  If not, it's probably easier to use a microcontroller to do the control digitally, with a pair of motor controllers to handle the output.</p>
+
+<p>Either way, you want to arrange that the commanded motor speeds are as follows:</p>
+
+<p>$$ V_1 = V_{nom} + k_p (d - d_{nom}) $$
+$$ V_2 = V_{nom} - k_p (d - d_{nom}) $$</p>
+
+<p>Where $V_1$ and $V_2$ are the commanded motor speeds or voltages, k_p is the proportional gain (this can be adjusted to trade off responsiveness and residual error against stability), d is the measured distance from the wall and d_nom is the nominal distance.</p>
+
+<p>More complicated control loops could involve integral and derivative terms; the latter could be implemented by using distance sensors at the front and rear of the vehicle so that their difference is proportional to the rate of approach or closure.  But I think a simple proportional controller as describe should work just fine.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4968" data-toggle = "popover">
+				<p>user name : pericynthion</p>
+				<p> user reputation : 121</p>
+				<p class = "tagcontent" id = "usertaginfo-4968">{'None': 2}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-4968">Load Comments</button></br>
+			<div id = "commentsection-4968" class = 'collapse'>
+			<div id = "comment-7720" class = "comment">
+				<p>Thanks! The IR sensors do have analog output, so the control loop using op amps is ideal. Just a couple of follow-up questions;
+How do I calculate k_p?
+How should I set up the op-amp circuits to get the k_p*(d+-d_nom) terms?</p>
+			</div>
+			<div id = "comment-7721" class = "comment">
+				<p>Haha, someone migrated this to the Robotics SE but those follow-up questions are definitely more suited to the electronics SE, particularly since the EE SE has an inline schematic editor.  Perhaps you could post your second follow-up as a standalone question there ("How can I implement a proportional error control scheme with op amps?")  As for choosing k_p, it's difficult to say since its units are somewhat weird (volts per meter) and its value will depend on the sensor and motor characteristics, and the vehicle dynamics.   Best to start small and make it adjustable.</p>
+			</div>
+			<div id = "comment-7722" class = "comment">
+				<p>Thanks for the help! Would upvote but no reputation :P</p>
+			</div>
+			</div>
+				<textarea id = "speech-4968" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4968">
+					<img id="start_img-4968" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4968">Comment</button>
+			<br><div id = "ans-4969"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4969" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Looks like you could use PI or PID regulator (see <a href="https://robotics.stackexchange.com/a/4964/7485">my answer there</a>).</p>
+
+<p>The P-regulator (proportional) suggested by pericynthion should work, but you have to tune it well and won't be same for another similar robot if the difference changes. PI regulator can compensate on-the-fly and deduce the error. D-part can be used for fine-tuning.</p>
+
+<p>Use the distance (measured by IR-sensor) as a feed for PID regulator and desired distance as the input. Output will be the difference of the regulation for the two motors (actually the Kp from the answer you got from pericynthion).</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4969" data-toggle = "popover">
+				<p>user name : firda</p>
+				<p> user reputation : 131</p>
+				<p class = "tagcontent" id = "usertaginfo-4969">{'None': 3}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-4969" class = 'collapse'>
+			</div>
+				<textarea id = "speech-4969" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4969">
+					<img id="start_img-4969" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4969">Comment</button>
+			<br><div id = "ans-4970"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4970" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>What I suggest to you is to use a PI or PID regulator for each motor like pericynthion said, but I'm afraid is not sufficient to keep your robot stright, so you need to keep the the two wheels at the same speed and synchronized, for example you can implement odometery in your UC.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4970" data-toggle = "popover">
+				<p>user name : R Djorane</p>
+				<p> user reputation : 111</p>
+				<p class = "tagcontent" id = "usertaginfo-4970">{'None': 1}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-4970">Load Comments</button></br>
+			<div id = "commentsection-4970" class = 'collapse'>
+			<div id = "comment-7724" class = "comment">
+				<p>The input to the regulator is not the motor's speed, it's the distance from the wall.  So the control loop can be closed around that without the need for odometry.</p>
+			</div>
+			</div>
+				<textarea id = "speech-4970" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4970">
+					<img id="start_img-4970" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4970">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

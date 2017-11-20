@@ -1,0 +1,216 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>In vision based localization, is it possible to make multiple vehicles cooperate to improve the estimation of each other?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-10950" class = "post">
+			<h2>Question</h2>
+			<div id="vote-10950" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 90</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>In vision based localization, is it possible to make multiple vehicles cooperate to improve the estimation of each other?</h2>
+<p>I am currently working on a project that involves structure from motion using multiple cameras on multiple aerial vehicles (each vehicle has a monocular camera: think of it as a distributed stereo), and I am trying to extend this to include localization as well. My pipeline currently goes: robots at known locations -> take pictures -> reconstruct.</p>
+
+<p>When it comes to localizing the vehicles as well using this incrementally built map, the standard approach that comes to mind is to apply the PNP algorithm on each camera (assuming the reconstructed scene is visible to all cameras) which results in the 3D pose: but this doesn't necessarily take advantage of the fact that multiple cameras exist, apart from the fact that they are used in reconstructing the environment. Is there anything I can exploit using multiple cameras/vehicles that would result in enhanced localization accuracy of all of the vehicles as compared to a "single vehicle performing PNP on a known map" scenario?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10950" data-toggle = "popover">
+				<p>user name : Unattainable</p>
+				<p> user reputation : 8</p>
+				<p class = "tagcontent" id = "usertaginfo-10950">{'multi-agent': 1, 'None': 0, 'slam': 1, 'localization': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10950">Load Comments</button></br>
+			<div id = "commentsection-10950" class = 'collapse'>
+			<div id = "comment-19717" class = "comment">
+				<p>Isn't this called stereo vision? I'm not sure if I'm missing something. It sounds to me like you're talking about building a depth map with multiple cameras (stereo vision), and then using that data to **simultaneously map** the terrain **and localize** the robot - this would be a stereo vision SLAM technique. What differentiates your scenario from stereo SLAM?</p>
+			</div>
+			<div id = "comment-19718" class = "comment">
+				<p>Correct me if I'm wrong: isn't the term 'stereo vision' used exclusively for rigid camera rigs? When I say multiple cameras, they are on multiple vehicles: each vehicle has one. Perhaps I didn't word the question right.</p>
+			</div>
+			<div id = "comment-19719" class = "comment">
+				<p>are you doing stuff real time? or is this being post processed ?</p>
+			</div>
+			<div id = "comment-19720" class = "comment">
+				<p>Post processed for now.</p>
+			</div>
+			<div id = "comment-19722" class = "comment">
+				<p>Edited question to remove ambiguity</p>
+			</div>
+			<div id = "comment-19728" class = "comment">
+				<p>if this is being post processed, what is the distinction between to cameras taking picture a picture and a single camera taking two pictures?</p>
+			</div>
+			<div id = "comment-19730" class = "comment">
+				<p>Well, honestly there is none as of now. The image data I am using actually comes from two separate datasets from UAVs. But a real time implementation is currently in the works.</p>
+			</div>
+			</div>
+				<textarea id = "speech-10950" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10950">
+					<img id="start_img-10950" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10950">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-10959"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10959" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You can do it by fusion using a Kalman filter:</p>
+
+<p>You have a process model model:</p>
+
+<p>$$
+x_t = g(x_{t-1},u_t)
+$$</p>
+
+<p>Now, you have multiple measurements of the same process model from different perspectives:</p>
+
+<p>$$
+z1_t = h_1(x_{t}) \leftarrow \text{camera 1} \\
+z2_t = h_2(x_{t}) \leftarrow \text{camera 2} \\
+\cdots \\
+zn_t = h_n(x_{t}) \leftarrow \text{camera n} \\
+$$</p>
+
+<p>In the prediction step of the Kalman filter, nothing changes you have only one process:</p>
+
+<p>$$
+\bar{x}_t = g(x_{t-1},u_t) \\
+\bar{\Sigma}_t = G_t \Sigma_{t-1} G_t^\intercal + R_t
+$$</p>
+
+<p>And for the update step, you have to include all the measurements:</p>
+
+<p>$$
+K_t = \bar{\Sigma}_t H_t^\intercal ( H_t \bar{\Sigma}_t H_t^\intercal + Q_t )^{-1} \\
+x_t = \bar{x}_t + K_t ( z_t - h( \bar{x}_t ) ) \\
+\Sigma_t = ( I - K_t H_t ) \bar{\Sigma}_t 
+$$</p>
+
+<p>The trick is defining how you are building the matrices in the update step:</p>
+
+<p>$$
+z_t = \left[ \begin{array}{c} z1_t \\ z2_t \\ \cdots \\ zn_t \end{array} \right]
+$$</p>
+
+<p>$$
+h(\bar{x}_t) = \left[ \begin{array}{c} h_1(\bar{x}_t) \\ h_2(\bar{x}_t) \\ \cdots \\ h_n(\bar{x}_t) \end{array} \right]
+$$</p>
+
+<p>$$
+H_t = \left[ \begin{array}{c} H1_t \\ H2_t \\ \cdots \\ Hn_t \end{array} \right]
+$$</p>
+
+<p>$$
+Q_t = \left[ \begin{array}{cccc} Q1_t &amp; 0 &amp; 0 &amp; 0 \\ 0 &amp; Q2_t &amp; 0 &amp; 0 \\ \cdots \\ 0 &amp; 0 &amp; 0 &amp; Qn_t \end{array} \right]
+$$</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10959" data-toggle = "popover">
+				<p>user name : Luis</p>
+				<p> user reputation : 101</p>
+				<p class = "tagcontent" id = "usertaginfo-10959">{'control': 0, 'ekf': 0, 'None': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10959">Load Comments</button></br>
+			<div id = "commentsection-10959" class = 'collapse'>
+			<div id = "comment-19721" class = "comment">
+				<p>Thanks for the reply, but I'm confused: doesn't this solve the problem for one vehicle with multiple.. perspectives? Perhaps the edit I made to the question would make it clearer. I don't have multiple cameras localizing the same vehicle, I have one camera on each vehicle and I want to localize all of them assuming a common set of features are visible. Sorry about any confusion.</p>
+			</div>
+			<div id = "comment-19723" class = "comment">
+				<p>The cameras on each aerial vehicle give you a pose. You said all the cameras can see the same scene. So for example, if all cameras see the same point, each camera will give you a pose of that point. That point has a process, here I called it g. The Kalman update can optimize all the measurements (views) of that point. You need something to detect that two or more cameras are indeed looking at the same point.</p>
+			</div>
+			<div id = "comment-19724" class = "comment">
+				<p>Ah, I see it better now. Hope you wouldn't mind a couple more questions:
+
+As of now, the reconstruction of the scene doesn't happen continuously. Let's say my map contains only one point P at time instant 0. From 0 to another instant k, I re-use this 3D coordinate, and the only 'new' information coming in is where P is located in the image 2D coordinates. PNP(3D, 2D) gives me the pose of the vehicle. So to adapt this to your approach, would you suggest calculating let's say, the reprojection of that point P?
+
+In the world space, as P doesn't move. what would the process look like?</p>
+			</div>
+			<div id = "comment-19725" class = "comment">
+				<p>That re projection is the measurement of each camera. You can use it in pixel coordinates, before the re projection. For the process model you can use a velocity model on the point to optimize. And the measurement model can be the camera pinhole model.</p>
+			</div>
+			<div id = "comment-19731" class = "comment">
+				<p>I see. I am going to try to implement this idea. Just one last thing: let's say I am observing a scene from two vehicles, and the vehicles start moving in opposite directions, hence the 2D projection of the point I am observing is moving in opposite directions in the two frames. Would this cause a problem?</p>
+			</div>
+			<div id = "comment-19732" class = "comment">
+				<p>You may have an increase in the covariances Qt. If they get too big you will lose the position.</p>
+			</div>
+			<div id = "comment-19733" class = "comment">
+				<p>Well, not so much that the common features would be lost. Even though I have common points visible from both, there is a constant velocity model on the process but the two measurements are showing different directions of motion, so I was worried if that one of them would be 'trusted' more and the other thrown away? As of now it's essential that the vehicles be able to move however they want (keeping common features). Estimation theory isn't my strongest suit, so sorry for bothering about probably really basic questions!</p>
+			</div>
+			</div>
+				<textarea id = "speech-10959" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10959">
+					<img id="start_img-10959" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10959">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

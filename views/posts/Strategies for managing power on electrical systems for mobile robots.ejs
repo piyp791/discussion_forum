@@ -1,0 +1,269 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Strategies for managing power on electrical systems for mobile robots
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-483" class = "post">
+			<h2>Question</h2>
+			<div id="vote-483" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">7</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 866</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Strategies for managing power on electrical systems for mobile robots</h2>
+<p>What are some good strategies to follow while designing power supply for electrical systems on mobile robots?</p>
+
+<p>Such robots typically comprise of systems with</p>
+
+<ul>
+<li>microprocessor, microcontroller, DSP, etc units and boards along with immediate peripherals</li>
+<li>Motor control </li>
+<li>Analog Sensors(proximity, audio, voltage, etc)</li>
+<li>Digital Sensors (Vision, IMU, and other exotica)</li>
+<li>Radio comm circuits (Wifi, Bluetooth, Zigbee, etc)</li>
+<li>Other things more specific to the purpose of the robot being designed.</li>
+</ul>
+
+<p>Are there unified approaches/architectural rules to designing power systems which can manage clean power supply to all these various units which may be distributed across boards, without issues of interference, common ground, etc? Furthermore, also including aspects of redundancy, failure management, and other such 'power management/monitoring' features?</p>
+
+<p>well explained examples of some such existing power systems on robots would make for excellent answers.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-483" data-toggle = "popover">
+				<p>user name : schinoy</p>
+				<p> user reputation : 36</p>
+				<p class = "tagcontent" id = "usertaginfo-483">{'mobile-robot': 7, 'None': 0, 'electronics': 7}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-483" class = 'collapse'>
+			</div>
+				<textarea id = "speech-483" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-483">
+					<img id="start_img-483" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-483">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-485"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-485" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I don't know any "rules", but for complex bots, I create separate "power" unit. It basically consists of the battery, as well as some 7805s/7809s. The 78xx series takes a 12V input and gives an xx V output. Most ICs work well on 5V, and an Arduino needs 9V, so that's what I end up using (Note: the 5V/3V output pins on the Arduino are <em>not</em> really meant to be used much. They don't supply much power, so it's best to have a separate 5V line for your circuitry).</p>
+
+<p>After this, I connect all components in parallel to their respective power pins. It is generally beneficial to power the motor with a separate source (common ground). The motor draws the most current, so the simple act of stopping/slowing a motor can send fluctuations throughout the circuit. If you don't want to do this, at least add <a href="http://www.seattlerobotics.org/encoder/jun97/basics.html" rel="nofollow noreferrer">bypass capacitors</a> to the motor and the power inputs(Vcc/Gnd) of logic circuits (see <a href="https://robotics.stackexchange.com/questions/267/why-are-capacitors-added-to-motors-in-parallel-what-is-their-purpose">here</a> for more on how they work). These solve quite a few interference issues.</p>
+
+<p>If you want to be a bit more sophisticated, you can add zener diodes to the power outputs. Never had to do this myself, but it's apparently a good way of "rationing out" power. There also are "constant current diodes" that you can use--though I've never even seen one of those.</p>
+
+<p>For redundancy, the most you can do (for DC) is put two batteries in parallel and maybe send power to components by different physical routes. Take note of the "physical" there--the placement of the wires may be different (and they may attach do different parts of the board), but the overall circuit should remain unchanged. The reason behind doing this is that not doing this right may lead to power pins being shorted-- two logically separate 5V outputs shouldn't be shorted together, they won't be exactly the same and you'll probably have some heating/leakage.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-485" data-toggle = "popover">
+				<p>user name : Manishearth</p>
+				<p> user reputation : 1068</p>
+				<p class = "tagcontent" id = "usertaginfo-485">{'underwater': 30, 'None': 53, 'protection': 64, 'motor': 64, 'auv': 30, 'actuator': 11}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-485" class = 'collapse'>
+			</div>
+				<textarea id = "speech-485" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-485">
+					<img id="start_img-485" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-485">Comment</button>
+			<br><div id = "ans-507"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-507" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>These are the rules I follow when I am building power supply systems on my (small, mobile) robots:</p>
+
+<ul>
+<li>I always separate the motors' power supply from any other circuitry, to reduce interference (as @Manishearth <a href="https://robotics.stackexchange.com/a/485/435">mentions</a>).</li>
+<li>For the rest of my electronic systems, I step down (using linear regulators) from a battery to each of the required voltages (usually 5V and 3.3V in my applications) in parallel.</li>
+<li>I always include standard diodes as the first component after the battery's connection to any circuit boards, to protect against damage by reverse polarity. The voltage drop here should be taken into account when looking at regulator drop-outs.</li>
+</ul>
+
+<p>Most of my robots have been fairly simple and have not merited much in the way of redundancy, but a common way to add basic redundancy in the case of one power supply failing is through a simple relay-based switch box. This can be configured such that the power supply powers the relay coil in parallel to passing through the Normally-Open contacts to the robot. A second backup supply can be wired to pass through the Normally-Closed contacts. If the first supply fails, the relay will toggle over to the second supply. Cleverer systems can monitor power supply health and manually switch between primary and backup sources as required.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-507" data-toggle = "popover">
+				<p>user name : thisismyrobot</p>
+				<p> user reputation : 331</p>
+				<p class = "tagcontent" id = "usertaginfo-507">{'None': 20}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-507" class = 'collapse'>
+			</div>
+				<textarea id = "speech-507" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-507">
+					<img id="start_img-507" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-507">Comment</button>
+			<br><div id = "ans-7283"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7283" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Although it depends on the vehicle mission, these are also worth thinking about power-architecture (not implementation):</p>
+
+<ol>
+<li>If your robot has a payload (that is not used for moving or controlling the robot), try to have a separate power source for the payload.</li>
+<li>Isolate the motors, through a separate battery if required. So that even if the motors die, your camera or other systems would still be able to function.</li>
+<li>If you will send the robot out of eye sight make sure you have at least some beacon to later find it when the batteries die out. Today, I heard that an RC model got lost (power outage or some other fatal error). If it had a beacon, it could have been saved.</li>
+</ol>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7283" data-toggle = "popover">
+				<p>user name : G rkan  etin</p>
+				<p> user reputation : 284</p>
+				<p class = "tagcontent" id = "usertaginfo-7283">{'None': 13}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7283" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7283" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7283">
+					<img id="start_img-7283" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7283">Comment</button>
+			<br><div id = "ans-7303"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7303" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You asked for examples of existing robots. I once built a 6 wheeled rover robot with the following components:
+ - 2 homemade paperclip touch sensors
+ - 2 Arduino Unos
+ - a 3.3V digital compass
+ - a 5V radio transmitter
+ - 6 Vex Motor Controller 29's
+ - 6 DC motors, Stall current @ 2 amps, 6V</p>
+
+<p><strong>To avoid using complicated electrical stuff</strong> (no messing with capacitors or linear voltage regulators), we had 2 batteries, 1 for the "brain", 1 for the body.</p>
+
+<p>The 6 DC motors were powered by a LIPO battery, 5000mAh 7.4V 20C 2cell. The Vex Motor Controller 29's have 3 wires, 1 for data, and Vcc and Ground. It basically converts the motor into a servo. So we had the data wires from the motor controllers go to the Arduino PWM ports (11, 10, 9, 6, 5, 3), and the Vcc's go to the positive terminal of the LIPO, and the negatives to the common ground.</p>
+
+<p>The Arduino Unos, compass, and radio transmitter were powered by 4 AA batteries. The 4 AA batteries fed into the master Arduino, then distributed out to everything else via the 3.3V, 5V, and Vin ports (Arduino Uno has built in 3.3V and 5V linear regulators). So the 3.3V went to the compass, the 5V went to the radio beacon, the Vin went to the slave Arduino.</p>
+
+<p><strong>2 separate batteries is simple.</strong> There is no need to worry about back EMF from motors, no need for capacitors or adding voltage regulators.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7303" data-toggle = "popover">
+				<p>user name : Mack Tang</p>
+				<p> user reputation : 11</p>
+				<p class = "tagcontent" id = "usertaginfo-7303">{'None': 1}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7303" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7303" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7303">
+					<img id="start_img-7303" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7303">Comment</button>
+			<br><div id = "ans-7305"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7305" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Robotics is usually a business of various trade-offs, so there is no ultimate solution for power management, as every robot is different. For example, separate battery for motors mentioned by others sometimes may be a good solution, but sometimes cannot be used due to size/weight constraints. There are however some general tips there can be utilized in many designs:</p>
+
+<ul>
+<li>Never use same power source for electronics and motors/servos. Even if your motors are 5V, use separate voltage regulator for electronics, and separate power for motors.</li>
+<li>Do not use linear regulators for driving servos/motors. Use DC/DC converters instead. Motors can draw huge amounts of current. Linear regulators usually have poor efficiency, so much of a power will go to a waste in form of heat dissipated on a regulator.</li>
+<li>Keep high-current circuits away from other electronics, especially from analog ones.</li>
+<li>Consider using hardware or/and software filters if you want reliable and precise ADC readings.</li>
+<li>Use capacitors! They are your biggest friends when it comes to fighting interference. As a rule of thumb, you can assume that each IC should have at least one 100n capacitor between each VCC and GND pins pair. </li>
+<li>If you many boards distributed all around your robot, consider adding a separate voltage regulator for each board. It will cut out any interference acquired by power cables. </li>
+<li>Check out dedicated power management ICs. They can be really clever, signalling power failures, protecting your circuits from reverse polarity, over and under voltage and many, many more.</li>
+</ul>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7305" data-toggle = "popover">
+				<p>user name : mactro</p>
+				<p> user reputation : 925</p>
+				<p class = "tagcontent" id = "usertaginfo-7305">{'control': 1, 'None': 59, 'radio-control': 1, 'pid': 1, 'wifi': 1, 'wheeled-robot': 1, 'mechanism': 1, 'automation': 1, 'wireless': 1, 'industrial-robot': 2, 'design': 1, 'cnc': 2, 'actuator': 2, 'mobile-robot': 2}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7305" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7305" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7305">
+					<img id="start_img-7305" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7305">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

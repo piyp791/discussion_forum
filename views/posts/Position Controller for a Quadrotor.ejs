@@ -1,0 +1,227 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Position Controller for a Quadrotor
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-4675" class = "post">
+			<h2>Question</h2>
+			<div id="vote-4675" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 3189</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Position Controller for a Quadrotor</h2>
+<p>I have a question regarding the implementation of a quadrotor's position controller. 
+In my Matlab model the quadrotor takes 4 inputs: a desired altitude ($Z_{des}$) and desired attitude angles($\Phi_{des}$, $\Theta_{des}$, $\Psi_{des}$) which reflects the motion described by the differential equations of the model (see last picture). </p>
+
+<p><a href="https://i.stack.imgur.com/fzk2D.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/fzk2D.png" alt="theoretical loop controller for a quadrotor"></a></p>
+
+<p>Here an insight into the implemented Matlab dynamic model. As you can see it has a structure like an inner loop controler:</p>
+
+<p><a href="https://i.stack.imgur.com/IGZaA.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/IGZaA.png" alt="enter image description here"></a></p>
+
+<p>Anyway...it "hovers" perfectly on the starting point. (perfect graphs :) )
+Now I just need to go over and implement a sort of position controller to let the quadrotor to get from a start to a goal point, defined as usual through 3 coordinates $[X_d, Y_d, Z_d]$. </p>
+
+<p>That's tricky because I don't have the same space state variables as input and output of the system. So the controller must take a vector of three coordinates and be able to output 3 different angles to get there. The only exception is the height because it will be simply bypassed by the controller and doesn't need another calculation loop. A different story is for the three angles... </p>
+
+<p>My first idea was to simply create a feedback between the position given at the output of the simulated system and the desired position as in the figure above.
+But that rises another question: my quadrotor model solves the following equation system:</p>
+
+<p>$$
+\large \cases{ 
+ \ddot X = ( \sin{\psi} \sin{\phi} + \cos{\psi} \sin{\theta} \cos{\phi}) \frac{U_1}{m}  \cr
+ \ddot Y = (-\cos{\psi} \sin{\phi} + \sin{\psi} \sin{\theta} \cos{\phi}) \frac{U_1}{m} \cr
+ \ddot Z = (-g + (\cos{\theta} \cos{\phi}) \frac{U_1}{m} \cr
+ \dot p  = \frac{I_{YY} - I_{ZZ}}{I_{XX}}qr - \frac{J_{TP}}{I_{XX}} q \Omega + \frac{U_2}{I_{XX}} \cr
+ \dot q  = \frac{I_{ZZ} - I_{XX}}{I_{YY}}pr - \frac{J_{TP}}{I_{YY}} p \Omega + \frac{U_3}{I_{YY}} \cr
+ \dot r  = \frac{I_{XX} - I_{YY}}{I_{ZZ}}pq - \frac{U_4}{I_{ZZ}}
+}
+$$</p>
+
+<p>that means that they expect (as in the matlab model above) the desired angles and height. 
+But now I need right the inverse: given a desired position calculate the right angles!!! 
+For the direction is the solution really simple, since I can write something like:</p>
+
+<pre><code>Psi = atan2( (yd - yactual), (xd - xactual) );
+</code></pre>
+
+<p>where y and x lies on the horizontal plane. This is not so simple for the other two angles. So what can I do at this point? Just "invert" the given equations to get the desired angles?</p>
+
+<p>Another idea could be to implement a simple PD or PID controller. This is much more easier given the fact that I can experiment very quickly using Simulink and get very good results. But the problem is here again: how get I the desired angles from a desired position?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4675" data-toggle = "popover">
+				<p>user name : Dave</p>
+				<p> user reputation : 294</p>
+				<p class = "tagcontent" id = "usertaginfo-4675">{'control': 10, 'quadcopter': 11, 'None': 6, 'pid': 13, 'uav': 3, 'matlab': 0, 'mobile-robot': 0, 'ros': 2, 'movement': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-4675">Load Comments</button></br>
+			<div id = "commentsection-4675" class = 'collapse'>
+			<div id = "comment-7315" class = "comment">
+				<p>Related to [this question](http://robotics.stackexchange.com/q/4558/350), which is currently unanswered.</p>
+			</div>
+			<div id = "comment-9816" class = "comment">
+				<p>And how do you calculate Vy and/or Vx... And by any chance do you have the source or the paper of this idea?? thanks!</p>
+			</div>
+			<div id = "comment-9817" class = "comment">
+				<p>Look at this paper: [link](http://www-personal.acfr.usyd.edu.au/spns/cdm/papers/Mellinger.pdf)</p>
+			</div>
+			<div id = "comment-10392" class = "comment">
+				<p>I am implementing something similar. I have already implemented my attitude controller but I don't know how to do the position controller. How did you finally implemented it?</p>
+			</div>
+			<div id = "comment-22108" class = "comment">
+				<p>Any figures or any more information regarding this topic?</p>
+			</div>
+			</div>
+				<textarea id = "speech-4675" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4675">
+					<img id="start_img-4675" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4675">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-4676"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4676" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>By far, the most common solution to this problem is to use 2 separate controllers. The inner loop controller is what you already have: it tracks angle and height commands.</p>
+
+<p>The outer loop controller assumes that the angles are tracked perfectly and treats angles as inputs, rather than separate states. So it takes the position error and converts it to a desired roll/pitch (via PID, just like any other system where you use a controller to calculate desired system inputs), and those desired angles are passed into the inner loop controller.</p>
+
+<p>Make sense?</p>
+
+<p>If you want to get more complicated, your outer loop controller can define a desired acceleration. Using a bit more complicated math you can turn that into desired angles. This is theoretically cleaner but in practice you're still just tuning PID loops so the actual benefit may not justify the time and effort.</p>
+
+<p>------------ EDIT -----------</p>
+
+<p>To elaborate. The outer loop looks something like this. (for simplicity assume yaw=0)</p>
+
+<p>$$
+\begin{align}
+\hat{\phi}^d &amp;= k_{p,y} (y-y^d) + k_{d,y} (v_y - v_y^d) + k_{i,y} \int_0^t (y-y^d) dt
+\\
+\hat{\theta}^d &amp;= -k_{p,x} (x-x^d) = k_{d,x} (v_x - v_x^d) - k_{i,x} \int_0^t (x-x^d) dt
+\end{align}
+$$
+where $\hat{\phi}^d$ is the desired roll angle and $\hat{\theta}^d$ is the desired pitch angle. When yaw $\ne$ 0 you combine the two. Something like
+$$
+\begin{align}
+\phi^d &amp;= \cos(\psi) \hat{\phi}^d - sin(\psi) \hat{\theta}^d
+\\
+\theta^d &amp;= \sin(\psi) \hat{\phi}^d + cos(\psi) \hat{\theta}^d
+\end{align}
+$$
+where $\psi$ is the yaw angle (FYI, I might have the signs wrong there)</p>
+
+<p>Then, in the inner loop you have your existing controller.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4676" data-toggle = "popover">
+				<p>user name : ryan0270</p>
+				<p> user reputation : 1814</p>
+				<p class = "tagcontent" id = "usertaginfo-4676">{'None': 133}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-4676">Load Comments</button></br>
+			<div id = "commentsection-4676" class = 'collapse'>
+			<div id = "comment-7290" class = "comment">
+				<p>Yes, it makes sense.
+The only thing that is not clear to me is: given an outer loop controller which converts position in desired angles, where should I place my PID controller?
+Your explanation was really clear but it would help if you can put a simple figure to better understand. Thanks!</p>
+			</div>
+			<div id = "comment-7291" class = "comment">
+				<p>The inner/outer loop you meant is something like:
+[Schema](http://www.mathworks.de/help/examples/control_product/xxxhtmlcascadepiddemoscheme.png)
+Or I am wrong?</p>
+			</div>
+			<div id = "comment-7296" class = "comment">
+				<p>Yes, the diagram you linked to is a similar example of inner/outer loop controllers</p>
+			</div>
+			<div id = "comment-7320" class = "comment">
+				<p>ryan. Thanks but it doesn't help me a lot. I should  know where to put some PID controllers IN the outer controller.
+Reagrds</p>
+			</div>
+			<div id = "comment-7321" class = "comment">
+				<p>I edited my answer to show the outer loop equations</p>
+			</div>
+			<div id = "comment-7327" class = "comment">
+				<p>many many thanks Ryan. Thats helps me a lot!</p>
+			</div>
+			<div id = "comment-22075" class = "comment">
+				<p>@ryan0270 In the equation for pitch angle, should there be a plus sign instead of an equal sign in the middle of the equation?</p>
+			</div>
+			</div>
+				<textarea id = "speech-4676" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4676">
+					<img id="start_img-4676" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4676">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

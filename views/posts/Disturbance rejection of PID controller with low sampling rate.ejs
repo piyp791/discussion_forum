@@ -1,0 +1,141 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Disturbance rejection of PID controller with low sampling rate
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-14083" class = "post">
+			<h2>Question</h2>
+			<div id="vote-14083" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 26</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Disturbance rejection of PID controller with low sampling rate</h2>
+<p>I have a closed-loop system with the following discrete-time plant:</p>
+
+<p>$P(z) = \frac{0.1262}{z^2-0.3303z+0.07517}$</p>
+
+<p>With a fixed (and horrendously low) sampling time of 0.05 seconds. The plant has a time constant of approximately 0.03 seconds - this was calculated using MATLABs System Identification Toolbox.</p>
+
+<p>I am trying to design a PI/PID controller that will attenuate load disturbances (injected after the plant) with frequencies &lt; 1 Hz without amplifying higher frequencies. No matter how much I play with the gain and phase margins, I cannot seem to achieve this. </p>
+
+<p>Seen below, is a picture showing a nasty bump between 1 and 6 Hz (circled in red) that I cannot seem to remove and retaining disturbance rejection at low frequencies. </p>
+
+<p><a href="https://i.stack.imgur.com/R5qpV.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/R5qpV.png" alt="enter image description here"></a></p>
+
+<p>I believe that this is an impossible task to accomplish with such a low sampling rate. If so, are there any other control typologies I can take a look at? In the past, I designed a <a href="https://www.mathworks.com/help/control/examples/control-of-processes-with-long-dead-time-the-smith-predictor.html" rel="nofollow noreferrer">Smith predictor</a>, and yes it improved disturbance rejection but not by very much - I am still getting amplification at higher frequencies.</p>
+
+<p>Thank you,</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-14083" data-toggle = "popover">
+				<p>user name : Danny Gelman</p>
+				<p> user reputation : 1</p>
+				<p class = "tagcontent" id = "usertaginfo-14083">{'control': 0, 'None': 0, 'arduino': 0, 'pid': 0, 'matlab': 0, 'dynamics': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-14083" class = 'collapse'>
+			</div>
+				<textarea id = "speech-14083" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-14083">
+					<img id="start_img-14083" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-14083">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-14092"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-14092" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Because the plant has a delay of two samples it will never be possible to cancel the disturbances completely, because then you would have to predict the disturbance those two samples ahead of time. Also a Smith predictor is therefore only useful for obtaining a desirable complementary sensitivity transfer function.</p>
+
+<p>I also believe your are limited by the <a href="https://en.wikipedia.org/wiki/Bode%27s_sensitivity_integral" rel="nofollow noreferrer">waterbed effect</a>. According to this attenuating below 1 Hz and not amplify above that would be impossible. I gave it a try myself and was able to limit the peek of the sensitivity function to 4.06 dB while still satisfying the attenuating below 1 Hz. However lowering it to attenuating below 0.6 Hz gave me a peek of only 1.54 dB. Namely the waterbed effect roughly says that if you want to lower the magnitude of the sensitivity in a certain frequency range, then it has to go up somewhere else.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-14092" data-toggle = "popover">
+				<p>user name : fibonatic</p>
+				<p> user reputation : 373</p>
+				<p class = "tagcontent" id = "usertaginfo-14092">{'quadcopter': 2, 'None': 19, 'design': 2}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-14092">Load Comments</button></br>
+			<div id = "commentsection-14092" class = 'collapse'>
+			<div id = "comment-22963" class = "comment">
+				<p>Thank you again very much. I am realizing how difficult these dynamics are. I am considering putting a low-pass filter in the feedback line, so the PID controller does not attempt to compensate for disturbances > 1 Hz. I only care about attenuating low frequencies (< 1 Hz). A high order filter will inject so much phase delay - I believe. I feel like this is not good practice because in general this would equate to lower gains on the controller.</p>
+			</div>
+			<div id = "comment-22964" class = "comment">
+				<p>Would increase sampling rate help with the waterbed effect? Also, can you suggest any reading material on disturbance rejection and sampling rate?</p>
+			</div>
+			</div>
+				<textarea id = "speech-14092" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-14092">
+					<img id="start_img-14092" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-14092">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

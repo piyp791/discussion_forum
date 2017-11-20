@@ -1,0 +1,228 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>ROS: Best practices?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-3110" class = "post">
+			<h2>Question</h2>
+			<div id="vote-3110" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">8</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 950</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>ROS: Best practices?</h2>
+<p>I'm going to build a <em>small robot system</em>, and it seems like that ROS serves a nice framework to control and program the system.</p>
+
+<p>However, I am wondering which is the best practice to manage the components of my robot.</p>
+
+<ul>
+<li><p>Does it make sense to put all the sensors in one node?</p></li>
+<li><p>Should I only put the sensors of the same type in one node or is it better to have one node for one sensor? </p></li>
+<li><p>Is it a good practice to have some kind of handler node, which takes input from sensors and steers the corresponding actuators or should the actuator nodes and sensor nodes communicate directly?</p></li>
+</ul>
+
+<hr>
+
+<ol>
+<li><p>Fused sensor nodes and actuator nodes with handler
+<img src="https://i.stack.imgur.com/wkjDK.jpg" alt="1. Fused sensor nodes and actuator nodes with handler"></p></li>
+<li><p>Single sensor and actuator nodes with handler
+<img src="https://i.stack.imgur.com/WZkGN.jpg" alt="enter image description here"></p></li>
+<li><p>Direct communication
+<img src="https://i.stack.imgur.com/MyCez.jpg" alt="enter image description here"></p></li>
+</ol>
+
+<p>For me, I guess the best is to have some kind of handler, which handles the communication between sensors and actuators and have one node for each element of the robot (like in figure 2), because the system is in this way loosely coupled and can be extended easily, but I want to know what your opinion is.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-3110" data-toggle = "popover">
+				<p>user name : manf</p>
+				<p> user reputation : 43</p>
+				<p class = "tagcontent" id = "usertaginfo-3110">{'control': 8, 'None': 0, 'ros': 8}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-3110" class = 'collapse'>
+			</div>
+				<textarea id = "speech-3110" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-3110">
+					<img id="start_img-3110" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-3110">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-3112"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-3112" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">8</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Very short answer: 2</p>
+
+<hr>
+
+<h1>Sensors</h1>
+
+<p>Regarding whether reading from sensors all in one node or each separately, you should ask yourself this question:</p>
+
+<h3>Are the sensors meaningless without the other?</h3>
+
+<p>This question asks if the sensors are tightly coupled or not. For example, say you have a sensor that is sensitive to temperature (and you need to compensate for it). You add a temperature sensor primarily to fix the value of the other sensor. In this scenario, it makes sense to read both values at the same time, since they are tightly coupled. In fact, without the readings from the temperature sensor, the readings from the original sensor is useless.</p>
+
+<p>On the other hand, if the sensors are individually useful, by all means keep them in separate nodes. This has many benefits:</p>
+
+<ul>
+<li>The nodes can be run on separate processors</li>
+<li>The nodes can be reused in future robots</li>
+<li>Failure in communication with one node doesn't bring the whole system down</li>
+<li>Restart of acquisition from a faulty sensor board can be done separately from the others</li>
+</ul>
+
+<p>In fact, if you <em>need</em> any of the above benefits, you would have to go with separate nodes, even if the sensors are tightly coupled, but that usually doesn't happen.</p>
+
+<h1>Actuators</h1>
+
+<p>This is a analogous.</p>
+
+<h3>Are the actuators meaningless without the other?</h3>
+
+<p>For example, if you are designing a wrist with <a href="https://robotics.stackexchange.com/a/1201/158">robotic tendons</a> where for each tendon (for whatever reason) two motors are responsible to simultaneously work to move a joint in one or the other direction, then having them served in the same node makes much more sense than separate.</p>
+
+<p>On the other hand, where actuators are independent (common case), it makes sense to have one node for each actuator. In that case, each could be put in a different node.  Besides the exact same benefits as with sensors, there is this added benefit:</p>
+
+<ul>
+<li>If an actuators is stalled (for whatever reason), the other actuators still function.  If there is redundant degrees of freedom, they could even completely compensate for it.</li>
+</ul>
+
+<p>This has one implication. If you <em>need</em> the actuators to work in harmony, then put them in the same node. This is not just because of failure in communication, but because different nodes means different delays; on a distributed system each node is on a different part of the network and hence the difference in delays, on a centralized system different delays happen on high CPU loads due to each process's <em>luck</em> in scheduling.</p>
+
+<h1>Should There Be a Handler?</h1>
+
+<p>Even though the answer is "it depends", there is a common approach with many advantages. Let's change the name and call it "controller". The approach is "yes, there should be a controller".</p>
+
+<p>The advantages of having a controller are (among many):</p>
+
+<ul>
+<li>Decoupled processing: each node is responsible for one thing which means:
+
+<ul>
+<li>Simplicity: which implies
+
+<ul>
+<li>Easier development</li>
+<li>Easier debugging</li>
+<li>Fewer errors</li>
+<li>Less chance of failure</li>
+</ul></li>
+<li>Reusability: because the same controller can be used with different sensor nodes if they have the same functionality (i.e. message and service formats).</li>
+</ul></li>
+<li>Execution on separate hardware: each node can be moved in the network. For example, sensor and actuator nodes may be moved to a dedicated microcontroller (<a href="http://wiki.ros.org/rosserial_arduino" rel="nofollow noreferrer">Arduino</a> for example (not that I recommend)) and the controller on a PC.</li>
+<li>Avoid extreme ugliness: if the sensors wanted to directly influence the actuators, the result is simply a mess. Assuming no controller, let's look at each case:
+
+<ul>
+<li>One sensor node: basically this means the sensor node and the controller are put together in the same node. Not too bad, but very unnecessary.</li>
+<li>Many sensor nodes: this is the mess. This means the controller is <em>distributed</em> among the sensor nodes. Therefore all the sensor nodes have to talk with each other for each to know how to control its associated actuator(s). Imagine a failure in communication or various kinds of delays and you'll see how difficult it becomes. Given that this is utterly unnecessary, there is no reason for doing it!</li>
+</ul></li>
+</ul>
+
+<p>These said, there are disadvantages too. Having more nodes (any nodes, not just the controller) means:</p>
+
+<ul>
+<li>More wasted communication: the data have to move around in standard formats (so serialized and deserialized) through network or shared memory, ROS core has to look at them and decide who to deliver them to, etc. In short, some system resources are wasted in communication. If all nodes where in one, that cost could have been zero.</li>
+<li>Higher chance of failure: if for whatever reason a network link goes down, or a node dies, there is a failure in the system. If you are not prepared for it, it can take down the whole system. Now this is actually a good thing in general to be able to lose part of the system but not all of it (<a href="https://en.wikipedia.org/wiki/Graceful_degradation" rel="nofollow noreferrer">graceful degradation</a>), but there also exist applications where this should be avoided as much as possible. Cutting the communication and putting all code in one node actually helps with system stability. The down side is of course, the system either works fine or suddenly dies completely.</li>
+<li>Chaotic timings: each node runs on its own. The time it takes for its messages to arrive at others is non-deterministic and varies run by run. Unless your nodes timestamp each message (as a side note: you need to have synchronized clocks to a good degree, which ROS doesn't) and unless each receiving node can take the delay into account and control accordingly (which is a very difficult task on its own) then having multiple nodes means high uncertainty about the age of the data. This is actually one of the reasons (among many) that most robots move so slow; their control loop has to be slow enough to make sure all data correspond to the current period. The larger the delays, the slower the control loop.</li>
+</ul>
+
+<p>In all above disadvantages, the solution is to reduce the number of nodes, preferably to a single node. Wait a minute, that's not using ROS anymore! Exactly.</p>
+
+<p>To summarize:</p>
+
+<ul>
+<li>Use ROS for non-realtime systems where delays could sporadically get high. In that case, feel free to have as many ROS nodes as you wish. In fact, it's very good practice to have each ROS node do <em>one and only one</em> thing. That way, they become very simple, and they become highly reusable.</li>
+<li>On the other hand, for realtime systems, by all means avoid ROS. For that there is <a href="http://www.orocos.org/" rel="nofollow noreferrer">orocos</a> and technologies like <a href="https://en.wikipedia.org/wiki/EtherCAT" rel="nofollow noreferrer">EtherCAT</a> and more often than not, ad-hoc solutions.</li>
+</ul>
+
+<p>As a final word, in practice ROS does fine. Not great, but fine. Very often the system is not critical and the chance of failure is so small that every now and then a restart is not a big deal. This is the <a href="https://en.wikipedia.org/wiki/Ostrich_algorithm" rel="nofollow noreferrer">Ostrich algorithm</a>!</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-3112" data-toggle = "popover">
+				<p>user name : Shahbaz</p>
+				<p> user reputation : 2615</p>
+				<p class = "tagcontent" id = "usertaginfo-3112">{'None': 193, 'usb': 12, 'distributed-systems': 7, 'microcontroller': 1, 'embedded-systems': 7, 'servomotor': 1, 'platform': 18, 'can': 1, 'machine-learning': 12, 'real-time': 18, 'mobile-robot': 1, 'rs232': 12, 'software': 20}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-3112">Load Comments</button></br>
+			<div id = "commentsection-3112" class = 'collapse'>
+			<div id = "comment-6615" class = "comment">
+				<p>Wow, very nice and detailed answer! Thank you very much for your time ;)</p>
+			</div>
+			</div>
+				<textarea id = "speech-3112" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-3112">
+					<img id="start_img-3112" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-3112">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

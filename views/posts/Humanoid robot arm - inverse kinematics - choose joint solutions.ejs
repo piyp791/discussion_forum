@@ -1,0 +1,187 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Humanoid robot arm - inverse kinematics - choose joint solutions
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11947" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11947" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 203</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Humanoid robot arm - inverse kinematics - choose joint solutions</h2>
+<p>I have developed a 7DOF arm for a humanoid robot (see pic below for more details) 
+I have implemented the IK using a closed form solution and of course I come up with eight solutions - each one is actually positioning the end effector at the right position and orientation (I implemented the method described in the paper: <a href="https://www.google.fr/url?sa=t&amp;rct=j&amp;q=&amp;esrc=s&amp;source=web&amp;cd=1&amp;cad=rja&amp;uact=8&amp;ved=0ahUKEwi10M-l5_bSAhWTDRoKHSP2B9cQFggcMAA&amp;url=http%3A%2F%2Fwww.golems.org%2Fpapers%2FOFlaherty13-hubo-kinematics-techreport.pdf&amp;usg=AFQjCNHzioDUf5YclQWgxNYxgSti_BadBg&amp;sig2=RpSqZ9veAMRDUJfcjCi8tg" rel="nofollow noreferrer">"Kinematics and Inverse Kinematics for the Humanoid Robot HUBO2+"</a>).
+The question now is how to choose the right one, knowing the fact that the end effector will follow a trajectory. The idea is to compute iteratively the $[N, S, A, P]$ matrix that will be provided to the IK module. </p>
+
+<p>One solution I am thinking off is to choose the joint solution in the decision table that will minimize the given metrics:
+$$\sum_i (\theta_i^{current} - \theta_i^{next})^2$$
+where $\theta_i^{current}$ represents the the current value of the $i^{th}$ joint and $\theta_i^{next}$ is the computed value in the decision table.</p>
+
+<p>Do you think it is the right approach or there are other methods out there to find the best joint solution from the decision table. 
+<a href="https://i.stack.imgur.com/AvKwb.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/AvKwb.jpg" alt="enter image description here"></a></p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11947" data-toggle = "popover">
+				<p>user name : fabrice</p>
+				<p> user reputation : 76</p>
+				<p class = "tagcontent" id = "usertaginfo-11947">{'None': 3, 'laser': 0, 'inverse-kinematics': 8, 'humanoid': 8, 'robotic-arm': 6, 'path-planning': 1, 'gazebo': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11947" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11947" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11947">
+					<img id="start_img-11947" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11947">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-11950"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11950" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>That looks like a fun pair of arms :-)</p>
+
+<p>Yes, if you already have a known pose, choosing a solution that minimizes movement is a decent choice. The obvious draw-back is that which choice is made for a particular pose then depends on history, which may make validation harder.</p>
+
+<p>Another choice would be the one that minimizes the torque (because of gravity/load) on the weaker servos. I notice that you use a MX-28 in the shoulder, but AX-12 in the elbow. With the weight of the gripper and load, and the length of your arms, you should probably not plan on lifting any great weights in that configuration!</p>
+
+<p>I was asked to elaborate on "obvious draw-back."</p>
+
+<p>When validating that a mechanical system is safe to use in a particular environment, such as around human beings, you need to be able to validate that the system will never be in a "bad" configuration. When the configuration of time T depends on the configuration in time T-1, then you can't create a closed-form formula that describes exactly where the system will be for a given set of inputs, and thus validation degrades to either assuming the most pessimistic assumptions (everything within the theoretically possible movement range will happen,) or you have to degrade to manual testing, which is notoriously bad at finding rare edge cases.</p>
+
+<p>Similarly, when something goes wrong, you're going to have a hard time reproducing the conditions for the failure, so that you can study them, fix them, and then add some kind of test to make sure the failure will never happen again. If the pose of an armature is dependent not just on known current inputs, but on all inputs that have been fed to the robot since power-on, you're going to have to log and study a whole lot more data than if the pose is "closed form." (For simple time-dependent systems, storing just the output state of time T-1, and the new input state, may be enough to reproduce movement -- consider this for your system.)</p>
+
+<p>Another option is to say "the system is weak enough to never hurt humans, and it's only for cosmetic display, so if it breaks, there's no money on the line." That's a fine way of doing systems analysis. In the past, I've designed systems with MX servos, that, because of a bug, moved into interference (stalled against themselves,) and before I could cut power (a few seconds,) the delicate Maxxon motors in those servos had already burned out their brushes, necessitating a $90 replacement for each servo motor. There is an "overheating" and "stalled movement" safety in the controller for the servo, but the timing for those safeties is 5-7 seconds, and the timing for burning out a motor at the highest rated voltage of 4S LiPos is more like 2 seconds...</p>
+
+<p>So, validation is not just about keeping humans safe, it's also about saving money. To avoid this, you'll have to guarantee that no link in your arm will interfere with (be blocked by) the body of the robot, or another link of the arm, when you do the iterative solution. When using a closed form solution, you can bake that guarantee into the solution, and rest assured that there will never be such a problem.</p>
+
+<p>All in all, iterative solutions are SO MUCH SIMPLER, and also often "look better" aesthetically, so many solutions end up doing just that, and living with the, now obvious, draw-backs related to validation :-)</p>
+
+<p>(Please accept this answer if you find it to be helpful.)</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11950" data-toggle = "popover">
+				<p>user name : Jon Watte</p>
+				<p> user reputation : 645</p>
+				<p class = "tagcontent" id = "usertaginfo-11950">{'None': 43, 'cooling': 7, 'servos': 7, 'heat-management': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11950">Load Comments</button></br>
+			<div id = "commentsection-11950" class = 'collapse'>
+			<div id = "comment-21226" class = "comment">
+				<p>Hi Jon, thank you for your answer, actually I will make a choice based on the last known pose and the first experiments look good (so far :) ) but may be I missed something regarding the "obvious drawback"? Can you provide more details if you have time? You are right, there is an AX12 in the elbow and I am not planning to lift great weight - it is more about movement and body expression.</p>
+			</div>
+			<div id = "comment-21266" class = "comment">
+				<p>Thank you very much for your detailed answer Jon, I got the point!</p>
+			</div>
+			</div>
+				<textarea id = "speech-11950" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11950">
+					<img id="start_img-11950" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11950">Comment</button>
+			<br><div id = "ans-11957"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11957" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You can use differential IK to solve for a set of IK solutions along a given trajectory. The idea is that you use the IK solution of the current time step, to compute an IK solution for the next time step.</p>
+
+<p>Suppose $q$ is your IK solution at the current time step and $x^+$ is the desired end-effector pose at the next time step. You may compute $q^+$ by iteratively updating $q$:</p>
+
+<p>$$
+q \leftarrow q + dq,
+$$</p>
+
+<p>where $dq = J^{\dagger}(q)dx$, $J^{\dagger}$ is a pseudo inverse of the Jacobian matrix, and $dx$ is the difference between the current end-effector pose and the desired one. If a solution exists, this procedure should converge in only a few iterations (e.g. less than $10$ iterations). The converged value is taken as $q^+$.</p>
+
+<p>An advantage of this method is that in the end you will have a smooth joint trajectory.</p>
+
+<p>By the way, to select the initial IK solution for the trajectory, you may choose one which is well away from the configuration space boundary so that you wouldn't hit a boundary while following the end-effector trajectory.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11957" data-toggle = "popover">
+				<p>user name : Petch Puttichai</p>
+				<p> user reputation : 570</p>
+				<p class = "tagcontent" id = "usertaginfo-11957">{'None': 29, 'manipulator': 6, 'inverse-kinematics': 0, 'industrial-robot': 6, 'redundant-robots': 0, 'kinematics': 3, 'robotic-arm': 6, 'singularity': 3}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11957" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11957" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11957">
+					<img id="start_img-11957" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11957">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

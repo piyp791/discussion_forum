@@ -1,0 +1,305 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to use quaternions to feed a PID quadcopter stabilization loop?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-3137" class = "post">
+			<h2>Question</h2>
+			<div id="vote-3137" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">7</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 4859</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to use quaternions to feed a PID quadcopter stabilization loop?</h2>
+<p>I'm making a quadcopter. I have set up a PID loop to stabilize it to a given Euler angle (pitch and roll). The problem arises when the roll approaches 90 degrees (45 degrees and up). The values don't make sense anymore, as it approaches the gimbal lock. I intend to make it do complex maneuvers like looping etc., which exceeds the 45 degree roll limit.</p>
+
+<p>How can I use quaternions to overcome this problem? (I get quaternions from the MPU-9150.) I have read many articles on the matter of quaternions, but they all talk about rotations in 3D software, and tweening between two rotation points. This makes little sense as I do not know imaginary numbers and matrices.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-3137" data-toggle = "popover">
+				<p>user name : Friend of Kim</p>
+				<p> user reputation : 157</p>
+				<p class = "tagcontent" id = "usertaginfo-3137">{'quadcopter': 7, 'None': 0, 'arduino': 0, 'battery': 3, 'pid': 7, 'stability': 7}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-3137">Load Comments</button></br>
+			<div id = "commentsection-3137" class = 'collapse'>
+			<div id = "comment-7451" class = "comment">
+				<p>Did you solve your problem? If not please let us know how it's going, otherwise you might want to accept one of the answers.</p>
+			</div>
+			<div id = "comment-7455" class = "comment">
+				<p>@marcv81 Yes, it's working pretty well now :) Thank you for reminding me of accepting an answer :)</p>
+			</div>
+			<div id = "comment-7457" class = "comment">
+				<p>I'm glad it's working. It made me think of my own code and fix a bug too :)</p>
+			</div>
+			</div>
+				<textarea id = "speech-3137" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-3137">
+					<img id="start_img-3137" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-3137">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-3138"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-3138" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>First, I think you need to go back and look at your code. Gimbal lock is only a problem when you get very near (within a couple degrees) of 90. If you are seeing strange behavior at 45 degrees something else is the cause. </p>
+
+<p>As for your question, quaternions are usually not used directly in basic PID control since they have complicated behavior resulting in non-intuitive results. Usually they are either converted to Euler angles and then used in the normal PID controller, or special nonlinear controllers are designed to use them.</p>
+
+<p>Note that for your looping maneuvers, PID is generally not a very good controller: the gains that work well near hover no longer work well at large angles. Usually, when someone wants to do a loop they go "open loop", i.e. they start the maneuver under control and then once they get past a certain angle just just apply a fixed series of commands until they have completed the loop. Figuring out what fixed series of commands to use is the tricky part and often uses reinforcement learning (kind of like a formal way of doing trial and error).</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-3138" data-toggle = "popover">
+				<p>user name : ryan0270</p>
+				<p> user reputation : 1814</p>
+				<p class = "tagcontent" id = "usertaginfo-3138">{'None': 133}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-3138">Load Comments</button></br>
+			<div id = "commentsection-3138" class = 'collapse'>
+			<div id = "comment-6640" class = "comment">
+				<p>Thank you for your insight. I'm completely new to bare metal programming. I have only done high level programming. I'm also very interested in physics and maths, although I just finished high school, so I still don't know too much yet...</p>
+			</div>
+			<div id = "comment-6641" class = "comment">
+				<p>I'm making this with a friend, and we "invented" the PID loop ourselves. Being accustomed to a "correct" answer, it was very difficult for us to use it without knowing this was a common way to solve our problem. And when we discovered the PID loop on Wikipedia, our own invented PID loop was "approved".</p>
+			</div>
+			<div id = "comment-6642" class = "comment">
+				<p>So I really appreciate your insight on how this is commonly done in working projects. The strange behavior I'm talking about revealed itself when looking at the graph in `Serial Chart` (https://code.google.com/p/serialchart/) The input is the direct Euler output from the I2CDevLib (MPU-9150). I'll test a bit more. The "error" might have been caused by imprecise movements by myself.</p>
+			</div>
+			<div id = "comment-6643" class = "comment">
+				<p>The roll is the blue line. Red is yaw, green is pitch, blue is roll. As you can see, the problems start from about pi/4 and outwards. Is this a problem with the I2CDevLib, or is it "supposed" to be like this? http://screencast.com/t/svPV3C8B
+I'm turning the gyroscope 360 degrees around the roll axis.</p>
+			</div>
+			<div id = "comment-6644" class = "comment">
+				<p>I've seen AeroQuad being able to stabilize itself even after being thrown into the air. Is this because it takes care of the roll first, then the pitch, then the yaw?</p>
+			</div>
+			<div id = "comment-6646" class = "comment">
+				<p>Sorry, but the graph is hard to interpret without labels on the x and y axes. Also, looking at your question again, you mention that the problem occurs when roll reaches pi/4. For the normal quadrotor definition of roll, pitch, and yaw, gimbal lock only occurs when PITCH reaches pi/2. You can rotate anywhere about yaw or roll axes without problem.</p>
+			</div>
+			<div id = "comment-6649" class = "comment">
+				<p>The graph shows the MPU being rotated 360 degrees around the roll axis. The graph has time on the x axis, and the Euler angles on the y axis. The top of the y axis is pi, and the bottom is -pi. The red line is yaw, the green line is pitch, and the blue line is roll. As you can see, the problems start occuring from pi/4 and outwards. They really add up around 2pi/3.</p>
+			</div>
+			<div id = "comment-7059" class = "comment">
+				<p>If I had enough reputation I would downvote :) PIDs are extremely good controllers for doing loops. This video was done using a PID-based quadcopter: https://vimeo.com/92328596</p>
+			</div>
+			</div>
+				<textarea id = "speech-3138" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-3138">
+					<img id="start_img-3138" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-3138">Comment</button>
+			<br><div id = "ans-3141"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-3141" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>This MOOC free-of-charge course, <a href="https://courses.edx.org/courses/TUMx/AUTONAVx/2T2014/info" rel="nofollow">Welcome to TUMx's AUTONAVx!
+Autonomous Navigation for Flying Robots</a>, may help. It covers:</p>
+
+<ul>
+<li>Learning theory</li>
+<li>Exercise Quadcoptor programming that run on both stimulator and actual hardware</li>
+</ul>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-3141" data-toggle = "popover">
+				<p>user name : EEd</p>
+				<p> user reputation : 359</p>
+				<p class = "tagcontent" id = "usertaginfo-3141">{'None': 16, 'laser': 3, 'pid': 1, 'motor': 1, 'untagged': 0, 'pwm': 1}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-3141">Load Comments</button></br>
+			<div id = "commentsection-3141" class = 'collapse'>
+			<div id = "comment-6650" class = "comment">
+				<p>The link doesn't work.</p>
+			</div>
+			<div id = "comment-6651" class = "comment">
+				<p>The link works if you are logged in.</p>
+			</div>
+			<div id = "comment-6652" class = "comment">
+				<p>Video 1.4 has demo of many quadrotor, performing amazing actions. Hope you get interested in the topic.</p>
+			</div>
+			<div id = "comment-6653" class = "comment">
+				<p>May check FreeIMU software, which provides a) fusioned data from multiple sensors (rate gyro, compass, accelerometer), giving more stable, lower-drift and accurate data than just reading raw data from chip   b) provided multiple output formats, including pitch, roll and yaw, which may be simpler to visualize, understand and use.</p>
+			</div>
+			<div id = "comment-6654" class = "comment">
+				<p>Thank you for your help. I'm using the MPU-9150 which has an onboard DMP (sensor fusion) of both the gyroscope and an accelerometer. Fusing this with the magnetometer has to be done manually.</p>
+			</div>
+			<div id = "comment-6655" class = "comment">
+				<p>Please kindly reminded the motor magnet can cause big error on compass reading depending on motor, distance to sensor and orientation (field at sensor is sum of Earth's and motors', which either add or subtract). Can check with mechanical compass</p>
+			</div>
+			<div id = "comment-6656" class = "comment">
+				<p>Thank you. The course seems very interesting. I'm attending university this fall, and don't have too much spare time. So I guess we'll just have to make it fly first, then continue developing it slowly.</p>
+			</div>
+			<div id = "comment-6657" class = "comment">
+				<p>Let us [continue this discussion in chat](http://chat.stackexchange.com/rooms/15254/discussion-between-john-williams-and-friend-of-kim).</p>
+			</div>
+			</div>
+				<textarea id = "speech-3141" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-3141">
+					<img id="start_img-3141" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-3141">Comment</button>
+			<br><div id = "ans-4483"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4483" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>A quadcopter contains (among other things) two separate and independent algorithms: an attitude estimation algorithm, and a control algorithm.</p>
+
+<p>The attitude estimation algorithm computes information about the orientation of the quadcopter: the roll, pitch and yaw angles.</p>
+
+<p>The control algorithm is responsible for driving the motors so that the orientation of the quadcopter matches what the pilot (or the autopilot software) expects. This algorithm is what would read the estimated quadcopter angles (from the attitude estimation algorithm) and change the motors speed to attempt to match the desired angles. PIDs are a well-suited and common control algorithm for quadcopters.</p>
+
+<p>Gimbal lock is a phenomenon which may happen in the attitude estimation algorithm. It has nothing to do with the control algorithm. As such you don't need ESCs, motors or propellers to test for gimbal lock: you could modify your code to display your roll, pitch and yaw angles, and test that the correct values are calculated as you manually move your quadcopter around. You might be able to do this with the quadcopter tethered to your computer, via Bluetooth, or using other methods depending on your platform.</p>
+
+<p>If the angles are calculated correctly you don't need to worry about quaternions. If they are not calculated correctly, quaternions <em>might</em> help you. The attitude estimation algorithm shall output 3 angles for the control algorithm to use, however it might use a different internal representation such as quaternions or 3x3 matrices. In that case it would still convert the attitude information to angles so as to provide usable data to the control algorithm. Generally speaking quaternions are unintuitive but computationally efficient. This makes them well suited for slow platforms such as Arduino. Matrices or angles may be an easier choice for faster hardware. If you need me to elaborate on one solution or the other please let me know, but it would be quite premature for me to give details at this stage as I am not convinced you need to implement quaternions.</p>
+
+<p>Finally if the angles are calculated correctly the way to make your quadcopter loop is to control the angular rate rather than the angle. If your sticks represent the quadcopter angle there is no way to make it do a full loop: try to visualise the sticks position as the quadcopter loops and you should understand why. However if the sticks control the angular rate then you can control the speed at which it loops.</p>
+
+<p>Good luck with your project!</p>
+
+<p>Note: For the sake of simplicity I have not mentioned the theoretical option to manipulate the data as matrices or quaternions both in the attitude estimation algorithm and the control algorithm. I have never seen a quadcopter implementing such algorithms.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4483" data-toggle = "popover">
+				<p>user name : marcv81</p>
+				<p> user reputation : 408</p>
+				<p class = "tagcontent" id = "usertaginfo-4483">{'None': 22, 'pid': 4}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-4483">Load Comments</button></br>
+			<div id = "commentsection-4483" class = 'collapse'>
+			<div id = "comment-7155" class = "comment">
+				<p>Thank you for your thorough answer! A person working at InvenSense said that, in most applications, quaternions were easier and better than Euler angles. Looking at the data tethered, it seems that it is possible to correct one axis to stop the gimbal lock when this is about to happen.</p>
+			</div>
+			<div id = "comment-7158" class = "comment">
+				<p>Euler angles are a poor choice for the internal representation of the orientation. They are simple to visualise, but very hard to manipulate correctly to avoid gimbal lock. Quaternions are better because you wouldn't run into gimbal lock, but they are hard to visualise. Matrices are somehow easier to visualise than quaternions, but not as efficient if your platform is slow. My quadcopter uses quaternions internally, but converts to Euler angles for the PIDs to use.</p>
+			</div>
+			</div>
+				<textarea id = "speech-4483" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4483">
+					<img id="start_img-4483" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4483">Comment</button>
+			<br><div id = "ans-9213"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9213" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>This paper, <a href="http://www.nt.ntnu.no/users/skoge/prost/proceedings/ecc-2013/data/papers/0927.pdf" rel="nofollow">Full Quaternion Based Attitude Control for a Quadrotor</a> by
+Emil Fresk and George Nikolakopoulos, demonstrates what you are trying to achieve.</p>
+
+<blockquote>
+  <p><em>Abstract</em>  The aim of this article is to present a novel quaternion based control scheme for the attitude control problem of a quadrotor.
+  A quaternion is a hyper complex number of rank 4 that can be utilized
+  to avoid the inherent geometrical singularity when representing rigid
+  body dynamics with Euler angles or the complexity of having coupled
+  differential equations with the Direction Cosine Matrix (DCM). In the
+  presented approach both the quadrotor s attitude model and the
+  proposed non-linear Proportional squared (<em>P<sup>2</sup></em>) control
+  algorithm have been implemented in the quaternion space, without any
+  transformations and calculations in the Euler s angle space or DCM.
+  Throughout the article, the merits of the proposed novel approach are
+  being analyzed and discussed, while the efficacy of the suggested
+  novel quaternion based controller are being evaluated by extended
+  simulation results.</p>
+</blockquote>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9213" data-toggle = "popover">
+				<p>user name : jgkim2020</p>
+				<p> user reputation : 11</p>
+				<p class = "tagcontent" id = "usertaginfo-9213">{'None': 1}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9213">Load Comments</button></br>
+			<div id = "commentsection-9213" class = 'collapse'>
+			<div id = "comment-16300" class = "comment">
+				<p>Thanks for the relevant paper @jgkim2020.  But can you elaborate on it?  Perhaps summarize the paper's findings?  (Links can go stale after all).  You may also want to check out [How to answer](http://robotics.stackexchange.com/help/how-to-answer)</p>
+			</div>
+			<div id = "comment-16302" class = "comment">
+				<p>I agree with Ben - A summary of the paper would be great, as link death usually occurs after a while.</p>
+			</div>
+			</div>
+				<textarea id = "speech-9213" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9213">
+					<img id="start_img-9213" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9213">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

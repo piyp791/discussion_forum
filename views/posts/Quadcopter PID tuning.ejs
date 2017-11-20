@@ -1,0 +1,287 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Quadcopter PID tuning
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2297" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2297" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">10</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 16517</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Quadcopter PID tuning</h2>
+<p>In continuation of the question I asked here: <a href="https://robotics.stackexchange.com/questions/2167/quadcopter-instability-with-simple-takeoff-in-autonomous-mode">Quadcopter instability with simple takeoff in autonomous mode</a>
+  ...I'd like to ask a few questions about implementing a basic PID for a quadrotor controlled by an APM 2.6 module. (I'm using a frame from 3DRobotics)</p>
+
+<p>I've stripped down the entire control system to just two PID blocks, one for controlling roll and another for controlling pitch (yaw and everything else... I'd think about them later).</p>
+
+<p>I'm testing this setup on a rig which consists of a freely rotating beam, wherein I've tied down two of the arms of the quadrotor. The other two are free to move. So, I'm actually testing one degree of freedom (roll or pitch) at a time.</p>
+
+<p>Check the image below: here A, B marks the freely rotating beam on which the setup is mounted.
+<img src="https://i.stack.imgur.com/CbgYO.png" alt="enter image description here"></p>
+
+<p>With careful tuning of P and D parameters, I've managed to attain a sustained flight of about 30 seconds. </p>
+
+<p>But by 'sustained', I simple mean a test where the drone ain't toppling over to one side. Rock steady flight is still no where in sight, and more than 30 secs of flight also looks quite difficult. It wobbles from the beginning. By the time it reaches 20 - 25 seconds, it starts tilting to one side. Within 30 secs, it has tilted to one side by an unacceptable margin. Soon enough, I find it resting upside down </p>
+
+<p>As for the PID code itself, I'm calculating the proportional error from a 'complimentary filter' of gyro + accelerometer data. The integral term is set to zero. The P term comes to about 0.39 and the D term is at 0.0012. (I'm not using the Arduino PID library on purpose, just want to get one of my own PIDs implemented here.)</p>
+
+<p>Check this video, if you want to see how it works.</p>
+
+<p><a href="http://www.youtube.com/watch?v=LpsNBL8ydBA&amp;feature=youtu.be" rel="nofollow noreferrer">http://www.youtube.com/watch?v=LpsNBL8ydBA&amp;feature=youtu.be</a>
+[Yeh, the setup is pretty ancient! I agree. :)]</p>
+
+<p>Please let me know what could I possibly do to improve stability at this stage.</p>
+
+<p>@Ian: Of the many tests I did with my setup, I did plot graphs for some of the tests using the reading from the serial monitor. Here is a sample reading of Roll vs 'Motor1 &amp; Motor2 - PWM input' (the two motors controlling the roll):</p>
+
+<p><img src="https://i.stack.imgur.com/rnyIi.png" alt="Roll vs Motor PWM input"></p>
+
+<p>As for the input/output:</p>
+
+<p><strong>Input:</strong> Roll and pitch values (in degrees), as obtained by a combination of accelerometer + gyro</p>
+
+<p><strong>Output:</strong> PWM values for the motors, delivered using the Servo library's motor.write() function</p>
+
+<hr>
+
+<p><strong>Resolution</strong></p>
+
+<p>I resolved the problem. Here's how:</p>
+
+<ol>
+<li><p>The crux of the issue lied in the way I implemented the Arduino program. I was using the write() function to update the servo angles, which happens to accept only integer steps in the argument (or somehow responds only to integer input, 100 and 100.2 produces the same result). I changed it to writeMicroseconds() and that made the copter considerably steadier.</p></li>
+<li><p>I was adding up RPM on one motor while keeping the other at a steady value. I changed this to increase RPM in one motor while decreasing the opposing motor. That kinda keeps the total horizontal thrust unchanged, which might help me when I'm trying to get vertical altitude hold on this thing.</p></li>
+<li><p>I was pushing up the RPM to the max limit, which is why the quadcopter kept losing control at full throttle. There was no room for the RPM to increase when it sensed a tilt.</p></li>
+<li><p>I observed that one of the motor was inherently weaker than the other one, I do not know why. I hardcoded an offset into that motors PWM input.</p></li>
+</ol>
+
+<p>Thanks for all the support.</p>
+
+<hr>
+
+<p><strong>Source Code:</strong></p>
+
+<p>If you're interested, here's the source code of my bare-bones PID implementation: <a href="https://github.com/agnivsen/NoobCopter" rel="nofollow noreferrer">PID Source Code</a></p>
+
+<p>Please feel free to test it in your hardware. Any contributions to the project would be welcome.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2297" data-toggle = "popover">
+				<p>user name : metsburg</p>
+				<p> user reputation : 269</p>
+				<p class = "tagcontent" id = "usertaginfo-2297">{'quadcopter': 15, 'None': 8, 'ardupilot': 6, 'accelerometer': 1, 'arduino': 13, 'ekf': 0, 'pid': 12, 'stability': 10, 'slam': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2297">Load Comments</button></br>
+			<div id = "commentsection-2297" class = 'collapse'>
+			<div id = "comment-4502" class = "comment">
+				<p>What is the input and what is the output of the loop?</p>
+			</div>
+			<div id = "comment-4506" class = "comment">
+				<p>@GuySirton: Updated my question</p>
+			</div>
+			<div id = "comment-4525" class = "comment">
+				<p>What are those flat sections in your motor commands? Looks like something is saturating.  You roll changes like a continuous function but your commands look very abrupt.  Also why are both motor PWM commands drifting up while your roll input stays in what looks like the same range?  What is the approx timescale by the way?</p>
+			</div>
+			<div id = "comment-4526" class = "comment">
+				<p>The reason you're losing control after 30 seconds is probably related to both your commands drifting up.  I think you are trying to control the difference between the commands but you can't allow those to keep drifting up.</p>
+			</div>
+			<div id = "comment-4528" class = "comment">
+				<p>@GuySirton: They're not drifting up, I'm incrementing it upwards from zero, so that it reaches a particular steady state within 3/4 secs. However, I think you're right when you say "reason you're losing control after 30 seconds is probably related to both your commands drifting up". If I don't use this gradual increment, if I fix my PWM input at a certain level (lower than the max input shown above), the problem of losing control after 30secs goes away.</p>
+			</div>
+			<div id = "comment-4529" class = "comment">
+				<p>up==increment.  What you really want to control is the difference in thrust between the two motors, right?  Also try reducing your gain a little (half it) and see if the oscillations diminish.</p>
+			</div>
+			<div id = "comment-14197" class = "comment">
+				<p>can you share fixed code(Resolution)?</p>
+			</div>
+			<div id = "comment-14999" class = "comment">
+				<p>@acs: when I last checked, the code in GitHub was working, but with a slight wobble. https://github.com/agnivsen/NoobCopter you may test it out, but be cautious... quadrotors can be nigh uncontrollable with a rogue firmware.</p>
+			</div>
+			</div>
+				<textarea id = "speech-2297" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2297">
+					<img id="start_img-2297" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2297">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-2302"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2302" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I'd start by reading over this question: <a href="https://robotics.stackexchange.com/q/167/350">What are good strategies for tuning PID loops?</a></p>
+
+<p>If I had to guess, I'd say you have a problem in the way your complimentary filter is constructed.  With the quadcopter motors off, you should tilt the frame back and forth and see if the roll / pitch values that are reported are actually accurate.  </p>
+
+<p>To me, it looks like there is a delay between the input from the accelerometer and the output of your filter -- the oscillation could be explained by late reactions to the input data.  The eventual turning over looks like a possible integration error that accumulates over time -- in other words, while your quadcopter is on its side it actually thinks it's hovering levelly.</p>
+
+<p>(Update) Regarding your graph, the fact that your motor speeds continue to increase (instead of staying balanced) means you have an error somewhere.  Perhaps your Integral term is growing unbounded, and you should specify a reasonable maximum for it.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2302" data-toggle = "popover">
+				<p>user name : Ian</p>
+				<p> user reputation : 9640</p>
+				<p class = "tagcontent" id = "usertaginfo-2302">{'planning': 10, 'None': 809, 'power': 1, 'algorithm': 10, 'battery': 1, 'slam': 7, 'coverage': 10, 'mobile-robot': 9, 'sensors': 9}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2302">Load Comments</button></br>
+			<div id = "commentsection-2302" class = 'collapse'>
+			<div id = "comment-4505" class = "comment">
+				<p>I updated my question with the roll values, when tilting back and forth. I solved the eventual turning over by lowering my max PWM input. It seems like the correction values do not work at very high RPM. I can easily turn the rig with my hand when working at high RPM. At lower RPM, I feel considerable resistance and the quadcopter seems to oscillate back to its original position (which is good, I guess). So, 'turning over' problem is probably solved by lowering the RPM (don't know if the drone will take off at all or not, hope it does). Oscillation problem still remains.</p>
+			</div>
+			<div id = "comment-4508" class = "comment">
+				<p>If I'm reading this graph correctly, your roll sensor thinks that it starts at $-3^{\circ}$, oscillates, and ends up around $-5^{\circ}$.  But in the video, the quadcopter is on its side at $\pm90^{\circ}$.  Where does this discrepancy come from?</p>
+			</div>
+			<div id = "comment-4517" class = "comment">
+				<p>Well, the graph isn't exactly for the test shown in the video. As mentioned above, the graph is from one of the many tests I did with this setup and I do not recall exactly how this particular case looked like. The graph is just to give you an idea how the input vs output response behaves, and I also wanted to establish that there ain't much of a lag between input and output (given that the loop is running at 150+ Hz). Matching the video with the graph may not make much sense. I do not have the exact data set for the test in the video.</p>
+			</div>
+			<div id = "comment-4521" class = "comment">
+				<p>I realized the graph is kinda misleading, sorry for that. I'll try and update the graph with a more accurate one. Actually, since I was plotting data from the serial port, when I created this graph, the Arduino board was tethered with the laptop. After a certain bit of oscillation, I had to intervene and slow down the oscillation manually. That's why you see it settling down at - 5 deg, while in reality its around 90 deg. I'll try to update a more accurate graph later.</p>
+			</div>
+			<div id = "comment-4535" class = "comment">
+				<p>One other thing I see from the graph is that your combined thrust is *always* increasing.  That seems wrong.</p>
+			</div>
+			</div>
+				<textarea id = "speech-2302" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2302">
+					<img id="start_img-2302" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2302">Comment</button>
+			<br><div id = "ans-2313"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2313" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Well there could be a number of things going on here...</p>
+
+<p>1) Are your reported angles correct? noisy? You can easily check that by manually tilting your quad and monitoring the values coming out.</p>
+
+<p>2) your own PID implementation has a bug. You could use the trusted implementation out there to check your code.</p>
+
+<p>3) Props, motors mounted the wrong way round.</p>
+
+<p>4) ...</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2313" data-toggle = "popover">
+				<p>user name : dm76</p>
+				<p> user reputation : 245</p>
+				<p class = "tagcontent" id = "usertaginfo-2313">{'None': 10}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2313">Load Comments</button></br>
+			<div id = "commentsection-2313" class = 'collapse'>
+			<div id = "comment-4515" class = "comment">
+				<p>1) I've tilted and checked the reported angles, almost correct, but definitely noisy. 2) very likely... in fact, I think that summarizes it entirely :P 3) not very likely, two clockwise, two anti-clockwise... I've checked the props multiple times + I guess this type of error would have resulted in wild errors, way beyond control. 4) ....</p>
+			</div>
+			<div id = "comment-4516" class = "comment">
+				<p>4)... a wrong PID tuning can makes things worst than if you didn't have a PID at all!</p>
+			</div>
+			<div id = "comment-4518" class = "comment">
+				<p>Yeh, I see that now. I'll get working on it tomorrow. My first plan is to use the trusted PID library and second is to change the output of the PID from PWM signals to roll.pitch correction.</p>
+			</div>
+			</div>
+				<textarea id = "speech-2313" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2313">
+					<img id="start_img-2313" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2313">Comment</button>
+			<br><div id = "ans-2316"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2316" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">6</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><ol>
+<li>It looks like your proportional gain is too high.</li>
+<li>You seem to be constantly increasing RPM on one motor while locking in the other one to make the system rotate.  This isn't a good control strategy as eventually those are going to both saturate and you will lose control.  Also as time increases your ability to command the system decreases.  So you need a better model of the system.</li>
+<li>If you deal with #1, and #2 you'll have a more stable system but you may not be happy with the control bandwidth.  To deal with that you need to make your system stiffer which includes getting rid of any lag on the sensor side of things and on the control side of things.</li>
+</ol>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2316" data-toggle = "popover">
+				<p>user name : Guy Sirton</p>
+				<p> user reputation : 970</p>
+				<p class = "tagcontent" id = "usertaginfo-2316">{'None': 75}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2316" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2316" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2316">
+					<img id="start_img-2316" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2316">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

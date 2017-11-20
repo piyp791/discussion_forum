@@ -1,0 +1,240 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to convert PID outputs to appropriate motor speeds for a quad copter
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-4721" class = "post">
+			<h2>Question</h2>
+			<div id="vote-4721" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 3454</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to convert PID outputs to appropriate motor speeds for a quad copter</h2>
+<p>I am building an autonomous robot using PID control algorithm. So, far I have implemented PID using online resources/references. I am testing for stabilizing an axis of the quad copter. However, I am not successful to stabilize even one axis.
+Description: My input for the PID is an angle value i.e the orientation of the quad copter measured by AHRS (a Gyroscope that measures angles) and the motors take integer values as speeds. What I am doing is,</p>
+
+<pre><code>motor_right_speed = base_speed + adjusted_value;
+motor_left_speed = base_speed - adjusted_value;
+adjusted_value += PID_output;
+</code></pre>
+
+<p>Where ajusted_value is a buffer that accumulates or subtracts the PID output value based on either PID output is +ve or -ve.</p>
+
+<p>I also tried,</p>
+
+<pre><code>motor_right_speed = base_speed + PID_output;
+motor_left_speed = base_speed - PID_output;
+</code></pre>
+
+<p>Both don't seem to be working.</p>
+
+<p>I have tested using a wide range of P gain values (from very small to very large), but the quad copter only oscillates; it does not self-correct. Your help with suggestions would be greatly appreciated. Thanks!</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4721" data-toggle = "popover">
+				<p>user name : Ptrung</p>
+				<p> user reputation : 11</p>
+				<p class = "tagcontent" id = "usertaginfo-4721">{'quadcopter': 2, 'None': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-4721">Load Comments</button></br>
+			<div id = "commentsection-4721" class = 'collapse'>
+			<div id = "comment-7395" class = "comment">
+				<p>Can you describe more about how it's not working?  What is the behavior that you're seeing?</p>
+			</div>
+			</div>
+				<textarea id = "speech-4721" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4721">
+					<img id="start_img-4721" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4721">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-4728"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4728" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I have been there before :) First double check that everything else is working. My IMU was not working in flight at first, but I didn't realise it because I only ever had tested it with the motors off. The vibrations made my algorithm go crazy. The sensors built-in low-pass filter helped.</p>
+
+<p>Next a gyro measures angular rates, not angles. So you can know the speed at which you are turning around an axis, but not the angle itself. You could integrate the angular rate and get the angle, but the gyro drift would soon send you back down on the ground. In order to achieve angular stabilisation you need an accelerometer. And if you needed to maintain a precise heading you would need a magnetometer.</p>
+
+<p>This said with just a gyro you can stabilise the angular rate in what some call the "manual" mode. Piloting in this mode requires skills but it's not impossible to learn. For this the input of the PID is an angular rate, and the output is a difference to apply between opposed motors (based on your pseudo-code I'm assuming you have a + configuration, X is is not much more complicated).</p>
+
+<p>The correct formula to stabilise the roll rate only is the second one you used: <strong>motor_right_speed = base_speed + PID_output; motor_left_speed = base_speed - PID_output;</strong> You want to be careful about making sure the output remains within the motors bounds. My experience is that PD controllers work the best for roll/pitch stabilisation (leave the I term null). Start at 0 for all the constants, raise P until the quad oscillates slightly, then increase D until the oscillations from P dampen. Repeat until D cannot compensate the oscillations and use the last stable pair of constants. In order for this to work you have to use a test rig. If you try to stabilise only 1 anglular rate in flight you will crash.</p>
+
+<p>I would recommend not assuming the problem is with the PID: based on what you said it's not unlikely the issue is somewhere else. In any case try to isolate the different units of your program and test them independently. It's much harder to debug a whole system than its separate components. Good luck, you'll be happy when it works!</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4728" data-toggle = "popover">
+				<p>user name : marcv81</p>
+				<p> user reputation : 408</p>
+				<p class = "tagcontent" id = "usertaginfo-4728">{'None': 22, 'pid': 4}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-4728">Load Comments</button></br>
+			<div id = "commentsection-4728" class = 'collapse'>
+			<div id = "comment-7516" class = "comment">
+				<p>Thanks marcv81 for your answer. I am able to tune individual axis with only P, and D gains. But it seems like the axis does not know to turn back to original position if I tilt it. I believe it is because there is no I gain set yet. When I try to set I gain, even a very small value of I gain makes the axis tilt at a high angle and does not respond back, something weired! How would I tune I gain value ?</p>
+			</div>
+			<div id = "comment-7517" class = "comment">
+				<p>@Ptrung: Are you using an accelerometer? You need an accelerometer to stabilise the angle rather than just the angular rate. If you do have an accelerometer I suggest you cascade 2 PIDs: one for the angular rate and the other for the angle. I never got my quadcopter to stabilise well enough with just 1 PID per axis.</p>
+			</div>
+			<div id = "comment-7521" class = "comment">
+				<p>I am using an AHRS device (stands for Altitude Heading Reference System) and it only gives an angle value not an angular rate. How much is I gain important for flying a quad copter? Also, what is the best way to tune two axis of the quad copter together ?</p>
+			</div>
+			<div id = "comment-7524" class = "comment">
+				<p>@Ptrung: there are many different IMUs/AHRSs available. Which one are you using? As I said in my previous comment trying to stabilise an axis using just the angle is much harder than with 2 cascaded PIDs. But for this you would need the angular rate. You might have to use a different IMU/AHRS. I only ever stabilised an axis with a single PID for about 5 seconds and after a lot of efforts, so I can't really comment about the importance of I. With cascaded PIDs it worked much more easily, and remains more or less stable with a range of PID settings.</p>
+			</div>
+			</div>
+				<textarea id = "speech-4728" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4728">
+					<img id="start_img-4728" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4728">Comment</button>
+			<br><div id = "ans-5005"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-5005" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I would recommend to double check the algorithm and make sure that is able to output negative values. You should post your pid code.</p>
+
+<p>The approach you are using is a simple and quite effective control strategy in which the knowledge of the model is not required to get the job done. By 'knowledge of the model' I mean the system of equations that describes the dynamics of your quadcopter in space. You just need the reference value, the filtered measurement (the estimated angle) and three coefficients. </p>
+
+<p>In your project you want your <strong>roll and yaw angle</strong> <strong>to be 0</strong>, at least in hovering mode right. Let's consider as a measured variable y(t), the roll angle theta(t) at time t (the pitch angle phi will be another one). So y(t) = theta(t).</p>
+
+<ul>
+<li>First of all, <strong>make sure that your estimated angles are accurate</strong>.</li>
+</ul>
+
+<p>Then define the control error as the difference between the desired position, y_des = 0, and the actual measurement at time t, y(t). </p>
+
+<p>e(t) = y_des - y(t)</p>
+
+<p>In order to understand the effect of each coefficient, (Kp,Kd and Ki) we need to look at the control formula. </p>
+
+<p><img src="https://i.stack.imgur.com/ereLM.jpg" alt="enter image description here"></p>
+
+<p>The control input u(t) is the sum of three different terms:</p>
+
+<ul>
+<li><p>The proportional term is described by the <strong>Kp gain</strong> which tells the control how <strong>intense should the response be compared to the error</strong>. What does it mean? If at time t, the quad is 3 degree away from your setpoint (e(t)=3) then apply a torque Kp times that value to get it back the correct position. If the value is to high you will pass your set point and you will notice oscillations around the 0 value. The steady state error will decrease with increasing gain, but the tendency towards oscillation will also increase. You can't get good results only with this term.  </p></li>
+<li><p>The derivative term is characterized by the <strong>Kd gain</strong>. In the formula, this coefficient is multiplied by the derivative of the error. In other words, this gain tells the controller how fast should it react to <strong>changes in error's values</strong>. If you are going away from your set point,  the error's derivative will be different than zero and positive (or negative) so apply a torque proportionally to this value. The derivative action will not help if the sample time is too large.</p></li>
+<li><p>The integral term is described by the <strong>Ki gain</strong>. This coefficient <strong>weights the contribution of how long does the quadcopter remains in a state of error</strong>. If you are testing the control only on one axis and you are using a too low Proportional gain, Kp, you will notice that the quad won't be able to reach the 0 degree reference value and will be "stuck" at a certain angle. Adding Ki != 0 will help by providing an extra torque value after an interval of time. The Ki gain will determine this extra torque value.</p></li>
+</ul>
+
+<p>Here is example using arduino. <strong>(This is a basic code and what's above is pub version of the explanation)</strong></p>
+
+<pre><code>  // Roll PID
+  errorRoll = abs(SetpointRoll - estimatedKalmanRoll); //distance away from setpoint
+  if(errorRoll&lt;thresholdRoll)
+  {  
+    //we're close to setpoint, use conservative tuning parameters
+    myRollPID.SetTunings(consKpRoll, consKiRoll, consKdRoll);
+  }
+  else
+  {
+     //we're far from setpoint, use other parameters
+     myRollPID.SetTunings(aggKpRoll, aggKiRoll, aggKdRoll);
+  }
+
+  myRollPID.Compute(); // This computes rollpid   
+</code></pre>
+
+<p>Same thing for pitch, yaw and altitude</p>
+
+<pre><code>  // computes motor IN based on roll, pitch, yaw Pid OUT and throttle value
+  motorA = thr + rollpid - yawpid;
+  motorB = thr + pitchpid + yawpid;
+  motorC = thr - rollpid - yawpid;
+  motorD = thr - pitchpid + yawpid
+</code></pre>
+
+<p>Check <a href="https://robotics.stackexchange.com/questions/2964/quadcopter-pid-output?rq=1">this</a> answer as well. </p>
+
+<p>Hope this helps,
+Ciao.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-5005" data-toggle = "popover">
+				<p>user name : UserK</p>
+				<p> user reputation : 199</p>
+				<p class = "tagcontent" id = "usertaginfo-5005">{'quadcopter': 6, 'None': 3, 'motor': 1, 'accelerometer': 2, 'filter': 6, 'imu': 2, 'matlab': 2, 'kalman-filter': 2, 'sensors': 2, 'gyroscope': 6, 'quadrature-encoder': 1}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-5005" class = 'collapse'>
+			</div>
+				<textarea id = "speech-5005" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-5005">
+					<img id="start_img-5005" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-5005">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

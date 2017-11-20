@@ -1,0 +1,182 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Backstepping Integrator: changing the virtual control
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-4986" class = "post">
+			<h2>Question</h2>
+			<div id="vote-4986" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 166</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Backstepping Integrator: changing the virtual control</h2>
+<p>given the following differential equation 2 ODE in the following form:</p>
+
+<p>$\ddot{z}=-g + ( cos(\phi) cos(\theta))U_{1}/m $</p>
+
+<p>found in many papers (<a href="http://e-collection.library.ethz.ch/eserv/eth:7848/eth-7848-01.pdf" rel="nofollow">example</a>) and describing the dynamic model of a quadrotor (in this case I'm interested as an example only for the vertical axis $Z$) , I get the movement about $Z$ after integrating the variable $\ddot{z}$ two times. As control input I can control $U_{1}$, which represents the sum of all forces of the rotors.</p>
+
+<p>A Backstepping Integrator (as in many of papers already implemented) defines a tracking error for the <em>height</em> $e_{z} = z_{desired} - z_{real}$ and for the <em>velocity</em> $\dot{e}_{z} = \dot{z}_{desired} - \dot{z}_{real}$ to build virtual controls.</p>
+
+<p>Through the virtual controls one can <em>find</em> the needed valueof $U_{1}$ to drive the quadrotor to the desired height (see the solution later on)</p>
+
+<p>But wait...as said above I need to track both: <em>position error</em> and <em>velocity error</em>.</p>
+
+<p>Now I asked myself, how can I transform such equation and the corresponding virtual controls to track only the velocity??</p>
+
+<p>In my code I need to develop an interface to another package which accepts only velocity inputs and not position information.
+I should be able to drive my quadrotor to the desired position using only velocity informations, tracking the error for the z displacement it not allowed.</p>
+
+<p>The solution for the more general case looks like:</p>
+
+<p>$U_{1}=(m/(cos(\phi)cos(\theta))*(e_{z} + \ddot{z}_{desired} + \alpha_{1}^{2}\dot{e}_{z} - \alpha_{1}^{2}e_{z} + g + \alpha_{2}\dot{e}_{z})$</p>
+
+<p>for  $\alpha_{1}, \alpha_{2} &gt; 0$</p>
+
+<p>I could simply put brutal the $\alpha_{1} = 0$ for not tracking the position on Z but I think that is not the correct way.</p>
+
+<p>Maybe could you please point me in the right direction?</p>
+
+<p>Regards</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4986" data-toggle = "popover">
+				<p>user name : Dave</p>
+				<p> user reputation : 294</p>
+				<p class = "tagcontent" id = "usertaginfo-4986">{'control': 10, 'quadcopter': 11, 'None': 6, 'pid': 13, 'uav': 3, 'matlab': 0, 'mobile-robot': 0, 'ros': 2, 'movement': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-4986">Load Comments</button></br>
+			<div id = "commentsection-4986" class = 'collapse'>
+			<div id = "comment-13396" class = "comment">
+				<p>Are you saying you want to control the $z$ position but you only have feedback regarding the velocity $\dot{z}$? Does that mean you are assuming some initial condition and estimating your position based on integration of the velocity?</p>
+			</div>
+			<div id = "comment-13847" class = "comment">
+				<p>@BrianLynch, I think he's looking for velocity control to overcome the limitation of the joystick's workspace. This is the recommended way to allow the quadrotor to fly over  long distances.</p>
+			</div>
+			</div>
+				<textarea id = "speech-4986" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4986">
+					<img id="start_img-4986" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4986">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8338"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8338" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><blockquote>
+  <p>Now I asked myself, how can I transform such equation and the
+  corresponding virtual controls to track only the velocity??</p>
+</blockquote>
+
+<p>Actually deriving the tracking error of the velocity is much simpler than its position counterpart. In the same manner of deriving the position, you could derive the velocity. Start from the velocity and ignore the position which means you only need one Lyapunov function. <strong>Note</strong> with the position, you need two  Lyapunov functions.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8338" data-toggle = "popover">
+				<p>user name : CroCo</p>
+				<p> user reputation : 1040</p>
+				<p class = "tagcontent" id = "usertaginfo-8338">{'control': 18, 'pid': 4, 'slam': 16, 'manipulator': 3, 'mobile-robot': 14, 'dynamics': 6, 'errors': 2, 'data-association': 1, 'kinematics': 3, 'matlab': 6, 'kalman-filter': 21, 'motion-planning': 3, 'None': 41, 'noise': 24, 'theory': 1, 'localization': 14, 'microcontroller': 5, 'mapping': 5, 'sensor-error': 1, 'sensors': 7, 'quadcopter': 8, 'ekf': 26, 'simulation': 1, 'motion': 3}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8338" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8338" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8338">
+					<img id="start_img-8338" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8338">Comment</button>
+			<br><div id = "ans-8548"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8548" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Proces of integration is associated with error accumulation even with more advanced algorythms like <a href="https://en.wikipedia.org/wiki/Runge%E2%80%93Kutta_methods" rel="nofollow">RK4</a>. You need another sensor to avoid that and use sensor fusion algorytm (complementary filter or Kalman Filter) to merge the data. You can use sonar to detact distance to the groudn or barometer and differentiatite it to get velocity.</p>
+
+<p>When you get that use regulator to control it's velocity, diference in velocity bacame your error.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8548" data-toggle = "popover">
+				<p>user name : unitatem</p>
+				<p> user reputation : 18</p>
+				<p class = "tagcontent" id = "usertaginfo-8548">{'control': 1, 'None': 1, 'imu': 1, 'gyroscope': 1, 'accelerometer': 1}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8548" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8548" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8548">
+					<img id="start_img-8548" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8548">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

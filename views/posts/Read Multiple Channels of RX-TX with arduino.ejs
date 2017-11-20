@@ -1,0 +1,311 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Read Multiple Channels of RX-TX with arduino
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-1207" class = "post">
+			<h2>Question</h2>
+			<div id="vote-1207" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 5341</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Read Multiple Channels of RX-TX with arduino</h2>
+<p>I have a 9 channel RF RX/TX and want to connect 3 motors to it.  I am able to connect channel 1 with motor 1 but unable to connect channel 2 with motor 2 simultaneously with arduino.</p>
+
+<p>Here is the code I am currently using:</p>
+
+<pre><code>int motor1Left = 7;// defines pin 5 as connected to the motor
+int motor1Right= 9;// defines pin 6 as connected to the motor
+int motor2Left = 22;// defines pin 7 as connected to the motor
+int motor2Right = 26;// defines pin 8 as connected to the motor
+int enable = 5;
+int enable2 = 10;
+int channel1 = 2; // defines the channels that are connected
+int channel2 = 3;// to pins 9 and 10 of arduino respectively
+
+int Channel1 ; // Used later to 
+int Channel2 ; // store values
+
+void  setup ()
+{
+  pinMode (motor1Left, OUTPUT);// initialises the motor pins
+  pinMode (motor1Right, OUTPUT);
+  pinMode (motor2Left, OUTPUT);
+  pinMode (motor2Right, OUTPUT);// as outputs
+  pinMode (channel1, INPUT);// initialises the channels
+  pinMode (channel2, INPUT);// as inputs
+
+  Serial.begin (9600); // Sets the baud rate to 9600 bps
+}
+
+void  loop ()
+{
+  Channel1 = (pulseIn (channel1, HIGH)); // Checks the value of channel1
+  Serial.println (Channel1); //Prints the channels value on the serial monitor
+  delay(1000);
+
+  Channel2 = (pulseIn (channel2, HIGH)); // Checks the value of channel1
+  Serial.println (Channel2); //Prints the channels value value on the serial monitor
+  delay(1000);
+
+  if (Channel1 &gt; 1470 &amp;&amp; Channel1 &lt; 1500) /*These are the values that I got from my transmitter, which you may customize according to your transmitter values */
+  {
+    digitalWrite (motor1Left, LOW); // Sets both the
+    digitalWrite (motor1Right, LOW);// motors to low
+    analogWrite(enable, 100);  
+  }
+
+  if (Channel1 &lt; 1460) // Checks if Channel1 is lesser than 1300
+  {
+    digitalWrite (motor1Left, HIGH);// Turns the left
+    digitalWrite (motor1Right, LOW); // motor forward
+    analogWrite(enable, 100);
+  }
+
+  if (Channel1 &gt; 1510) // Checks if Channel1 is greater than 1500
+  {
+    digitalWrite (motor1Left, LOW);// Turns the right
+
+    digitalWrite (motor1Right, HIGH);// motor forward
+    analogWrite(enable, 70);
+  }
+
+  if (Channel2 &gt; 1480 &amp;&amp; Channel1 &lt; 1500 )
+  {
+    digitalWrite (motor2Left, LOW);// Sets both the
+    digitalWrite (motor2Right, LOW);// motors to low
+    analogWrite (enable2, 100);
+  }
+
+  if (Channel2 &lt; 1300) // Checks if Channel2 is lesser than 1300
+  {
+    digitalWrite (motor2Left, LOW);// Turns the left
+    digitalWrite (motor2Right, HIGH);// motor backward
+    analogWrite (enable2, 100);
+  }
+
+  if (Channel2 &gt; 1500) // Checks if Channel2 is greater than 1500
+  {
+    digitalWrite (motor2Left, HIGH);// Turns the right
+    digitalWrite (motor2Right, LOW);// motor backward
+    analogWrite (enable2, 100);
+  }
+}
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1207" data-toggle = "popover">
+				<p>user name : user2298012</p>
+				<p> user reputation : 11</p>
+				<p class = "tagcontent" id = "usertaginfo-1207">{'None': 0, 'arduino': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1207">Load Comments</button></br>
+			<div id = "commentsection-1207" class = 'collapse'>
+			<div id = "comment-2731" class = "comment">
+				<p>It looks like you have 4 motors (motor1 and motor2, each having a left and right) and 2 "enable" pins.  Can you describe what a channel input is supposed to do to a motor?  What is the layout of the motors?</p>
+			</div>
+			<div id = "comment-2738" class = "comment">
+				<p>It looks like you have introduced a delay of a second between channel1 and channel2. How would you expect it to simultaneously work then?</p>
+			</div>
+			<div id = "comment-2743" class = "comment">
+				<p>Could you provide some sort of block diagram as to what you are trying to connect to what? What version of Arduino are you using? Also, what is the model (you could provide a link) to the RF transmitter you are using? When you say "simultaneously", I would assume you mean "relatively" the same time, since the program can only actually do one thing at a time.</p>
+			</div>
+			</div>
+				<textarea id = "speech-1207" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1207">
+					<img id="start_img-1207" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1207">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-1256"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1256" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You cannot use the synchronous "pulseIn()" function to read multiple parallel inputs.
+In general, in embedded systems, you will end up writing a loop that runs as fast as possible, over and over, and does the following:</p>
+
+<p>1) read inputs
+2) calculate updates to state
+3) write outputs</p>
+
+<p>Ideally, this loop runs many thousands of times per second.</p>
+
+<p>I'm assuming from context that by "RX/TX" you mean RC-hobby-radio-control PWM pulses.
+The problem you're having is reading the width of more than one pulse at the same time.
+There are two ways to approach this:</p>
+
+<p>1) Each time through the loop, read both input pins. If a pin is high and was previously low, write the current time (in microseconds) to a variable tracking that pin. If the pin is low and was previously high, write the difference between current time, and the value in the tracking variable, to a variable tracking "last length for pin X."</p>
+
+<p>2) Install pin change interrupt handlers for the input pins. Each time one of the pins change, run the algorithm above, from within the interrupt handler. Because of possible race conditions, you need to check both pins for each pin change interrupt.</p>
+
+<p>You will note with both these approaches that precision is pretty crummy in the Arduino environment. There are a few reasons for this, including interrupts used to run the milliseconds timer, and significant overhead in the digitalRead() function as compared to reading ports directly. To get high-quality input, you may need to read ports directly (check the Atmega data sheets for how) and you may also want to poll all the way until the pulse goes low in the interrupt handler (beware that a second pin may go high while the first pin is already high.)</p>
+
+<p>This may sound complex if you're new to programming microcontrollers, but it's really the kind of thing that's done every day by those who actual work with this. This is one of several reasons why you need a fair bit of education and experience to become a seasoned developer ;-)</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1256" data-toggle = "popover">
+				<p>user name : Jon Watte</p>
+				<p> user reputation : 645</p>
+				<p class = "tagcontent" id = "usertaginfo-1256">{'None': 43, 'cooling': 7, 'servos': 7, 'heat-management': 7}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-1256" class = 'collapse'>
+			</div>
+				<textarea id = "speech-1256" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1256">
+					<img id="start_img-1256" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1256">Comment</button>
+			<br><div id = "ans-1262"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1262" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I'm assuming you have a standard 9-channel hobby RC transmitter (with the little joysticks you move with your fingers) and a corresponding 9-channel hobby RC receiver intended to go into a RC car or airplane with standard servo 3-pin headers (9 of them).
+And you have your Arduino, and a few motors you want to control with it.</p>
+
+<p>Your program has better-than-average comments, but some are still mystifying, such as:</p>
+
+<pre><code>int motor1Left = 7;// defines pin 5 as connected to the motor
+</code></pre>
+
+<p>Really?</p>
+
+<p>I would break this problem into (at least) two parts, try to get each part working independently, and then try to get everything working together.</p>
+
+<p>One way to break it up into parts is to have an array something like</p>
+
+<pre><code>int pulseWidth[9];
+</code></pre>
+
+<p>I might write one program that <em>only</em> reads pulse widths from the RC receiver and prints them out the serial port.
+Then I might extend that program to store those pulse widths into that array,
+and then print out the values in that array.
+Then I might write a completely separate program that sets each value in that array to a different constant,
+and then uses the values in that array to control the motors.
+Only after I got both programs working would I combine them into one program.</p>
+
+<p>Reading the pulse widths is definitely the trickiest part,
+but I hear that several people have gotten that to work adequately for them.</p>
+
+<p>The two basic approaches to reading pulse widths that I've seen are:</p>
+
+<ul>
+<li>(a) Get <a href="http://blog.ilektronx.com/2013/01/hacking-cheap-hobbyking-6-channel.html" rel="nofollow">all the signals on one wire</a>, sometimes called "the PPM stream" (i.e., if it uses a 4017 IC for splitting, attach the wire to the "CLK" pin 14; if it uses a 4015 IC for splitting, attach the wire to the "CLK" pin 9), and feed that one wire into a single Arduino input. Or,</li>
+<li>(b) Feed each output pin that you care about to separate input pins on the Arduino. (It may help if you use an O'scope to figure out which order the "RC receiver" pulses those pins.)</li>
+</ul>
+
+<p>Have you tried maybe running program listed at
+<a href="https://www.sparkfun.com/tutorials/348" rel="nofollow">"RC Hobby Controllers and Arduino"</a>
+without any changes at all?
+Does that much work on your hardware?</p>
+
+<p>Other people connecting a hobby RC receiver to an Arduino include (in no particular order):</p>
+
+<ul>
+<li><a href="http://arduino.cc/forum/index.php?topic=91909.0" rel="nofollow">"reading 6-channel RC receiver PWM signal"</a></li>
+<li><a href="http://musingsandhobbies.blogspot.com/2009/11/arduino-vex-receiver-and-signal.html" rel="nofollow">"Arduino, Vex receiver and signal splitter"</a></li>
+<li><a href="http://arduino.cc/forum/index.php/topic,20286.0.html" rel="nofollow">"Arduino: Read PWM Signal from a RC-Receiver"</a> </li>
+<li><a href="http://arduino.cc/forum/index.php/topic,42462.0.html" rel="nofollow">"Arduiono: 3 axis auto stabilized platform"</a></li>
+<li><a href="http://autosysprogs.blogspot.com/2011/04/arduino-and-txrx-system.html" rel="nofollow">"Arduino and Tx/Rx system"</a></li>
+<li><a href="http://www.rcgroups.com/forums/showthread.php?t=1227935" rel="nofollow">"Arduino Receiver"</a></li>
+<li><a href="http://rcarduino.blogspot.com/2012/04/how-to-read-multiple-rc-channels-draft.html" rel="nofollow">"RCArduino: How To Read Multiple RC Channels"</a></li>
+<li><a href="http://rcarduino.blogspot.com/2012/11/how-to-read-rc-receiver-ppm-stream.html" rel="nofollow">"How To Read RC Receiver PPM Stream"</a></li>
+<li><a href="http://arduino.cc/forum/index.php/topic,7167.0.html" rel="nofollow">"Arduino: Read PPM signals from RC receiver or Control"</a></li>
+<li><a href="http://playground.arduino.cc/Code/ReadReceiver" rel="nofollow">"Arduino: Read Receiver"</a></li>
+<li><a href="http://diydrones.com/profiles/blogs/705844%3aBlogPost:38393" rel="nofollow">"How to hack the PPM signal from any receiver (Futaba) with Arduino"</a></li>
+<li><a href="http://www.elenafrancesco.org/old/arduino/ppmmixer/" rel="nofollow">"PPMMixer: Arduino Radio R/C PPM Mixer Programmable"</a></li>
+<li><a href="http://www.rcgroups.com/forums/showthread.php?t=1808432" rel="nofollow">"Arduino ppm signal reader and generator"</a></li>
+<li><a href="https://github.com/kiuz/PPM-Signal-Reader-ARDUINO" rel="nofollow">"Arduino PPM signal reader/decoder Library"</a></li>
+</ul>
+
+<p>P.S.: often you get <a href="http://www.chiark.greenend.org.uk/~sgtatham/bugs.html" rel="nofollow">better answers</a> to problems like this if you write all three parts: (1) what you want to happen, (2) the complete program listing, and (3) what actually happens when you run the program&nbsp;  "Motor 2 never moves, no matter how I move the control stick", or "Motor 2 always moves exactly like motor 1 moves", or whatever it is you actually observe.</p>
+
+<p>You did great with part (2), but without (1) and (3) it's difficult for anyone to help you.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1262" data-toggle = "popover">
+				<p>user name : David Cary</p>
+				<p> user reputation : 3365</p>
+				<p class = "tagcontent" id = "usertaginfo-1262">{'quadcopter': 38, 'stepper-driver': 9, 'None': 256, 'multi-rotor': 2, 'force-sensor': 9, 'stability': 36, 'industrial-robot': 1, 'design': 18, 'motor': 2, 'stepper-motor': 9}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-1262" class = 'collapse'>
+			</div>
+				<textarea id = "speech-1262" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1262">
+					<img id="start_img-1262" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1262">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

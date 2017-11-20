@@ -1,0 +1,302 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>With a 6-axis robot, given end-effector position and range of orientations, how to find optimal joint values
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-344" class = "post">
+			<h2>Question</h2>
+			<div id="vote-344" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">9</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 1542</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>With a 6-axis robot, given end-effector position and range of orientations, how to find optimal joint values</h2>
+<p>Given a six-axis articulated robot arm holding a tool at its end-effector,  if I have a desired tool position and tool orientation,  there will be exactly 1 solution to the inverse kinematics equation for the robot to reach that position.<br>
+(or rather up to 16 different solutions, depending on range of the joints)</p>
+
+<p><img src="https://i.stack.imgur.com/CkYqu.gif" alt="http://en.wikipedia.org/wiki/Robotic_arm"></p>
+
+<p>But if the robot is holding something like a pen, and I want the robot to mark a specific point with that pen on the target, then I do not care how the pen is oriented, as long as it is perpendicular to the marked surface.</p>
+
+<p>So the inverse-kinematics equation will have infinitely many solutions.</p>
+
+<p>How can I pick among these solutions the joint configuration that is closest to the current configuration: the one that will require the least amount of movement to reach?<br>
+(or the joint configuration that is optimal according to some other similar criterion, such as that all joint angles are furthest from their maximum and minimum?)</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-344" data-toggle = "popover">
+				<p>user name : HugoRune</p>
+				<p> user reputation : 206</p>
+				<p class = "tagcontent" id = "usertaginfo-344">{'None': 0, 'inverse-kinematics': 9, 'localization': 9, 'calibration': 7, 'joint': 5, 'industrial-robot': 14, 'kinematics': 9, 'motion-planning': 14}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-344" class = 'collapse'>
+			</div>
+				<textarea id = "speech-344" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-344">
+					<img id="start_img-344" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-344">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-345"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-345" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">9</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>First, we need to define <strong>optimal</strong>. Since you do not say what you consider optimal, most people choose a quadratic expression. For example, suppose your current joint angles are given by the vector $\vec{\alpha}$. We can consider minimizing the movement required - with an error $\vec{x} = \vec{\alpha} - \vec{\alpha}_{start}$, you can define a cost function $J=\vec{x}^TQ\vec{x}$ for some matrix $Q$. We normally use a diagonal matrix, but any positive-definite matrix will do.</p>
+
+<p>In a simplified example with two joint angles, if joint $a$ had a cheaper motor (perhaps closer to end-effector), we might have a cost function of</p>
+
+<p>$J=\left[\begin{matrix}x_a\\x_b\end{matrix} \right]\left[\begin{matrix}1&amp;0\\0&amp;2\\\end{matrix} \right]\left[\begin{matrix}x_a&amp;x_b\end{matrix} \right]$, ie. movement of joint $b$ is twice as costly as joint $a$.</p>
+
+<p>Now, the kinematic equation is a matrix formula, and in Denavit-Hartenberg notation might be:</p>
+
+<p>$\prod{T_i}=\left[\begin{matrix}1&amp;0&amp;0&amp;x\\0&amp;1&amp;0&amp;y\\0&amp;0&amp;1&amp;z\\0&amp;0&amp;0&amp;1\end{matrix} \right]$, where the right hand side represents the position $(x,y,z)$ and orientation (currently set as zero rotation), given the joint angles.</p>
+
+<p>Since we do not care about the orientation, and only the position, we can truncate the first 3 columns of the last transformation matrix, and the last row of the first transformation matrix. We can equivalently express this formula as:</p>
+
+<p>$\left[\begin{matrix}1&amp;0&amp;0&amp;0\\0&amp;1&amp;0&amp;0\\0&amp;0&amp;1&amp;0\end{matrix}\right]\prod{T_i}\left[\begin{matrix}0\\0\\0\\1\end{matrix}\right]=\left[\begin{matrix}x\\y\\z\end{matrix} \right]$</p>
+
+<p>Multiplying out the left hand side, we get three equations. If the parameters were linear, it would be simple to solve. This is the case if all the actuators are linear actuators. In this case, the problem is actually a <strong><a href="http://en.wikipedia.org/wiki/Quadratic_programming">quadratic program</a></strong>. We can re-arrange the left hand side to get the equation:</p>
+
+<p>$K\vec{x}=\left[\begin{matrix}x\\y\\z\end{matrix}\right]$, for some matrix $K$.</p>
+
+<p>A quadratic program is a problem which can be expressed in the form:</p>
+
+<blockquote>
+  <p>Minimize $J=\frac{1}{2}\vec{x}^TQ\vec{x}+\vec{c}^T\vec{x}$</p>
+  
+  <p>Subject to $A\vec{x}\leq\vec{b}$, $E\vec{x}=\vec{d}$</p>
+</blockquote>
+
+<p>To solve this, there are a number of algorithms you can use, for example, interior point, active set, ... . Just find a suitable library, and it will solve it for you.</p>
+
+<p>A non-linear system of equations is more difficult to solve. This is called <strong><a href="http://en.wikipedia.org/wiki/Nonlinear_programming">non-linear programming</a></strong>, but it is what you have if you have rotating joints.</p>
+
+<p>Essentially, in place of matrix equations, you have nonlinear functions.</p>
+
+<blockquote>
+  <p>Minimize $f(x)$ subject to $\vec{h}(x) = 0$, $\vec{g}(x) \leq 0$ (re-arrange if necessary to make the RHS of the constraints zero)</p>
+</blockquote>
+
+<p>The algorithms used to solve this are even more complex, but includes Interior-point, Sequential quadratic programming (SQP), Active-set, Trust-region reflective algorithms. Obviously, the explanation of how these algorithms work is very lengthy, and I will leave it out of the scope of this answer. Suffice it to say, the amount of content on the algorithms used for just quadratic programming could be a whole course by itself.</p>
+
+<p>You should just find a library to solve the problem, it would take a long time to code up an efficient implementation, and efficient implementations can handle 100 (or more) variables at a time. For example, if you use MATLAB, then there is documentation on how to use the function <a href="http://www.mathworks.com/help/optim/ug/constrained-nonlinear-optimization-examples.html#f11071">fmincon</a> from the Optimization Toolbox.</p>
+
+<p>To solve it online, you might want C++ or other native implementation, for example, NLopt. Do note that this may not be something a microcontroller can solve quickly, and many libraries may have other dependencies which are not easy to use on a microcontroller (since they are intended for a computer).</p>
+
+<hr>
+
+<p>If you are not worried about efficiency, and just want something you can code yourself, then assuming there is a function you can call to solve the <strong>inverse kinematic problem</strong>, you can simply do a gradient descent method. For example, arbitrarily choosing a random starting orientation, solve the inverse problem, then check the cost function. Then you can use perturbation analysis to check how you should vary the orientation. For example, if you check similar orientations around your current orientation (ie. 8 points in a cubic grid), you can get a second order approximation of how the cost function varies in each direction.</p>
+
+<p>Using the second order approximation (known as a Hessian matrix since it is multivariate - 3-dimensional for orientation), you can find the zero-crossing of the gradient of the cost function (ie. the predicted local minima).</p>
+
+<p>With the new predicted orientation, just put it through the inverse solver again, and repeat until the accuracy is sufficient.</p>
+
+<p>Do note that this will probably not be as efficient, because the inverse kinematic problem itself must be iteratively solved (so you are repeatedly using a function which itself takes a while to solve). Also, the code involved may be less than a fully-fledged optimization algorithm, but it is still quite substantial, and not an insignificant investment of time.</p>
+
+<hr>
+
+<p>Using either method (formally solving as a nonlinear program or using the iteratively using a function to solve the inverse problem), the solution may not be optimal if there are multiple local minima. In this case, you can try to find the global minima by using various approaches. Even with a non-linear programming solver, you will be expected to seed it with initial values (eg. joint angles). You can repeatedly run either method with the seed generated in various ways:</p>
+
+<ul>
+<li>random restart (it is generated randomly)</li>
+<li>grid-based</li>
+</ul>
+
+<p>or other custom methods.</p>
+
+<p>However do note that if there are many minima, there is no good way to guarantee that you will find the global minima. You can only improve your chances.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-345" data-toggle = "popover">
+				<p>user name : ronalchn</p>
+				<p> user reputation : 2449</p>
+				<p class = "tagcontent" id = "usertaginfo-345">{'None': 187, 'two-wheeled': 20, 'inverse-kinematics': 15, 'interrupts': 5, 'microcontroller': 13, 'wiring': 7, 'c': 8, 'avr': 5, 'brushless-motor': 2, 'joint': 15, 'kinematics': 15, 'hall-sensor': 2, 'mobile-robot': 20, 'arm': 15}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-345" class = 'collapse'>
+			</div>
+				<textarea id = "speech-345" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-345">
+					<img id="start_img-345" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-345">Comment</button>
+			<br><div id = "ans-1825"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1825" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Since the question is about an industrial robot, we probably don't have a model of the dynamics of the robot, so I am assuming we are looking for solutions that optimize a kinematic criterion only.</p>
+
+<p>The robot has a closed-form solution for its inverse kinematics, but unluckily the end-effector has an extra rotational degree of freedom, which means that the robot has essentially 7 degrees of freedom. But because this is just one more <em>dof</em>, it is not as much of an issue as one might think.</p>
+
+<p>A common trick for such <em>almost</em> non-redundant robots is to lock the extra degrees of freedom and solve for the remaining joint values analytically. Let's say we write a closed-form IK solver for the 6 <em>dof</em> robot that returns solutions in $0.05$ ms on average. By iterating from $1$ to $360$ you can therefore find the optimal solution for a discretization of the pen angle of $1^\circ$ in about $18$ ms, which given the application is probably more than adequate.</p>
+
+<p>If most of the time the pen is only moving a little (e.g. when drawing a line), another trick to speed up the search is to make use of numerical IK, for example the pseudoinverse method:</p>
+
+<p>Let $q_1$ be the current configuration of the robot, let $J$ be its Jacobian, and let $\Delta x$ be the displacement of the target relative to the current end-effector transformation. Solve $\Delta x = J \, \Delta q$ for $\Delta q$ and compute a new configuration $q_2 = q_1 + \Delta q$. I am skipping details here, but the solution $\Delta q$ should minimize $\|\Delta q\|$ for a properly chosen metric.</p>
+
+<p>This is done for the 7 <em>dof</em> robot and again should take only fractions of a millisecond. Although $q_2$ might not be a valid configuration (the joint values can be out of bounds) and might not be an accurate IK solution (you can take more pseudoinverse steps, though), most of the time it will be a good starting point for a search using the closed-form solver.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1825" data-toggle = "popover">
+				<p>user name : antonakos</p>
+				<p> user reputation : 161</p>
+				<p class = "tagcontent" id = "usertaginfo-1825">{'None': 6}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-1825" class = 'collapse'>
+			</div>
+				<textarea id = "speech-1825" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1825">
+					<img id="start_img-1825" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1825">Comment</button>
+			<br><div id = "ans-2122"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2122" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>There is a nice closed form to this.  Let's say that we don't care what $r_z$ is (i.e. we don't care how we <em>change</em> it).</p>
+
+<p>$$
+\mathbf{J}^{-1}\dot{\mathbf{X}}=
+\dot{\mathbf{\Theta}}=
+\begin{bmatrix}
+\vec{j_{1}} &amp; \vec{j_{2}} &amp; \vec{j_{3}} &amp; \vec{j_{4}} &amp; \vec{j_{5}} &amp; \vec{j_{6}}
+\end{bmatrix}
+\begin{bmatrix}
+\dot{x}\\
+\dot{y}\\
+\dot{z}\\
+\dot{r_x}\\
+\dot{r_y}\\
+\dot{r_z}
+\end{bmatrix}
+=
+\begin{bmatrix}
+\dot{\theta_1}\\
+\dot{\theta_2}\\
+\dot{\theta_3}\\
+\dot{\theta_4}\\
+\dot{\theta_5}\\
+\dot{\theta_6}\\
+\end{bmatrix}
+$$
+Where $\vec{j_{i}}$ is the $i^{th}$ column of $\mathbf{J}^{-1}$.
+We can break up $\dot{\mathbf{\Theta}}$ into the portion that depends on $\dot{r_z}$ and the portion that doesn't.
+$$
+\dot{\mathbf{\Theta}}=
+\dot{\mathbf{\Theta}}_{\dot{x}\dots \dot{r_y}} + \dot{\mathbf{\Theta}}_{\dot{r_z}}
+\\
+\dot{\mathbf{\Theta}}_{\dot{r_z}}=
+\vec{j_{6}}
+\dot{r_z}
+$$
+So now the game has become, let's minimize 
+$$
+(\dot{\mathbf{\Theta}}_{\dot{x}\dots \dot{r_y}} + \dot{\mathbf{\Theta}}_{\dot{r_z}})^T
+D(\dot{\mathbf{\Theta}}_{\dot{x}\dots \dot{r_y}} + \dot{\mathbf{\Theta}}_{\dot{r_z}})
+$$ 
+for some diagonal matrix $D$ like ronalchn said above.  I'm going to use $A=\dot{\mathbf{\Theta}}_{\dot{x}\dots \dot{r_y}}$ and $B=\dot{\mathbf{\Theta}}_{\dot{r_z}^*}$ for easier viewing.</p>
+
+<p>We can expand this out to
+$$
+A^TDA+2B^TDA+B^TDB\\
+\text{or}\\
+A^TDA+2\dot{r_z}\vec{j_{6}}^TDA+\dot{r_z}^2\vec{j_{6}}^TD\vec{j_{6}}
+$$</p>
+
+<p>Now we have an easy equation to differentiate on $\dot{r_z}$.  We find the derivative with respect to $\dot{r_z}$ and set it to $0$.
+$$
+2\vec{j_{6}}^TDA+2\dot{r_z}\vec{j_{6}}^TD\vec{j_{6}}=0\\
+\dot{r_z} = \frac{-\vec{j_6}^TDA}{\vec{j_6}^TD\vec{j_6}}
+$$
+This minimizes the joint angle "distance" between your two poses.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2122" data-toggle = "popover">
+				<p>user name : joshkarges</p>
+				<p> user reputation : 73</p>
+				<p class = "tagcontent" id = "usertaginfo-2122">{'industrial-robot': 5, 'None': 3, 'inverse-kinematics': 5, 'robotic-arm': 5}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2122" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2122" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2122">
+					<img id="start_img-2122" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2122">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

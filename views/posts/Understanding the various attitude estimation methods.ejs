@@ -1,0 +1,261 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Understanding the various attitude estimation methods
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7137" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7137" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 360</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Understanding the various attitude estimation methods</h2>
+<p>I am building a quadcopter using the Arduino Uno with a 6dof accelerometer and gyro. I will be adding a separate 3 axis magnetometer soon for heading. I have successfully implemented the code that reads the data coming in from these sensors and prints them out. </p>
+
+<p>I have also checked for bias by averaging 100 measurements. My code calculates the pitch from the accel and pitch from the gyro respectively:</p>
+
+<p>pitchAccel = atan2((accelResult[1] - biasAccelY) / 256, (accelResult[2] - biasAccelZ) / 256)*180.0 / (PI); </p>
+
+<p>pitchGyro +=((gyroResult[0] - biasGyroX) / 14.375)*dt;</p>
+
+<p>I am then using a complementary filter to fuse the two readings together like this:</p>
+
+<p>pitchComp = (0.98*pitchGyro) + (pitchAccel*0.02);</p>
+
+<p>I am stuck on how to proceed from here. I am using the same procedure for roll, so I now have readings for pitch and roll from their respective complementary filter outputs. </p>
+
+<p>I have read a lot of articles on the DCM algorithm which relates the angles from the body reference frame to the earth reference frame. Should that be my next step here? Taking the pitch and roll readings in the body reference frame and transforming them to the earth reference frame? Repeat the entire procedure for yaw using the magnetometer? If yes, how should I go about doing the transformations? </p>
+
+<p>I understand the math behind it, but I am having a hard time understanding the actual implementation of the DCM algorithm code-wise. </p>
+
+<p>Any help is appreciated!</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7137" data-toggle = "popover">
+				<p>user name : anomaly23</p>
+				<p> user reputation : 6</p>
+				<p class = "tagcontent" id = "usertaginfo-7137">{'quadcopter': 1, 'None': 0, 'gyroscope': 1, 'accelerometer': 1, 'arduino': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7137" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7137" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7137">
+					<img id="start_img-7137" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7137">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7143"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7143" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I will shamelessly steal content from another anwser I gave:</p>
+
+<blockquote>
+  <ul>
+  <li>First determine orientation based on information from both the gyroscope and accelerometer. The accelerometer is accurate in the long term while the gyroscope is accurate in the short term, so you will need some kind of sensor fusion algorithm to determine the"true" orientation of the quad. The most popular one is the <a href="http://en.wikipedia.org/wiki/Kalman_filter" rel="nofollow">Kalman Filter</a> but many others are available to choose from.</li>
+  </ul>
+</blockquote>
+
+<p>You have already done this, I would suggest though looking into more sophisticated estimation techniques like the Kalman filter to improve performance</p>
+
+<blockquote>
+  <ul>
+  <li>The next thing you will want to do is build a simple rate controller where you try to match the rate of rotation on a certain axis to the rate commanded by the controller</li>
+  </ul>
+</blockquote>
+
+<p>This should probably be your next step</p>
+
+<blockquote>
+  <ul>
+  <li><p>after you have a rate controller you can build a simple stabilized controller, where instead of commanding the rate you command a certain angle. You take the desired angle and the current angle and based on those values calculate a desired rate to close that gap and then feed that into the rate controller.</p></li>
+  <li><p>You will probably need a RC controller and receiver set, you will need to read the PWM values from the receiver in order to take command input</p></li>
+  </ul>
+  
+  <p><a href="https://ghowen.me/build-your-own-quadcopter-autopilot/" rel="nofollow">Here</a> is my favorite resource on the matter it helped me when I was making my first flight controller from scratch.</p>
+</blockquote>
+
+<p>Good luck!</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7143" data-toggle = "popover">
+				<p>user name : Mark Omo</p>
+				<p> user reputation : 1786</p>
+				<p class = "tagcontent" id = "usertaginfo-7143">{'None': 119}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7143">Load Comments</button></br>
+			<div id = "commentsection-7143" class = 'collapse'>
+			<div id = "comment-10144" class = "comment">
+				<p>So essentially I can move on to the control part in terms of my algorithm design since I have the fused values for my orientation? I am confused because I always thought that the values would have to be transformed to an inertial frame since the IMU readings are in the UAV body frame.</p>
+			</div>
+			<div id = "comment-10145" class = "comment">
+				<p>Yep its all tightly linked, do you have a test paltform?</p>
+			</div>
+			<div id = "comment-10146" class = "comment">
+				<p>A test platform as in some sort of simulation?</p>
+			</div>
+			<div id = "comment-10147" class = "comment">
+				<p>Depends are yiu writing for a simulation now? Or some kind of HIL? Or do you have a quadrocopter? I assume you have at least an arduino and the sensor boards.</p>
+			</div>
+			<div id = "comment-10148" class = "comment">
+				<p>Yes, I do have an arduino and the IMU. I've mainly been playing around with those for now. Going back to my first comment, could you clarify the DCM algorithm part? Shouldn't IMU readings be transformed to an inertial frame?</p>
+			</div>
+			<div id = "comment-10149" class = "comment">
+				<p>Not necessarily all you need to know it the rate you are moving to implement a rate controller and you only need to know is your deviation in both the pitch and roll for a simple stabilized controller</p>
+			</div>
+			</div>
+				<textarea id = "speech-7143" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7143">
+					<img id="start_img-7143" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7143">Comment</button>
+			<br><div id = "ans-7611"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7611" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>First the answer to the main question. The readings are the pitch and roll of your sensor, at the inertial frame. As your sensor is certainly not moving in your aircraft in time, you do not have to re-convert into any other frames. The readings are the aircraft pitch-roll-yaw data.</p>
+
+<p>Coming to the Pitch computation from accelerations. I don't know if this method works for aircraft that can rapidly move. In <a href="http://www.freescale.com/files/sensors/doc/app_note/AN3461.pdf" rel="nofollow">a reference of a similar application</a> , it is explained that the accelerometer is assumed NOT TO BE UNDER LINEAR ACCELERATION. The aircraft might experience some turbulence, without pitching, and the <strong>pitch_accel</strong> calculation would calculate some pitch, which would not be real. Another short note is to use the atan2 function, to arrive at realistic angles of pitch and roll.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7611" data-toggle = "popover">
+				<p>user name : G rkan  etin</p>
+				<p> user reputation : 284</p>
+				<p class = "tagcontent" id = "usertaginfo-7611">{'None': 13}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7611" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7611" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7611">
+					<img id="start_img-7611" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7611">Comment</button>
+			<br><div id = "ans-9012"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9012" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I personally found very useful the procedure described at the following <a href="http://philstech.blogspot.ch/2015/06/complimentary-filter-example-quaternion.html" rel="nofollow">link</a>, in order to have a total 3D estimation, without suffering any gimbal lock or other problems.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9012" data-toggle = "popover">
+				<p>user name : charles</p>
+				<p> user reputation : 266</p>
+				<p class = "tagcontent" id = "usertaginfo-9012">{'None': 9, 'ekf': 3, 'frame': 3, 'slam': 3, 'imu': 4, 'kalman-filter': 3, 'mobile-robot': 4, 'gyroscope': 4}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-9012" class = 'collapse'>
+			</div>
+				<textarea id = "speech-9012" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9012">
+					<img id="start_img-9012" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9012">Comment</button>
+			<br><div id = "ans-9019"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9019" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Inertial Navigation Systems (INSs) with 9DOF IMUs allow you to extract not only pitch and roll values but also yaw and <strong>most importantly</strong> are able to do so under sustained turns, where Coriolis acceleration is not negligible.</p>
+
+<p>However, you'll have to completely overhawl your algorithm, instead of building it up incrementally.</p>
+
+<p>DCM, as you said, is a traditional method. Ardupilot was using it until recently so the code is still in the repo and its initial author has written some good background reports. Start <a href="http://diydrones.com/profiles/blogs/dcm-imu-theory-first-draft?id=705844" rel="nofollow">here</a> and follow the relative links and publications of the author.</p>
+
+<p>Another spinnoff of the Mahoney filter is the Madgwick filter which also works well and I have personally encoded it into arduino successfully, albeit for a plane. <a href="http://www.x-io.co.uk/res/doc/madgwick_internal_report.pdf" rel="nofollow">Here</a> is the relevant report. You'll find more resources online.</p>
+
+<p>Finally, Extended Kalman Filters are also making a comeback, thanks to cheaper, smaller more powerful computers. Ardupilot is using it lately as its main filter. However, EKF filters are usually tailor-made and I can't point to you to some ready-to-go code solution. I'm afraid you'll have to do a bit of searching. As a background read, <a href="http://home.wlu.edu/~levys/kalman_tutorial/" rel="nofollow">this one</a> seems fine.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9019" data-toggle = "popover">
+				<p>user name : George ZP</p>
+				<p> user reputation : 461</p>
+				<p class = "tagcontent" id = "usertaginfo-9019">{'None': 27}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-9019" class = 'collapse'>
+			</div>
+				<textarea id = "speech-9019" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9019">
+					<img id="start_img-9019" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9019">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

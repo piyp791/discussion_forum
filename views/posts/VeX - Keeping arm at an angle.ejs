@@ -1,0 +1,208 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>VeX - Keeping arm at an angle
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2489" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2489" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 741</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>VeX - Keeping arm at an angle</h2>
+<p>So my team made a Vex robot for the <a href="http://www.vexrobotics.com/wiki/Toss_Up" rel="nofollow">toss-up competition</a>, but we need the arm up during the autonomous. The problem is that it's too heavy to stay up on its own. I was going to use encoders to count what angle the arm is at. I was going to use this code, but I'm not sure if there's a better way.</p>
+
+<pre><code> while(MotorEncoder[rightMotor] &lt; 1000)
+  {
+    motor[rightMotor] = 80;
+    motor[leftMotor] = 80;
+  }
+</code></pre>
+
+<p>Would anyone recommend a better solution or is this the best way? This is untested by the way.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2489" data-toggle = "popover">
+				<p>user name : Michael Blake</p>
+				<p> user reputation : 113</p>
+				<p class = "tagcontent" id = "usertaginfo-2489">{'None': 0, 'arm': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2489" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2489" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2489">
+					<img id="start_img-2489" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2489">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-2492"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2492" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Some clarifications before i answer.  when you say "its too heavy to stay up on its own" do you mean that the arm is too heavy for the motor, or the arm doesn't stay at an angle when the motor is not powered?  also, why are you controlling two motors, and reading only one encoder?  perhaps you should provide a better description of your arm.</p>
+
+<p>that being said, i would use simple proportional control for this.  (proportional control being the "P" in what is more commonly called PID control).  what you have above is called "bang" control.</p>
+
+<p>basically, you just set up a linear relationship between encoder readings and motor current.  (actually the difference between encoder readings of where the arm is and where you want it to be).  For example:</p>
+
+<pre><code> void set_arm_to_angle(int angle)
+ {
+     int P = 200;
+     int error = angle - MotorEncoder[rightMotor];
+     motor[rightMotor] = P * error
+ }
+</code></pre>
+
+<p>you should be able to find lots of info on proportional control on the web.  but basically, if the arm is lower than where you want, positive current is applied to raise the arm.  the farther away from your desired angle, the more current.  if the arm is too high, current is reversed.</p>
+
+<p>it can be a little tricky figuring out the right gain (P).  too low, and the arm won't move, too high and the arm will oscillate.  i wouldn't worry about the I and D terms.  but adding some friction to the arm might help.</p>
+
+<p>and if you want more info on more advanced robot arm topics, this page give a gentle overview: <a href="http://www.societyofrobots.com/robot_arm_tutorial.shtml" rel="nofollow">http://www.societyofrobots.com/robot_arm_tutorial.shtml</a></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2492" data-toggle = "popover">
+				<p>user name : Ben</p>
+				<p> user reputation : 3608</p>
+				<p class = "tagcontent" id = "usertaginfo-2492">{'None': 277, 'inverse-kinematics': 3, 'accelerometer': 5, 'calibration': 10, 'kinematics': 14, 'robotic-arm': 8, 'jacobian': 6, 'dh-parameters': 8, 'imu': 5, 'sensors': 5}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2492">Load Comments</button></br>
+			<div id = "commentsection-2492" class = 'collapse'>
+			<div id = "comment-4834" class = "comment">
+				<p>My arm doesn't stay up when the motors are powered off. So I can raise it perfectly fine, but if I let go of a button, the arm falls straight down. And currently I only have one encoder because I figured the second wasn't needed because they're going to be proportional. The way the arm is set up is there are two towers, each with a motor powering a gear that powers a gear attached to the arm. The arm is one solid frame.
+
+And thank you very much for that. I like the idea and I'll have to try it out. I wish I could upvote it.</p>
+			</div>
+			</div>
+				<textarea id = "speech-2492" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2492">
+					<img id="start_img-2492" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2492">Comment</button>
+			<br><div id = "ans-2518"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2518" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Can't comment but expanding on Ben's answer.
+To get the general magnitude of P you consider the range of your inputs and outputs. For vex motor control you have a control parameter range of -127 to +127. Your angle input if coming straight from the encoder value is 360 per revolution with the Cortex. One recommendation: for an arm with a fixed range, you are better off using a potentiometer which gives you an absolute rather than relative range position. Just make sure you mount it in a way that the arm doesn't move outside of the pots range. Motion range is about 250 degrees. </p>
+
+<p>Back to the question of P. You want P such that the input to the motor is in its range. Figure out the maximum angle error. For example if you want the arm at position 80 and it starts out at 0, the initially the error is 80. Since you want the motor input to be as large at 127, P=127/80 .  For the pot, output range is about 4000 and your maximum error might be on the order of 2000, so initially try P=127/2000.</p>
+
+<p>A final bit of advice, since you are using a simple proportional controller (only P, not I and D terms), you will have some droop. That is, you'll never be exactly at 80 since this means no error and hence no drive. So the arm will settle in at some point below that - hence droop. The simple solution used in this case is to have your set point a bit above the desired point so the set point - droop = desired point.  You can adjust this after you get P established.</p>
+
+<p>A final bit of advice, have your competition switch hooked up and have someone standing by to move the switch to off. If you get values really wrong, your arm could go crazy and hurt some one, or even worse, break something on the robot. I've seen shafts (and done it myself) that are twisted like taffy.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2518" data-toggle = "popover">
+				<p>user name : user21387</p>
+				<p> user reputation : 21</p>
+				<p class = "tagcontent" id = "usertaginfo-2518">{'None': 2}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2518">Load Comments</button></br>
+			<div id = "commentsection-2518" class = 'collapse'>
+			<div id = "comment-4871" class = "comment">
+				<p>Thank you very much for that. I wish I could +1 it. I actually had that issue that you described where the arm would go crazy once in a while and bend everything. I'll keep your tips in mind. Thank you.</p>
+			</div>
+			</div>
+				<textarea id = "speech-2518" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2518">
+					<img id="start_img-2518" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2518">Comment</button>
+			<br><div id = "ans-2585"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2585" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>proportional controller may yield steady state error. it's better to use PI control. that your arm will fall when the motors are not powered is due to the fact that no special backdrive protection is included in the motor or the mechansim. you may want some actual brake to stop the backdrive</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2585" data-toggle = "popover">
+				<p>user name : user3939</p>
+				<p> user reputation : 19</p>
+				<p class = "tagcontent" id = "usertaginfo-2585">{'None': 1}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2585" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2585" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2585">
+					<img id="start_img-2585" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2585">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

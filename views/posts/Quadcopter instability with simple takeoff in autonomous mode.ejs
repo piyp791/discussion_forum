@@ -1,0 +1,448 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Quadcopter instability with simple takeoff in autonomous mode
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2167" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2167" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 5951</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Quadcopter instability with simple takeoff in autonomous mode</h2>
+<p>I'm trying to get a quad rotor to fly. The on board controller is an Ardupilot Mega 2.6, being programmed by Arduino 1.0.5.</p>
+
+<p>I'm trying to fly it in simple autonomous mode, no Radio controller involved. I've done a thorough static weight balancing of the assembly (somewhat like this: <a href="http://www.youtube.com/watch?v=3nEvTeB2nX4" rel="nofollow">http://www.youtube.com/watch?v=3nEvTeB2nX4</a>) and the propellers are balanced correctly.</p>
+
+<p>I'm trying to get the quadcopter to lift using this code:</p>
+
+<pre><code>#include &lt;Servo.h&gt;
+
+
+int maxspeed = 155;
+int minspeed = 0;
+
+Servo motor1;
+Servo motor2;
+Servo motor3;
+Servo motor4;
+
+int val = 0;
+int throttleCurveInitialGradient = 1;
+
+void setup()
+{
+
+
+val = minspeed;
+
+motor1.attach(7);
+motor2.attach(8);
+motor3.attach(11);
+motor4.attach(12);
+
+
+}
+
+
+void loop()
+{
+setAllMotors(val);
+delay(200);
+val&gt;maxspeed?true:val+=throttleCurveInitialGradient;
+}
+
+void setAllMotors(int val)
+  {
+    motor1.write(val);
+    motor2.write(val);
+    motor3.write(val);
+    motor4.write(val);
+  }
+</code></pre>
+
+<p>But the issue is, as soon as the quadcopter takes off, it tilts heavily in one direction and topples over. </p>
+
+<p>It looks like one of the motor/propeller is not generating enough thrust for that arm to take-off. I've even tried offsetting the weight balance against the direction that fails to lift, but it doesn't work (and I snapped a few propellers in the process);</p>
+
+<ul>
+<li>Is there something wrong with the way the ESCs are being fired using
+the Servo library?</li>
+<li>If everything else fails, am I to assume there is something wrong
+with the motors?</li>
+<li>Do I need to implement a PID controller for self-balancing the roll
+and pitch just to get this quadrotor to take off?</li>
+</ul>
+
+<p><strong>Edit 1:</strong>    Thanks for all the replies.</p>
+
+<p>I got the PID in place. Actually, it is still a PD controller with the integral gain set to zero. </p>
+
+<p>Here's how I'm writing the angles to the servo:</p>
+
+<pre><code>motor1.write((int)(val + (kP * pError1) +(kI * iError1) +(kD * dError1)));  //front left
+motor2.write((int)(val + (kP * pError2) +(kI * iError2) +(kD * dError2)));  //rear right
+motor3.write((int)(val + (kP * pError3) +(kI * iError3) +(kD * dError3)));  //front right
+motor4.write((int)(val + (kP * pError4) +(kI * iError4) +(kD * dError4)));  //rear left 
+</code></pre>
+
+<p>kI is zero, so I'll ignore that.</p>
+
+<p>With the value of kP set somewhere between 0.00051 to 0.00070, I'm getting an oscillation of steady amplitude around a supposed mean value. But the problem is, the amplitude of oscillation is way too high. It is somewhere around +/- 160 degrees, which looks crazy even on a tightly constrained test rig. </p>
+
+<hr>
+
+<p>[  <strong>Edit 2:</strong> <em>How I calculate the term 'pError'</em> - Simple linear thresholding. </p>
+
+<p>I've a precomputed data of the average readings (mean and SD) coming out of the gyro when the IMU is steady. Based on the gyro reading, I classify any motion of the setup as left, right, forward or backward. </p>
+
+<p>For each of these motion, I increase the pError term for two of the motors, i.e, for right tilt, I add pError terms to motors 2 &amp; 3, for left tilt, I add pError term to motors 1 &amp; 4 etc. (check the comment lines in the code snippet given above). </p>
+
+<p>The magnitude of error I assign to the pError term is = <em>abs(current gyro reading) - abs(mean steady-state gyro reading)</em>. This value is always positive, therefore the side that is dipping downwards will always have a positive increment in RPM.  ]</p>
+
+<hr>
+
+<p>As I crank up the derivative gain to around 0.0010 to 0.0015, the oscillation dampens rapidly and the drone comes to a relatively stable attitude hold, but not on the horizontal plane. The oscillation dies down (considerably, but not completely) only to give me a stable quadrotor tilted at 90 - 100 degrees with horizontal. </p>
+
+<p>I'm using only the gyros for calculating the error. The gyros were self calibrated, hence I do expect a fair amount of noise and inaccuracy associated with the error values. </p>
+
+<ul>
+<li>Do you think that is the primary reason for the high amplitude
+oscillation?</li>
+</ul>
+
+<p>One other probable reason might be the low update frequency of the errors. I'm updating the errors 6 times a second. </p>
+
+<ul>
+<li>Could that be a probable reason it is taking longer to stabilise the
+error?</li>
+</ul>
+
+<p>And, for the steady state error after the wild oscillations dampen, is it necessary to fine tune the integral gain to get rid of that?</p>
+
+<p>Please help.</p>
+
+<hr>
+
+<p><strong>Edit 3:</strong>  I cranked up the frequency of operation to 150+ Hz and what I get now is a very controlled oscillation (within +/- 10 degrees). </p>
+
+<p>I'm yet to tune the derivative gain, following which I plan to recompute the errors for the integral gain using a combination of gyro and accelerometer data. </p>
+
+<hr>
+
+<p><strong>Edit 4:</strong>  I've tuned the P and D gain, resulting in +/- 5 degrees oscillation(approx). I can't get it to any lower than this, no matter how much I try.</p>
+
+<p>There are two challenges about which I'm deeply concerned:</p>
+
+<p>After 5 to 8 seconds of flight, the quadcopter is leaning into one side, albeit slowly. </p>
+
+<p>A) Can this drift be controlled by tuning the integral gain?</p>
+
+<p>B) Can the drift be controlled by using accelerometer + gyro fused data?</p>
+
+<p>C) Given that my drone still shows +/- 5 degrees oscillation, can I consider this the optimal set point for the proportional and derivative gains? Or do I need to search more? (In which case, I'm really at my wits end here!) </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2167" data-toggle = "popover">
+				<p>user name : metsburg</p>
+				<p> user reputation : 269</p>
+				<p class = "tagcontent" id = "usertaginfo-2167">{'quadcopter': 15, 'None': 8, 'ardupilot': 6, 'accelerometer': 1, 'arduino': 13, 'ekf': 0, 'pid': 12, 'stability': 10, 'slam': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2167">Load Comments</button></br>
+			<div id = "commentsection-2167" class = 'collapse'>
+			<div id = "comment-4295" class = "comment">
+				<p>Possibly related: http://robotics.stackexchange.com/a/1216/350</p>
+			</div>
+			<div id = "comment-4305" class = "comment">
+				<p>You will have to provide more information on how exactly are you calculating term pError. In most of the cases although PID is good enough, oscillation are due to poor physical setup. So make sure that your physical setup is perfect in terms of propeller are perfectly balanced and gyros are isolated using vibration dampening material such as foam pads.</p>
+			</div>
+			<div id = "comment-4306" class = "comment">
+				<p>@nikhil: Please check 'edit 2' for a summary of how I'm computing pError. Physical setup is definitely not 'perfect', I'm sure. However, we've tried to do our best - yes, the propellors are balanced (one of the prop shows a slight dent in the root, but the weight balance is fine), static weight balancing of the entire setup is decent and there is a styrofoam pad glued under the IMU.</p>
+			</div>
+			<div id = "comment-4307" class = "comment">
+				<p>Are you using any filer for gyro data? Gyro usually show drift over time which you have to correct by applying filer. You should use Accelerometer along with gyro to achieve horizontal stability as gyro alone will never be able to perform up to your expectation. 6Hz is very low update rate. I would recommend at least 100Hz of update rate. More update rate will result in better performance.</p>
+			</div>
+			<div id = "comment-4308" class = "comment">
+				<p>@nikhil: I was just using a LPF on Gyro. To fuse gyro with accelerometer, do I need to go for Kalman filter? Can I use anything simpler? Please give me some hints for this. As for the frequency, I'm working on that. I'll get it up to 150 Hz + today.</p>
+			</div>
+			<div id = "comment-4309" class = "comment">
+				<p>A perfectly tuned kalaman will give you best result. You can also use simpler complimentary filter as explained in http://stackoverflow.com/questions/15490990/obtaining-orientation-using-gyroscope-and-accelerometer
+Here are few more references 
+
+http://www.starlino.com/imu_kalman_arduino.html   
+http://www.x-io.co.uk/res/doc/madgwick_internal_report.pdf   
+http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=4608934&tag=1</p>
+			</div>
+			</div>
+				<textarea id = "speech-2167" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2167">
+					<img id="start_img-2167" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2167">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-2169"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2169" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">7</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Even very small errors can bother the balancing. Small errors such as: </p>
+
+<ol>
+<li>Weight of the quadcopter is unbalanced. </li>
+<li>One motor is rotating faster/slower than others due to manufacturing or your power-source. </li>
+<li>Air resistance and wind. </li>
+<li>Unbalanced propellers due to manufacturing.</li>
+<li>Strong magnetic forces.</li>
+</ol>
+
+<p>You simple can not send the same motor speed to all motors and expect it to hover. 
+You do need a sensor which can read the tilting of the robot and adjust the motor speeds based on the tilt angles. To do that you need to implement a PID controller (The simplest method).</p>
+
+<p>As far as I know there are some PID controller for arudino. But you could always write your own simple version of a PID controller.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2169" data-toggle = "popover">
+				<p>user name : Esk</p>
+				<p> user reputation : 358</p>
+				<p class = "tagcontent" id = "usertaginfo-2169">{'None': 23, 'chassis': 2, 'motor': 2}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2169">Load Comments</button></br>
+			<div id = "commentsection-2169" class = 'collapse'>
+			<div id = "comment-4285" class = "comment">
+				<p>Yeh, there are plenty of PID controllers for arduino. I was hoping to develop one myself.</p>
+			</div>
+			<div id = "comment-4510" class = "comment">
+				<p>"Weight of the quadcopter is unbalanced" is not a factor here, because the Integral component of the PID controller will compensate for the imbalance.</p>
+			</div>
+			<div id = "comment-4522" class = "comment">
+				<p>Thats correct Ian. Therefore I wrote that he needs the PID.</p>
+			</div>
+			<div id = "comment-4534" class = "comment">
+				<p>Oh OK.  I thought you were talking about the PID he was already using, but you weren't.  (It looks like this question has been heavily updated.)</p>
+			</div>
+			</div>
+				<textarea id = "speech-2169" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2169">
+					<img id="start_img-2169" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2169">Comment</button>
+			<br><div id = "ans-2170"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2170" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Quadcopter is inherently unstable system. So you have to apply some feedback controller (eg. PID) to keep it airborne. Even if you apply some basic PID using angular rates and angles, you still have to provide manual correction for drift till PID gains are perfectly set. So using radio control for manual control is really helpful during initial development stage.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2170" data-toggle = "popover">
+				<p>user name : nikhil</p>
+				<p> user reputation : 633</p>
+				<p class = "tagcontent" id = "usertaginfo-2170">{'wireless': 0, 'communication': 0, 'None': 36, 'serial': 0, 'raspberry-pi': 0}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2170" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2170" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2170">
+					<img id="start_img-2170" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2170">Comment</button>
+			<br><div id = "ans-2190"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2190" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Is it always the same side that topples? If so, one obvious thing to try to eliminate the possibility that one of your motors is faulty, is to simply switch motor positions and see if the side that topples changes.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2190" data-toggle = "popover">
+				<p>user name : user453441</p>
+				<p> user reputation : 188</p>
+				<p class = "tagcontent" id = "usertaginfo-2190">{'None': 5, 'motor': 5}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2190">Load Comments</button></br>
+			<div id = "commentsection-2190" class = 'collapse'>
+			<div id = "comment-4300" class = "comment">
+				<p>No, it doesn't topple on the same side (with the PD controller). Even without switching motors, it topples whimsically.</p>
+			</div>
+			</div>
+				<textarea id = "speech-2190" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2190">
+					<img id="start_img-2190" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2190">Comment</button>
+			<br><div id = "ans-2308"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2308" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I read the code but it looks like it is for the first attempt where you tried to hover "open loop"  that can't work.   So now you tried a PID control based straight off the raw IMU data.  Tha't better but you are going to need one more step between the two.   Will I say this assuming you are using a low-cost IMU, the kind that just breaks out the chip.  </p>
+
+<p>First off it would be ideal if you could measure the speed of each motor, and not just assume it rotates at a speed proportionate to the commanded value.  Likely it does not.  The BEST way to to place an encoder on the motor shaft that sends a few pluses per revolution.  Then you replace "motor2.write(val)" with something like "motor.setspeed(rotationVelocity); and the set speed method runs a PID loop just ontheat one motor's speed, sending whatever PWM value is required.   OK, lacking an encoder, get a hand held propeller tachometer.  And plot RPM vs PWM for a tried vehicle fixed to a stand at some hight from the ground.   </p>
+
+<p>NEXT YOU NEED TO KNOW HOW TO RELATE RPM TO THRUST.  One problem with yourPID control is it assume PWM value (voltage) is LINEARLY related to force in the vertical direction is is NOT because 
+1) If the vehicle is tilted the foxed is no longer down and is smaller be the cosine of the tilt and..
+2) force is NEVER linearly replaced to voltage.  It think(???) there is a cubed relationship the is power cubed = force.  </p>
+
+<p>You might just kip all the math and measure the force as a function of PWM and make a lookup table.  Better to use encoders and</p>
+
+<p>You over all PID loop will work much better when have a linear relationship.</p>
+
+<p>Next idea:  You CAN make a quad more stable.  What if you tilt the plane of each door inwards just a little.  Each is slightly non-horizonal, now if one side dips it will generate more lift.  </p>
+
+<p>Last idea:  The IMU is a noisy device.  The accelerometer has high frequency noise on it becise of random vibrations and the gyro has drift.  The "standard" why to address this is with a Kalman Filter.  The math is not easy but you can find MANY examples of Kalman filters on-line.</p>
+
+<p>Summary:
+1) Use good filter model to correct the IMU data.  The raw data is not good.
+2) Create a method (function) that takes llefting force as input then sets the PWM slue as required.<br>
+3) Used a top layer PID to drive the error to zero</p>
+
+<p>What this does is address the basic flaw of all PID controller, they don't "see" inside the black box.  They don't know the gyro drift and accelerometer is noisy and that PWM has a non-linear relationship to lift.  </p>
+
+<p>Next you get into moving flight and you need to make your aerodynamic model better to account for the fixed pitch props</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2308" data-toggle = "popover">
+				<p>user name : user3150208</p>
+				<p> user reputation : 431</p>
+				<p class = "tagcontent" id = "usertaginfo-2308">{'None': 27}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2308">Load Comments</button></br>
+			<div id = "commentsection-2308" class = 'collapse'>
+			<div id = "comment-4504" class = "comment">
+				<p>Thanks for the well thought answer. I've, infact, already implemented some of the things you suggest here. Check this question: http://robotics.stackexchange.com/questions/2297/quadcopter-pid-tuning?noredirect=1#comment4502_2297 which I posted a few days ago. This question specifically shows where I stand now. I seriously need to incorporate the non-linear property of the thrust vector. That is why I found the proportional gains to be different under different steady RPMs. The proportional gain also varies with battery voltage. Please check my new question and respond, if you wish. Thanks.</p>
+			</div>
+			<div id = "comment-4513" class = "comment">
+				<p>Why would you need to know the motor speed. That's irrelevant. If you were in open-loop, then yes, you'd need to know precisely the relationship between thrust and PWM input. But the whole point of PID control is that you don't need to know this!</p>
+			</div>
+			<div id = "comment-4527" class = "comment">
+				<p>Ok, I understand what you're saying, makes sense. But I was just wondering, suppose if my PWM input vs output thrust response is an exponential curve (say)... is it not likely that the value of P/I/D for the linear part of the curve (slope of 1) will be different from the value for the more horizontal part (slope ~ 0) of the curve? Is it not better to confine my operation to a range where the input vs output characteristics are more or less similar?</p>
+			</div>
+			<div id = "comment-4531" class = "comment">
+				<p>You're right, for non-linear systems, different PID gains will be need for different part of the curve. You said you needed different P gain for different RPMs... what is the variation there? You'll have to choose the smallest P gain within your operating range of RPMs, trading off for somewhat slower settling-time.</p>
+			</div>
+			<div id = "comment-4532" class = "comment">
+				<p>Nonetheless, it would be interesting to measure this non-linearity. One way, perhaps, instead of using encoders, would be to measure the audio spectrum of the motors (Any smart phone can do that), see the frequencies that comes up when the motors are on. Then you'd to relate frequencies with RPMs. See blog post: http://blog.pistuffing.co.uk/?p=2342</p>
+			</div>
+			</div>
+				<textarea id = "speech-2308" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2308">
+					<img id="start_img-2308" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2308">Comment</button>
+			<br><div id = "ans-2314"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2314" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I can see several mistakes in your approach.</p>
+
+<p>The biggest red flag for me is that you are treating the motors as individually-controlled PIDs when in fact they need to work in pairs.  I'm talking about this line that you posted:</p>
+
+<pre><code>motor1.write((int)(val + (kP * pError1) +(kI * iError1) +(kD * dError1)));  //front left
+</code></pre>
+
+<p>The output of your PID should be the desired roll or pitch force -- the correction to the current pitch or roll vs what is desired.  The desired roll or pitch force will then be translated into the thrust ratio between the 2 motors that can effect that force.</p>
+
+<p>The second problem I see is that you are using a PD controller instead of a PID controller and wondering why it appears to be imbalanced.  The integral term is <em>precisely</em> what you are missing -- it compensates for any (static) imbalance in the quadcopter itself.</p>
+
+<p>The third (potential) problem that I see is that you might not be properly mapping the motor speed to the desired thrust -- that relationship may not be linear. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2314" data-toggle = "popover">
+				<p>user name : Ian</p>
+				<p> user reputation : 9640</p>
+				<p class = "tagcontent" id = "usertaginfo-2314">{'planning': 10, 'None': 809, 'power': 1, 'algorithm': 10, 'battery': 1, 'slam': 7, 'coverage': 10, 'mobile-robot': 9, 'sensors': 9}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2314">Load Comments</button></br>
+			<div id = "commentsection-2314" class = 'collapse'>
+			<div id = "comment-4514" class = "comment">
+				<p>The following link explains well how to "pair" the motors with the various control output: http://theboredengineers.com/2012/05/the-quadcopter-basics/</p>
+			</div>
+			</div>
+				<textarea id = "speech-2314" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2314">
+					<img id="start_img-2314" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2314">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

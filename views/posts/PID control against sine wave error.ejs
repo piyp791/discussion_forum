@@ -1,0 +1,183 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>PID control against sine wave error
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2575" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2575" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 800</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>PID control against sine wave error</h2>
+<p>I'm writing a PID to control a toy car that follows a black line on a circuit. I've tuned my PID and it works at high speed for all the circuit except the winding section. For that, the error signal looks like a sine wave, and the toy car steers too much. I would like it to go close to straight, is it possible?</p>
+
+<p><strong>Edit:</strong> My car sees 100 grey points in a line ahead, and the difference between the darkest point and the middle of the visual range is the error signal. My output is the angle of a servo on the front wheels of the car, while the speed of the back motors is constant.</p>
+
+<p>The desired performance would be to oscillate with an amplitude less than the amplitude of the winding road, and the actual performance is that the car steers close to the sine line for one period, and at the next max amplitude it under steers. Sorry, I can't provide graphs right now but I'll try to add some in the next days.</p>
+
+<p>Is there a formula for adjusting the PID constants for the desired PID bandwidth?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2575" data-toggle = "popover">
+				<p>user name : Valentin Brasso</p>
+				<p> user reputation : 101</p>
+				<p class = "tagcontent" id = "usertaginfo-2575">{'None': 0, 'pid': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2575">Load Comments</button></br>
+			<div id = "commentsection-2575" class = 'collapse'>
+			<div id = "comment-4925" class = "comment">
+				<p>What do you mean "the car steers too much"?  It's the nature of a given PID controller that it has a certain closed loop bandwidth.  If you exceed that bandwidth the PID will not be able to track the error.  To improve the bandwidth you need to either improve your tuning or improve your machine...</p>
+			</div>
+			<div id = "comment-4926" class = "comment">
+				<p>Can you post some example graphs of desired vs actual performance?  Also, is your PID controlling the angle of the steering wheels or some other actuation method?</p>
+			</div>
+			<div id = "comment-4928" class = "comment">
+				<p>There is no formula for adjusting the PID for a given closed loop bandwidth because the closed loop bandwidth is a combination of the open loop bandwidth and the PID controller.  To illustrate, if your car isn't even physically capable of tracking the line no PID will make it track.</p>
+			</div>
+			</div>
+				<textarea id = "speech-2575" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2575">
+					<img id="start_img-2575" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2575">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-2579"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2579" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>From <a href="http://www.goddardconsulting.ca/pid-control.html" rel="nofollow">An Introduction to Loop-Shaping Design for PID Control</a>:</p>
+
+<blockquote>
+  <p>any constant gain feedback will act as a stabilizing controller when
+  the loop is closed. This constant gain is simply a proportional
+  controller. The gain raises or lowers the open-loop magnitude response
+  hence setting the cross-over frequency.</p>
+  
+  <p>...</p>
+  
+  <p>When the loop is closed the cross-over frequency is the bandwidth of
+  the closed-loop.</p>
+</blockquote>
+
+<p>So you would run your loop in Proportional only mode over that section of track. Tune your P term until you achieve the desired performance. You will then need to add back in your I and D terms and tune over the rest of the track.</p>
+
+<p>It may turn out that the P term chosen to achieve the desired performance over the winding section of track produces an unacceptable response for the rest of the track. In which case it may be best to simply place a low pass filter in front of your loop and not pass any errors that are above a certain value.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2579" data-toggle = "popover">
+				<p>user name : embedded.kyle</p>
+				<p> user reputation : 1469</p>
+				<p class = "tagcontent" id = "usertaginfo-2579">{'None': 124}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2579">Load Comments</button></br>
+			<div id = "commentsection-2579" class = 'collapse'>
+			<div id = "comment-4927" class = "comment">
+				<p>If his controller remains stable as he raises the proportional gain then the control loop will perform better on all sections.  More likely as he raises his gain he will be reducing his gain margin until at some point the system will be unstable and likely be so over all parts of the course.  What the OP is asking for is not possible in general- You can't tune a PID to get *any* bandwidth you need.  Your achievable bandwidth is limited by your system design.  An interesting twist here is that the car is looking ahead.</p>
+			</div>
+			</div>
+				<textarea id = "speech-2579" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2579">
+					<img id="start_img-2579" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2579">Comment</button>
+			<br><div id = "ans-2586"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2586" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>One observation is that this is a slightly different situation than the classical control problem.  Your sensor is looking ahead so you're not measuring the current (or past error) but rather you're measuring where you want to position that car in some future time.  As an example, consider that your car currently has its wheels turned such that it is following a given arc to the right.  Your sensor tells you that the target line is somewhat to your right.  It is quite likely that you do not need to give any additional control input to hit your target and attempting to keep correcting to the right will over-steer the car.</p>
+
+<p>To get the best tracking performance you need to figure out how the car drives in open loop mode.  Think about it as a race car driver approaching a turn, he doesn't correct his current error as he's going through the turn, he plans his approach and only correct the tiny errors left as he is taking the turn.  Your perfect driver will need very little correction as he takes into account all the parameters ahead of hitting that turn.</p>
+
+<p>From a control perspective this part of your algorithm is known as <a href="http://en.wikipedia.org/wiki/Feed_forward_%28control%29" rel="nofollow noreferrer">feed-forward</a> and is the most important part in getting your car to perform.</p>
+
+<p>With the right feedforward in place you will still need a PID controller to take out any residual error.  One problem you have though is actually figuring out what to use as an error signal.  The simplest choice is to use that signal but you can probably do better.  There are a number of questions that discuss some PID tuning basics and you can refer to those (e.g. <a href="https://robotics.stackexchange.com/q/167/1584">What are good strategies for tuning PID loops?</a> ).</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2586" data-toggle = "popover">
+				<p>user name : Guy Sirton</p>
+				<p> user reputation : 970</p>
+				<p class = "tagcontent" id = "usertaginfo-2586">{'None': 75}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2586" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2586" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2586">
+					<img id="start_img-2586" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2586">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

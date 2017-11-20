@@ -1,0 +1,181 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to choose the state space model for 1 axis gyroscope to implemnt a good kalman filter
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-5045" class = "post">
+			<h2>Question</h2>
+			<div id="vote-5045" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 292</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to choose the state space model for 1 axis gyroscope to implemnt a good kalman filter</h2>
+<p>I am using <a href="http://www.pololu.com/file/0J563/L3GD20.pdf" rel="nofollow">this gyroscope</a> in order to measure the rotation of my robot around the z axis.
+I want to implement a kalman filter in order to improve the values.
+What i came with since now is this space model:</p>
+
+<p>$$
+  (k+1)= (k)+dt* '(k)+w(k) 
+$$
+$$
+ y(k)= (k)+z(k)
+$$
+where $ $ is the angle, $ '$ is the angular rate given by the gyro and $w$ is the noise. (I hold up my gyro and measured 50 values while it was steady and find out that the variance is equal to 0.0002).
+What i want to ask:</p>
+
+<ol>
+<li>is what i did is correct?</li>
+<li>How can i find out $z(k)$? .According to the data sheet noise density is equal to 0.03 dps/sqrt(hz),how can i use this information to find out $z(k)$ and correct $w(k)$ if it is wrong.</li>
+</ol>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-5045" data-toggle = "popover">
+				<p>user name : Med.ali</p>
+				<p> user reputation : 34</p>
+				<p class = "tagcontent" id = "usertaginfo-5045">{'control': -1, 'odometry': 1, 'None': 0, 'noise': 5, 'motor': 1, 'arduino': 1, 'pid': 1, 'wheeled-robot': 1, 'kalman-filter': 3, 'sensors': 0, 'gyroscope': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-5045" class = 'collapse'>
+			</div>
+				<textarea id = "speech-5045" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-5045">
+					<img id="start_img-5045" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-5045">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-5048"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-5048" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Assuming the angular velocity is constant (i.e. $\dot{\theta}_{k+1} = \dot{\theta}_{k}$) It seems to me the state vector should look like this </p>
+
+<p>$$
+\underbrace{
+\begin{bmatrix}
+\theta_{k+1} \\
+\dot{\theta}_{k+1}
+\end{bmatrix}}_{\textbf{x}_{k+1}}
+=
+\underbrace{
+\begin{bmatrix}
+1 &amp; \Delta t \\
+0 &amp; 1
+\end{bmatrix}
+}_{F}
+\begin{bmatrix}
+\theta_{k} \\
+\dot{\theta}_{k}
+\end{bmatrix}
++
+w_{k+1}
+$$</p>
+
+<p>$$
+\begin{align*}
+y_{k+1} &amp;= h(\textbf{x}_{k+1}) + z_{k+1} \\
+        &amp;= 
+\underbrace{
+\begin{bmatrix}
+0 &amp; 1
+\end{bmatrix}}_{H}
+\begin{bmatrix}
+\theta_{k+1} \\ 
+\dot{\theta}_{k+1}
+\end{bmatrix}
++
+z_{k+1}
+\end{align*}
+$$</p>
+
+<p>where $w_{k+1}$ is the process noise not the sensor noise (be careful). You could assume it to be zero if you think there is no noise affects your state vector and the noise only comes from the sensor (i.e. $z_{k+1}$) and it must be Gaussian noise with zero mean and known variance (i.e. $\mathcal{N}(0, \sigma^{2})$). Once you get the matrices and the noise parameters, applying Kalman filter is straightforward. Hope this helps</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-5048" data-toggle = "popover">
+				<p>user name : CroCo</p>
+				<p> user reputation : 1040</p>
+				<p class = "tagcontent" id = "usertaginfo-5048">{'control': 18, 'pid': 4, 'slam': 16, 'manipulator': 3, 'mobile-robot': 14, 'dynamics': 6, 'errors': 2, 'data-association': 1, 'kinematics': 3, 'matlab': 6, 'kalman-filter': 21, 'motion-planning': 3, 'None': 41, 'noise': 24, 'theory': 1, 'localization': 14, 'microcontroller': 5, 'mapping': 5, 'sensor-error': 1, 'sensors': 7, 'quadcopter': 8, 'ekf': 26, 'simulation': 1, 'motion': 3}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-5048">Load Comments</button></br>
+			<div id = "commentsection-5048" class = 'collapse'>
+			<div id = "comment-7806" class = "comment">
+				<p>Any suggestions on how to find wk+1?</p>
+			</div>
+			<div id = "comment-7807" class = "comment">
+				<p>@Med.ali, read this http://robotics.stackexchange.com/questions/2245/kalman-filter-and-the-state-noise-vector</p>
+			</div>
+			</div>
+				<textarea id = "speech-5048" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-5048">
+					<img id="start_img-5048" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-5048">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

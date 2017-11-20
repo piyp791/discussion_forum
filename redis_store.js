@@ -5,9 +5,6 @@ fs = require('fs');
 var jpickle = require('jpickle');
 
 
-
-
-
 client = redis.createClient();
 
 client.on("error", function (err) {
@@ -15,6 +12,33 @@ client.on("error", function (err) {
 });
 
 module.exports = {
+
+	getUserActivity: function(userid){
+
+		//console.log('get user activity from redis...');
+		return new Promise(function(resolve, reject){
+			client.hget('test', 'user_activity_obj', function (err, replies) {
+		    	//console.log(replies);
+		    	var suggestions = JSON.parse(replies)[userid];
+		    	//console.log('suggestions-->' + JSON.stringify(suggestions));
+		    	resolve(suggestions);
+			});
+		})
+	},
+
+	getQueryWordsForPost: function(post){
+
+		//console.log('get user activity from redis...');
+		return new Promise(function(resolve, reject){
+			client.hget('test', 'tfidf_obj', function (err, replies) {
+		    	//console.log(replies);
+		    	var suggestions = JSON.parse(replies)[post.id];
+		    	//console.log('suggestions-->' + JSON.stringify(suggestions));
+		    	resolve(suggestions);
+			});
+		})
+	},
+
 	actualSearchForRecommendations: function (userid){
 
 		console.log('searching via collaborative filtering...');
@@ -718,4 +742,4 @@ async function searchRecommendations(){
 
 }
 
-searchRecommendations()
+//searchRecommendations()

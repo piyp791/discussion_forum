@@ -1,0 +1,204 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Dealing with fixed transformations while solving inverse kinematics
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11079" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11079" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 79</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Dealing with fixed transformations while solving inverse kinematics</h2>
+<p>I am trying to solve inverse kinematics (using the Jacobian pseudoinverse method) for a 7 DoF arm, but because of the way the robot is mounted, the base frame does not coincide with the frame of the first joint, so there is a transformation between base and frame 0. As the Jacobian expresses the joint-end effector velocity relationship w.r.t. the base frame, and also because my target poses etc. are expressed w.r.t the base frame, I encoded the transformation as an extra row in my DH parameters, but these angles are always fixed. Hence, I ended up with 8 rows in my DH although I have only 7 joints.</p>
+
+<p>Because of this, my inverse kinematics algorithm, when trying to minimize the end effector pose error, continuously attempts to change the angle of the "first" joint which really isn't a joint at all. Hence, although the algorithm thinks the end effector has reached the target position, in real world it would not, because that base-robot transformation would be invalid for my setup. If I force this angle to be constant after every update of the iteration, the algorithm fails to converge and gets stuck at some pose. So I am guessing my approach for encoding the fixed base-first joint transformation is wrong? How are these transformations usually dealt with?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11079" data-toggle = "popover">
+				<p>user name : HighVoltage</p>
+				<p> user reputation : 398</p>
+				<p class = "tagcontent" id = "usertaginfo-11079">{'stereo-vision': 2, 'probability': 10, 'multi-agent': 4, 'planning': 10, 'manipulator': 2, 'cameras': 1, 'matlab': 1, 'kalman-filter': 7, 'None': 19, 'noise': 3, 'inverse-kinematics': 2, 'localization': 8, 'pose': 4, 'mapping': 0, 'rotation': 1, '3d-reconstruction': 0, 'computer-vision': 8, 'algorithm': 3, 'c++': 3, 'slam': 2, 'exploration': 0, 'path-planning': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11079" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11079" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11079">
+					<img id="start_img-11079" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11079">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-11080"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11080" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Hopefully you still have only 4 rows in your DH matrix, not 8 as you said.  I think you mean that your Jacobian matrix has 8 $\require{enclose} \enclose{horizontalstrike}{\text{rows}}$ columns.  </p>
+
+<p>Your approach is close to correct, but it has one flaw.   The flaw is when you make the transformation that you are calling the "first joint."  Instead of letting the rotation between that coordinate system and the next be a variable, say, $q_1$, just plug in the value of that angle (for example, $\pi \over 2$).</p>
+
+<p>If you do this, then you'll see that your Jacobian has only 7 $\enclose{horizontalstrike}{\text{rows}}$ columns, as it should.   The iterative pseudoinverse process will have a higher likelihood of converging to a proper solution since it will not be trying to move a nonexistant degree of freedom.   And you won't need to reset that angle after each iteration, because it is constant.  </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11080" data-toggle = "popover">
+				<p>user name : SteveO</p>
+				<p> user reputation : 2960</p>
+				<p class = "tagcontent" id = "usertaginfo-11080">{'None': 222}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11080">Load Comments</button></br>
+			<div id = "commentsection-11080" class = 'collapse'>
+			<div id = "comment-19952" class = "comment">
+				<p>If the Jacobian has only 7 rows, then are you suggesting to just remove the base-robot transformation from my robot description (DH etc.) and just use it separately for my convenience? Because I am guessing the algorithm would fail if the Jacobian was in one reference frame but my end effector pose, error etc. are computed in a different reference.
+ 
+
+(PS: I'm used to writing DH as 4 columns and $n$ rows, and Jacobian as a $6Xn$ matrix)</p>
+			</div>
+			<div id = "comment-19959" class = "comment">
+				<p>The first transformation should still be included in your forward kinematics.   However, it will not lead to an independent column for your Jacobian because of the fact that the terms of that transformation are constants.  You would only get another column if the partial derivative of any term of your kinematics, with respect to that angle, is nonzero.</p>
+			</div>
+			<div id = "comment-19970" class = "comment">
+				<p>Got it, thanks!</p>
+			</div>
+			</div>
+				<textarea id = "speech-11080" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11080">
+					<img id="start_img-11080" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11080">Comment</button>
+			<br><div id = "ans-11081"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11081" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Having 8 rows in the DH parameters table is completely ok. However, this does not lead to 8 rows in your jacobi matrix. The size of the jacobi matrix is always given by number of degrees of freedom in Cartesian space and number of degrees of freedom in joint space. In your case 6 and 7, as I understand. </p>
+
+<p>Elements in the Jacobi matrix express to what extent does a small change in a joint variable cause a change in the cartesian variables. Based on this, it should be clear that your fixed transformation from base to joint 1 cannot have any changes in it therefore cannot have its own variable and row in the jacobian matrix.</p>
+
+<p>This situation is very common. It is essentially the same as having a last transformation from the flange coordinate system to the tool coordinate system.</p>
+
+<p>So, to build up the jacobian, I always do it as follows:</p>
+
+<ol>
+<li><p>Write the DH parameter table</p></li>
+<li><p>Multiply all matrices together (all 8 in your case)</p></li>
+<li><p>Write the equation</p>
+
+<p>$A_{lhs} = A_{rhs}$</p></li>
+</ol>
+
+<p>where $A_{lhs}$ is the transformation matrix from the joint space side (DH transformations multiplied together) and $A_{rhs}$ is the Cartesian transformation matrix multiplied togehter ($T_x(x) * T_y(y)*...$).</p>
+
+<ol start="4">
+<li>From this matrix equation express the equations:</li>
+</ol>
+
+<p>$x = f_x(q_1, q_2, q_3, q_4, q_5, q_6, q_7)$</p>
+
+<p>$y = f_y(q_1, q_2, q_3, q_4, q_5, q_6, q_7)$</p>
+
+<p>$z = f_z(q_1, q_2, q_3, q_4, q_5, q_6, q_7)$</p>
+
+<p>$a = f_a(q_1, q_2, q_3, q_4, q_5, q_6, q_7)$</p>
+
+<p>$b = f_b(q_1, q_2, q_3, q_4, q_5, q_6, q_7)$</p>
+
+<p>$c = f_c(q_1, q_2, q_3, q_4, q_5, q_6, q_7)$</p>
+
+<p>This is the direct kinematics problem in explicit from. </p>
+
+<ol start="5">
+<li>Derive all elements of the Jacobi Matrix (with a computer algebraic system, e.g. Maple, Matlab Symbolics toolbox, Math.net, symPy, etc.)</li>
+</ol>
+
+<p>$\frac{\delta x}{\delta q_1}$ = $\frac{\delta f_x}{\delta q_1}$</p>
+
+<ol start="6">
+<li>Build up all 6x7 elements of the jacobi matrix this way</li>
+</ol>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11081" data-toggle = "popover">
+				<p>user name : 50k4</p>
+				<p> user reputation : 2800</p>
+				<p class = "tagcontent" id = "usertaginfo-11081">{'geometry': 0, 'None': 193, 'kinematics': 0, 'robotic-arm': 0}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11081" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11081" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11081">
+					<img id="start_img-11081" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11081">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

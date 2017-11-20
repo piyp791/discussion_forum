@@ -1,0 +1,130 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Resampling attitude states (quaternions, rotation matrix) in a Particle Filter
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2121" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2121" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">8</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 176</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Resampling attitude states (quaternions, rotation matrix) in a Particle Filter</h2>
+<p>Suppose I have a particle filter which contains an attitude state (we'll use a unit quaternion from the body to the earth frame for this discussion) $\mathbf{q}_b^e$.</p>
+
+<p>What methods should or should not be used for resampling? Many resampling schemes (e.g. <a href="http://www.stat.columbia.edu/~liam/teaching/neurostat-spr12/papers/EM/resampling.pdf">this paper</a>) seem to require the variance to be calculated at some stage, which is not trivial for $SO\{3\}$. Or, the variance is required when performing roughening.</p>
+
+<p>Are there any good papers on resampling attitude states?  Especially those that re-sample complete poses (e.g. position and attitude)?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2121" data-toggle = "popover">
+				<p>user name : Damien</p>
+				<p> user reputation : 166</p>
+				<p class = "tagcontent" id = "usertaginfo-2121">{'particle-filter': 8, 'None': 0, 'pose': 8, 'dynamics': 5, 'gps': 5}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2121" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2121" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2121">
+					<img id="start_img-2121" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2121">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-2125"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2125" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Most particle filter implementations will use some kind of importance sampling, which does not require you to make an assumption on the underlying distribution. This is one of the main reasons for using a particle filter in the first place. Importance sampling does not sample from the estimated distribution, but from your set of weighted samples.</p>
+
+<p>This includes the ones in your linked paper. All the references to variance in there speak of the variance which is introduced by that particular re-sampling scheme. It is a measure on the quality of the re-sampling, since you do not want to introduce unnecessary uncertainty in your estimate of the true distribution by the particles. You do not need to calculate the variances of your particles for the re-sampling.</p>
+
+<p>On the question which one work best? Your paper has some of the answers. I also made a <a href="https://robotics.stackexchange.com/a/484/127">post</a> on the subject using less maths. In most cases some form of stratified resampling will be better than the multinomial scheme. </p>
+
+<p>The only case I could think of where you would need to calculate the variance of your SO(3) distribution as well would be when you wanted to verify the variance your resampling introduces. In that case, what I would do is to calculate the mean of the orientation (as you said, not trivial), and then use the variance of differences to the mean as scaled axis of rotation representation. But as I said. I don't think you need this.</p>
+
+<p>One word of caution: sampling over the full 6D pose is in most cases not recommended. You need a serious amount of particles for this. Even if you needed only 10 particles per dimension to represent your distribution appropriately - which often is not enough - this could mean that you need up to one million particles in 6D. Lots of memory and processing power...</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2125" data-toggle = "popover">
+				<p>user name : Jakob</p>
+				<p> user reputation : 2519</p>
+				<p class = "tagcontent" id = "usertaginfo-2125">{'ransac': 3, 'None': 210, 'computer-vision': 1, 'cameras': 1, 'c++': 3, 'slam': 12, 'rock': 1, 'i2c': 3, 'servos': 3, 'software': 1}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2125" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2125" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2125">
+					<img id="start_img-2125" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2125">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

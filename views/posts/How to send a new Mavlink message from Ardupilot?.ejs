@@ -1,0 +1,151 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to send a new Mavlink message from Ardupilot?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-5164" class = "post">
+			<h2>Question</h2>
+			<div id="vote-5164" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 1130</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to send a new Mavlink message from Ardupilot?</h2>
+<p>I'm trying to add a new message to the MAVLink interface. Following <a href="http://dev.ardupilot.com/wiki/code-overview-adding-a-new-mavlink-message/" rel="nofollow">this page</a>, there are the steps I took:</p>
+
+<ol>
+<li><p>Added the message to ardupilotmega.xml. Right at the end of the file:</p>
+
+<pre><code>&lt;message name="TESTING_TESTING_TESTING" id="182"&gt;
+  &lt;description&gt;A testing message&lt;/description&gt;
+  &lt;field type="int16_t" name="placeholder"&gt;Does nothing. Simply a placeholder&lt;/field&gt;
+&lt;/message&gt;
+</code></pre></li>
+<li><p>Regenerated the mavlink messages headers using <code>./libraries/GCS_MAVLink/generate.sh</code>. It worked okay and the new headers appeared.</p></li>
+<li><p>Then I added a function to the GCS class to make sure I'm sending on the right channel:</p>
+
+<pre><code>void GCS_MAVLINK::send_testing_testing_testing()
+{
+    mavlink_msg_testing_testing_testing_send(chan, 0);
+}
+</code></pre></li>
+<li><p>Now it's time to send the message, I added my own function to the scheduler (on last priority). I made sure the function is called by sending text first and seeing it on the mission planner console. Here is the function I added:</p>
+
+<pre><code>static void a_testing_loop(void)
+{
+    for (uint8_t i=0; i&lt;num_gcs; i++) 
+    {
+        if (gcs[i].initialised)
+        {
+            // gcs[i].send_text_P(SEVERITY_HIGH,PSTR("Testing String"));
+            gcs[i].send_testing_testing_testing();
+        }
+    }
+}
+</code></pre></li>
+</ol>
+
+<p>My message, however, isn't received on the mission planner end. It might have been received and ignored by the mission planner, but anyway it doesn't appear on the console window (even with 'Mavlink Message Debug' on)</p>
+
+<p>Is there configuration to be made to the Mission Planner for it to receive new messages? Or am I sending the message wrong?</p>
+
+<p>Also, is there a way to filter out messages from the console when using 'Mavlink debug mode'?</p>
+
+<p>I'm using SITL for testing</p>
+
+<p>(I don't have enough reputation - But this should be under the tag 'mavlink')</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-5164" data-toggle = "popover">
+				<p>user name : Nitay</p>
+				<p> user reputation : 151</p>
+				<p class = "tagcontent" id = "usertaginfo-5164">{'None': 3, 'ardupilot': 1, 'mavlink': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-5164">Load Comments</button></br>
+			<div id = "commentsection-5164" class = 'collapse'>
+			<div id = "comment-10393" class = "comment">
+				<p>Hi I have the same problem,
+I need to send by apm a sensor value, i follow the guide like you but I don't know how I can recognize my custom message. Have you find a solution?</p>
+			</div>
+			<div id = "comment-10413" class = "comment">
+				<p>I'm not sure as this was a while ago - But have you recompiled the mission planner MAVlink XMLs as well? Also, I've got a tool I've developed that might be usefull to you. I'll try to upload it today or tomorrow</p>
+			</div>
+			<div id = "comment-22139" class = "comment">
+				<p>I wanted to comment, but I don't have enough reputation. I'm struggling with the same thing. I have done the same things you did in the Ardupilot. I have also created the definition of the message in ardupilotmega.xml. Still no good result when I try to read it with `MainV2.comPort.MAV.getPacket()` method in the middle of the `mainloop()` in `FlightData.cs`.</p>
+			</div>
+			<div id = "comment-22143" class = "comment">
+				<p>@JonathanLopesFlor ncio I'm sorry but I can't remember exactly what I did. I remember fixing it though. I ended up implementing my own GCS, meaning I had more control over the messages and was able to see all messages received. A good workaround, however, is to send text messages (gcs_send_text_fmt) with what you need and adding code on the client side to parse these. If you need more debug info - You can add custom logs (I can extract the logs part from my code if you need more guidance)</p>
+			</div>
+			</div>
+				<textarea id = "speech-5164" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-5164">
+					<img id="start_img-5164" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-5164">Comment</button>
+
+<h1>Answers</h1>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

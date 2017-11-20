@@ -1,0 +1,234 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Wheel Odometry Covariance Matrix for Custom Robot
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-12260" class = "post">
+			<h2>Question</h2>
+			<div id="vote-12260" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 262</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Wheel Odometry Covariance Matrix for Custom Robot</h2>
+<p>I have been looking around in the forums, but could not find any answer for how to go about getting the wheel odometry covariance matrix for a custom built planar robot (I found some posts related to EKF, but could not find any clear solution). I need this in order to for e.g. fuse wheel odometry with other types of odometry, etc... I really would only need the covariance for the global planar velocities (which are directly related to the encoders/inputs), and determining the position or acceleration covariances seem to be able to be derived from there. </p>
+
+<p>I will try posting the answers to this as I find them, and perhaps this could also help future roboticists (hobbysts!?) that want to build a new mobile robot but may be confused about this.</p>
+
+<p>Let's say I have a custom planar robot with N number of motors/wheels/encoders, and a defined kinematic model.</p>
+
+<p>That is, I have a mapping:</p>
+
+<blockquote>
+  <p>(Vx, Vy, AngVel) -> ( W1, W2, ..., Wn)</p>
+</blockquote>
+
+<p>where W's are each motor's angular velocities. I am not sure if the inverse mapping always exists, but I could assume that it does just for now.</p>
+
+<p>By reading around the forums, I found that first we should calibrate for the systematic errors (e.g., due to unequal wheel diameters, etc..). For differential wheeled robots, this can be done with the UMBMark algorithm. This still does not give any specific information on how to get the covariance matrix tho.</p>
+
+<p>I imagine there are two options, using a static covariance matrix (predetermined by calibration), or dynamically adjusting them (let's say through a Kalman filter).</p>
+
+<p>A static covariance matrix is probably less accurate, but simpler to determine. However, I have no idea how to go about choosing these values (should I make the robot move back and forth several times and use the error as the Vx variance?). Are there any basic guidelines for filling up the covariance matrix statically?</p>
+
+<p>Another (more difficult) option seems to be to use a Kalman filter, and update the covariance matrices dynamically. But I am unsure what to choose as the inputs, nor white gaussian noise values for process/observation. </p>
+
+<p>Imagine there's some sort of local controller that I just give desired angular velocities and it tries to produce them. Should I go as low level as defining my inputs as the currents, and then go through the motor model? Or should I just choose the inputs to be my commanded angular velocities? </p>
+
+<p>But if my inputs are the desired angular velocities, then the state doesn't seem to depend on the previous state, and doesn't follow the kalman filter convention for the process (i.e. the new state would only depend on the input, as I am controlling the planar velocities directly from the wheels, and it is not affected by the previous state)!?
+At least the sensor model seems to be quite easy to derive from the kinematic model.</p>
+
+<p>As you can probably see, I am extremely confused for something that most likely has to be determined for most mobile robots out there. I am finding little to no clear documentation, which is weird for such a (very common!?) problem. If anyone could point me in the right direction I'd be extremely happy! </p>
+
+<p>Thanks!!</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12260" data-toggle = "popover">
+				<p>user name : robotics enthusiast</p>
+				<p> user reputation : 1</p>
+				<p class = "tagcontent" id = "usertaginfo-12260">{'wheel': 0, 'odometry': 0, 'None': 0, 'sensor-error': 0, 'calibration': 0, 'mobile-robot': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-12260" class = 'collapse'>
+			</div>
+				<textarea id = "speech-12260" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12260">
+					<img id="start_img-12260" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12260">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-12301"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-12301" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The covariance matrix of <em>the control inputs</em> is measured and known.</p>
+
+<p>That is, following the EKF equations on <a href="https://en.wikipedia.org/wiki/Extended_Kalman_filter" rel="nofollow noreferrer">this page</a>, the covariance of the control, $Q$ is (often) a diagonal matrix, where the diagonal terms are the variances of the control effects.  </p>
+
+<p>In a planar 2d robot, where odometery is used as a surrogate of control, the $Q$ matrix has two non-zero elements, which coorespond to the error in distance measurements from odometry. Stated another way, if the odometers return $d$ as distance travelled, and they have error $\sigma_d$, then your covariance matrix for control is $\begin{bmatrix} \sigma^2_d, 0 \\ 0, \sigma^2_d \end{bmatrix}$</p>
+
+<p>That's it. Just estimate how bad your measurements are.</p>
+
+<ul>
+<li>I would not go all the way down to voltages, I would trust the local controller and measure how bad it is to get the sigma above</li>
+<li>If your robot does not have inertia, then yes, angular velocity is independent across states. This is not a KF problem, you could include it if you wanted</li>
+<li>You need a book, and to start simple. Start with odometry. Do a 3D (x,y, theta) state, and see if you can go from there.</li>
+</ul>
+
+<hr>
+
+<p>The covariance matrix of the <em>robot state</em> is constructed by the jacobian of the state with respect to the control inputs, and is part of the EKF update equations.  (or, for non-parametric estimators, it's often just the actual variance of the samples).</p>
+
+<hr>
+
+<p>Some details and references:</p>
+
+<p>if your state (position, velocity) is a function of the wheels speeds (controls), first construct the functions $x=f(u), y=f(u), s=f(u), \omega = f(u)$... (for x,y position, speed, and rotational speed).  You can go as crazy as you want for $u$, it could be just wheel speeds, or some hugely complex modelling of the whole world, if mercury is in retrograde, etc.</p>
+
+<p>Typically, I use <a href="https://robotics.stackexchange.com/a/134/163">this</a>.</p>
+
+<p>Then, construct the <a href="https://en.wikipedia.org/wiki/Jacobian_matrix_and_determinant" rel="nofollow noreferrer">jacobian</a>, and let's call it $F$, etc, etc, following the <a href="https://en.wikipedia.org/wiki/Extended_Kalman_filter" rel="nofollow noreferrer">ekf equations</a>.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12301" data-toggle = "popover">
+				<p>user name : Josh Vander Hook</p>
+				<p> user reputation : 3960</p>
+				<p class = "tagcontent" id = "usertaginfo-12301">{'None': 345}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-12301" class = 'collapse'>
+			</div>
+				<textarea id = "speech-12301" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12301">
+					<img id="start_img-12301" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12301">Comment</button>
+			<br><div id = "ans-12342"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-12342" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Josh, thank you for your help!</p>
+
+<p>From my understanding it seems that a basic process for determining the velocity covariance matrices of a 3D (X,Y, Theta) robot with N wheels would then be (please correct me if I am wrong!):</p>
+
+<ol>
+<li><p>Define the state of the robot. For example, this could be (x Velocity $\dot{x}$, y velocity $\dot{y}$, theta velocity $\dot{\theta}$).</p></li>
+<li><p>Define a mapping function $x=f_x(u), y=f_y(u), \theta=f_{\theta}(u)$ of the control inputs $u$ to the state variables. This would depend on the kinematic model of the robot. For example, the control inputs could be the wheel velocities $w_1, w_2, ..., w_n$ for $N$ wheels.</p></li>
+<li><p>Place the robot at a reference position on the floor. Give control inputs to move it in the X direction (for e.g. 0.5 m/s), measure the real velocity the robot moved in X (e.g. 0.45 m/s). Repeat this several times for the forward direction, and obtain the standard deviation in x velocity based on statistical measurements. Do the same process for y velocity and Theta velocity.
+This constant covariance matrix we will call Q:</p></li>
+</ol>
+
+<p>$$
+Q = \begin{bmatrix}
+\sigma_{\dot{x}}^2 &amp;0  &amp;0 \\ 
+ 0&amp;  \sigma_{\dot{y}}^2&amp;0 \\ 
+ 0&amp;  0&amp; \sigma_{\dot{\theta}^2}
+\end{bmatrix}
+$$</p>
+
+<ol start="3">
+<li><p>Compute the transition matrix $F$, which is constructed from the jacobian of the state function $f$ with respect to the states. Refer to <a href="https://en.wikipedia.org/wiki/Extended_Kalman_filter" rel="nofollow noreferrer">Wikipedia</a> for the matrix equations.</p></li>
+<li><p>Define the sensor model. This maps the state variables to sensor values. For wheeled robots with $N$ encoders $p_1, p_2, ..., p_N$, this would be a map of the form $p_1 = h_1(\dot{x},\dot{y},\dot{\theta});p_2 = h_2(\dot{x},\dot{y},\dot{\theta});... $. </p></li>
+<li><p>Define the sensor error covariance matrix $R$. A wheel can be turned to a specific value, and the real measurements compared with the encoder outputs. When done several times, its statistics can be determined (similar to above):</p></li>
+</ol>
+
+<p>$$
+R = \begin{bmatrix}
+\sigma_{p_1}^2 &amp;0  &amp;0 \\ 
+ 0&amp;  \sigma_{p_2}^2&amp;0 \\ 
+ 0&amp;  0&amp; ...
+\end{bmatrix}
+$$</p>
+
+<ol start="6">
+<li><p>Compute the matrix $H$, as the jacobian of the sensor model function $h$ to the state variables.</p></li>
+<li><p>Now you can start the kalman filter loop. Choose matrix $P_0$ as an initial guess (you can choose all 0 for the beginning). Follow the equations in <a href="https://en.wikipedia.org/wiki/Extended_Kalman_filter" rel="nofollow noreferrer">Wikipedia</a> and solve for the state and odometry covariance matrix $P$ at every frame! This result (state, covariance) can be read by for example, the robot_localization package in ROS to fuse several sets of data and get a better odometry approximation!</p></li>
+</ol>
+
+<p>P.S. I am not really sure if this is correct, but I hope someone can tell me if it is (or any mistakes that I may have done along the way!)!</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12342" data-toggle = "popover">
+				<p>user name : robotics enthusiast</p>
+				<p> user reputation : 1</p>
+				<p class = "tagcontent" id = "usertaginfo-12342">{'wheel': 0, 'odometry': 0, 'None': 0, 'sensor-error': 0, 'calibration': 0, 'mobile-robot': 0}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-12342" class = 'collapse'>
+			</div>
+				<textarea id = "speech-12342" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12342">
+					<img id="start_img-12342" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12342">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

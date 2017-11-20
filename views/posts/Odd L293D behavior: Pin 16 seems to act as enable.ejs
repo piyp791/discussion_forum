@@ -1,0 +1,176 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Odd L293D behavior: Pin 16 seems to act as enable
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2053" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2053" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 779</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Odd L293D behavior: Pin 16 seems to act as enable</h2>
+<p>I have a chip that is labeled L293D with a small 'ST' logo, which does not behave like I believe a L239D should:</p>
+
+<p>I have the chip on a breadboard with pins 4,5,12 and 13 connected to the ground rail. The positive rail gets 6V from a battery pack.
+A motor is connected to pins 3 and 6.
+Pin 2 is connected to the positive rail.</p>
+
+<p>Now, when I connect pin 1 (enable 1) to the positive rail, the motor spins, which is expected.</p>
+
+<p>The weird thing is that if I connect pin 16 instead of pin 1 to positive, the motor spins, as well. </p>
+
+<p>Also, with the motor connected to 11 and 14, and 15 connected to positive, the motor spins if I connect pin 1 or pin 16 to positive, but not if I connect pin 9 (which should be the enable pin for that side).</p>
+
+<p>Does any of that make sense? Am I missing something here?</p>
+
+<p>Thanks!</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2053" data-toggle = "popover">
+				<p>user name : Juergen</p>
+				<p> user reputation : 11</p>
+				<p class = "tagcontent" id = "usertaginfo-2053">{'None': 0, 'h-bridge': 2, 'motor': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2053" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2053" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2053">
+					<img id="start_img-2053" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2053">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-2054"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2054" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The behaviour you're describing seems to be correct (as described in the <a href="http://www.ti.com/lit/gpn/l293" rel="nofollow noreferrer">Texas Instruments L293 datasheet</a> - which should be the same as ST's variant). Here's an example of how to wire 3 different motors (please note the indicated diodes are internal to the L293).</p>
+
+<p><img src="https://i.stack.imgur.com/VSY5i.png" alt="Copied from TI L293 Datasheet"></p>
+
+<p>The idea is that Vcc1 (pin 16) should be associated with your logic inputs: pins 1, 2, 7, 9, 10 and 15 (in other words, if your micro is powered from 3V3, Vcc1 should be 3V3). On the other hand, if you run your motors from 6V, Vcc2 (pin 8) should be 6V (or whichever voltage you use to drive the motors).</p>
+
+<p>For reference, here's the pinout of the TI L293.</p>
+
+<p><img src="https://i.stack.imgur.com/ep9A5.png" alt="enter image description here"></p>
+
+<p>Update:</p>
+
+<p>The TI variant does indeed seem to be the same as <a href="http://www.st.com/web/catalog/sense_power/FM142/CL851/SC1790/SS1555/PF63141" rel="nofollow noreferrer">ST's L293D (see powerdip package)</a>.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2054" data-toggle = "popover">
+				<p>user name : EDDY74</p>
+				<p> user reputation : 395</p>
+				<p class = "tagcontent" id = "usertaginfo-2054">{'None': 25}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2054" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2054" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2054">
+					<img id="start_img-2054" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2054">Comment</button>
+			<br><div id = "ans-2057"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2057" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The correct way to wire the pins out on a L293D is as follows:<br>
+Pin 1 &amp; 9 are enable pins should be tied to +5 if pulled low the outputs will be turned off regardless of the input states. <br>
+Pins 4,5, 13, 12 are ground pins and ideally connected to the micro-controller ground connection. <br>
+Pin2, Pin7, Pin10 and Pin15 are logic input pins. These are control pins and should be connected to micro-controller pins. <br>
+Pins 2 &amp; 7 control the left motor and 10 &amp; 15 control the right motor.
+Pin3, Pin6, Pin11, and Pin14 are output pins. Tie Pin3 and Pin6 to the first motor, Pin11 and Pin14 to second motor.<br>
+Pin 16 enables the IC should be connected to a +5v Regulated Supply
+Pin 8 powers the motors <br>
+More details:
+<a href="http://www.robotplatform.com/howto/L293/motor_driver_1.html" rel="nofollow">http://www.robotplatform.com/howto/L293/motor_driver_1.html</a></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2057" data-toggle = "popover">
+				<p>user name : OricTosh</p>
+				<p> user reputation : 86</p>
+				<p class = "tagcontent" id = "usertaginfo-2057">{'None': 7}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2057" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2057" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2057">
+					<img id="start_img-2057" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2057">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

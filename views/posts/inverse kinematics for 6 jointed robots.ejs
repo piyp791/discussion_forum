@@ -1,0 +1,159 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>inverse kinematics for 6 jointed robots
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9622" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9622" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 224</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>inverse kinematics for 6 jointed robots</h2>
+<p>I am a  uncertain about how to compute the right homogeneous transformation matrix to compute an inverse kinematic Q-configuration. </p>
+
+<p>Looking at robot like this <a href="https://i.stack.imgur.com/cuV2q.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/cuV2q.jpg" alt="enter image description here"></a></p>
+
+<p>Where at the end of this robot I have a camera mounted on to it. </p>
+
+<p>The purpose of my application is to make the robot follow an object, so basically tracking it.  The camera provide me with an X,Y,Z coordinate, which the position i want place my robot arm. </p>
+
+<p><strong><em>First question - How do i set up the desired homogenous transformation matrix?</em></strong></p>
+
+<p>The way i see it, I have 2 transformation matrices being <code>T_tool_base</code> and <code>T_world_tool</code> which become <code>T_world_base = (T_tool_base) (T_world_tool)</code></p>
+
+<p>My question is that how do i compute my desired transformation matrix. 
+I think i know how i should setup the transformation matrix for the camera which would be like this</p>
+
+<p>T_world_tool = <code>0 0 0 x
+               0 0 0 y
+               0 0 0 z
+               0 0 0 1</code></p>
+
+<p>(Second question is regarding the rotation matrix, how do prescribe such that rotation in arbitrary as long the endpoint has the desired position in the world frame?)</p>
+
+<p>but what should t_tool_base entail? should it entail the transformation of its current state or the desired transformation, and if so how do i extract the desired t_tool_base transformation?...</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9622" data-toggle = "popover">
+				<p>user name : James potter</p>
+				<p> user reputation : 226</p>
+				<p class = "tagcontent" id = "usertaginfo-9622">{'stereo-vision': 3, 'visualization': 1, 'None': 0, 'inverse-kinematics': 11, 'algorithm': 5, 'c++': 4, 'kinematics': 5, 'matlab': 1, 'robotic-arm': 18, 'jacobian': 3, 'motion-planning': 8}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-9622" class = 'collapse'>
+			</div>
+				<textarea id = "speech-9622" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9622">
+					<img id="start_img-9622" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9622">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9633"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9633" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">7</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I would recommend changing the naming convention since it is a bit misleading. In robotics the world Coordinate system (CS) is usually your fixed, absolute coordinate system. Lets call the transformation matrix from your camera to your object $T_{Object,Tool}$ If it cannot include any rotation, then you are right is should have the form as you specified. You are also right with your multiplications, but I would advise keeping the two thing separate. I actually do not think that you need the $T_{Object,Tool}$ matrix</p>
+
+<p>The $T_{Tool,Base}$ is a transformation matrix form your tool to your base. This is what you can use to solve the inverse kinematics problem. </p>
+
+<ol>
+<li>Define your coordinate systems (with the Denavit Hartenberg convention)</li>
+<li>Build your transformation matrix as
+$T_{Tool,Base} = A1(q1) \cdot A2(q2) \cdot A3(q3)\cdot A4(q4)\cdot A5(q5)\cdot A6(q6)$</li>
+<li>Build the Cartesian transformation Matrix as
+$T_{TCP} = X_{trans}\cdot Y_{trans}\cdot Z_{trans}\cdot X_{rot}\cdot Y_{rot}\cdot Z_{rot}$</li>
+<li>Solve the inverse kinematics problem from </li>
+</ol>
+
+<p>$T_{TCP} = T_{Tool,Base}$</p>
+
+<p>as presented in <a href="http://thydzik.com/academic/robotics-315/chap4.pdf">this description</a>. After this step you should have a function that for a given Cartesian coordinates of the TCP as input $X = (x, y, z, a, b, c)$ calculates the corresponding joint position as output $Q = (q_1, q_2, q_3, q_4, q_5, q_6)$</p>
+
+<ol start="5">
+<li>Your camera will measure the relative position of the object. Lets define the vector of measurments as $X_{Object} = (x, y, z, 0, 0, 0)$. The current Cartesian position of the robot is known (after solving the IK problem). Lets call this $X_{TCP} = (x_r, y_r, z_r, a_r, b_r, c_r)$. If you only want to track positions then $X_{new} = X_{Object} + X_{TCP}$ will give you the coordinates you want to position your TCP. Use this as input for the inverse kinematic function and get the $Q$ angles which correspond to this position. If you want to orient the TCP toward the object calculate also the new realative angles geometrically then add those also (instead of the $0, 0, 0$). That is it!</li>
+</ol>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9633" data-toggle = "popover">
+				<p>user name : 50k4</p>
+				<p> user reputation : 2800</p>
+				<p class = "tagcontent" id = "usertaginfo-9633">{'geometry': 0, 'None': 193, 'kinematics': 0, 'robotic-arm': 0}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-9633" class = 'collapse'>
+			</div>
+				<textarea id = "speech-9633" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9633">
+					<img id="start_img-9633" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9633">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

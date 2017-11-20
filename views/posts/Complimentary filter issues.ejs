@@ -1,0 +1,295 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Complimentary filter issues
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-10746" class = "post">
+			<h2>Question</h2>
+			<div id="vote-10746" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 111</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Complimentary filter issues</h2>
+<p><a href="https://i.stack.imgur.com/nSIHt.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/nSIHt.jpg" alt="Angle comparison"></a><a href="https://i.stack.imgur.com/C9Wmj.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/C9Wmj.jpg" alt="Angles from Gyroscope"></a><a href="https://i.stack.imgur.com/rxEjW.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/rxEjW.jpg" alt="Angles from Accelerometer raw data"></a>I'm trying to implement the complimentary filter to get Euler angles using accelerometer and gyroscope data. Attached is the MATLAB code that I have along with a data set.</p>
+
+<p>The data corresponds to moving the sensor from 0-90 degrees while attached to a goniometer. The sensor has an inbuilt algorithm that outputs Euler angles too and I'm trying to test the accuracy of this algorithm as it tends to overshoot the angle estimates.</p>
+
+<p>The problem with the complimentary filter is that the angles move between (around) negative 40 and positive 40 degrees instead of changing between (around) 0-90 degrees.</p>
+
+<p>Can anyone please point out what is wrong and why the complimentary filter isn't working well.</p>
+
+<pre><code>clc;
+clear all;
+close all;
+M=importdata('Multiple_Sensors_747000.csv');
+A=M.data;
+[m n]=size(A);
+a=1;
+t=m/60;
+angle=0;
+
+for i=1:3723
+    Acc(a,:)=M.data(i,6:8); % Reading Accelerometer data
+    R_norm(a)=sqrt(Acc(a,1)^2+Acc(a,2)^2+Acc(a,3)^2); % Normalized accelerometer 
+    Racc_norm1(a,1)=acos(Acc(a,1)/R_norm(a));         % Angle from accelerometer in X
+    Racc_norm1(a,2)=acos(Acc(a,2)/R_norm(a));         % Angle from accelerometer in Y
+    Racc_norm1(a,3)=acos(Acc(a,3)/R_norm(a));         % Angle from accelerometer in Z
+
+    Gyroscope(a,:)=M.data(i,3:5);                     % Reading gyroscope data
+    gyro(a,:)=Gyroscope(a,:)*(1/t);                   % Integrating gyroscope data
+    r(a,1)=sum(gyro(:,1));                            % Angle from gyroscope data
+    r(a,2)=sum(gyro(:,2));
+    r(a,3)=sum(gyro(:,3));
+    angle=0.99*(angle+(gyro(a,:)))+(0.01*Racc_norm1(a,:)); % Complimentary filter equation
+    ang(a,:)=angle;
+    a=a+1;
+end
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10746" data-toggle = "popover">
+				<p>user name : user6446313</p>
+				<p> user reputation : 28</p>
+				<p class = "tagcontent" id = "usertaginfo-10746">{'filter': 5, 'None': 0, 'gyroscope': 5, 'accelerometer': 5, 'matlab': 5}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10746">Load Comments</button></br>
+			<div id = "commentsection-10746" class = 'collapse'>
+			<div id = "comment-19355" class = "comment">
+				<p>What do the raw angles from the accel look like?</p>
+			</div>
+			<div id = "comment-19374" class = "comment">
+				<p>can we see the raw accel angles from a single axis during a 90 deg rotation? Ideally just data from a couple seconds.  no sense can be made from that accel plot.</p>
+			</div>
+			</div>
+				<textarea id = "speech-10746" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10746">
+					<img id="start_img-10746" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10746">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-10767"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10767" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>There are quite a few things wrong here. I'll split them into two sections: technical errors, and coding warnings. </p>
+
+<h2>Technical Errors:</h2>
+
+<ol>
+<li><strong>You are not calculating your angles from accelerometer readings correctly.</strong> Consider the arguments in general - they are the normalized accelerometer readings on each axis. You then take the inverse cosine of these. So, if the accelerometer is sitting flat on a table, <code>a_z</code> = -1 (or 1, depending on the polarity/handedness of your sensor), and <code>a_x</code> and <code>a_y</code> are zero. You then take the inverse cosine of those values, to find that the angle of rotation about the x and y axes are +90 degrees and the angle of rotation about the z axis is zero. This doesn't make sense. Consider instead using the <a href="http://www.hobbytronics.co.uk/accelerometer-info" rel="nofollow">equations found here</a>:</li>
+</ol>
+
+<p>$$
+\theta_x = \arctan{\left(\frac{X}{\sqrt{Y^2 + Z^2}}\right)} \\
+\theta_y = \arctan{\left(\frac{Y}{\sqrt{X^2 + Z^2}}\right)} \\
+$$</p>
+
+<p>Here you can see that, if the accelerometer is reading 0 on the x/y axes and +/-1 on the z-axis, that there is no rotation about the x or y axes. This makes sense. </p>
+
+<ol start="2">
+<li><p><strong>You are not using the gyroscope <em>angles</em></strong>. The gyroscope outputs an angular <em>velocity</em>, not an angular <em>position</em>. In order to get the angular <em>position</em>, you need to numerically integrate the gyroscope readings. You seem to have this in your code: <code>r = sum(Gyroscope)*(1/T);</code>, but then you <em>fail to use those angles</em> in the complimentary filter. Instead you go back to the raw gyro outputs.</p></li>
+<li><p><strong>Your complimentary filter isn't a complimentary filter.</strong> A complimentary filter is like a lag filter. Each have the form: <code>y = (k)*a + (1-k)*b;</code>. In the complimentary filter, <code>a</code> and <code>b</code> are two different signals, and <code>k</code> is like a "blend" factor, where you take <code>k</code>% of one signal and add it to <code>1-k</code>% of the other signal. You end up with 100% of signal strength if you do this. In a lag filter, <code>a</code> is the current sample and <code>b</code> is the previous output of the lag filter. The <code>k</code> and <code>1-k</code> argument still stands, though, and you still wind up with 100% of signal strength. I'll split what you're doing into parts to try to make it more clear what you're doing:</p></li>
+</ol>
+
+<p>You have:</p>
+
+<pre><code>angle=0.99*(angle+(gyro(a,:)))+(0.01*Racc_norm1(a,:));
+ang(a,:)=angle;
+</code></pre>
+
+<p>Splitting this up a little, you could rephrase it by pulling the <code>angle</code> term out of its own definition and calling a different variable - <code>prevAngle</code>. Factor the <code>0.99</code> that it's multiplied by as well and you get:</p>
+
+<pre><code>prevAngle = angle;
+angle = 0.99*(gyro(a,:))+(0.01*Racc_norm1(a,:));
+ang(a,:) = 0.99*prevAngle + angle;
+</code></pre>
+
+<p>So here it's like you've got a complimentary filter in the form of:</p>
+
+<pre><code>k = 0.99;
+angle = k*gyro(a,:) + (1-k)*Racc_norm1(a,:);
+</code></pre>
+
+<p>but, your lag filter is broken, because after that line you have:</p>
+
+<pre><code>k2 = 0.99;
+ang(a,:) = k2*prevAngle + (k2+(1-k2))*angle;
+</code></pre>
+
+<p>which is the same another way of saying what you have, which is:</p>
+
+<pre><code>ang(a,:) = k2*prevAngle + (1)*angle;
+</code></pre>
+
+<p>Hopefully here you can see that, while your complimentary filter is setup okay and you retain 100% signal strength, your lag filter is broken and <strong>each sample</strong> increases in magnitude by 1.99. You should be doing <code>k2*prevAngle + (1-k2)*angle</code>, but instead of adding <code>(1-k2)*angle</code>, where <code>(1-k2)</code> is 0.01, you're instead adding <code>1*angle</code>.</p>
+
+<p>So, in summary, you are getting gibberish from the accelerometers, and combining that with gyroscope <em>velocities</em> with a broken filter.</p>
+
+<h2>Coding Warnings:</h2>
+
+<p>I'm really not trying to poke you in the eye/salt in the wound at this point, I'm just pointing out some flaws and hopefully giving some guidance that should speed up the work I'd imagine you'll be doing in the future. (Combination of IMU filtering and Matlab all sounds like a senior/grad project). </p>
+
+<ol>
+<li><p><strong>Don't use magic numbers.</strong> Your <code>for</code> loop runs to 3273. What is that? Why that specific number? You seem to have a grasp of the <code>size()</code> function. I'll point out that you can call <code>size()</code> two different ways - as you have, which is <code>[m,n] = size(data)</code>, or another way - <code>m = size(data,1)</code> and <code>n = size(data,2)</code>. You never use <code>n</code>, so I'm assuming all you care about is the number of rows. I generally get the number of samples/rows with a one-line call like: <code>nSamples = size(data,1);</code>. Then I can use <code>nSamples</code> instead of magic numbers in all other places <em>and I don't need to go back and edit the code for different data sets.</em> Manually re-coding for every data set is hazardous to your sanity and can give you lots of grief when you forget to change <strong>all</strong> of the magic numbers and then switch data sets. </p></li>
+<li><p><strong>Don't manually increment anything.</strong> You declare <code>a=1;</code> and then use the <code>a=a+1;</code> at the end of your for loop, using <code>a</code> everywhere you could otherwise use <code>i</code>, your loop variable. </p></li>
+<li><p><strong>Use descriptive names.</strong> I generally avoid <code>i</code> and similar, even for loop variables. First, <code>i</code> without declaration is <code>1i</code>, the imaginary number in Matlab. Second, it gets a little tedious/confusing in nested loops to go i/j or i/ii or whatever. As with note 1, I declare my samples to be <code>nSamples</code>, and my <code>for</code> loops are generally <code>for currentSample = 1:nSamples</code>. This can blow up column widths, but the code is so much easier to read and the loop variables are so much easier to manage that I figure it's worth it. One loop can loop through your <code>currentSample</code> and your other loop can then run through <code>currentColumn</code> or whatever. </p></li>
+<li><p><strong>Vectorize.</strong> Vectorizing will always speed up your code. Matlab is terrible, <strong>terrible</strong> at doing any kind of looping. They have algorithms that run vector operations faster than if you looped over it. In C languages there shouldn't be much of a difference, but Matlab isn't C and it doesn't run in real time. I clocked your code at about 140ms to execute when I made a fake data set of size <code>randn(3723,8)</code> and used that for your code. When I used vector operations I got that down to 8ms, and that includes the loop required to do the lag filter. If you did <em>just</em> the complimentary filter, then you can take that loop out and the time drops to 0.8ms. This means that, even though I'm still running a loop, my vectorized version is 16x faster than your unvectorized version. Without the loop it's 160 times faster. I wanted to harp on vectorizing a little because I had simulations as a grad student that ran 24 hours per day for up to 9 days. Every millisecond matters when you're on that time scale. You might not ever do anything that intense, but you'll almost certainly work on larger datasets at some point. This looks like a minute of data.</p></li>
+</ol>
+
+<p>Not only is it faster, but it's also easier to look at. Consider the following, from your code:</p>
+
+<pre><code>for i=1:3723
+    Acc(a,:)=M.data(i,6:8); % Reading Accelerometer data
+    R_norm(a)=sqrt(Acc(a,1)^2+Acc(a,2)^2+Acc(a,3)^2); % Normalized accelerometer 
+    Racc_norm1(a,1)=acos(Acc(a,1)/R_norm(a));         % Angle from accelerometer in X
+    Racc_norm1(a,2)=acos(Acc(a,2)/R_norm(a));         % Angle from accelerometer in Y
+    Racc_norm1(a,3)=acos(Acc(a,3)/R_norm(a));         % Angle from accelerometer in Z
+
+    Gyroscope(a,:)=M.data(i,3:5);                     % Reading gyroscope data
+    gyro(a,:)=Gyroscope(a,:)*(1/t);                   % Integrating gyroscope data
+    r(a,1)=sum(gyro(:,1));                            % Angle from gyroscope data
+    r(a,2)=sum(gyro(:,2));
+    r(a,3)=sum(gyro(:,3));
+    a=a+1;
+end
+</code></pre>
+
+<p>and compare that with the vectorized form:</p>
+
+<pre><code>Acc = M.data(:,6:8);
+R_norm = (Acc(:,1).^2 + Acc(:,2).^2 + Acc(:,3).^2).^(0.5);
+Racc_norm1 = acos(Acc(:,1)./repmat(R_norm,1,3));
+
+Gyroscope = M.data(:,3:5);
+gyro = Gyroscope.*(1/t);
+r = cumsum(gyro);
+</code></pre>
+
+<p>A couple of things were used there - the colon operator to select 'all' rows (<code>Acc = M.data(:,6:8)</code>), the use of the element-wise operator, which is just a period before the regular operators (.^ .* ./), the use of <code>repmat</code> to get <code>R_norm</code> to be the same size as <code>Acc</code>. <code>repmat</code> is easy to use - the data set you want to copy, how many copies you want in the row dimension, and how many copies you want in the column dimension. Lastly, there's the cumulative sum <code>cumsum</code> to compound sequential sums. </p>
+
+<p>So, in closing, this is probably way more than you were looking for, but former grad student to (probably) grad student, these are tips and tricks I learned along the way with Matlab. </p>
+
+<p>Practice vectorizing code in everything you do. When you're working on small stuff it's easy to see if you've done something wrong. By the time you get to big projects, thinking in vectorized form will be second nature. If you wait for the big project to start trying to vectorize, you're in for a world of pain and sorrow trying to learn on-the-fly or (worse) trying to refactor a project.</p>
+
+<p>Best of luck!</p>
+
+<p>tl;dr - Come for the technical review, stay for the nifty tips! </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10767" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-10767">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10767">Load Comments</button></br>
+			<div id = "commentsection-10767" class = 'collapse'>
+			<div id = "comment-19378" class = "comment">
+				<p>I'll add as a comment that I would strongly encourage you to give the [Madgwick filter](http://x-io.co.uk/open-source-imu-and-ahrs-algorithms/) a shot. At the bottom of the page there are links to already-written functions in Matlab for doing exactly what you're trying to do.</p>
+			</div>
+			<div id = "comment-19393" class = "comment">
+				<p>Thank you very much for all your feedback. I am a grad student, a relative beginner in programming and will be working with large data sets- so all your feedback is highly appreciated. I tried to make the changes you mentioned. Here's the modified code:</p>
+			</div>
+			<div id = "comment-19394" class = "comment">
+				<p>`for rows=1:m
+     times1(a)=M.data(rows,2);
+    Acc(a,:)=Out(rows,:); % Reading Accelerometer data
+    R_norm = (Acc(:,1).^2 + Acc(:,2).^2 + Acc(:,3).^2).^(0.5); 
+    Racc_norm1 = atan(Acc(:,1:3)./repmat(R_norm,1,3)); 
+   Gyroscope(a,:)=M.data(rows,3:5);                  
+    gyro(a,:)=Gyroscope(a,:)*(1/t);                   
+    r = cumsum(gyro);                     
+    prevAngle(a,:) = angle(a-1,:);
+    angle(a,:) = 0.95*(r(a,:))+(0.05*Racc_norm1(a,:));     %Complementary filter equation
+    ang(a,:)=0.95.*prevAngle(a,:)+0.05.*angle(a,:);
+    a=a+1;
+end`</p>
+			</div>
+			<div id = "comment-19395" class = "comment">
+				<p>But the complimentary filter output still does not seem accurate. It still goes negative as before. Is there something obvious that I'm still missing?</p>
+			</div>
+			<div id = "comment-19399" class = "comment">
+				<p>@user6446313 - First, if you're going to post code, please *edit your question* and put it there. It's harder than it needs to be to read when it's all on one line like that. Have you tried just plotting the two values separately? Look at `r` and look at `Racc_norm`, and see if they both look generally correct. **Then** run those values through the complimentary filter. This is good troubleshooting practice in general - verify your data at every step possible to identify which step is bad. It looks like your accelerometer calculation is still incorrect.</p>
+			</div>
+			<div id = "comment-19400" class = "comment">
+				<p>You swapped `acos` for `atan` but that's all you did. First, I'll point out that you can't get a yaw angle (z-axis rotation) from an accelerometer because that axis is parallel to the gravity vector. So the best you can do is use the complimentary filter to fuse the x- and y-axis readings for the accelerometer and gyro. The z-axis reading has to come only from the gyro; the accelerometer physically can't detect that. You need to use the form I posted above to get the accelerometer readings correct.</p>
+			</div>
+			<div id = "comment-19401" class = "comment">
+				<p>First normalize the accelerometer readings - `Acc(a,:) = Acc(a,:)/R_norm(a);`, then calculate the angles with `theta_x(a) = atan(Acc(a,1)^2 / (Acc(a,2)^2 + Acc(a,3)^2));` for the x-angle rotation and `theta_y(a) = atan(Acc(a,2)^2 / (Acc(a,1)^2 + Acc(a,3)^2));` for the y-angle rotation. Then, last step would be to fuse *only those two angles* with the gyro - `angle(a,1) = 0.95*r(a,1) + 0.05*theta_x(a);` and `angle(a,2) = 0.95*r(a,2) + 0.05*theta_y(a);`. The z-axis rotation has to be gyro-only `angle(a,3) = r(a,3);`.</p>
+			</div>
+			</div>
+				<textarea id = "speech-10767" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10767">
+					<img id="start_img-10767" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10767">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

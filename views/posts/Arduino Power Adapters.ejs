@@ -1,0 +1,174 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Arduino Power Adapters
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8580" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8580" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 53</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Arduino Power Adapters</h2>
+<p>I'm shopping for my first Arduino with a specific goal in mind. I need to attach 3 standard servo motors, an ArduCam Mini 2MP camera, and several LEDs. I'm trying to figure out power requirements. I assume that USB power won't be sufficient. I'm looking at 12V AC-to-DC outlet adapters and I noticed that Amps vary from ~500MA to 5A. I don't want to use batteries.</p>
+
+<p>What would you recommend as minimum amperage for this setup? Is there a maximum amperage for Arduino boards? I don't want to plug it in and burn it out. If I plug in both the USB cable and a power adapter at the same time, is power drawn from both cables?</p>
+
+<p>Thanks!</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8580" data-toggle = "popover">
+				<p>user name : skibulk</p>
+				<p> user reputation : 110</p>
+				<p class = "tagcontent" id = "usertaginfo-8580">{'None': 0, 'power': 0, 'arduino': 0, 'servomotor': 1, 'robotic-arm': 1, 'sensors': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8580" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8580" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8580">
+					<img id="start_img-8580" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8580">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8583"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8583" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The three  standard servo motors    presumably standard-size hobby RC servos   will be the main load on your power supply, unless your LEDs are high-power devices.  Pololu.com's <a href="https://www.pololu.com/blog/16/electrical-characteristics-of-servos-and-introduction-to-the-servo-control-interface" rel="nofollow">electrical characteristics of servos...</a> web page has some guidelines you probably should read.  Some excerpts:</p>
+
+<blockquote>
+  <p>... A standard servo will have a stall current around one amp, a micro servo will need a few hundred milliamps, and a giant servo can draw ten amps or more. ... quiescent currents are tricker to estimate ... typically, the current should be in the few dozen to one or two hundred milliamp range</p>
+</blockquote>
+
+<p>For your three servos, a 5V 2A power supply is reasonable, supposing you never stall more than one servo at once and that stall times are brief (a few seconds at most).  If you were to stall all three servos at the same time on a 2A PS, and the Uno were powered by the same supply, it probably would reset or otherwise misbehave.</p>
+
+<p>Figure 35 to 50 mA for the Uno, and perhaps 50 mA for the ArduCam Mini 2MP camera (125 mW at 3V, IIUC), and 15 to 25 mA per LED.  Note, for indicator LEDs (vs illumination) many high brightness LEDs work ok at sub-milliamp currents; for example, on some of my Arduino nano boards I've replaced the PWR indicator's 1K  dropping resistor with 20K  and it's adequately bright.</p>
+
+<p>In brief, allow two to three amps for the servos and perhaps a fourth of an amp for the rest.</p>
+
+<p>The Arduino will draw only the current it needs, as long as it's powered via USB or its Vin pin or DC socket.  Several Arduino models (eg Uno, Mega2560, Nano) have a FET or diode automatic power-selection network, typically allowing them to be powered by USB at the same time as by Vin pin or DC socket.  </p>
+
+<p>If you wish to connect a 5V PS to an Arduino's +5V line (which can be done), first review the  gotcha's  at <em><a href="http://www.rugged-circuits.com/10-ways-to-destroy-an-arduino/" rel="nofollow">10 ways to destroy an arduino </a></em> at rugged-circuits.com.  </p>
+
+<p><em>Edit:</em> </p>
+
+<p>For a 12V adapter, hook into the Vin pin or DC socket.  On an Uno, there's a diode after the DC socket and in this case using the socket is preferable to using Vin.</p>
+
+<p>With 12V into the Uno's +5V regulator (typically a NCP1117ST50T3G), you probably won't draw more than 0.3 0.5 A from the  +5V line without overheating the regulator.  A 9V supply, dropping 3V less across the regulator, dissipates 1.5 W less power in it at 0.5 A than does a 12V supply, with consequently less heating.</p>
+
+<p>An <a href="https://www.arduino.cc/en/Main/ArduinoBoardUno" rel="nofollow">Uno page at arduino.cc</a> says:</p>
+
+<blockquote>
+  <p>The board can operate on an external supply from 6 to 20 volts. If supplied with less than 7V, however, the 5V pin may supply less than five volts and the board may become unstable. If using more than 12V, the voltage regulator may overheat and damage the board. The recommended range is 7 to 12 volts. </p>
+</blockquote>
+
+<p>Note that hooking a 5V PS to the +5V bypasses the regulator entirely.  The earlier link (<em>10 ways...</em>) recommends against this in certain cases.  The Uno page at arduino.cc advises against it:</p>
+
+<blockquote>
+  <p>5V. This pin outputs a regulated 5V from the regulator on the board. The board can be supplied with power either from the DC power jack (7 - 12V), the USB connector (5V), or the VIN pin of the board (7-12V). Supplying voltage via the 5V or 3.3V pins bypasses the regulator, and can damage your board. We don't advise it.</p>
+</blockquote>
+
+<p>Options include: </p>
+
+<ul>
+<li><p>Power Arduino and low-current devices via USB or via a 9V 3-5 W adapter; use a higher-current, eg 2A or 10 W,  5V adapter for servos.</p></li>
+<li><p>With a 5 A or 60 W, 12V adapter, connect +12 to Vin or DC socket; also attach one or more inexpensive adjustable 2-amp LM2596-based buck regulators like <a href="http://www.ebay.com/itm/LM2596S-ADJ-DC-DC-Buck-Regulator-Power-Module-3A-Adjustable-5V-12V-24V-/191095436739?hash=item2c7e2cf5c3:g:27IAAOxydUJTMqQv" rel="nofollow">1</a>, <a href="http://www.ebay.com/itm/DC-DC-Buck-Step-Down-Converter-Module-LM2596-Voltage-Regulator-Led-Voltmeter-/160995621268?hash=item257c163994:g:uUsAAMXQQQZRyqOI" rel="nofollow">2</a>, or <a href="http://www.ebay.com/itm/LM2596-LED-Voltage-Regulator-DC-DC-Buck-Step-Down-Converter-Module-Voltmeter-/331701453975?hash=item4d3af28497:g:ihkAAOSw5ZBWPMuc" rel="nofollow">3</a> to the +12, dial the outputs in to +5, and use them to power the servos, with the Arduino ground common with the regulator grounds.</p></li>
+</ul>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8583" data-toggle = "popover">
+				<p>user name : James Waldby - jwpat7</p>
+				<p> user reputation : 1856</p>
+				<p class = "tagcontent" id = "usertaginfo-8583">{'None': 134}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8583">Load Comments</button></br>
+			<div id = "commentsection-8583" class = 'collapse'>
+			<div id = "comment-13967" class = "comment">
+				<p>Thanks! So if I get a 5 amp DC adaptor and connect it to my Arduino with one LED (for initial testing, without servos), it would only draw ~75mA? It would not explode from the extra amps?</p>
+			</div>
+			<div id = "comment-13968" class = "comment">
+				<p>@skibulk, right, supposing it's 5V 5A powering a 5V bus.</p>
+			</div>
+			<div id = "comment-13969" class = "comment">
+				<p>I plan to use a 12V wall outlet adapter. Arduino reports an operating voltage of 5V but recommends input voltage of 7-12V. Strange. See "Technical Specs": https://www.arduino.cc/en/Main/ArduinoBoardUno</p>
+			</div>
+			<div id = "comment-13971" class = "comment">
+				<p>@skibulk, See edit.  That  recommended input voltage goes through a regulator that drops it to +5.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8583" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8583">
+					<img id="start_img-8583" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8583">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

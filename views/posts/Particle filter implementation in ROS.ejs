@@ -1,0 +1,129 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Particle filter implementation in ROS
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2075" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2075" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 1234</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Particle filter implementation in ROS</h2>
+<p>I'm looking for particle filter implementation in ROS to use in mobile robot localization, but it seems the only available package is <a href="http://wiki.ros.org/amcl" rel="nofollow">amcl</a> (Adaptive Monte Carlo), I'm not sure is it possible to use it as particle filter or not, and if it's feasible, how?</p>
+
+<p><strong>Note</strong>: The robot (wheeled robot) provides odometry data and another data source is <code>Kinect</code>, that provides visual odometry data using <a href="http://wiki.ros.org/fovis" rel="nofollow">fovis</a>.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2075" data-toggle = "popover">
+				<p>user name : Maysam</p>
+				<p> user reputation : 185</p>
+				<p class = "tagcontent" id = "usertaginfo-2075">{'odometry': 3, 'None': 0, 'localization': 12, 'particle-filter': 7, 'slam': 2, 'mobile-robot': 5, 'ros': 12, 'navigation': 4}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2075" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2075" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2075">
+					<img id="start_img-2075" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2075">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-2080"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2080" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Monte Carlo localization is just another name for a particle filter. Monte Carlo methods are a broader name for computational algorithms that rely on random sampling. A particle filter is a specific application of the general Monte Carlo method for localization, and so it is simply referred to sometimes as Monte Carlo localization.</p>
+
+<p>If you ask Lord Google, he'll tell you everything you want to know:
+<a href="http://en.wikipedia.org/wiki/Monte_Carlo_localization">http://en.wikipedia.org/wiki/Monte_Carlo_localization</a></p>
+
+<p>Sebastian Thrun has a great book called Probabilistic Robotics that talks about MCL (Monte Carlo Localization) if you're interested in something more formal.</p>
+
+<p>Edit: I just read the amcl rosnode wiki page and it actually mentions pretty much exactly what I've said here...I'm sure if you just read the node's wiki page you'll find your answers. </p>
+
+<p>The amcl rosnode currently works with laser range data (i.e. from a LIDAR), so you'll have to extend it if you want to take advantage of a Kinect. It seems like you'll need some form of sensor measurement, as opposed to pure odometry. You could combine the odometry readings from the wheels &amp; the visual odometry in a Kalman Filter, but with no sensor readings to update your position and fix errors based on a map, you'll just accumulate error and you'd have no sensor update in your MCL. You should be able to generate range data using the Kinect for the purpose of applying it as the sensor update in the MCL algorithm, and it might even be possible to publish this as laser data in ROS if you reformat it. This would allow you to interface directly with the existing amcl package.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2080" data-toggle = "popover">
+				<p>user name : Andrew Capodieci</p>
+				<p> user reputation : 826</p>
+				<p class = "tagcontent" id = "usertaginfo-2080">{'None': 54}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2080" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2080" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2080">
+					<img id="start_img-2080" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2080">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

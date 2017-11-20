@@ -1,0 +1,439 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Correct way to use Subsumption Architecture with Robot C
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-309" class = "post">
+			<h2>Question</h2>
+			<div id="vote-309" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">10</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 1800</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Correct way to use Subsumption Architecture with Robot C</h2>
+<p>I've been doing a lot of reading lately about <a href="http://en.wikipedia.org/wiki/Subsumption_architecture" rel="nofollow">Subsumption Architecture</a> and there are a few different ways people seem to advocate. </p>
+
+<p>For instance some people use a global "flag" variable to have a task take control. Others use the <code>endTimeSlice()</code> and allow the arbiter to really choose. And I think this is correct. </p>
+
+<p>I have this small section of <a href="http://en.wikipedia.org/wiki/Robotc" rel="nofollow">RobotC</a> code that I'm working on for a line following robot but am not sure I am doing it right as currently the track method will always take over the find method. The correct flow should be that find should guide the robot to the line using a spiral path to find the line. Once the line is found track should take over. </p>
+
+<pre><code>task evade(){
+    if(SensorValue(forwardSonarSensor) &gt; threshold){
+            //box the obstruction
+    }
+}
+
+task find(){
+    if(SensorValue(lightSensor) &gt; threshold){
+            //spiral the robot
+    }
+}
+
+task track(){
+
+    if(SensorValue(lightSensor) &lt; threshold){
+            //go straight
+    }else{
+                //execute turns to follow the line
+    }
+}
+
+task main(){
+    while(true){
+        StartTask(evade,9);
+        StartTask(track,8);
+        StartTask(find,7);
+        wait1Msec(250);
+    }
+}
+</code></pre>
+
+<p>I've just used some comments here rather than the actual code to keep it brief. Are my if statements not good enough as conditions because when the robot is off the line, <code>track()</code> takes over. Is this due to the else statement within track? If so, how to have <code>track()</code> perform turns when it looses the line without taking over from forage at the start of the program? </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-309" data-toggle = "popover">
+				<p>user name : Eric Banderhide</p>
+				<p> user reputation : 150</p>
+				<p class = "tagcontent" id = "usertaginfo-309">{'mobile-robot': 10, 'None': 0, 'two-wheeled': 10, 'robotc': 10, 'software': 10}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-309">Load Comments</button></br>
+			<div id = "commentsection-309" class = 'collapse'>
+			<div id = "comment-351" class = "comment">
+				<p>The numbers you give in `StartTask`, are they the priority of the task? Is 9 going to be the highest priority? In that case, shouldn't `find` have more priority than `track`? In fact, the condition of `find` and the `else` condition of `track` are the same. So, as a human, if the sensor value is bigger than threshold, what would you do? Go on spiral or turn to adjust the line?</p>
+			</div>
+			</div>
+				<textarea id = "speech-309" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-309">
+					<img id="start_img-309" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-309">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-337"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-337" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">6</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>With Subsumption Architecture, you should carefully design your behaviors in such a way that if you assign task <code>T</code> priority <code>n</code>, then <code>T</code> should be what the robot should do if all tasks with higher priority than <code>n</code> are ignored.</p>
+
+<p>Let's order your example tasks, then figure out a way to implement it. Your tasks are <code>evade</code>, <code>find</code> and <code>track</code>.</p>
+
+<p>In general you would want the robot to track a line. However, if it couldn't detect the line, then it should try to find it. Above all, it should evade obstacles. This gives us the following ordering:</p>
+
+<ul>
+<li>Highest priority: <code>evade</code></li>
+<li>Then: <code>find</code></li>
+<li>Then: <code>track</code></li>
+</ul>
+
+<p>The reason <code>find</code> has higher priority than <code>track</code> is that, as I mentioned above, you would <code>track</code> only if <code>evade</code> and <code>find</code> are unnecessary. If you put <code>find</code> below <code>track</code>, that means you start tracking if there is no obstacle, even if you are not on the line.</p>
+
+<p>Now let's look at your implementation:</p>
+
+<pre><code>task find(){
+    if(SensorValue(lightSensor) &gt; threshold){
+            //spiral the robot
+    }
+}
+
+task track(){
+
+    if(SensorValue(lightSensor) &lt; threshold){
+            //go straight
+    }else{
+                //execute turns to follow the line
+    }
+}
+</code></pre>
+
+<p>Remember that we gave <code>find</code> a higher priority. Therefore, if the robot cannot sense the <code>lightSensor</code>, it will go in spiral trying to find the line. Once it does, <code>track</code> kicks in. As you can see, the <code>else</code> condition of <code>track</code> never happens.</p>
+
+<p>While this works, the robot would move very awkwardly. There is not much you can do about it in fact, given the current build of your robot.</p>
+
+<hr>
+
+<p>Although I already answered your question, but here is a simple improvement to your line tracking:</p>
+
+<p>Instead of one light sensor, use two; <code>ls_left</code> and <code>ls_right</code>. Using (at least) two sensors, you can understand whether you are totally out of the track, or about to go out of the track. In the second case, you can easily turn to the proper direction and get back on track.</p>
+
+<p>Your <code>find</code> task is similar:</p>
+
+<pre><code>task find(){
+    if (SensorValue(ls_left) &gt; threshold
+        &amp;&amp; Sensorvalue(ls_right) &gt; threshold){
+            //spiral the robot
+    }
+}
+</code></pre>
+
+<p>That is, you go in spiral only if you don't sense anything at all</p>
+
+<p>Your <code>track</code> task now becomes more efficient:</p>
+
+<pre><code>task track(){
+
+    if (SensorValue(ls_left) &lt; threshold
+        &amp;&amp; SensorValue(ls_right) &lt; threshold){
+            //go straight
+    } else if (SensorValue(ls_left) &lt; threshold
+        &amp;&amp; SensorValue(ls_right) &gt; threshold){
+            //turn left
+    } else if (SensorValue(ls_left) &gt; threshold
+        &amp;&amp; SensorValue(ls_right) &lt; threshold){
+            //turn right
+    } else {
+            // shouldn't happen, but go on spiral anyway
+    }
+}
+</code></pre>
+
+<p>Obviously, with a matrix of light sensors, you can better judge how badly you are going out of track (i.e. with what angle) and better decide how to get back on track (i.e. with what angular speed).</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-337" data-toggle = "popover">
+				<p>user name : Shahbaz</p>
+				<p> user reputation : 2615</p>
+				<p class = "tagcontent" id = "usertaginfo-337">{'None': 193, 'usb': 12, 'distributed-systems': 7, 'microcontroller': 1, 'embedded-systems': 7, 'servomotor': 1, 'platform': 18, 'can': 1, 'machine-learning': 12, 'real-time': 18, 'mobile-robot': 1, 'rs232': 12, 'software': 20}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-337" class = 'collapse'>
+			</div>
+				<textarea id = "speech-337" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-337">
+					<img id="start_img-337" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-337">Comment</button>
+			<br><div id = "ans-346"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-346" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>short answer; no you really need to do things quite a bit differently.</p>
+
+<p>long incomplete answer;
+Let me give you some psuedo code appropriate for robotC, that puts you on a better path. First, do not use tasks - this is NOT what robotC tasks are for. They could be made to work, maybe, maybe not (and you need quite a few changes to even try).</p>
+
+<pre><code>// global variables
+int distance;
+int light;
+
+main() {
+   while (true) {
+   distance = read_distance;
+   light = read_light;
+   if (task1_wantsToRun())
+     task1_run();
+   if (task2_wantsToRun())
+     task2_run();   
+   }
+}
+</code></pre>
+
+<p>there is a couple of things here; priority becomes irrelevant. As nice as it seems to have tasks in robotC with priorities, they are not a good choice for subsumption implementation in my experience. For reasons like, priorities are not always honored, tasks can not be interrupted (sometimes) so when a higher priority event occurs, it is not going to react like you expect, robotC only recently became re-entrant, so things like accessing a sensor from more than 1 task may be risky (I2C timing issues), and in some cases it is not (automatically polled sensors).</p>
+
+<p>You can add your own priority implementation to the above loop as you get things working, but it really is not needed for starts.</p>
+
+<p>Your comment "//box the obstruction"  describes a ballistic behavior. Those are a bit tricky to implement using multi-tasking. The simple loop I used makes it a lot easier, and better for starters/learning.</p>
+
+<p>The other thing I will leave you with, is that subsumption while being neat and appropriate for a lot of things, is not a good way to implement what is better done traditionally. Indeed the 'evade' portion may be a good candidate for subsumption, but honestly your other task should be called 'GoOnAboutYourBusiness'. I say this because you probably do not want to change from searching to following with subsumption. Handle those with traditional programming loops. With a single sensor, - is the light sensed darker or lighter than it was last loop?  if it got darker (assuming black line) keep turning the same direction, if it got lighter turn the other way, if it stayed the same, go straight. You probably need to add some PID and use a steering curve instead of just turning left and right to be smoother.</p>
+
+<p>And yes, multiple sensors help. <a href="http://www.mindsensors.com/" rel="nofollow">http://www.mindsensors.com/</a>  - yeah, that's me in the movie currently (11/10/2012)</p>
+
+<h3>Update: actual code</h3>
+
+<p>I will try this out in a little while, but it compiles and illustrates what I wrote above:</p>
+
+<pre><code>#pragma config(Sensor, S1,     S_LIGHT,        sensorLightActive)
+#pragma config(Sensor, S2,     S_DISTANCE,     sensorSONAR)
+#pragma config(Motor,  motorB,          LEFT,          tmotorNXT, PIDControl, encoder)
+#pragma config(Motor,  motorC,          RIGHT,         tmotorNXT, PIDControl, encoder)
+//*!!Code automatically generated by 'ROBOTC' configuration wizard               !!*//
+
+int distance_value, light_value;
+
+bool evade_wantsToRun()
+{
+    return distance_value &lt; 30;
+}
+
+void evade_task()
+{
+    // full stop
+    motor[LEFT] = 0;        
+    // evade the object ballistically (ie in full control)  
+    // turn left, drive
+    nSyncedTurnRatio = 0;
+    motor[LEFT] = -20;
+    Sleep(500);
+    nSyncedTurnRatio = 100;
+    Sleep(1000);
+    // turn right, drive
+    nSyncedTurnRatio = 0;
+    motor[LEFT] = 20;
+    Sleep(500);
+    nSyncedTurnRatio = 100;
+    Sleep(1000);
+    // turn right, drive
+    nSyncedTurnRatio = 0;
+    motor[LEFT] = 20;
+    Sleep(500);
+    nSyncedTurnRatio = 100;
+    Sleep(1000);
+    // turn left, resume
+    nSyncedTurnRatio = 0;
+    motor[LEFT] = 20;
+    Sleep(500);
+    motor[LEFT] = 0;
+}
+
+///////////////////////////////
+
+void TurnBySteer(int d)
+{
+    // normalize -100 100 to 0 200
+    nSyncedTurnRatio = d + 100; 
+}
+///////////////////////////////
+
+typedef enum programPhase { starting, searching, following, finished };
+programPhase phase = starting;
+
+// these 'tasks' are called from a loop, thus do not need to loop themselves
+
+void initialize()
+{
+    nSyncedTurnRatio = 50;
+    nSyncedMotors = synchBC;
+    motor[LEFT] = 30;       // start a spiral drive
+    phase = searching;
+}
+
+void search()
+{
+    if (light_value &lt; 24)
+    {
+        nSyncedTurnRatio = 100;
+        phase = following;
+    }
+}
+
+int lastLight = -1;
+int currentSteer = 0;
+void follow()
+{
+    // if it is solid white we have lost the line and must stop
+    // if lightSensors detects dark, we are on line
+    // if it got lighter, we are going more off line
+    // if it got darker we are headed in a good direction, slow down turn in anticipation
+    // +++PID will be even smoother
+    if (light_value &gt; 64)
+    {
+        motor[LEFT] = 0;
+        phase = finished;
+        return;
+    }
+    if (light_value &lt; 24)
+        currentSteer = 0;
+    else if (light_value &gt; lastLight)
+        currentSteer += sgn(currentSteer) * 1;
+    else    // implied (light_value &lt; lastLight)
+        currentSteer -= sgn(currentSteer) * 1;      
+
+    TurnBySteer(currentSteer);
+}
+
+bool regularProcessing_wantsToRun()
+{
+    return phase != finished;
+}
+
+void regularProcessing_task()
+{
+    switch (phase)
+    {
+    case starting:
+        initialize();
+        break;
+    case searching:
+        search();
+        break;
+    case following:
+        follow();
+    }
+}
+
+task main()
+{
+    // subsumption tasks in priority oder
+    while (true)
+    {
+        // read sensors once per loop
+        distance_value = SensorValue[S_DISTANCE];
+        light_value = SensorValue[S_LIGHT];
+        if (evade_wantsToRun())
+            evade_task();
+        if (regularProcessing_wantsToRun())
+            regularProcessing_task();
+        else
+            StopAllTasks();
+        EndTimeSlice();     // give others a chance, but make it as short as possible
+    }
+}
+</code></pre>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-346" data-toggle = "popover">
+				<p>user name : Spiked3</p>
+				<p> user reputation : 1881</p>
+				<p class = "tagcontent" id = "usertaginfo-346">{'None': 125}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-346">Load Comments</button></br>
+			<div id = "commentsection-346" class = 'collapse'>
+			<div id = "comment-376" class = "comment">
+				<p>I agree that this problem is more easily solved with a simple loop. I don't understand why would anyone downvote this.</p>
+			</div>
+			<div id = "comment-381" class = "comment">
+				<p>I do not want to leave the impression that it easier to solve with a simple loop, but rather the impression that it IS the correct use of subsumption to use a simple loop as one of the tasks. Whomever downgraded it has mod points, and no understanding of subsumption. You will not find that there is not a lot of people doing subsumption on an LEGO NXT (implied by using robotC), so don't expect code to be readily available to be pasted.</p>
+			</div>
+			<div id = "comment-384" class = "comment">
+				<p>Yes, I as wondering why the OP was using tasks for something as simple as subsumption.</p>
+			</div>
+			<div id = "comment-430" class = "comment">
+				<p>Because it is a very very very very very common beginner mistake with robotC - to try and use tasks for everything. I wish they would move it to an advanced only area.</p>
+			</div>
+			</div>
+				<textarea id = "speech-346" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-346">
+					<img id="start_img-346" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-346">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

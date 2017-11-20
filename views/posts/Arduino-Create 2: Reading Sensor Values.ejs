@@ -1,0 +1,246 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Arduino-Create 2: Reading Sensor Values
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7215" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7215" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 1295</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Arduino-Create 2: Reading Sensor Values</h2>
+<p>Over the past few weeks, I have been attempting to interface the iRobot Create 2 with an Arduino Uno. As of yet, I have been unable to read sensor values back to the Arduino. I will describe by hardware setup and my Arduino code, then ask several questions; hopefully, answers to these questions will be helpful for future work with the Create 2.</p>
+
+<p><strong>Hardware:</strong>
+The iRobot Create 2 is connected to the Arduino Uno according to <a href="http://www.irobot.com/~/media/MainSite/PDFs/About/STEM/Create/Arduino_Tutorial.pdf?la=en" rel="nofollow noreferrer">the suggestions given by iRobot</a>. Instead of the diodes, a DC buck converter is used, and the transistor is not used because a software serial port is used instead of the UART port.</p>
+
+<p><strong>Software:</strong>
+The following is the code that I am implementing on the Arduino. The overall function is to stop spinning the robot once the angle of the robot exceeds some threshold. A software serial port is used, which runs at the default Create 2 Baud rate.</p>
+
+<pre><code>#include &lt;SoftwareSerial.h&gt;
+int rxPin=3;
+int txPin=4;
+int ddPin=5; //device detect
+int sensorbytes[2]; //array to store encoder counts
+int angle;
+const float pi=3.1415926;
+#define left_encoder (sensorbytes[0])
+#define right_encoder (sensorbytes[1])
+SoftwareSerial Roomba(rxPin,txPin);
+
+void setup() {
+  pinMode(3, INPUT);
+  pinMode(4, OUTPUT);
+  pinMode(5, OUTPUT);
+  pinMode(ledPin, OUTPUT);
+  Roomba.begin(19200);
+
+  // wake up the robot
+  digitalWrite(ddPin, HIGH);
+  delay(100);
+  digitalWrite(ddPin, LOW);
+  delay(500);
+  digitalWrite(ddPin, HIGH);
+  delay(2000);
+
+  Roomba.write(byte(128));  //Start
+  Roomba.write(byte(131));  //Safe mode
+  updateSensors();
+
+  // Spin slowly
+  Roomba.write(byte(145));
+  Roomba.write(byte(0x00));
+  Roomba.write(byte(0x0B));
+  Roomba.write(byte(0xFF));
+  Roomba.write(byte(0xF5));  
+}
+
+void loop() {
+    updateSensors();
+    // stop if angle is greater than 360 degrees
+    if(abs(angle)&gt;2*pi){
+      Roomba.write(173);
+      delay(100);
+    }
+}
+
+void updateSensors() {
+  // call for the left and right encoder counts
+  Roomba.write(byte(148));
+  Roomba.write(byte(2));
+  Roomba.write(byte(43));
+  Roomba.write(byte(44));
+  delay(100);
+
+  // load encoder counts into an array
+  int i = 0;
+  while(Roomba.available()) {
+    int c = Roomba.read();
+    sensorbytes[i] = c;
+    i++;
+  }
+  angle=((right_encoder*72*pi/508.8)-(left_encoder*72*pi/508.8))/235;
+}
+</code></pre>
+
+<p><strong>Questions:</strong></p>
+
+<ul>
+<li><strong>Am I loading the sensor values into the array correctly?</strong> This same code works when a bump and run program is implemented, but that requires knowing only one bit rather than two bytes.</li>
+<li><strong>How many bytes can be read over the serial connection at a time?</strong> A previous post (<a href="https://robotics.stackexchange.com/questions/2530/help-sending-serial-command-to-roomba/2537#2537">Help sending serial command to Roomba</a>) highlights that one byte can be sent at a time. Does this imply that the reverse is true? If so, would a solution be to use a char array to read the values instead and then to append two chars to form an signed int?</li>
+<li><strong>Is serial communication synchronization a problem?</strong> I am assuming that synchronization is not a problem, but is it possible for the bytes to be split on the nibble boundaries? This would present a problem because there is not a nibble datatype. </li>
+</ul>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7215" data-toggle = "popover">
+				<p>user name : NBCKLY</p>
+				<p> user reputation : 741</p>
+				<p class = "tagcontent" id = "usertaginfo-7215">{'None': 44, 'roomba': 4, 'irobot-create': 4, 'arduino': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7215" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7215" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7215">
+					<img id="start_img-7215" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7215">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7240"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7240" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>NBCKLY, have you been able to connect and send commands to the Create 2 with your Arduino?</p>
+
+<p>Did you put the Create into 19200 Baud mode as referenced in page 4 of the <a href="http://www.irobot.com/~/media/MainSite/PDFs/About/STEM/Create/iRobot_Roomba_600_Open_Interface_Spec.pdf" rel="nofollow">OI Specifications</a><sup>1</sup>?</p>
+
+<blockquote>
+  <p>Method 1: While powering off Roomba, continue to hold down the Clean/Power button after the light has turned off. After about 10 seconds, Roomba plays a tune of descending pitches. Roomba will communicate at 19200 baud until the processor loses battery power or the baud rate is explicitly changed by way of the OI.</p>
+  
+  <p>Method 2: Use the Baud Rate Change pin (pin 5 on the Mini-DIN connector) to change Roomba s baud rate. After turning on Roomba, wait 2 seconds and then pulse the Baud Rate Change low three times. Each pulse should last between 50 and 500 milliseconds. Roomba will communicate at 19200 baud until the processor loses battery power or the baud rate is explicitly changed by way of the OI. </p>
+</blockquote>
+
+<hr>
+
+<p><sup>1</sup> iRobot  Create  2 Open Interface (OI) Specification</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7240" data-toggle = "popover">
+				<p>user name : Chris P.</p>
+				<p> user reputation : 23</p>
+				<p class = "tagcontent" id = "usertaginfo-7240">{'None': 3}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7240">Load Comments</button></br>
+			<div id = "commentsection-7240" class = 'collapse'>
+			<div id = "comment-10295" class = "comment">
+				<p>It seems that a common concern is interfacing the Arduino with the Create 2 is the Baud rate. Using the software serial port (not the labeled RX/TX pins, which use UART), the Arduino is able to communicate at 115200 Baud. I am able to both send and receive information satisfactorily at this rate. While I cannot attest to the exact reliability of using the Arduino at this Baud because I have not performed rigorous testing, I suspect that the error is low enough for implementation of certain forms of control.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7240" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7240">
+					<img id="start_img-7240" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7240">Comment</button>
+			<br><div id = "ans-7252"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7252" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>As it turns out, <strong>I was not loading the sensor values into the array properly.</strong> <strong>It seems that data is transmitted one byte at a time</strong>, so the sensorbytes array needed to be an array of 4 elements rather than two. Once this was corrected, the correct encoder counts could be determined by joining the upper and lower bytes of the encoder counts from each wheel using the following scheme:</p>
+
+<pre><code>// highbyte is shifted left eight bits, lowbyte is added to highbyte    
+// encoder_count=highbyte&lt;&lt;8+lowbyte
+left_encoder=sensorbytes[0]&lt;&lt;8+sensorbytes[1];
+</code></pre>
+
+<p>This scheme made sure that the resulting left_encoder was a signed int rather than an unsigned int had the word() function been used. The revised updateSensors() code can be found in this post: <a href="https://robotics.stackexchange.com/questions/7229/irobot-create-2-encoder-counts/7246?iemail=1&amp;noredirect=1#7246">iRobot Create 2: Encoder Counts</a>.</p>
+
+<p><strong>Serial communication synchronization was not a problem.</strong> I suspect that this sort of thing is handled behind the scenes and does not need to be programmed at the high level that I am working on.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7252" data-toggle = "popover">
+				<p>user name : NBCKLY</p>
+				<p> user reputation : 741</p>
+				<p class = "tagcontent" id = "usertaginfo-7252">{'None': 44, 'roomba': 4, 'irobot-create': 4, 'arduino': 2}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7252" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7252" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7252">
+					<img id="start_img-7252" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7252">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

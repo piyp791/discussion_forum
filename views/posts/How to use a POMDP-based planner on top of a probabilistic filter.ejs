@@ -1,0 +1,151 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to use a POMDP-based planner on top of a probabilistic filter
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7644" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7644" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 145</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to use a POMDP-based planner on top of a probabilistic filter</h2>
+<p>POMDPs extend MDPs by conceiling state and adding an observation model. A POMDP controller processes either</p>
+
+<ul>
+<li>action/observation histories or</li>
+<li>a bayesian belief state, computed from the observations (<em>belief-MDP</em> transformation)</li>
+</ul>
+
+<p>In a complex, real-world system like a robot, one usually preprocesses sensory readings using filters (Kalmann, HMM, whatever). The result of which is a belief-state.</p>
+
+<p>I am looking for publications that discuss the problem of fitting a (probably more abstract) POMDP model on top of an existing filter-bank. </p>
+
+<ol>
+<li>Do you have to stick to the belief-MDP, and hand over the filtered belief-state to the controller?</li>
+<li>Is there any way of using history-based POMDP controllers, like MCTS?</li>
+<li>How do you construct/find the abstract observations you need to formulate the POMDP model?</li>
+</ol>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7644" data-toggle = "popover">
+				<p>user name : ziggystar</p>
+				<p> user reputation : 118</p>
+				<p class = "tagcontent" id = "usertaginfo-7644">{'filter': 3, 'None': 0, 'planning': 3, 'particle-filter': 3, 'kalman-filter': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7644" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7644" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7644">
+					<img id="start_img-7644" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7644">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8081"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8081" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I have used POMDP like models on top of a localization algorithm (<a href="http://wiki.ros.org/amcl" rel="nofollow">Adaptive Monte Carlo Localization</a>, from ROS), and a person detector [1][2] to find and follow a person with a humanoid robot. These two algorithms generate the input (observation) for the POMDP model in [1] and [2]. Also in [3] they used a POMDP model with similar input.</p>
+
+<p>As next step we used POMCPs (Partially Observable Monte Carlo Processes [4]) which use Monte Carlo simulations to create a policy because they are able to handle much larger state spaces. 
+Having continuous states and observations causes problems when trying to find a policy, since there will be an infinite number of observations possible. We used Monte Carlo processes with continuous states [4], but the observations and actions were discretized to prevent the policy tree from growing too wide. There is however work on the use of continuous observations in POMDP, such as presented in [5]. </p>
+
+<p>Other work with POMDP like models on a top level are: [6-8].  </p>
+
+<ol>
+<li>A. Goldhoorn, A. Sanfeliu and R. Alqu zar Mancho. Analysis of methods for playing human robot hide-and-seek in a simple real world urban environment, 1st Iberian Robotics Conference, 2013, Madrid, in ROBOT2013: First Iberian Robotics Conference, Vol 252-3 of Advances in Intelligent Systems and Computing, pp. 505-520, 2014, Springer. <a href="http://ieeexplore.ieee.org/xpl/articleDetails.jsp?arnumber=7041445" rel="nofollow">http://ieeexplore.ieee.org/xpl/articleDetails.jsp?arnumber=7041445</a></li>
+<li>A. Goldhoorn, A. Garrell Zulueta, R. Alqu zar Mancho and A. Sanfeliu. Continuous real time POMCP to find-and-follow people by a humanoid service robot, 2014 IEEE-RAS International Conference on Humanoid Robots, 2014, Madrid, Spain, pp. 741-747, IEEE Press. <a href="http://ieeexplore.ieee.org/xpl/articleDetails.jsp?arnumber=7041445" rel="nofollow">http://ieeexplore.ieee.org/xpl/articleDetails.jsp?arnumber=7041445</a> </li>
+<li>Luis Merino, Joaqu\'in Ballesteros, No  P rez-Higueras, Rafael Ram n-Vigo, Javier P rez-Lara, and Fernando Caballero. Robust Person Guidance by Using Online POMDPs. In Manuel A. Armada, Alberto Sanfeliu, and Manuel Ferre, editors, ROBOT2013: First Iberian Robotics Conference, Advances in Intelligent Systems and Computing, pp. 289 303, Springer International Publishing, 2014. <a href="http://link.springer.com/chapter/10.1007%2F978-3-319-03653-3_22" rel="nofollow">http://link.springer.com/chapter/10.1007%2F978-3-319-03653-3_22</a> </li>
+<li>D. Silver and J. Veness,  Monte-Carlo planning in large POMDPs, 
+Proceedings of 24th Advances in Neural Information Processing Systems
+(NIPS), pp. 1 9, 2010.</li>
+<li>J.M. Porta, N. Vlassis, M.T. Spaan and P. Poupart. Point-based value iteration for continuous POMDPs. Journal of Machine Learning Research, 7: 2329-2367, 2006.</li>
+<li>Pineau, J., Gordon, G., &amp; Thrun, S. (2003). Point-based value iteration: An anytime algorithm for POMDPs. In IJCAI International Joint Conference on Artificial Intelligence (Vol. 18, pp. 1025 1030). Citeseer. Retrieved from <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.68.1777&amp;rep=rep1&amp;type=pdf" rel="nofollow">http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.68.1777&amp;rep=rep1&amp;type=pdf</a></li>
+<li>Ong, S., Png, S., &amp; Hsu, D. (2009). POMDPs for robotic tasks with mixed observability. Proc. Robotics: Science and Systems. Retrieved from <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.149.3849&amp;rep=rep1&amp;type=pdf" rel="nofollow">http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.149.3849&amp;rep=rep1&amp;type=pdf</a></li>
+<li>Schesvold, D., Tang, J., Ahmed, B. M., Altenburg, K., &amp; Nygard, K. E. (2003). POMDP planning for high level UAV decisions: Search vs. strike. In In Proceedings of the 16th International Conference on Computer Applications in Industry and Engineering (pp. 3 6). Citeseer. Retrieved from <a href="http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.125.9134" rel="nofollow">http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.125.9134</a></li>
+</ol>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8081" data-toggle = "popover">
+				<p>user name : agold</p>
+				<p> user reputation : 250</p>
+				<p class = "tagcontent" id = "usertaginfo-8081">{'None': 12}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8081" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8081" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8081">
+					<img id="start_img-8081" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8081">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

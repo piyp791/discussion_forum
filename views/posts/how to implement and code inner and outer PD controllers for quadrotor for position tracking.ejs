@@ -1,0 +1,554 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>how to implement and code inner and outer PD controllers for quadrotor for position tracking
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7235" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7235" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 2099</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>how to implement and code inner and outer PD controllers for quadrotor for position tracking</h2>
+<p>The quadrotor system is  multi-ODEs equations. The linearized model is usually used especially for position tracking, therefore one can determine the desired x-y positions based on the roll and pitch angles. As a result,  one nested loop which has inner and outer controllers is needed for controlling the quadrotor. For implementation, do I have to put <code>while-loop</code> inside <code>ode45</code> for the inner attitude controller? I'm asking this because I've read in a paper that the inner attitude controller must run faster (i.e. 1kHz) than the position controller (i.e. 100-200 Hz). In my code, both loops run at 1kHz, therefore inside <code>ode45</code> there is no <code>while-loop</code>. Is this correct for position tracking? If not, do I have to insert <code>while-loop</code> inside <code>ode45</code> for running the inner loop? Could you please suggest me a pseudocode for position tracking?</p>
+
+<p>To be more thorough, the dynamics equations of the nonlinear model of the quadrotor is provided  <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.149.4367&amp;rep=rep1&amp;type=pdf">here</a>, if we assume the small angles, the model is reduced to the following equations </p>
+
+<p>$$
+\begin{align}
+\ddot{x}      &amp;= \frac{U_{1}}{m} ( \theta \cos\psi + \phi \sin\psi) \\
+\ddot{y}      &amp;= \frac{U_{1}}{m} ( \theta \sin\psi - \phi \cos\psi) \\
+\ddot{z}      &amp;= \frac{U_{1}}{m} - g   \\
+\ddot{\phi}   &amp;= \frac{l}{I_{x}} U_{2} \\
+\ddot{\theta} &amp;= \frac{l}{I_{y}} U_{3} \\
+\ddot{\psi}   &amp;= \frac{1}{I_{z}} U_{4} \\
+\end{align}
+$$</p>
+
+<p>The aforementioned equations are linear. For position tracking, we need to control $x,y,$ and $z$, therefore we choose the desired roll and pitch (i.e. $\phi^{d} \ \text{and} \ \theta^{d}$)</p>
+
+<p>$$
+\begin{align}
+\ddot{x}^{d} &amp;= \frac{U_{1}}{m} ( \theta^{d} \cos\psi + \phi^{d} \sin\psi) \\
+\ddot{y}^{d} &amp;= \frac{U_{1}}{m} ( \theta^{d} \sin\psi - \phi^{d} \cos\psi) \\
+\end{align}
+$$</p>
+
+<p>Therefore, the closed form for the desired angles can be obtained as follows</p>
+
+<p>$$
+\begin{bmatrix}
+\phi_{d} \\
+\theta_{d} 
+\end{bmatrix}
+=
+\begin{bmatrix}
+\sin\psi &amp; \cos\psi \\
+-\cos\psi &amp; \sin\psi 
+\end{bmatrix}^{-1}
+\left( \frac{m}{U_{1}}\right) 
+\begin{bmatrix}
+\ddot{x}^{d} \\
+\ddot{y}^{d}
+\end{bmatrix}
+$$</p>
+
+<p>My desired trajectory is shown below</p>
+
+<p><img src="https://i.stack.imgur.com/QDujZ.png" alt="enter image description here"></p>
+
+<p>The results are </p>
+
+<p><img src="https://i.stack.imgur.com/UKJKc.png" alt="enter image description here"></p>
+
+<p>And the actual trajectory vs the desired one is </p>
+
+<p><img src="https://i.stack.imgur.com/9hbl9.png" alt="enter image description here"></p>
+
+<p>My code for this experiment is </p>
+
+<pre><code>%%
+%######################( Position Controller )%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+clear all;
+clc;
+
+dt = 0.001;
+ t = 0;
+
+% initial values of the system
+ x = 0;
+dx = 0;
+ y = 0;
+dy = 0;
+ z = 0;
+dz = 0;
+
+   Phi = 0;
+  dPhi = 0;
+ Theta = 0;
+dTheta = 0;
+   Psi = pi/3;
+  dPsi = 0;
+
+
+%System Parameters:
+m  = 0.75;      % mass (Kg)
+L  = 0.25;      % arm length (m)
+Jx = 0.019688; % inertia seen at the rotation axis. (Kg.m^2)
+Jy = 0.019688; % inertia seen at the rotation axis. (Kg.m^2)
+Jz = 0.039380; % inertia seen at the rotation axis. (Kg.m^2)
+g  = 9.81;      % acceleration due to gravity m/s^2
+
+errorSumX = 0;
+errorSumY = 0;
+errorSumZ = 0;
+
+errorSumPhi   = 0;
+errorSumTheta = 0;
+
+pose = load('xyTrajectory.txt');
+
+DesiredX = pose(:,1);
+DesiredY = pose(:,2);
+DesiredZ = pose(:,3);
+
+dDesiredX = 0;
+dDesiredY = 0;
+dDesiredZ = 0;
+
+DesiredXpre = 0;
+DesiredYpre = 0;
+DesiredZpre = 0;
+
+dDesiredPhi = 0;
+dDesiredTheta = 0;
+DesiredPhipre = 0;
+DesiredThetapre = 0;
+
+
+
+for i = 1:6000
+
+   % torque input
+   %&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;( Ux )&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;
+   Kpx = 50; Kdx = 8; Kix = 0; 
+   Ux = Kpx*( DesiredX(i) - x  ) + Kdx*( dDesiredX - dx ) + Kix*errorSumX;
+
+   errorSumX = errorSumX + ( DesiredX(i) - x );
+
+     dDesiredX = ( DesiredX(i) - DesiredXpre ) / dt;
+   DesiredXpre = DesiredX(i);
+
+   %&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;( Uy )&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;
+   Kpy = 100; Kdy = 10; Kiy = 0; 
+   Uy = Kpy*( DesiredY(i) - y  ) + Kdy*( dDesiredY - dy ) + Kiy*errorSumY;
+
+
+   errorSumY = errorSumY + ( DesiredY(i) - y );
+
+     dDesiredY = ( DesiredY(i) - DesiredYpre ) / dt;
+   DesiredYpre = DesiredY(i);
+
+
+
+   %&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;( U1 )&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;
+   Kpz = 100; Kdz = 20; Kiz = 0; 
+   U1 = Kpz*( DesiredZ(i) - z ) + Kdz*( dDesiredZ - dz ) + Kiz*errorSumZ; 
+
+   errorSumZ = errorSumZ + ( DesiredZ(i) - z );
+
+      dDesiredZ = ( DesiredZ(i) - DesiredZpre ) / dt;
+   DesiredZpre = DesiredZ(i);
+
+   %#######################################################################
+   %#######################################################################
+   %#######################################################################
+   % Desired Phi and Theta
+   R = [  sin(Psi),cos(Psi); 
+         -cos(Psi),sin(Psi)];
+
+
+   DAngles = R\( (m/U1)*[Ux; Uy]);
+
+
+   %Wrap angles
+   DesiredPhi   = wrapToPi( DAngles(1) ) /2;
+   DesiredTheta = wrapToPi( DAngles(2) );
+
+
+   %&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;( U2 )&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;
+   KpP = 100; KdP = 10; KiP = 0;
+   U2 = KpP*( DesiredPhi - Phi ) + KdP*( dDesiredPhi - dPhi )  + KiP*errorSumPhi;
+
+   errorSumPhi = errorSumPhi + ( DesiredPhi - Phi );
+
+     dDesiredPhi = ( DesiredPhi - DesiredPhipre ) / dt;
+   DesiredPhipre = DesiredPhi;
+
+
+   %--------------------------------------
+   %&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;( U3 )&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;
+
+   KpT = 100; KdT = 10; KiT = 0;
+   U3 = KpT*( DesiredTheta - Theta ) + KdP*( dDesiredTheta - dTheta ) + KiT*errorSumTheta;
+
+    errorSumTheta = errorSumTheta + ( DesiredTheta - Theta );
+
+     dDesiredTheta = ( DesiredTheta - DesiredThetapre ) / dt;
+   DesiredThetapre = DesiredTheta;
+
+
+
+   %--------------------------------------
+   %&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;( U4 )&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;
+   KpS = 80; KdS = 20.0; KiS = 0.08;
+   U4 = KpS*( 0 - Psi ) + KdS*( 0 - dPsi );
+
+
+   %###################( ODE Equations of Quadrotor )###################
+   %===================( X )=====================
+   ddx = (U1/m)*( Theta*cos(Psi) + Phi*sin(Psi) );
+
+    dx = dx + ddx*dt;
+     x =  x +  dx*dt;
+   %===================( Y )=====================
+   ddy = (U1/m)*( Theta*sin(Psi) - Phi*cos(Psi) );
+
+    dy = dy + ddy*dt;
+     y =  y +  dy*dt;
+
+   %===================( Z )=====================
+   ddz = (U1/m) - g;
+
+    dz = dz + ddz*dt;
+     z =  z +  dz*dt;
+
+   %===================( Phi )=====================
+   ddPhi = ( L/Jx )*U2;
+
+    dPhi = dPhi + ddPhi*dt;
+     Phi =  Phi +  dPhi*dt;
+
+   %===================( Theta )=====================
+   ddTheta =  ( L/Jy )*U3;
+
+    dTheta =  dTheta + ddTheta*dt;
+     Theta =   Theta +  dTheta*dt;
+
+   %===================( Psi )=====================
+   ddPsi =  (1/Jz)*U4;
+
+    dPsi = dPsi + ddPsi*dt;
+     Psi =  Psi +  dPsi*dt;
+
+   %store the erro
+     ErrorX(i)   = ( x - DesiredX(i) );
+     ErrorY(i)   = ( y - DesiredY(i) );
+     ErrorZ(i)   = ( z - DesiredZ(i) );
+%    ErrorPhi(i)   = ( Phi - pi/4 );
+%    ErrorTheta(i) = ( Theta - pi/4 );
+     ErrorPsi(i)   = ( Psi - 0 );
+
+
+   X(i) = x;
+   Y(i) = y;
+   Z(i) = z;
+
+   T(i) = t;
+
+%    drawnow 
+%    plot3(DesiredX, DesiredY, DesiredZ, 'r')
+%    hold on
+%    plot3(X, Y, Z, 'b')
+   t = t + dt; 
+
+
+end
+
+
+Figure1 = figure(1);
+set(Figure1,'defaulttextinterpreter','latex');
+%set(Figure1,'units','normalized','outerposition',[0 0 1 1]);
+
+subplot(2,2,1)
+plot(T, ErrorX, 'LineWidth', 2)
+title('Error in $x$-axis Position (m)')
+xlabel('time (sec)')
+ylabel('$x_{d}(t) - x(t)$', 'LineWidth', 2)
+
+subplot(2,2,2)
+plot(T, ErrorY, 'LineWidth', 2)
+title('Error in $y$-axis Position (m)')
+xlabel('time (sec)')
+ylabel('$y_{d}(t) - y(t)$', 'LineWidth', 2)
+
+subplot(2,2,3)
+plot(T, ErrorZ, 'LineWidth', 2)
+title('Error in $z$-axis Position (m)')
+xlabel('time (sec)')
+ylabel('$z_{d} - z(t)$', 'LineWidth', 2)
+
+
+subplot(2,2,4)
+plot(T, ErrorPsi, 'LineWidth', 2)
+title('Error in $\psi$ (m)')
+xlabel('time (sec)')
+ylabel('$\psi_{d} - \psi(t)$','FontSize',12);
+grid on 
+
+
+Figure2 = figure(2);
+set(Figure2,'units','normalized','outerposition',[0 0 1 1]);
+
+figure(2)
+plot3(X,Y,Z, 'b')
+grid on
+
+hold on 
+plot3(DesiredX, DesiredY, DesiredZ, 'r')
+
+pos = get(Figure2,'Position');
+set(Figure2,'PaperPositionMode','Auto','PaperUnits','Inches','PaperSize',[pos(3),pos(4)]);
+print(Figure2,'output2','-dpdf','-r0');
+
+legend('actual', 'desired')
+</code></pre>
+
+<p>The code of the desired trajectory is </p>
+
+<pre><code>clear all; clc;
+
+fileID = fopen('xyTrajectory.txt','w');
+
+ angle = -pi; radius = 5; z = 0; t = 0;
+
+for i = 1:6000
+    if ( z &lt; 2 ) 
+        z = z + 0.1;
+        x = 0; 
+        y = 0;
+    end
+    if  ( z &gt;= 2 )
+        angle = angle + 0.1;
+        angle = wrapToPi(angle);
+        x = radius * cos(angle);
+        y = radius * sin(angle);
+        z = 2;
+    end
+
+    X(i) = x;
+    Y(i) = y;
+    Z(i) = z;
+
+    fprintf(fileID,'%f \t %f \t %f\n',x, y, z); end
+
+fclose(fileID); plot3(X,Y,Z) grid on
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7235" data-toggle = "popover">
+				<p>user name : CroCo</p>
+				<p> user reputation : 1040</p>
+				<p class = "tagcontent" id = "usertaginfo-7235">{'control': 18, 'pid': 4, 'slam': 16, 'manipulator': 3, 'mobile-robot': 14, 'dynamics': 6, 'errors': 2, 'data-association': 1, 'kinematics': 3, 'matlab': 6, 'kalman-filter': 21, 'motion-planning': 3, 'None': 41, 'noise': 24, 'theory': 1, 'localization': 14, 'microcontroller': 5, 'mapping': 5, 'sensor-error': 1, 'sensors': 7, 'quadcopter': 8, 'ekf': 26, 'simulation': 1, 'motion': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7235">Load Comments</button></br>
+			<div id = "commentsection-7235" class = 'collapse'>
+			<div id = "comment-10360" class = "comment">
+				<p>Can you upload and link your "xyTrajectory.txt" file?</p>
+			</div>
+			<div id = "comment-10361" class = "comment">
+				<p>@acs, I did. The last code.</p>
+			</div>
+			<div id = "comment-10362" class = "comment">
+				<p>Ok. I couldnt see the last two equation in the paper.</p>
+			</div>
+			<div id = "comment-10363" class = "comment">
+				<p>I've posted the linearized model of the quadrotor in my post, therefore the code is for the linearized version.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7235" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7235">
+					<img id="start_img-7235" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7235">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7286"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7286" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Your pseudocode for PD like this:</p>
+
+<pre><code>Kp Kd
+erroSum=errorSum+(desired-actual);
+ddesired=(desired-predesired)/dt;
+desiredpre=desired;
+PD= Kp*(desired-actual)+Kd*(ddesired-dactual)
+</code></pre>
+
+<p><strong>Try to apply this:</strong></p>
+
+<pre><code>previosuerror=0
+Kp Kd
+error=(desired-actual); //for angles use atan2(sin(desired),cos(actual)) neglect sign  
+derivative=(previouserror-error)/dt; 
+previouserror=error;
+P=Kp*error;
+D=Kd*derivative;
+PD=P+D;
+</code></pre>
+
+<p>Reference: first 3 module of <a href="https://class.coursera.org/conrob-001" rel="nofollow">https://class.coursera.org/conrob-001</a></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7286" data-toggle = "popover">
+				<p>user name : acs</p>
+				<p> user reputation : 838</p>
+				<p class = "tagcontent" id = "usertaginfo-7286">{'stereo-vision': 4, 'control': 1, '3d-printing': 2, 'simulator': 8, 'multi-agent': 0, 'pid': 1, 'slam': 2, 'robotic-arm': 1, 'mobile-robot': 10, 'ros': 8, 'battery': 0, 'swarm': 2, 'cameras': 4, 'lidar': 4, '3d-model': 2, 'imu': 3, 'kalman-filter': 3, 'gazebo': 1, 'gps': 2, 'None': 34, 'localization': 4, 'sensors': 7, '3d-reconstruction': 2, 'quadcopter': 0, 'computer-vision': 2, 'algorithm': 1, 'sensor-fusion': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7286">Load Comments</button></br>
+			<div id = "commentsection-7286" class = 'collapse'>
+			<div id = "comment-10365" class = "comment">
+				<p>What is the problem with my approach? For the link, what is the first 3 module ? I opened the link but it is not clear what  you are referring me to.</p>
+			</div>
+			<div id = "comment-10366" class = "comment">
+				<p>I think your PD codes are wrong. Try to write pseudocode which shown as"try to apply this". that pseudocode wirtten according to reference. Also  you have too many PD calculations although you need only three.</p>
+			</div>
+			<div id = "comment-10369" class = "comment">
+				<p>"I think your PD codes are wrong." What is the problem? It is just different approach for implementing the controller.  I believe I need six controllers. Three for the outer loop (x,y,z) and three for inner loop (phi, theta, psi).</p>
+			</div>
+			<div id = "comment-10375" class = "comment">
+				<p>ok you can apply 3 PD but it works with wrong PD code and calculates wrong angle in inner loop.Try my pseudocode to see wrong or right. I'm trying to help you. You must know that no one will write all your code</p>
+			</div>
+			<div id = "comment-10485" class = "comment">
+				<p>I'm totally sure the problem is not from the way PD is coded in my case but I've tried your suggestion with no luck. The problem is more complicated than I thought. The controllers must be tuned carefully and whether the linear model suits aggressive trajectories is the key. I've moved to nonlinear system with backstepping and with careful trajectory and tuning, I'm getting good results but the response is rather slow.</p>
+			</div>
+			<div id = "comment-10486" class = "comment">
+				<p>Finally, I'm not asking you to do the code since I've provided the entire code in my post.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7286" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7286">
+					<img id="start_img-7286" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7286">Comment</button>
+			<br><div id = "ans-7348"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7348" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>As extension to this <a href="https://robotics.stackexchange.com/a/7296/6941">answer</a>, I'd like to share with the community a <strong><a href="http://www.mathworks.com/matlabcentral/fileexchange/51076-displacement-control-of-a-quadcopter" rel="nofollow noreferrer">Simulink model</a></strong> implementing the system described above. It does not represent a solution for the code reported by <a href="https://robotics.stackexchange.com/users/2155/croco">CroCo</a> but it may give a better insight and, as such, it might be helpful.</p>
+
+<p>The system is depicted below:
+<img src="https://i.stack.imgur.com/zyBuq.png" alt="system"></p>
+
+<p>In red we have the blocks running at $1\,\text{KHz}$, which deal with the <strong>attitude</strong> control, whereas in green are shown those blocks that allow tracking the <strong>linear displacement</strong> and run at $100\,\text{Hz}$.</p>
+
+<p>As side note, since we have to ensure that the "<em>small angles</em>" assumption remains valid throughout the simulation, the <strong>take-off</strong> phase (i.e. reaching the desired height $z_d$) needs to be almost complete before commencing the <strong>displacement tracking</strong> of the $x_d\left(t\right)$ and $y_d\left(t\right)$ time-varying linear coordinates (a circle of radius $5\,\text{m}$ in the model). Further, for the same reason, the desired circular trajectory must start from the quadcopter's initial position $\left(x\left(0\right),y\left(0\right)\right)$.</p>
+
+<p>Depending on the controllers' gains, we can get quite nice tracking results:
+<img src="https://i.stack.imgur.com/Nv0Df.png" alt="results"></p>
+
+<p>The first top three diagrams shows the $x$, $y$ and $z$ components (green), respectively, while following the targets (blue). The last plot reports on the roll (blue), pitch (green) and yaw (red). Time is expressed in seconds, displacements are in meters and angles are in degrees.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7348" data-toggle = "popover">
+				<p>user name : Ugo</p>
+				<p> user reputation : 1482</p>
+				<p class = "tagcontent" id = "usertaginfo-7348">{'None': 99}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7348">Load Comments</button></br>
+			<div id = "commentsection-7348" class = 'collapse'>
+			<div id = "comment-10483" class = "comment">
+				<p>thank you so much. It seems that I'm getting somewhere. My ultimate goal is to re-implement the project in C++. In my Matlab code, both controllers are running at 1KHz which means it is hard to carry out aggressive maneuver with linear model. For nonlinear model, I'm using backstepping controller, for very careful and smooth trajectory, it seems the quadrotor follows the trajectory but not very fast.</p>
+			</div>
+			<div id = "comment-10484" class = "comment">
+				<p>Cont., for using joystick, it is hard to tune the backstepping controller to let the quadrotor follows the trajectory as fast as possible because this mission requires the platform to carry out aggressive maneuver which means the small angles assumption don't hold any more.</p>
+			</div>
+			<div id = "comment-10488" class = "comment">
+				<p>In the "_small angles_" assumption (still nonlinear model, yet simplified), the "_aggressiveness_" of the final maneuvers will depend on the the maximum angles you can reach before invalidating the assumption itself, and not on the rate of the outer loop, I'd say.
+
+For the complete nonlinear model as well as the back-stepping controller, I suppose you're referring to the cited paper, I didn't read though.
+
+Do you know that with the **Embedded Coder** toolbox you can obtain production C++ code automatically from Simulink models, ready to be run on your systems?</p>
+			</div>
+			</div>
+				<textarea id = "speech-7348" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7348">
+					<img id="start_img-7348" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7348">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

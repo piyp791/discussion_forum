@@ -1,0 +1,162 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Problem with inverse kinematics in robotic arm using Matlab
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11393" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11393" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 232</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Problem with inverse kinematics in robotic arm using Matlab</h2>
+<p>I define my robotic arm with following code</p>
+
+<pre><code>% Link('d', 0.15005, 'a', 0.0203, 'alpha', -pi/2)
+L(1) = Link([0  0.15   0    pi/2     0], 'standard');
+L(2) = Link([0  0     0.15   0       0], 'standard');
+L(3) = Link([0  0     0.15   0       0], 'standard');
+L(4) = Link([0  0     0.15   0       0], 'standard');
+% set limits for joints
+ L(1).qlim=[deg2rad(-45) deg2rad(45)];
+ L(2).qlim=[deg2rad(-45) deg2rad(45)];
+ L(3).qlim=[deg2rad(-60) deg2rad(60)];
+ L(4).qlim=[deg2rad(-50) deg2rad(50)];
+ %build the robot model
+rob = SerialLink(L, 'name','rob');
+qready = [0 0 0 0]; % initial position of robot
+</code></pre>
+
+<p>And I solve inverse kinematic and plot robotic arm with code</p>
+
+<pre><code> Td = transl([0.05 0 -0.20]);
+q = rob.ikine(Td, qready,[1 1 1 0 0 0]);
+plot(rob,q,'noname');
+</code></pre>
+
+<p>Its results are <code>0  -139.0348635    82.65184319 -1.286384217</code> which is four angles named theta1, theta2, theta3 and theta4 respectively. Now the point is I gave joint limit for theta2 as <strong><em>-45 to 45 degree</em></strong> but result output is <strong><em>-139 degree</em></strong>. Same case with theta3. Why it is so? Another thing is when I plot these angles <em>robotic arm cross each other</em> as shown in figure. I want to know what is wrong with code or I'm missing any thing. </p>
+
+<p><a href="https://i.stack.imgur.com/5eenk.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/5eenk.jpg" alt="enter image description here"></a></p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11393" data-toggle = "popover">
+				<p>user name : Naseeb Gill</p>
+				<p> user reputation : 62</p>
+				<p class = "tagcontent" id = "usertaginfo-11393">{'None': 0, 'manipulator': 2, 'inverse-kinematics': 5, 'simulator': 0, 'arduino': 2, 'simulation': 2, 'servomotor': 1, 'kinematics': 1, 'matlab': 6, 'robotic-arm': 5, 'rotation': 1, 'forward-kinematics': 0, 'dynamics': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11393" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11393" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11393">
+					<img id="start_img-11393" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11393">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-11395"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11395" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>In the <a href="http://www.petercorke.com/RTB/r9/html/SerialLink.html" rel="nofollow noreferrer">documentation</a> of the Robotics Toolbox by Peter Corke it is stated that the ikine() method does not regard motion limits. (Notes -> Joint limits are not considered in this solution.)</p>
+
+<p>You can cosider using ikcon() instead. </p>
+
+<p>Solving the inverse kinematics does not guarentee a colision free pose of the robot. That is only guaranteed if a colision check is carried out or if the joint limits are respected (adn set correctly).</p>
+
+<p>Furthermore I would advise to check the exit flag of the method solving the inverse kinematics to make sure that indeed it has found a solution</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11395" data-toggle = "popover">
+				<p>user name : 50k4</p>
+				<p> user reputation : 2800</p>
+				<p class = "tagcontent" id = "usertaginfo-11395">{'geometry': 0, 'None': 193, 'kinematics': 0, 'robotic-arm': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11395">Load Comments</button></br>
+			<div id = "commentsection-11395" class = 'collapse'>
+			<div id = "comment-20556" class = "comment">
+				<p>Thanks @50k4, When I used ikcon(), angles are within limit but the points I entered and  points at which finally end-effector reached is different. I tried to use mask matrix [1 1 1 0 0 0] with ikcon(), but it shows error 
+Error using optimset (line 76)
+Cannot use OPTIMSET to alter options created using OPTIMOPTIONS.
+Use OPTIMOPTIONS instead.
+
+Error in SerialLink/ikcon (line 92)
+        problem.options = optimset(problem.options, options);
+
+How to solve error prolblem using ikcon().</p>
+			</div>
+			</div>
+				<textarea id = "speech-11395" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11395">
+					<img id="start_img-11395" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11395">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

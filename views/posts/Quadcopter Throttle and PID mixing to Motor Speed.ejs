@@ -1,0 +1,198 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Quadcopter Throttle and PID mixing to Motor Speed
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2772" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2772" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 3493</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Quadcopter Throttle and PID mixing to Motor Speed</h2>
+<p>I've been writing some quad copter software and I am not sure what the best way is to map the throttle and PID inputs to ESC power.</p>
+
+<p>My throttle range is 0-1 and my PID outputs are 0-1. My ESC's have a range of 1060us to 1860us.</p>
+
+<p>I have mapped the motor speeds like this:</p>
+
+<pre><code>_motorPower[0] = map((_rcConstrainedCommands[3] + _ratePIDControllerOutputs[1] + _ratePIDControllerOutputs[2] + _ratePIDControllerOutputs[0]), 0.0, 4.0, 1060, 1860);
+_motorPower[1] = map((_rcConstrainedCommands[3] + _ratePIDControllerOutputs[1] - _ratePIDControllerOutputs[2] - _ratePIDControllerOutputs[0]), 0.0, 4.0, 1060, 1860);
+_motorPower[2] = map((_rcConstrainedCommands[3] - _ratePIDControllerOutputs[1] - _ratePIDControllerOutputs[2] + _ratePIDControllerOutputs[0]), 0.0, 4.0, 1060, 1860);
+_motorPower[3] = map((_rcConstrainedCommands[3] - _ratePIDControllerOutputs[1] + _ratePIDControllerOutputs[2] - _ratePIDControllerOutputs[0]), 0.0, 4.0, 1060, 1860);
+</code></pre>
+
+<p>This works but if my quad is perfectly level (i.e. the PID outputs are 0) and I apply full throttle (1.0) then map this to ESC power I will only get quarter power (1260us).</p>
+
+<p>How should I be doing this so that if my throttle is on max then I get max power? If my throttle is half (0.5) then I should get half power plus the PID values etc.</p>
+
+<p>Can anyone help me with this?</p>
+
+<p>Thanks
+Joe</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2772" data-toggle = "popover">
+				<p>user name : Joseph Roberts</p>
+				<p> user reputation : 167</p>
+				<p class = "tagcontent" id = "usertaginfo-2772">{'quadcopter': 6, 'magnetometer': 1, 'None': 2, 'accelerometer': 2, 'calibration': 1, 'pid': 5, 'lidar': 2, 'esc': 5, 'motor': 5, 'imu': 1, 'sensors': 2, 'pwm': 5}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2772">Load Comments</button></br>
+			<div id = "commentsection-2772" class = 'collapse'>
+			<div id = "comment-5165" class = "comment">
+				<p>Maybe this question means something to somebody, but without context, those function calls are a bit meaningless?</p>
+			</div>
+			<div id = "comment-5226" class = "comment">
+				<p>float map(float x, float in_min, float in_max, float out_min, float out_max);  // In his example, takes the value of x, and linearly re-maps it from the range [0..4] to the range [1060..1860].</p>
+			</div>
+			</div>
+				<textarea id = "speech-2772" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2772">
+					<img id="start_img-2772" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2772">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-2820"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2820" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>For each motor the output should be:</p>
+
+<ul>
+<li>A value at which the power from the 4 motors roughly keeps the quadcopter airborne, for instance 1500ms.</li>
+<li>Plus or minus the influence of the throttle. For instance with your throttle is in the 0:1 range you could apply 600 * (throttle - 0.5), which will put the motors output in the 1200:1800ms range.</li>
+<li>Plus or minus the PIDs output. For instance with your PIDs in the 0:1 range you could add 200 * (PID - 0.5). The individual PID contribution would be in the -100:100 range. For a +4 configuration there are 2 PIDs to add for each motor, so the output would be in the 1000:2000ms range.</li>
+</ul>
+
+<p>Here is my unmodified code for this. My throttle is in the -100:100 range, and my PIDs are already in the appropriate range. I'm sure you can translate to your own specifications easily.</p>
+
+<pre><code>uint16_t motor[4];
+float base = MOTOR_IDLE + (THROTTLE_K * throttle);
+motor[MOTOR_FRONT] = base + pitchRatePID.getControl() - yawRatePID.getControl();
+motor[MOTOR_LEFT] = base + rollRatePID.getControl() + yawRatePID.getControl();
+motor[MOTOR_BACK] = base - pitchRatePID.getControl() - yawRatePID.getControl();
+motor[MOTOR_RIGHT] = base - rollRatePID.getControl() + yawRatePID.getControl();
+</code></pre>
+
+<p>The THROTTLE_K constant would be what to modify if I experienced your problem.</p>
+
+<p>As you realise the possible motors output exceeds the ESC range, which is evil. Bounding the output is not an elegant way to do it as it will trip up your PIDs computations. A better way which maintains the speed ratios between the motors is the add or remove a constant to all the motors to get all the outputs back within the bounds. Here is a sample from my own code, I hope it makes sense.</p>
+
+<pre><code>// Fix motor mix range
+int16_t motorFix = 0;
+uint16_t motorMin = motor[0], motorMax = motor[0];
+for(int i=1 ; i&lt;4 ; i++)
+{
+  if(motor[i] &lt; motorMin) motorMin = motor[i];
+  if(motor[i] &gt; motorMax) motorMax = motor[i];
+}
+if(motorMin &lt; MOTOR_MIN) motorFix = MOTOR_MIN - motorMin;
+else if(motorMax &gt; MOTOR_MAX) motorFix = MOTOR_MAX - motorMax;
+
+// Refresh motors
+for(int i=0 ; i&lt;4 ; i++) Servo::setChannel(i, motor[i] + motorFix);
+</code></pre>
+
+<p>I hope this helps, please let me know if you need further clarifications!</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2820" data-toggle = "popover">
+				<p>user name : marcv81</p>
+				<p> user reputation : 408</p>
+				<p class = "tagcontent" id = "usertaginfo-2820">{'None': 22, 'pid': 4}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2820">Load Comments</button></br>
+			<div id = "commentsection-2820" class = 'collapse'>
+			<div id = "comment-5357" class = "comment">
+				<p>At the moment I am bounding the motor output. The method you have described makes sense, I will try to implement it. Thanks for your answer.</p>
+			</div>
+			<div id = "comment-5418" class = "comment">
+				<p>Hi,
+
+I'm unsure about the throttle part. My throttle is between -1  and 1 and from what you say I should be trying to achieve the full throttle range of 1100 - 1800. Does this mean my formula to work out the throttle base would be 1450 + (350 * throttle)?
+
+I have an X config quad so I have 3 PID's for each motor.
+They output between -1 and 1. For each of these should the formula be 100 * PIDValue?
+
+Does this sound correct?</p>
+			</div>
+			<div id = "comment-5431" class = "comment">
+				<p>@JosephBaldwinRoberts, 3 PIDs per motor is correct for a X setup. If you bound your PIDs -which I didn't do- you need to make sure you use an appropriate technique (back calculation, etc). The throttle formula I recommend is A + B * throttle indeed. A = 1450 and B = 350 are fine values, but you could use other values of A if the quadcopter ascends/descends when the throttle stick is centered, and other values of B if the quadcopter ascends/descends too fast when moving the throttle stick.</p>
+			</div>
+			</div>
+				<textarea id = "speech-2820" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2820">
+					<img id="start_img-2820" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2820">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

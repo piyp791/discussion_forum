@@ -1,0 +1,186 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Relationship between earth frame attitude and acceleration for a quadcopter
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8425" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8425" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 200</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Relationship between earth frame attitude and acceleration for a quadcopter</h2>
+<p>For a quadcopter, what is the relationship between roll, pitch, and yaw in the <strong>earth frame</strong> and acceleration in the x, y, and z dimensions in the earth frame? To be more concrete, suppose roll ($\theta$) is a rotation about the earth frame x-axis, pitch ($\phi$) is a rotation about the earth frame y-axis, and yaw ($\psi$) is a rotation about the z-axis. Furthermore, suppose $a$ gives the acceleration produced by all four rotors, i.e. acceleration normal to the plane of the quadcopter. Then what are $f, g, h$ in</p>
+
+<p>$$a_x = f(a,\theta,\phi,\psi)$$
+$$a_y = g(a,\theta,\phi,\psi)$$
+$$a_z = h(a,\theta,\phi,\psi)$$</p>
+
+<p>where $a_x$, $a_y$, and $a_z$ are accelerations in the $x$, $y$, and $z$ dimensions.</p>
+
+<p>I've seen a number of papers/articles giving the relationship between x,y,z accelerations and attitude, but it's never clear to me whether these attitude angles are rotations in the earth frame or the body frame.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8425" data-toggle = "popover">
+				<p>user name : BmoreDaniel</p>
+				<p> user reputation : 23</p>
+				<p class = "tagcontent" id = "usertaginfo-8425">{'quadcopter': 0, 'control': 4, 'None': 0, 'geometry': 4, 'reference-request': 4, 'dynamics': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8425" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8425" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8425">
+					<img id="start_img-8425" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8425">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8434"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8434" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The orientation <em>angles</em> will be provided in the Earth frame (global or world frame is more appropriate). It is pretty much impossible to provide a frame orientation with angles <em>with respect to that same frame</em>.</p>
+
+<p>Then, given some acceleration $a_b$ in the body frame, you can find the acceleration in the world frame $a_w$ by pre-multiplication with the rotation matrix $R$.</p>
+
+<p>$a_w = R a_b$</p>
+
+<p>If you assume a typical roll-pitch-yaw sequence, then this will look like:</p>
+
+<p>$\begin{bmatrix} a_{w,x} \\ a_{w,y} \\ a_{w,z} \end{bmatrix} = \begin{bmatrix} c_\psi c_\theta &amp; -s_\psi c_\phi + c_\psi s_\theta s_\phi &amp; s_\psi s_\phi + c_\psi s_\theta c_\phi \\ s_\psi c_\theta &amp; c_\psi c_\phi + s_\theta s_\psi s_\phi &amp; -c_\psi s_\phi + s_\theta s_\psi c_\phi \\ -s_\theta &amp; c_\theta s_\phi &amp; c_\theta c_\phi \end{bmatrix} \begin{bmatrix} a_{b,x} \\ a_{b,y} \\ a_{b,z} \end{bmatrix}$</p>
+
+<p>Where $c_x = \cos x$ and $s_x = \sin x$.</p>
+
+<p>Of course, you can expand this to specify the x-y-z components of the world frame acceleration as individual equations as you mentioned:</p>
+
+<p>$a_{w,x} = f(a_b, \phi, \theta, \psi)$</p>
+
+<p>$a_{w,y} = g(a_b, \phi, \theta, \psi)$</p>
+
+<p>$a_{w,z} = h(a_b, \phi, \theta, \psi)$</p>
+
+<p>Note that I am using the convention where $\phi$ is roll (about x-axis), $\theta$ is pitch (about y-axis), and $\psi$ is yaw (about z-axis).</p>
+
+<p>When the rotation sequence roll, pitch, yaw is applied, each rotation occurs with respect to a world frame axis. We could get the same final result by applying a yaw, pitch, roll sequence but about each <em>new</em> axis. This latter method is more intuitive when visualizing roll-pitch-yaw (or rather Euler angle) rotations.</p>
+
+<p>Here is a figure to clarify the rotation sequence in case it helps. The world frame is shown in black, the body frame in red-green-blue, and intermediary frames during the "intuitive" rotation sequence are included in grey.</p>
+
+<p><a href="https://i.stack.imgur.com/XNqRc.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/XNqRc.png" alt="enter image description here"></a></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8434" data-toggle = "popover">
+				<p>user name : Brian Lynch</p>
+				<p> user reputation : 1237</p>
+				<p class = "tagcontent" id = "usertaginfo-8434">{'None': 85}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8434">Load Comments</button></br>
+			<div id = "commentsection-8434" class = 'collapse'>
+			<div id = "comment-13622" class = "comment">
+				<p>That's a great explanation. You state that "roll-pitch-yaw rotations occur sequentially about new axes step-by-step as you apply them". Is this because it is not possible to specify roll-pitch-yaw rotations that are with respect to a fixed set of axes? Is there a nice explanation for why that would be impossible?</p>
+			</div>
+			<div id = "comment-13623" class = "comment">
+				<p>There are a lot of different ways you can specify rotation. I was trying to find a decent diagram or even better an animation, but couldn't find one yet. I will add something to my answer to better explain that. When you intuitively think about roll-pitch-yaw, it makes the most sense to imagine yawing about the z-axis, then pitching about the new y-axis, then rolling about the new x-axis. But mathematically, you are actually rolling about the x-axis first (which coincides with the world frame x-axis), then pitching about the world frame y-axis, then yawing about the world frame z-axis.</p>
+			</div>
+			<div id = "comment-13624" class = "comment">
+				<p>Hence, why I say it is "misleading" but not incorrect.</p>
+			</div>
+			<div id = "comment-13625" class = "comment">
+				<p>[Here](https://youtu.be/UpSMNYTVqQI) is an animation of the "intuitive" rotations about the body axes, whereas [here](https://youtu.be/ImPBVQJRSwY?t=48s) is an animation of the actual rotation sequence about the world frame axes. Notice how the intuitive rotations appear as you'd expect, whereas the actual rotations don't seem to really be rolling and pitching about the right body axes. Also note that the two videos use different conventions for the axes directions.</p>
+			</div>
+			<div id = "comment-13626" class = "comment">
+				<p>I'm a bit confused now. My previous comment was incorrect. The videos clarified that. Each rotation is about the original x,y, and z axes, not about the axes that rotate with each subsequent rotation. However, this webpage (http://planning.cs.uiuc.edu/node102.html) says that the rotation matrix you gave ($R$) is from world frame to body frame, not from body frame to world frame. If that webpage is correct, then the equation would be $a_w = R^{-1}a_b$, not $a_w = Ra_b$. Is that right?</p>
+			</div>
+			<div id = "comment-13627" class = "comment">
+				<p>I should really just remove that statement because it is the source of the confusion. Each rotation happens with respect to the world frame, but the order of rotations is important. Stick out your right hand fingers in a index-middle-thumb x-y-z frame. To me the intuitive roll-pitch-yaw sequence is: yaw about thumb, pitch about middle, then roll about index (where we are rotating about each new axis). However, in truth we are first rolling about index which aligns with world frame x, then pitching about world frame y, then yawing about world frame z.</p>
+			</div>
+			<div id = "comment-13628" class = "comment">
+				<p>The convention of how you consider $R$ in terms of frame  A to B can definitely vary. What I have posted is correct though, where $a_w = R a_b$, $a_b$ is a vector defined in the body frame and $a_w$ is the same vector but in the world frame. Think about the vector [1,0,0] in the body frame, that will be the red 1 vector in my image, which is the first column of $R$.</p>
+			</div>
+			<div id = "comment-13647" class = "comment">
+				<p>I think I get it now. There are two points I was missing - (1) a roll, pitch, yaw rotation in the world frame is equivalent to a yaw, pitch, roll rotation in the body frame (the intuitive rotation) and (2) the notion of a body frame is simply convention. Any rotation matrix $R$ takes some frame A to the world frame, and it takes the world frame to some frame B. If you call A the body frame, then $R$ is a rotation from body frame to world frame. If you call B the body frame, then $R$ is a rotation from world frame to body frame. Is that accurate?</p>
+			</div>
+			<div id = "comment-13648" class = "comment">
+				<p>I'm a bit apprehensive about saying this, but I think your last comment is actually a very nice way of explaining it. Over time I have come to just accept that rotations are tricky, there are different conventions, and there are umpteen ways to do them. Even forgetting about quaternions and axis-angle representation, the same rotation matrix can be formed from [a number of different sequences](https://en.wikipedia.org/wiki/Euler_angles).</p>
+			</div>
+			<div id = "comment-13662" class = "comment">
+				<p>It's definitely a confusing concept, but you've helped clarify things for me quite a bit. Thanks for answering all my stupid questions. It was a big help.</p>
+			</div>
+			<div id = "comment-13664" class = "comment">
+				<p>Not stupid at all, rotations just take practice. I always find myself second guessing myself and moving my hand around in a right hand coordinate system to get my bearings.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8434" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8434">
+					<img id="start_img-8434" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8434">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

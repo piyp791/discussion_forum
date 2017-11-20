@@ -1,0 +1,329 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Create 2 Reading Sensor Values
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-10200" class = "post">
+			<h2>Question</h2>
+			<div id="vote-10200" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 165</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Create 2 Reading Sensor Values</h2>
+<p>I am trying to solve some Create 2 sensor reading problem that I am having when I came across @NBCKLY's posts (<a href="https://robotics.stackexchange.com/questions/7215/arduino-create-2-reading-sensor-values">Part 1</a> and <a href="https://robotics.stackexchange.com/questions/7229/irobot-create-2-encoder-counts">Part 2</a>) that I believe are exactly what I am looking for. I copied his code from the original post into my project and updated the code from the second post as best as I could interpret...but something is not going according to plan.</p>
+
+<p>For example, I am printing the angle to my serial monitor (for now) but I am constantly getting a value of 0 (sometimes 1).</p>
+
+<p>Can @NBCKLY or anybody please check out this code and tell me what I'm doing wrong? I would appreciate it. Thank you very much.</p>
+
+<pre><code>int baudPin = 2;
+int data;
+bool flag;
+int i;
+int ledPin = 13;
+int rxPin = 0;
+signed char sensorData[4];
+int txPin = 1;
+
+unsigned long baudTimer = 240000;
+unsigned long prevTimer = 0;
+unsigned long thisTimer = 0;
+
+
+
+void drive(signed short left, signed short right) {
+  Serial.write(145);
+  Serial.write(right &gt;&gt; 8);
+  Serial.write(right &amp; 0xFF);
+  Serial.write(left &gt;&gt; 8);
+  Serial.write(left &amp; 0xFF);
+}
+
+void updateSensors() {
+  Serial.write(149);
+  Serial.write(2);
+  Serial.write(43); // left encoder
+  Serial.write(44); // right encoder
+  delay(100);
+
+  i = 0;
+
+  while (Serial.available()) {
+    sensorData[i++] = Serial.read();
+  }
+
+  int leftEncoder = int((sensorData[0] &lt;&lt; 8)) | (int(sensorData[1]) &amp; 0xFF);
+  int rightEncoder = (int)(sensorData[2] &lt;&lt; 8) | (int)(sensorData[3] &amp; 0xFF);
+  int angle = ((rightEncoder * 72 * 3.14 / 508.8) - (leftEncoder * 72 * 3.14 / 508.8)) / 235;
+
+  Serial.print("\nAngle: ");
+  Serial.print(angle);
+  Serial.print("\n");
+}
+
+
+
+void setup() {
+  pinMode(baudPin, OUTPUT);
+  pinMode(ledPin, OUTPUT);
+  pinMode(rxPin, INPUT);
+  pinMode(txPin, OUTPUT);
+
+  delay(2000);
+  Serial.begin(115200);
+
+  digitalWrite(baudPin, LOW);
+  delay(500);
+  digitalWrite(baudPin, HIGH);
+  delay(100);
+
+  Serial.write(128);
+  Serial.write(131);
+  updateSensors();
+  drive(50, -50);
+}
+
+
+
+void loop() {
+  thisTimer = millis();
+
+  if (thisTimer - prevTimer &gt; baudTimer) {
+    i = 0;
+    prevTimer = thisTimer;
+    digitalWrite(baudPin, LOW);
+    delay(500);
+    digitalWrite(baudPin, HIGH);
+    Serial.print("Pulse sent...\n");
+  }
+
+  updateSensors();
+}
+</code></pre>
+
+#
+
+<p>What I am asking is why do I only get an angle of rotation of 0 or 1 degrees when the robot is moving in a circle. The angle should be incrementing while the robot is moving. </p>
+
+<p>The output I am getting on the serial monitor shows a line of what looks like garble which I assume is supposed to be the bytes sent back from the Create which is followed by "Angle: 0 (or 1)" What I was expecting to see was an increasing angle value. (1,2,3...360, and so on).</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10200" data-toggle = "popover">
+				<p>user name : Tony Tzankoff</p>
+				<p> user reputation : 1</p>
+				<p class = "tagcontent" id = "usertaginfo-10200">{'sensors': 0, 'None': 0, 'irobot-create': 0, 'arduino': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-10200" class = 'collapse'>
+			</div>
+				<textarea id = "speech-10200" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10200">
+					<img id="start_img-10200" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10200">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-10206"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10206" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>First, I'll point out that <a href="https://cdn-shop.adafruit.com/datasheets/create_2_Open_Interface_Spec.pdf" rel="nofollow noreferrer">OP code 20</a> will just give you the angle directly. Remember if you use that code then, </p>
+
+<blockquote>
+  <p>The value returned must be divided by 0.324056 to get degrees.</p>
+</blockquote>
+
+<p>Regarding your code specifically, it looks like you're trying to do:</p>
+
+<p>$$
+\frac{\mbox{right distance} - \mbox{left distance}}{\mbox{wheel base}} \\
+$$</p>
+
+<p>This is a rearrangement of the <a href="https://en.wikipedia.org/wiki/Arc_length#Arcs_of_circles" rel="nofollow noreferrer">arc length</a> formula:</p>
+
+<p>$$
+s = r\theta \\
+$$</p>
+
+<p>where $s$ is the arc traversed (difference in wheel distances), $r$ is the radius of the circle (the wheel base), and $\theta$ is the angle traversed, <strong>in radians</strong>. </p>
+
+<p>So, one of your problems is that you are using an <code>int</code> to define your angle value - <code>int</code> is short for <em>integer</em>, meaning that it can only be whole number. Radians are very small in magnitude compared to degrees. One complete circle is $2\pi$ radians, or about 6.28. Compare this to degrees, which is 360. This means that one radian is about 60 degrees; you won't get any update because of your unit definition. </p>
+
+<p><strong>Your biggest problem</strong> is, as <a href="https://robotics.stackexchange.com/q/7229/9720">NBCKLY asked about</a>, the encoder counts that are returned to you from OP code 43 and 44 are <strong>not signed</strong>. So, when you your math, you are doing the following:</p>
+
+<p>$$
+\frac{ \frac{\mbox{right encoder}}{\mbox{counts per rev}} (\pi d) - \frac{\mbox{left encoder}}{\mbox{counts per rev}} (\pi d)}{\mbox{wheel base}} \\
+$$</p>
+
+<p>BUT, your drive commands are equal in magnitude. This means that $\mbox{right encoder}\approx \mbox{left encoder}$ <strong>because the encoder counts are not signed</strong>. That is, even though your drive command is <em>negative</em>, the counts come back as <em>positive</em>. </p>
+
+<p>So, here's what you can do to fix this**:</p>
+
+<ol>
+<li>Multiply the encoder counts by the <a href="https://en.wikipedia.org/wiki/Sign_function#Definition" rel="nofollow noreferrer">sign</a> (not sine) of the respective drive command. </li>
+<li>Use a <code>float</code> for the angle and/or use degrees for the angle by multiplying your existing code by <code>(180/3.1415)</code>.</li>
+</ol>
+
+<p>** - A final note on your code: You're going to have trouble doing it the way you are at the moment because you're using <em>total</em> encoder counts for your math. Say you get to 16,000 counts and change direction on that motor. What happens? Well, the way I've written above (which fixes your current issue), you go from +16,000 to -16,000 (or vice-versa). What you should consider doing instead is to <em>accumulate</em> an angle and to evaluate only the <em>elapsed</em> wheel encoder counts. That is, I would do the following (pseudo-code):</p>
+
+<pre><code>float angle;
+angle = 0;
+
+&lt;in your updateSensor code&gt;
+leftEncoder = &lt;get left encoder counts&gt;;
+rightEncoder = &lt;get right encoder counts&gt;;
+
+/* Rollover protection on the encoder */
+if leftDriveCommand &gt; 0
+    if leftEncoder &lt; prevLeftEncoder
+        prevLeftEncoder = prevLeftEncoder - 65535;
+    end
+elseif leftDriveCommand &lt; 0
+    if leftEncoder &gt; prevLeftEncoder
+        prevLeftEncoder = prevLeftEncoder + 65535;
+    end
+end
+
+&lt;do the same thing for the right encoder&gt;
+
+elapsedLeft = leftEncoder - prevLeftEncoder;
+prevLeftEncoder = leftEncoder;
+
+elapsedRight = rightEncoder - prevRightEncoder;
+prevRightEncoder = rightEncoder;
+
+angleIncrement = (elapsedRight - elapsedLeft)*(pi*d/countsPerRev)/(wheelBase);
+
+angle = angle + angleIncrement;
+</code></pre>
+
+<p>So in this way you accumulate your angle by looking at how much of an angle has elapsed since the last time you updated your sensor. In this way, you don't have to worry about what happens with encoder counts when you reverse polarity on a drive command. You should also consider what is going to happen when you roll over from 65535 back to 0. </p>
+
+<p><strong>Or again, just use OP code 20 to get the angle directly</strong>.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10206" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-10206">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10206">Load Comments</button></br>
+			<div id = "commentsection-10206" class = 'collapse'>
+			<div id = "comment-18344" class = "comment">
+				<p>I am not sure if Op Code 142 and Packet ID 20 is what I am looking for. However, I was looking into it and when I ran code to get a reading, I got nothing when trying to read the data.
+
+    Roomba.write(142);
+    Roomba.write(43);
+
+    i = 0;
+
+    while (Roomba.available()) {
+      sensorData[i++] = Roomba.read();
+      Serial.print ("BYTE\n"); // <-- should at least print the word BYTE, but does not
+    }
+
+    delay(100);
+  }
+
+P.S. I give on this formatting stuff. Nothing I type works there either...despite copying and pasting from on screen instructions.</p>
+			</div>
+			<div id = "comment-18347" class = "comment">
+				<p>...and before anybody starts getting critical over teh fact that I initially saido packet id 20 and then used ID 43 in my code, the same problem applies. I am not getting any data back at all. Why that is is what I am tying to figure out. I'll do the math after I get the data to do it with.</p>
+			</div>
+			<div id = "comment-18352" class = "comment">
+				<p>First of all, I misread something in Arduino's serialSoftware setup that led me to use an improper pin for my RX line. That issue has been resolved. I am now getting sensor data. Yay! Secondly, the 142/20 op code/packet id combination (with a non-moving Roomba) returns a negative value. Since the Roomba is not moving, should the result be 0 until it starts moving? I try to look at other people's code to see how they did it (as I am more of a visual learner) and notice that nobody else accounts for rollover protection. An oversight? Looking at your code, I can see how this might come in handy.</p>
+			</div>
+			<div id = "comment-18354" class = "comment">
+				<p>@TonyTzankoff - Formatting doesn't work (nicely) in comments. You can delineate code with the grave accent ( ` ) on either end. Generally, you should *edit your question* to incorporate new/updated information. Regarding your issue, the documentation says Op code 142 followed by packed ID 20 gets you the *elapsed Angle* (page 26). You need to accumulate those angles. If you are having a problem with the initial value being something other than zero, then discard it and poll again. The second (and subsequent) values should be zero if it didn't move.</p>
+			</div>
+			<div id = "comment-18355" class = "comment">
+				<p>Also I appear to have not linked the manual from which I was quoting. The manual I quoted can be found [here](https://www.usna.edu/Users/weapsys/esposito/_files/roomba.matlab/MTIC2/Create2_Open_Interface_AUG_15_2015.pdf). There's not much difference, though.</p>
+			</div>
+			<div id = "comment-18385" class = "comment">
+				<p>I was using the accent on both ends but you can see how it did not turn out. Anyway, I am accumulating the elapsed angle (2,4,6...180) but this method has generated another problem. I am displaying "angle traveled" and "total angle" through the serial monitor...and it makes a major jump despite not having traveled that far.  
+
+`angle --> -4.00 totalAngle --> -140.00  
+angle --> -4.00 totalAngle --> -144.00  
+angle --> -2.00 totalAngle --> -146.00  
+angle --> -1024.00 totalAngle --> -1170.00`
+
+The robot stops at this point because the abs(totalAngle) >= 180. Any idea why this is?</p>
+			</div>
+			<div id = "comment-18386" class = "comment">
+				<p>@TonyTzankoff - Well, your initial question was, "What I am asking is why do I only get an angle of rotation of 0 or 1 degrees when the robot is moving in a circle." If you have a new question, it's best to make a new question so everyone can see it and answer.</p>
+			</div>
+			</div>
+				<textarea id = "speech-10206" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10206">
+					<img id="start_img-10206" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10206">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

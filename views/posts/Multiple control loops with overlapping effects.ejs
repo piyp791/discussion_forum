@@ -1,0 +1,241 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Multiple control loops with overlapping effects
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8111" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8111" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">8</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 658</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Multiple control loops with overlapping effects</h2>
+<p>I'm familiar with using PID to perform closed loop control when there is a single output and a single error signal for how well the output is achieving the desired set-point.</p>
+
+<p>Suppose, however, there are multiple control loops, each with one output and one error signal, but the loops are not fully independent.  In particular, when one loop increases its actuator signal, this changes the impact of the output from other loops in the system.</p>
+
+<p>For a concrete example, imagine a voltage source in series with a resistor, applying a voltage across a system of six adjustable resistors in parallel.  We can measure the current through each resistor and we want to control the current of each resistor independently by adjusting the resistance.  Of course, the trick here is that when you adjust one resistor's resistance, it changes the overall resistance of the parallel set, which means it changes the voltage drop due to the divider with the voltage source's resistance and hence changes the current through the other resistors.</p>
+
+<p>Now, clearly we have an ideal model for this system, so we can predict what resistance we should use for all resistors simultaneously by solving a set of linear equations.  However, the whole point of closed loop control is that we want to correct for various unknown errors/biases in the system that deviate from our ideal model.  The question then: what's a good way to implement closed loop control when you have a model with this kind of cross-coupling?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8111" data-toggle = "popover">
+				<p>user name : Dan Bryant</p>
+				<p> user reputation : 143</p>
+				<p class = "tagcontent" id = "usertaginfo-8111">{'control': 8, 'None': 0, 'pid': 8}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8111" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8111" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8111">
+					<img id="start_img-8111" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8111">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8113"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8113" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">8</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Typically with a <strong>m</strong>ultiple <strong>i</strong>nput, <strong>m</strong>ultiple <strong>o</strong>utput (MIMO) system, a control engineer uses a <a href="https://en.wikipedia.org/wiki/Full_state_feedback">state feedback controller</a>. This style of controller leverages a <a href="https://en.wikipedia.org/wiki/State-space_representation">state-space model</a> of the system and generally takes the form:</p>
+
+<p>$$
+\dot{x}=\mbox{A}x+\mbox{B}u \\
+y = \mbox{C}x + \mbox{D}u \\
+$$</p>
+
+<p>where $x$ is a vector of states, $u$ is a vector of inputs, $y$ is a vector of outputs, and the time derivative of the states, $\dot{x}$, shows how the states evolve over time, as determined by combinations of states $\mbox{A}$ and inputs $\mbox{B}$. Outputs are also determined by an interaction between states and inputs, but the outputs can be any combination, so the output state and input matrices are different - $\mbox{C}$ and $\mbox{D}$. </p>
+
+<p>I won't go into a large amount of detail regarding state feedback controls, but in general, the matrices $\mbox{A} \rightarrow \mbox{D}$ "map" or associate a particular state or input to another state or input. For instance, if you want to model a system of unrelated differential equations, you would get something like:</p>
+
+<p>$$
+\dot{x} = \left[ \begin{array}{ccc}
+\dot{x}_1 \\
+\dot{x}_2 \\
+\dot{x}_3 \end{array} \right] = \left[ \begin{array}{ccc}
+k_1 &amp; 0 &amp; 0 \\
+0 &amp; k_2 &amp; 0 \\
+0 &amp; 0 &amp; k_3 \end{array} \right] \left[ \begin{array}{ccc}
+x_1 \\
+x_2 \\
+x_3 \end{array} \right]
+$$
+which represents:
+$$
+\dot{x}_1 = k_1 x_1 \\
+\dot{x}_2 = k_2 x_2 \\
+\dot{x}_3 = k_3 x_3 \\
+$$</p>
+
+<p>If you wanted to add input $u_1$ to the equation for $\dot{x}_1$ and input $u_2$ to $\dot{x}_3$, then you could add a $\mbox{B}u$ term:</p>
+
+<p>$$
+\dot{x} = \left[ \begin{array}{ccc}
+\dot{x}_1 \\
+\dot{x}_2 \\
+\dot{x}_3 \end{array} \right] = \left[ \begin{array}{ccc}
+k_1 &amp; 0 &amp; 0 \\
+0 &amp; k_2 &amp; 0 \\
+0 &amp; 0 &amp; k_3 \end{array} \right] \left[ \begin{array}{ccc}
+x_1 \\
+x_2 \\
+x_3 \end{array} \right] + \left[ \begin{array}{ccc}
+1 &amp; 0 \\
+0 &amp; 0 \\
+0 &amp; 1 \end{array} \right] \left[ \begin{array}{ccc}
+u_1 \\
+u_2 \end{array} \right]
+$$</p>
+
+<p>If you want to keep this, but you think that state $x_1$ contributes to how $x_2$ changes, you can add that interaction:</p>
+
+<p>$$
+\dot{x} = \left[ \begin{array}{ccc}
+\dot{x}_1 \\
+\dot{x}_2 \\
+\dot{x}_3 \end{array} \right] = \left[ \begin{array}{ccc}
+k_1 &amp; 0 &amp; 0 \\
+\boxed{ k_{x_1 \rightarrow x_2} } &amp; k_2 &amp; 0 \\
+0 &amp; 0 &amp; k_3 \end{array} \right] \left[ \begin{array}{ccc}
+x_1 \\
+x_2 \\
+x_3 \end{array} \right] + \left[ \begin{array}{ccc}
+1 &amp; 0 \\
+0 &amp; 0 \\
+0 &amp; 1 \end{array} \right] \left[ \begin{array}{ccc}
+u_1 \\
+u_2 \end{array} \right]
+$$</p>
+
+<p>When you write these out now, you get:</p>
+
+<p>$$
+\begin{array} \\
+\dot{x}_1 &amp; = &amp; k_1 x_1 + u_1 \\
+\dot{x}_2 &amp; = &amp; k_{x_1 \rightarrow x_2}x_1 + k_2 x_2 \\
+\dot{x}_3 &amp; = &amp; k_3 x_3 + u_2 \end{array}
+$$</p>
+
+<p>You can keep building up complexity as your system requires. Once you have a model, for state feedback controls, you need to make sure that the system is <strong>linear</strong>, in that the system doesn't have trig functions or one state multiplying itself or another state, and make sure that it is <strong>time invariant</strong>, in that the matrices $\mbox{A} \rightarrow \mbox{D}$ don't change with time - no function of (t) in them. You may be able to make some simplifications, such as a <a href="https://en.wikipedia.org/wiki/Small-angle_approximation">small angle approximation</a> to help get your $\mbox{A}$ matrix into the <strong>LTI</strong> form required for the next step. </p>
+
+<p>Now you can "mask" the entire system into the tidy two equations first shown, hiding the entire $\mbox{A}$ matrix with just the letter 'A', etc. With the <a href="https://en.wikipedia.org/wiki/Laplace_transform">Laplace transform</a> you can (hand-wave) evaluate the uncontrolled, open-loop dynamics of the system. You do this by finding the <a href="http://demonstrations.wolfram.com/SimulationOfFeedbackControlSystemWithControllerAndSecondOrde/">poles of the system</a>, which in term indicate system response. </p>
+
+<p>You can also evaluate the system to see if it is <a href="https://en.wikipedia.org/wiki/Controllability">controllable</a>, meaning that you can use your inputs to alter all of the states in a unique manner, and to see if it is <a href="https://en.wikipedia.org/wiki/Observability">observable</a>, meaning that you can actually determine what the values of the states are. </p>
+
+<p>If the system is controllable, you can take information about the states, $-\mbox{G}x$, and feed that into the system, using the information you have about the states to drive them to a desired value. Using only the two initial equations for clarity, when you add the control signal to the input you get:</p>
+
+<p>$$
+\dot{x} = \mbox{A}x + \mbox{B}(u - \mbox{G}x) \\
+y = \mbox{C}x + \mbox{D}u \\
+$$</p>
+
+<p>which becomes:</p>
+
+<p>$$
+\dot{x} = \mbox{A}x - \mbox{BG}x + \mbox{B}u \\
+y = \mbox{C}x + \mbox{D}u \\
+$$</p>
+
+<p>which can be rearranged as:</p>
+
+<p>$$
+\dot{x} = [\mbox{A}-\mbox{BG}]x + \mbox{B}u \\
+y = \mbox{C}x + \mbox{D}u \\
+$$</p>
+
+<p>Where before you system response was driven by the $\mbox{A}$ matrix, now it is driven by $\mbox{A-BG}$. You can again evaluate the poles via the Laplace transform, but now you have a gain matrix $\mbox{G}$ you can use to tune the controller, putting the poles wherever you want, which establishes the time response to be whatever you want.</p>
+
+<p>The process continues, with <a href="https://en.wikipedia.org/wiki/State_observer">observers</a> setup to compare the actual system output $y$ with the model's predicted output $\hat{y}$. This is where it's important to note that the outputs don't have to be the same combination of states as you use in the state differential equation - where your states might be a current your output might be a voltage ($R\times I$) so you can make a comparison with a measurable signal on your real system. </p>
+
+<p>Like I said, there is a <em>ton</em> of information involved with modeling systems and designing state feedback controllers, I just outlined the general process as I believe this is scope you were looking for with your question. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8113" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-8113">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8113">Load Comments</button></br>
+			<div id = "commentsection-8113" class = 'collapse'>
+			<div id = "comment-12947" class = "comment">
+				<p>Thanks, this is an excellent basis for some further research.</p>
+			</div>
+			<div id = "comment-12955" class = "comment">
+				<p>great answer, **tl;dr;** scalar values describing a SISO system become matrices for a MIMO system, the "cross-coupling" can be seen in the off-diagonal values in the matrices.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8113" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8113">
+					<img id="start_img-8113" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8113">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

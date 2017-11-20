@@ -1,0 +1,295 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>DH-Parameters for Forward Kinematics for Translatory Motion only
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7575" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7575" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 307</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>DH-Parameters for Forward Kinematics for Translatory Motion only</h2>
+<p>I am fairly new to the DH-transformation and I have difficulties to understand how it works. Why are not all coordinates (X+Y+Z) incorporated into the parameters? It seems to me that at least one information is useless/goes to the trash, since there is only a, d (translatory information) and alpha, theta(rotatory information). </p>
+
+<p>Example: 
+The transition between two coordinate systems with identical orientation(alpha=0, theta=0) but with different coordinates(x1!=x2, y1!=y2, z1!=z2). 
+DH only makes use of a maximum of two of these information.</p>
+
+<p>Please enlighten me! </p>
+
+<p>Greetings</p>
+
+<p>:EDIT: </p>
+
+<p>To clarify which part of the DH-Transform I don't understand, here is an example. </p>
+
+<p>Imagine a CNC-Mill(COS1) on a stand(COS0) without any variable length(=no motion) between COS0-COS1. For some reason I need to incorporate the transformation from COS0-COS1(=T0-1) into the forward transformation of my CNC-Mill. 
+<img src="https://i.stack.imgur.com/csRPG.png" alt="DH1"></p>
+
+<p>DH-Parameters for T0-1 would be a=5mm, alpha=90 , d=2mm and theta=90 . Assuming this is correct, the dX=10mm information is lost during this process?
+If I recreate the relation between COS0 and COS1 according to the DH-Parameters, I end up like this: 
+<img src="https://i.stack.imgur.com/EAbhr.png" alt="DH2"></p>
+
+<p>As far as I understand, on non parallel axis the information is not lost because the measurement of a/d would be diagonal, therefore include either dX/dY, dX/dZ or dY/dZ(pythagorean theorem) in one parameter. </p>
+
+<p>Where is the flaw in my logic?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7575" data-toggle = "popover">
+				<p>user name : dcpria</p>
+				<p> user reputation : 26</p>
+				<p class = "tagcontent" id = "usertaginfo-7575">{'dh-parameters': 3, 'None': 1, 'forward-kinematics': 3, 'cnc': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7575">Load Comments</button></br>
+			<div id = "commentsection-7575" class = 'collapse'>
+			<div id = "comment-10988" class = "comment">
+				<p>What I see as the possible flaw here is the constraint "the Xn axis intersects both Zn-1 and Zn axes" (Via Wikipedia). If you rotation COS1 by 45 degrees, the issue would go away, and you would get an "a" parameter that is calculated from dZ and dX, it would be that 11.36mm value.</p>
+			</div>
+			<div id = "comment-10989" class = "comment">
+				<p>Yes, that was my point in the last sentence of my edit. But I don't know of any rule which I might have broken in DH terms.</p>
+			</div>
+			<div id = "comment-10990" class = "comment">
+				<p>It appears that the rule you have broken is that rule I quoted. In your current setup (figure 1), the X axis in COS1 does not intersect Z in COS0. Your figure 2 shows that you ended up forced into this constraint.</p>
+			</div>
+			<div id = "comment-10991" class = "comment">
+				<p>I am not sure if I understand you correct. The Wikipedia page says: "2. the x-axis is parallel to the common normal". Which means there are only two ways to set it, facing away/towards the previous COS. If I would want it to intersect, i would need to rotate COS1 by 45  (as you mentioned), but this would result into a wrong z-axis of COS1(if it would be a motion axis).</p>
+			</div>
+			<div id = "comment-10993" class = "comment">
+				<p>Okay, now I understand the point you have made and I can see the flaw in my logic. DH doesn't necessarily place the the coordinate systems into the actual physical axis (like in the video mentioned, posted by @Chuck around 0:56)the origin is not in the center of the actuator. So the dX information actually is not taken into account, but will be with the next transform(T1-2).
+So a way to cope with this for programmatically visualizations seems to be to insert another COS between COS0 and COS1, which is rotated by 45 .</p>
+			</div>
+			<div id = "comment-10995" class = "comment">
+				<p>You could just use a "regular" transformation matrix to go from COS0 to COS1, then use DH for the CNC. Since there is no variability from COS0 to COS1, DH isn't really needed, and a homogeneous transformation could be used.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7575" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7575">
+					<img id="start_img-7575" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7575">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7576"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7576" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You don't need an explicit declaration for X, Y, and Z because the information is all relative to the previous joint. </p>
+
+<p>For a terrific tutorial, see <a href="https://www.youtube.com/watch?v=rA9tm0gTln8" rel="nofollow">this video</a>.</p>
+
+<p>You don't typically use DH parameters to generate a transform from one fixed coordinate to another fixed coordinate; you use them to define <em>joint motions</em>. </p>
+
+<p>In your example, you want to recreate the transform from COS0 to COS1. (By the way, <code>cos</code> is the symbol for <a href="http://mathworld.wolfram.com/Cosine.html" rel="nofollow">cosine</a> I would suggest using <code>F</code> for denoting different frames of reference) You use the following DH parameters:</p>
+
+<p>d = 2mm</p>
+
+<p>$\theta$ = 90 degrees ($\frac{\pi}{2}$)</p>
+
+<p>r = 5mm</p>
+
+<p>$\alpha$ = -90 degrees ($-\frac{\pi}{2}$)</p>
+
+<p>The problem here is that, again, DH parameters are for <em>joint motion</em>, not for fixed locations, so all you are doing is defining the location and orientation of the Z-axis. In DH parameters, the Z-axis is the axis of motion. As mentioned <a href="https://www.youtube.com/watch?v=rA9tm0gTln8&amp;t=1m2s" rel="nofollow">about 1 minute into the video I linked</a>, "DH parameters are only concerned with the motion of the links, not the physical placement of components."</p>
+
+<p>You are attempting to use DH parameters to locate a physical position where DH parameters are used to define an <strong>axis</strong> of motion.</p>
+
+<p>Your confusion comes from the fact that you are misusing the DH parameters. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7576" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-7576">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7576">Load Comments</button></br>
+			<div id = "commentsection-7576" class = 'collapse'>
+			<div id = "comment-10923" class = "comment">
+				<p>Thanks, this video explains it quite well, though I can't get my head around that special case explained in original post. It seems to me that DH is not applicable for two coordinate systems with all 3 axes parallel. Instead I would need redefine the orientation of the second coordinate system (e.g.: like at 2:36 in the video). Resulting in that only one axis can be parallel in both systems. Is this correct? If it is, how does this work in practice when both systems have all 3 parallel axes? (e.g. a CNC-Mill on a gantry crane. Yes, it's ridiculous but easy to visualize. )</p>
+			</div>
+			<div id = "comment-10924" class = "comment">
+				<p>@dcpria - I added a bit more to my answer in hopes of clarifying for you.</p>
+			</div>
+			<div id = "comment-10984" class = "comment">
+				<p>I have added an example to clarify my question. I see how the global X,Y,Z information incorporates each axis motions, my question is about the X,Y,Z information within one transform between two coordinate systems.</p>
+			</div>
+			<div id = "comment-10992" class = "comment">
+				<p>@dcpria - DH parameters are not intended to locate physical objects, they are used to define motions. This is your confusion. See an expanded explanation in my edited answer above.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7576" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7576">
+					<img id="start_img-7576" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7576">Comment</button>
+			<br><div id = "ans-7579"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7579" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>In DH, the Z axis always goes along the direction of variability. For a rotational (revolute) joint, that means Z is the axis of rotation. For a translational joint (prismatic) the Z axis is in the direction that the joint can translate. For each direction the robot can be actuated, a coordinate system is needed. So your example of a gantry crane, if that crane can be actuated in 3 directions, then it will take 3 coordinate systems to define said crane.  Then the CNC mill will need 3 as well. </p>
+
+<p>So, now taking a step back. Since our hypothetical 3D gantry crane has 3 coordinate systems, and in each coordinate system the Z axis is along the direction of freedom, you can imagine that from a global perspective, X,Y and Z are dealt with. </p>
+
+<p>I made a quick illustration. If you look, you can see that Z2 defines a direction that the crane can be actuated, but it is in X direction of the preceding coordinate system (X1). Z1 also defines a direction of acutation, but it is in the Y direction of the preceding coordinate system (Y0). So from a global perspective, the X,Y,Z are essentially incorporated. </p>
+
+<p>So the basis of your question boils down to, "why is only Z used as the axis of actuation?" I don't have an answer for that, other than probably the math would break down somewhere. </p>
+
+<p><img src="https://i.stack.imgur.com/ODMSa.jpg" alt="enter image description here"> </p>
+
+<p><strong>EDIT</strong> </p>
+
+<p>More info based on updated description. To transform between two coordinate systems with no variability in between them, all that is required is a homogeneous transform, as shown. Reference for how these matrices are formed can be found <a href="http://www.ro.feri.uni-mb.si/predmeti/robotizacija/knjiga/homogene.pdf" rel="nofollow noreferrer">here</a> on page 65 of the text.</p>
+
+<p><img src="https://i.stack.imgur.com/Ef9Fw.jpg" alt="enter image description here"></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7579" data-toggle = "popover">
+				<p>user name : Matt Brown</p>
+				<p> user reputation : 188</p>
+				<p class = "tagcontent" id = "usertaginfo-7579">{'None': 16, 'wheeled-robot': 2}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7579">Load Comments</button></br>
+			<div id = "commentsection-7579" class = 'collapse'>
+			<div id = "comment-10986" class = "comment">
+				<p>Sorry, if I didn't express my question clear enough. Please see the edit of my original post.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7579" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7579">
+					<img id="start_img-7579" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7579">Comment</button>
+			<br><div id = "ans-7582"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7582" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I studied DH transformation for industrial robotics exam. In DH procedure you consider only 1DOF joint (eventually decomposing a xDOF joint in x 1DOF with 0 link length) and you set relative z-axis parallel to joint axis and x-axis perpendicular to the plan defined by k-joint axis and k+1-joint axis. In this way you can consider every joint-to-joint transformation as a spin on relative z-axis and a spin on x-axis (the spin is defined as rotation and translation on the same axis and is the only 3D commutative tranformation). </p>
+
+<p>So, for each joint you get a transformation matrix that depends on joint variable (rotation or translation on relative z-axis) and on link length and geometry(rotation and/or translation on relative x-axis) . </p>
+
+<p>The total transformation matrix is the product of all single joint transformation matrix and it depends on all joint variables and on robot geometry</p>
+
+<p>I hope that this fast explanation is helpful and I hope that I did not made too many grammatical mistakes!</p>
+
+<p><strong>EDIT</strong></p>
+
+<p>DH transform is normally used to compute kinematics in robotic arms and it doesn't work for all kind of motion. In some cases it needs a "patch" in order to be usable for some configuration (i.e. adding an auxiliary 0DOF link to include some geometries). In your case I think you should decompose your sistem in two different transformation T0-1 and T1-2 to include every translation. In alternative you can set x-axis parallel to diagonal in order to have only one transformation matrix T0-1</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7582" data-toggle = "popover">
+				<p>user name : MrDeepPurple</p>
+				<p> user reputation : 11</p>
+				<p class = "tagcontent" id = "usertaginfo-7582">{'quadcopter': 0, 'None': 1, 'imu': 0, 'kalman-filter': 0, 'arduino': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7582">Load Comments</button></br>
+			<div id = "commentsection-7582" class = 'collapse'>
+			<div id = "comment-10985" class = "comment">
+				<p>Thanks, I understand the "idea" behind the DH-transform, my questions is rather more about transform between two coordinate systems. I have added an example to my original post to clarify it.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7582" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7582">
+					<img id="start_img-7582" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7582">Comment</button>
+			<br><div id = "ans-7584"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7584" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>To be short and simple, D-H notation uses third axis as the reference to the other 2 through out the calculations. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7584" data-toggle = "popover">
+				<p>user name : Trinadh venna</p>
+				<p> user reputation : 81</p>
+				<p class = "tagcontent" id = "usertaginfo-7584">{'None': 5}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7584" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7584" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7584">
+					<img id="start_img-7584" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7584">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

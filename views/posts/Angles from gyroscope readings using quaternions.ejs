@@ -1,0 +1,219 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Angles from gyroscope readings using quaternions
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11208" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11208" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 101</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Angles from gyroscope readings using quaternions</h2>
+<p>I am using gyroscope only to get real time angles as I move the IMU using a micro controller.</p>
+
+<p>I am able to get angles at a pretty decent accuracy(2 to 3 degree error). I am using quaternions for obtaining angles.</p>
+
+<p>The angles are with respect to the initial position of the IMU.</p>
+
+<p>I rotate the IMU around individual axis i.e around any one Axis at a time, I get good accuracy. But when I rotate around all axis at once the problem starts as stated below.</p>
+
+<p>Problem:</p>
+
+<p>The problem here is when I give a pitch and then yaw all seems fine. Now at this position of pitch and yaw, I give a roll, the other two angles also change. </p>
+
+<p><strong>The gyroscope gives raw angular rate in DPS, which is converted to radian/sec for processing. The quaternions are calculated from raw angular rate.</strong></p>
+
+<p>The code to convert quaternions to euler angles is as follows,</p>
+
+<pre><code>//Local variables for clarity
+fqw = gsangleparam.fquaternion[0];
+fqx = gsangleparam.fquaternion[1];
+fqy = gsangleparam.fquaternion[2];
+fqz = gsangleparam.fquaternion[3];
+
+
+//Calculate Angles*/
+gsangles.yaw = atan2(2 * (fqx*fqy + fqw*fqz), (fqw*fqw + fqx*fqx - fqy*fqy -    fqz*fqz)) * 180/PI;
+
+gsangles.pitch = asin(-2 * (fqx*fqz - fqw*fqy)) * 180/PI;
+
+gsangles.roll = atan2(2 * (fqy*fqz + fqw*fqx), (fqw*fqw - fqx*fqx - fqy*fqy  + fqz*fqz)) * 180/PI;
+</code></pre>
+
+<p>The Problem of roll is present only when initial position(and also 180 deg counterpart) is as follows:</p>
+
+<p>X - Facing left</p>
+
+<p>Y - Facing towards us </p>
+
+<p>Z - Facing UP</p>
+
+<p><strong>The problem is</strong>, When I give a pitch(around X here),yaw(around Z) and then roll(around Y here) or any sequence of roll pitch and yaw, then yaw changes.</p>
+
+<p>In fact whenever I rotate about Y axis(roll here), Yaw(around Z) changes. </p>
+
+<p>There is no problem when the initial position is(and also 180 deg counterpart) as follows, </p>
+
+<p>X - Facing away from us </p>
+
+<p>Y - Facing towards us</p>
+
+<p>Z - Facing UP</p>
+
+<p><strong>There is no problem</strong>. i.e When I give a pitch(around Y here),yaw(around Z) and then roll(around X here) or any sequence of roll pitch and yaw, there is no problem.</p>
+
+<p>Why is this happening?? can anyone please explain. 
+Thanks in advance.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11208" data-toggle = "popover">
+				<p>user name : Nithin G A</p>
+				<p> user reputation : 64</p>
+				<p class = "tagcontent" id = "usertaginfo-11208">{'None': 0, 'accelerometer': 11, 'algorithm': 2, 'calibration': 1, 'integration': 3, 'gyroscope': 5, 'orientation': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11208">Load Comments</button></br>
+			<div id = "commentsection-11208" class = 'collapse'>
+			<div id = "comment-20269" class = "comment">
+				<p>Can you provide the model number and/or datasheet for the gyro you're using? Everything I've said is speculative; the datasheet should give an absolute answer.</p>
+			</div>
+			<div id = "comment-20278" class = "comment">
+				<p>I use MPU 6500 from Invensense. The Sensitivity is 1000 DPS.</p>
+			</div>
+			<div id = "comment-20286" class = "comment">
+				<p>Any inputs from your side??</p>
+			</div>
+			<div id = "comment-20297" class = "comment">
+				<p>How are you defining the x and y axes relative to the text on the MPU-6500 package? Also, how are you defining your rotations? About the body axes or about global axes?</p>
+			</div>
+			<div id = "comment-20304" class = "comment">
+				<p>For me the package is the reference, the data sheet mentions the X and Y axis directions with respect to the package.</p>
+			</div>
+			<div id = "comment-20305" class = "comment">
+				<p>Regarding defining the rotations, the rotations are made in the body axis, but defined in a global unrotating frame which is the initial position of the MEMS sensor. The quaternions always gives the angles with respect to the initial position from which we start as far as my knowledge goes.</p>
+			</div>
+			</div>
+				<textarea id = "speech-11208" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11208">
+					<img id="start_img-11208" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11208">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-11209"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11209" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I'll link you to some <a href="http://planning.cs.uiuc.edu/node102.html" rel="nofollow noreferrer">math</a> but try to give a conceptual explanation, too. </p>
+
+<p>Consider a case where you want to start with the IMU upright and pointed forward and want to end with the IMU upside-down (new +z = old -z) but still pointed forward (new +x = old +x). </p>
+
+<p>How do you get from the starting position to the end position?</p>
+
+<ol>
+<li>Easiest way is to rotate about +x an angle of 180 degrees. (Roll) </li>
+<li>You could rotate about +y an angle of 180 degrees and <em>then</em> rotate about the new +z axis an angle of 180 degrees (Pitch then Yaw)</li>
+<li>You could rotate about +z an angle of 180 degrees and then rotate about the new +y axis an angle of 180 degrees (Yaw then Pitch)</li>
+</ol>
+
+<p>There are other ways you could do it, too - you could rotate about successive axes in 90 degree increments, a bunch of little increments, etc. The point is, <em>you need to define what your order of rotations are</em> to get from one particular starting orientation to get to a particular ending orientation for your rotation angles to make sense. </p>
+
+<p>The problem that you're seeing is that your gyroscope is likely setup to assume a <em>roll first</em>, followed by a <em>pitch</em>, followed by a <em>yaw</em>. That's (again, probably - check your datasheet) the order of rotations the gyro is giving you, but <em>you</em> are giving <em>it</em> a a pitch first, then yaw, which are the last two rotations in the sequence, then giving it the first rotation - roll. </p>
+
+<p>You're giving it the first motion <em>last</em>, which means that it has to go "back" and update the pitch/yaw angles to correct for the fact that you didn't rotate <em>it</em> the way it wants to report the angles to you. </p>
+
+<p>Try doing a roll <em>first</em>, followed by a pitch then a yaw and see if your angles hold steady with that order of rotations. Check your datasheet for specifics, but I think most systems are setup for roll/pitch/yaw (rpy) order.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11209" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-11209">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11209">Load Comments</button></br>
+			<div id = "commentsection-11209" class = 'collapse'>
+			<div id = "comment-20266" class = "comment">
+				<p>Please check the edits in the question. I am not facing a problem in sequence of rotations, I think it is related to the initial position. Please do check the edit and share your thoughts.</p>
+			</div>
+			<div id = "comment-20267" class = "comment">
+				<p>After a few experiments I found that the Initial Position is the key and also based on that we need to select the sequence of rotation. Eg. If the Initial Position is ZXY, Z up and X left and Y towards us(Right Hand Cordinate system), We need to use ZXY rotation sequence. If Initial position is ZYX,(Z up, Y left and X away from us), then we have to use ZYX sequence.</p>
+			</div>
+			<div id = "comment-20268" class = "comment">
+				<p>Your inputs guided me to do some experiments and come up with these observations. Thanks a lot Chuck</p>
+			</div>
+			</div>
+				<textarea id = "speech-11209" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11209">
+					<img id="start_img-11209" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11209">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

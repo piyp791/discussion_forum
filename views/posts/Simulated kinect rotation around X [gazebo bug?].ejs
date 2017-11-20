@@ -1,0 +1,153 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Simulated kinect rotation around X [gazebo bug?]
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-963" class = "post">
+			<h2>Question</h2>
+			<div id="vote-963" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">6</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 426</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Simulated kinect rotation around X [gazebo bug?]</h2>
+<p>I asked this question on <a href="http://answers.ros.org/question/53784/simulated-kinect-rotation-around-x-bug/" rel="noreferrer">answers.ros.org</a> and <a href="http://answers.gazebosim.org/question/1177/simulated-kinect-rotation-around-x-bug/" rel="noreferrer">gazebo.ros.org</a> but still haven't got any answer. I'm posting my question here with the hope someone can help me.</p>
+
+<p>In our robot, the Kinect can be mounted on the side of the arm, as shown in the screenshot below. When running the simulation in Fuerte, I found this weird behaviour. As you can observe on the image, the point cloud does not match the robot model (we see a partial image of the hand/arm at the bottom left of the screenshot, which should be on the robot model).</p>
+
+<p><a href="http://answers.ros.org/upfiles/13597242445897604.png" rel="noreferrer">Rotate Kinect http://answers.ros.org/upfiles/13597242445897604.png</a></p>
+
+<p>As soon as I rotate the kinect against its X axis (so that the kinect is horizontal as you can see on the second screenshot), then the point cloud and robot model are aligned properly.</p>
+
+<p><a href="http://answers.ros.org/upfiles/13596283675382491.png" rel="noreferrer">Horizontal Kinect http://answers.ros.org/upfiles/13596283675382491.png</a></p>
+
+<p>The kinect xacro and dae are the one from the turtlebot. I'm simply attaching them with a rotation:</p>
+
+<pre><code>&lt;joint name="base_camera_joint" type="fixed"&gt;
+  &lt;origin  xyz="0.01216 0.1713 0.433"
+       rpy="-${M_PI/2} ${M_PI/4} -${M_PI/12}" /&gt; 
+  &lt;!-- This -pi/2 in origin rpy is the offending parameter --&gt;
+
+  &lt;parent link="shadowarm_trunk"/&gt;
+  &lt;child link="camera_link" /&gt;
+&lt;/joint&gt;
+</code></pre>
+
+<p>The code can be seen on github.</p>
+
+<p>Any help is greatly appreciated!</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-963" data-toggle = "popover">
+				<p>user name : Ugo</p>
+				<p> user reputation : 141</p>
+				<p class = "tagcontent" id = "usertaginfo-963">{'kinect': 6, 'None': 1, 'ros': 6, 'simulator': 6}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-963" class = 'collapse'>
+			</div>
+				<textarea id = "speech-963" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-963">
+					<img id="start_img-963" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-963">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-969"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-969" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>An answer from David Butterworth which solved my problem! Thanks David.</p>
+
+<hr>
+
+<p>I found that if you modify the visual/collision mesh to be aligned with your joint origin, then it's okay.
+Don't do extra translations/rotations of the mesh from within your URDF, because that is broken.
+The orientation of the sensor data should depend on the Gazebo macro, but there should be only translations in there, with 2 joint rotations for the extra pair of camera frames.</p>
+
+<p>My Gazebo macro is based on the PR2 one, but with the visual/collision meshes fixed and re-scaled as per above.
+The end result is that any translation/rotation is only done at the head_mount_kinect joint that orientates everything else, and you can successfully pitch the sensor up-down or vertically.</p>
+
+<p>I'm guessing that in your situation, the PointCloud data is actually in the correct place, but because of the bug with the meshes, the visual model is in the wrong place.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-969" data-toggle = "popover">
+				<p>user name : Ugo</p>
+				<p> user reputation : 141</p>
+				<p class = "tagcontent" id = "usertaginfo-969">{'kinect': 6, 'None': 1, 'ros': 6, 'simulator': 6}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-969" class = 'collapse'>
+			</div>
+				<textarea id = "speech-969" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-969">
+					<img id="start_img-969" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-969">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

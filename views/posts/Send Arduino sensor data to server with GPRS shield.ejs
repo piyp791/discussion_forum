@@ -1,0 +1,334 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Send Arduino sensor data to server with GPRS shield
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-1299" class = "post">
+			<h2>Question</h2>
+			<div id="vote-1299" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 8116</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Send Arduino sensor data to server with GPRS shield</h2>
+<p>I'm trying to send Arduino sensor data to a server using a GPRS shield (<a href="http://www.geeetech.com/wiki/index.php/Arduino_GPRS_Shield" rel="nofollow">SIM900 shield from Geeetech</a>). I have this particular set up because the data will be updated to a website and the device will be roaming. I can't use <a href="http://www.cosm.org" rel="nofollow">http://www.cosm.org</a> because to the best of my knowledge that only updates every 15 minutes, I need to update about every 5-10 seconds.</p>
+
+<p>In order to connect I tried the code below to form UDP connection but it does not get sent through to the receiving IP and port. I don't know why. No errors occur on the Arduino side, and the server side has been shown to work with an iPhone app that sends a UDP message.</p>
+
+<pre><code>///connect
+void connectUDP()
+{
+ mySerial.println("AT+CSTT=\"APN\"");
+ delay(3000);
+ ShowSerialData();
+ mySerial.println("AT+CIICR");
+ delay(3000);
+ ShowSerialData();
+ mySerial.println("AT+CIFSR");
+ delay(3000);
+ ShowSerialData();
+ mySerial.println("AT+CIPSTART=\"UDP\",\"SERVER IP\",\"SERVER PORT\"");
+ delay(3000);
+ ShowSerialData();
+ mySerial.println();
+
+}
+
+
+///send udp packet to server 
+void sendUDP()
+{
+ for(int x = 0; x &lt; 30; x++){
+   mySerial.println("AT+CIPSEND"); 
+   delay(100);
+   ShowSerialData();
+   mySerial.println("\"hello world\"");
+   delay(100);
+   ShowSerialData();
+   mySerial.println((char)26);
+   delay(1000);
+   ShowSerialData();
+ }
+ mySerial.println();
+ //ShowSerialData();
+}
+</code></pre>
+
+<p>The server side is as follows (written in python):</p>
+
+<pre><code>import SocketServer
+
+PORTNO = 14
+
+class handler(SocketServer.DatagramRequestHandler):
+    def handle(self):
+        newmsg = self.rfile.readline().rstrip()
+    print (newmsg)
+        self.wfile.write(self.server.oldmsg)
+        self.server.oldmsg = newmsg
+
+s = SocketServer.UDPServer(('',PORTNO), handler)
+print "Awaiting UDP messages on port %d" % PORTNO
+s.oldmsg = "This is the starting message."
+s.serve_forever()
+</code></pre>
+
+<p>I can see a possible solution might be to change it to a TCP connection, but I don't know how to do that...</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1299" data-toggle = "popover">
+				<p>user name : James Herd</p>
+				<p> user reputation : 26</p>
+				<p class = "tagcontent" id = "usertaginfo-1299">{'None': 0, 'raspberry-pi': 5, 'arduino': 5, 'python': 5, 'programming-languages': 5, 'sensors': 5}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1299">Load Comments</button></br>
+			<div id = "commentsection-1299" class = 'collapse'>
+			<div id = "comment-2877" class = "comment">
+				<p>Were you able to verify that the GPRS shield can perform other functions (like dialing a phone number) based on serial port commands that you send it?</p>
+			</div>
+			<div id = "comment-2879" class = "comment">
+				<p>Yes, it can send an SMS, call a phone and receive http data all based on AT commands sent through the serial port.</p>
+			</div>
+			<div id = "comment-2880" class = "comment">
+				<p>And can you verify that `echo "test123" | nc -u YOUR_SERVER_IP 14` Produces output in your server?</p>
+			</div>
+			<div id = "comment-2881" class = "comment">
+				<p>so, send that from the arduino or another device? because I already used an iphone app which can send iphone sensor data as a UDP packet. that process worked perfectly and the server was receiving the data, so nothings wrong with the server side it seems.</p>
+			</div>
+			<div id = "comment-2883" class = "comment">
+				<p>I don't have this particular module, so the best I can suggest is peeking at code [like this example](http://forum.arduino.cc/index.php?topic=165947.0), which is apparently working intermittently, and see if there is something you're missing in yours.</p>
+			</div>
+			<div id = "comment-7822" class = "comment">
+				<p>arduino gprs shield sim900: buy from her: http://www.elecfreaks.com/store/gprsgsm-moduleefcom-pro-efcompro-p-450.html</p>
+			</div>
+			<div id = "comment-9165" class = "comment">
+				<p>Did you ever get this working? If so, perhaps suggest an answer? I mention it mostly as this has 2k views, and it would be good to have it "resolved"...</p>
+			</div>
+			<div id = "comment-9563" class = "comment">
+				<p>Its possible UDP gets blocked by your ISP.</p>
+			</div>
+			<div id = "comment-9622" class = "comment">
+				<p>+1, I'm having a similar issue. However, I don't think that you meant [cosm.org](http://cosm.org) as that appears to be some new age website dealing in mushrooms! :-) I believe you meant what was once known as _PACHUBE_, which then became [cosm.com](http://cosm.com), and now appears to be taken over by [xively.com](http://xively.com)...</p>
+			</div>
+			</div>
+				<textarea id = "speech-1299" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1299">
+					<img id="start_img-1299" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1299">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9376"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9376" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Your code appears a little incomplete - I am assuming that this is because you wished to include only the salient functions. </p>
+
+<p>Once the required missing lines from the GeeTech Wiki - <a href="http://www.geeetech.com/wiki/index.php/Arduino_GPRS_Shield#A_Simple_Source_Code_Examples" rel="nofollow">Arduino GPRS Shield - A Simple Source Code Examples</a> (their typo, not mine) are added, the complete (minimal) code would seem to be:</p>
+
+<pre><code>#include &lt;SoftwareSerial.h&gt;
+
+SoftwareSerial mySerial(7, 8);
+
+///connect
+void connectUDP()
+{
+ mySerial.println("AT+CSTT=\"APN\"");
+ delay(3000);
+ ShowSerialData();
+ mySerial.println("AT+CIICR");
+ delay(3000);
+ ShowSerialData();
+ mySerial.println("AT+CIFSR");
+ delay(3000);
+ ShowSerialData();
+ mySerial.println("AT+CIPSTART=\"UDP\",\"SERVER IP\",\"SERVER PORT\"");
+ delay(3000);
+ ShowSerialData();
+ mySerial.println();
+}
+
+
+///send udp packet to server 
+void sendUDP()
+{
+ for(int x = 0; x &lt; 30; x++){
+   mySerial.println("AT+CIPSEND"); 
+   delay(100);
+   ShowSerialData();
+   mySerial.println("\"hello world\"");
+   delay(100);
+   ShowSerialData();
+   mySerial.println((char)26);
+   delay(1000);
+   ShowSerialData();
+ }
+ mySerial.println();
+ //ShowSerialData();
+}
+
+void ShowSerialData()
+{
+ while(mySerial.available()!=0)
+   Serial.write(mySerial.read());
+}
+
+void setup() {
+  // put your setup code here, to run once:
+
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  connectUDP();
+  sendUDP();
+}
+</code></pre>
+
+<p>As to why this isn't working, I am not sure, and I am still working on it. </p>
+
+<p>As a sanity check, I presume that, in your actual Arduino sketch, you have substituted <code>SERVER IP</code> and <code>SERVER PORT</code> with actual values (i.e., a real IP address and port number)?  <code>SERVER IP</code> and <code>SERVER PORT</code> are not variables (global or otherwise) nor <code>#define</code>s. As you have not included the entire sketch, it is difficult to tell otherwise. </p>
+
+<p>In addition, make sure that the server address that you specify in the Arduino sketch matches the IP address of the server running the Python script, and that the port that you specify in the Arduino sketch matches <code>PORTNO</code> in the Python script. Sorry if I am stating the obvious, but, like I said, this is a sanity check.</p>
+
+<p>Regarding your second point:</p>
+
+<blockquote>
+  <p>I can see a possible solution might be to change it to a TCP connection, but I don't know how to do that...</p>
+</blockquote>
+
+<p>You simply need to change <code>UDP</code> to <code>TCP</code> in the following line<sup>1</sup>:</p>
+
+<pre><code> mySerial.println("AT+CIPSTART=\"UDP\",\"SERVER IP\",\"SERVER PORT\"");
+</code></pre>
+
+<p>so that it becomes</p>
+
+<pre><code> mySerial.println("AT+CIPSTART=\"TCP\",\"SERVER IP\",\"SERVER PORT\"");
+</code></pre>
+
+<p>Obviously, as I have pointed out above, you need to provide actual values for <code>&lt;SERVER IP&gt;</code> and <code>&lt;SERVER PORT&gt;</code>, for example:</p>
+
+<pre><code> mySerial.println("AT+CIPSTART=\"TCP\",\"116.228.221.51\",\"8500\"");
+</code></pre>
+
+<p>On the server side, the following lines in the Python script:</p>
+
+<pre><code>s = SocketServer.UDPServer(('',PORTNO), handler)
+print "Awaiting UDP messages on port %d" % PORTNO
+</code></pre>
+
+<p>need to be changed to:</p>
+
+<pre><code>s = SocketServer.TCPServer(('',PORTNO), handler)
+print "Awaiting TCP messages on port %d" % PORTNO
+</code></pre>
+
+<p>Again, ensure that the <code>PORTNO</code>, in your server side Python script, matches the port specified in the AT command.</p>
+
+<hr>
+
+<p><sup>1</sup> See <a href="http://m2msupport.net/m2msupport/atcipstart-start-up-tcp-or-udp-connection/" rel="nofollow">m2msupport.net - AT+CIPSTART</a>. The relevant notes being</p>
+
+<pre><code>AT+CIPSTART=?
+
++CIPSTART: ("TCP","UDP"),("(0,255).(0,255).(0,255).(0,255)"),(1,65535)
++CIPSTART: ("TCP","UDP"),("DOMAIN NAME"),(1,65535)
+
+OK
+
+Start a TCP connection
+AT+CIPSTART="TCP","116.228.221.51","8500"
+
+OK
+
+Start a UDP connection
+AT+CIPSTART="UDP","116.228.221.51","9600"
+
+CONNECT OK
+</code></pre>
+
+<p><strong>Note</strong> that <em>the web page</em> has a <strong>typo</strong>, and a period is shown where a comma should be, in the <code>Start a UDP connection</code> example. I have corrected this typo in the example above.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9376" data-toggle = "popover">
+				<p>user name : Greenonline</p>
+				<p> user reputation : 1053</p>
+				<p class = "tagcontent" id = "usertaginfo-9376">{'None': 44, 'arduino': 3, 'stepper-motor': 7, 'mechanism': 0, 'rcservo': 13}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-9376" class = 'collapse'>
+			</div>
+				<textarea id = "speech-9376" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9376">
+					<img id="start_img-9376" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9376">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

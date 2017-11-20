@@ -1,0 +1,229 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>DH parameters and Kinematic Decoupling
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8549" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8549" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 700</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>DH parameters and Kinematic Decoupling</h2>
+<p>Is it possible to decouple a 5DOF manipulator? 
+This question I asked earlier and I believe I got the right answers but I never show the drawings of the manipulator and now I'm hesitating during setup of the DH parameters for Forward Kinematics. See drawing depicted here.<a href="https://i.stack.imgur.com/fUCIF.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/fUCIF.png" alt="enter image description here"></a> </p>
+
+<p><a href="https://i.stack.imgur.com/QiEgK.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/QiEgK.png" alt="enter image description here"></a></p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8549" data-toggle = "popover">
+				<p>user name : Oswaldfig</p>
+				<p> user reputation : 47</p>
+				<p class = "tagcontent" id = "usertaginfo-8549">{'forward-kinematics': 0, 'None': 2, 'kinematics': 1, 'dh-parameters': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8549" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8549" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8549">
+					<img id="start_img-8549" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8549">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8550"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8550" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The first manipulator shown is a typical articulated arm without the final roll about the tool axis.  Just use the DH parameters for a Puma but set joint 6 = 0.  </p>
+
+<p>I don't know of any shortcuts for the second manipulator other than working out the DH parameters directly.  However, DH seems like overkill for this design.  DH allows you to handle things like joint twists and other offsets, which your manipulator does not have.  Rather than that, would you consider using simple rotation matrices and a vector loop to describe the end effector position and orientation with respect to the global coordinate system?</p>
+
+<p><a href="https://i.stack.imgur.com/WNzfF.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/WNzfF.png" alt="5DOF with coordinate systems"></a></p>
+
+<p>In this picture I show your link lengths $L_1$, $L_2$, and $L_3$, along with coordinate systems $0$ through $5$. I left the $\hat Y$ axes out for clarity, but they follow the right-hand rule.</p>
+
+<p>Your positional vector loop is $$\vec P_t = L_1 \hat Z_1 + L_2 \hat X_2 + L_3 \hat Z_5$$
+where $\vec P_t$ represents the position of the center of your tool tip.</p>
+
+<p>Now find the rotation matrices to define the unit vectors $\hat Z_1$, $\hat X_2$, and $\hat Z_5$.</p>
+
+<p>I will use $_x^{x+1}R$ for the rotation matrix between coordinate systems $x$ and $x+1$, and $\theta_i$ to represent the $i$th joint angle.</p>
+
+<p>$$_0^1R = \begin{bmatrix}
+\cos \theta_1&amp;-\sin \theta_1&amp;0\\
+\sin \theta_1&amp;\cos \theta_1&amp;0\\
+0&amp;0&amp;1
+\end{bmatrix}
+$$</p>
+
+<p>$$_1^2R = \begin{bmatrix}
+\cos \theta_2&amp;-\sin \theta_2&amp;0\\
+0&amp;0&amp;1\\
+-\sin \theta_2&amp;-\cos \theta_2&amp;0
+\end{bmatrix}
+$$
+(notice $\hat Y_2$ should point "down")</p>
+
+<p>$$_2^3R = \begin{bmatrix}
+0&amp;0&amp;1\\
+-\sin \theta_3&amp;-\cos \theta_3&amp;0\\
+\cos \theta_3&amp;-\sin \theta_3&amp;0
+\end{bmatrix}
+$$</p>
+
+<p>$$_3^4R = \begin{bmatrix}
+\sin \theta_4&amp;-\cos \theta_4&amp;0\\
+0&amp;0&amp;1\\
+-\cos \theta_4&amp;-\sin \theta_4&amp;0
+\end{bmatrix}
+$$</p>
+
+<p>$$_4^5R = \begin{bmatrix}
+0&amp;0&amp;1\\
+\cos \theta_5&amp;-\sin \theta_5&amp;0\\
+\sin \theta_5&amp;\cos \theta_5&amp;0
+\end{bmatrix}
+$$</p>
+
+<p>Now find the unit vectors needed for your vector loop (all with respect to the global coordinate system $0$).  $\hat Z_1$ is the third column from $_0^1R$:</p>
+
+<p>$$\hat Z_1 = \left( \begin{array}
+{c}0\\
+0\\
+1
+\end{array} \right)
+$$</p>
+
+<p>$\hat X_2$ is the first column from $_0^2R$, which you find by multiplying $_0^1R _1^2R$:</p>
+
+<p>$$_0^2R = \begin{bmatrix}
+\cos \theta_1 \cos \theta_2&amp;-\cos \theta_1 \sin \theta_2&amp; -\sin \theta_1\\
+\sin \theta_1 \cos \theta_2&amp;-\sin \theta_1 \sin \theta_2&amp; \cos \theta_1\\
+-\sin \theta_2&amp;-\cos \theta_2&amp;0
+\end{bmatrix}
+$$</p>
+
+<p>$$\hat X_2 = \left( \begin{array}
+{c}\cos \theta_1 \cos \theta_2\\
+\sin \theta_1 \cos \theta_2\\
+-\sin \theta_2
+\end{array} \right)
+$$</p>
+
+<p>In a similar way you can find $\hat Z_5$:</p>
+
+<p>$$\hat Z_5 = \left( \begin{array}
+{c}\sin \theta_4 (\cos \theta_1 \sin \theta_2 \sin \theta_3 - \sin \theta_1 \cos \theta_3) - \cos \theta_1 \cos \theta_2 \cos \theta_4\\
+\sin \theta_4 (\sin \theta_1 \sin \theta_2 \sin \theta_3 + \cos \theta_1 \cos \theta_3) - \sin \theta_1 \cos \theta_2 \cos \theta_4\\
+\cos \theta_2 \sin \theta_3 \sin \theta_4 + \sin \theta_2 \cos \theta_4
+\end{array} \right)
+$$</p>
+
+<p>Plugging values for the link lengths, and unit vectors, into your vector loop equation gets you the tool tip position.</p>
+
+<p>For the upper left $3x3$ submatrix of your 4x4 DH matrix, you just use $_0^5R$ (assuming the coordinate system definitions are the same).</p>
+
+<p>Now back to your wrist partitioning question.  You can use the same technique to compute the origin of the $4$ coordinate system ($L_1 \hat Z_1 + L_2 \hat X_2$).  Rotations $\theta_3$, $\theta_4$ and $\theta_5$ do not affect the position of this point, which is often referred to as the wrist center.  Those three joints can then orient the tool with respect to the $4$ coordinate system.  </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8550" data-toggle = "popover">
+				<p>user name : SteveO</p>
+				<p> user reputation : 2960</p>
+				<p class = "tagcontent" id = "usertaginfo-8550">{'None': 222}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8550">Load Comments</button></br>
+			<div id = "commentsection-8550" class = 'collapse'>
+			<div id = "comment-13852" class = "comment">
+				<p>Hi SteveO,Any PUMA robot type ?</p>
+			</div>
+			<div id = "comment-13853" class = "comment">
+				<p>The Puma 560 would be a good one for you to start with because you should be able to find a lot of examples for that one.  Of course, you will have to make the link lengths equal to the links on your robot (and notice that the shoulder and elbow offsets are zero for your system, too).</p>
+			</div>
+			<div id = "comment-13854" class = "comment">
+				<p>The second model you added is not the same as the solid model.  In the solid model, the shoulder and elbow joints are parallel, and the forearm roll joint is distal to the elbow.   That is similar to the Puma.   Your second drawing uses a different joint arrangement, which would not match the Puma kimematics.</p>
+			</div>
+			<div id = "comment-13855" class = "comment">
+				<p>The second model is the correct one and it is based on the solid model . The solid model is picture is copied from the distributor webpage but the rotating arrows are not drawn correctly.</p>
+			</div>
+			<div id = "comment-13856" class = "comment">
+				<p>Ok, I edited my answer.</p>
+			</div>
+			<div id = "comment-14263" class = "comment">
+				<p>Woow ! That's a crystal clear explanation. Thank you ever so much SteveO, Sorry for my delayed response, I was offline for few weeks.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8550" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8550">
+					<img id="start_img-8550" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8550">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

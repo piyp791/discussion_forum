@@ -1,0 +1,173 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>What type of control law is used in "Reaction Control System" of Apollo Lunar Module or Space Shuttle?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7722" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7722" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 139</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>What type of control law is used in "Reaction Control System" of Apollo Lunar Module or Space Shuttle?</h2>
+<p>Reaction Control Systems (RCS) on these vehicles are implemented by using small rocket thrusters. For me it looks like these thrusters work in some kind of "pulse" mode. And I can't understand - do they use some optimal control to calculate in advance the required impulse to reach the new desired state of the system OR they use "pulse" mode just for precise magnitude variation of provided thrust (like average voltage in PWM(pulse-width modulation)) in a classic PID control loop?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7722" data-toggle = "popover">
+				<p>user name : Alex Bokov</p>
+				<p> user reputation : 30</p>
+				<p class = "tagcontent" id = "usertaginfo-7722">{'control': 5, 'None': 0, 'rocket': 5, 'simulator': 0, 'uav': 0, 'matlab': 0, 'simulation': 0, 'automatic': 5}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7722" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7722" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7722">
+					<img id="start_img-7722" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7722">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7730"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7730" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><blockquote>
+  <p>do they use some optimal control to calculate in advance the required impulse to reach the new desired state of the system</p>
+</blockquote>
+
+<p>This is a property every stable controlled system has/should have. Figuring out how to get to some other state is the core of control theory.</p>
+
+<p><em>Doing</em> something in advance is not possible, but <em>knowing</em> it certainly is.
+Given that the system is controllable an stable, it should be able to follow a given trajectory. It is a lot easier to calculate a trajectory beforehand instead of generating desired states "on the fly".</p>
+
+<p>The great joy of control theory is that it is <s>only boring mathematical formulas and numbers, entirely unaware of what it's actually going on in the "real world"</s> able to describe very different systems in a common abstract way. So let's substitute the spaceship with a car.</p>
+
+<p>You are standing at the traffic lights. You think about what to do when they turn green. You create a mental image of how the acceleration (and thus velocity and thus position) of the car should change over time.
+In a car, that resembles to how hard you should hit the pedal to the metal.</p>
+
+<p>In a multiaxes setup in space, there are many angular accelerations to consider, but it's still the same: how should these values change over time?</p>
+
+<p>There are infinite solutions, but some are favourable. when you are docking in space for a example, you don't want to rotate much at the end of the motion. You want to have pretty much only translational movement between the two docking parts towards each other at the end of the motion. That's why the most part of possibly necessary rotation should happen at the beginning of the motion.</p>
+
+<p>And don't forget that you are in space. finding a trajectory that uses minimal fuel is desirable.</p>
+
+<blockquote>
+  <p>they use "pulse" mode just for precise magnitude variation of provided thrust (like average voltage in PWM(pulse-width modulation)) in a classic PID control loop?</p>
+</blockquote>
+
+<p>This is not an OR part, but AND. The "pulse" mode is all they have. You can open or close the valve. But the "pulse" is a controlled system in on itself. They measure all kinds of properties of the tanks like temperature and pressure to estimate what one "pulse" will do.</p>
+
+<p>Additionally, the computers know the payload and can calculate the model that's being controlled. In a sense, the system is self aware and can adjust its control accordingly.</p>
+
+<p><a href="http://science.ksc.nasa.gov/shuttle/technology/sts-newsref/sts-rcs.html" rel="nofollow noreferrer">Check this document on the RCS</a> which I got a bit of information from.</p>
+
+<hr>
+
+<p>An attempt to explain the "it's only a pulse" idea:</p>
+
+<p>You are probably familiar with one very common type of spaceship: microwave ovens. (admittedly, they are bound to some big rock by gravity, but still, they are in space (like everything else), so they are clearly spaceships)</p>
+
+<p>There are different kinds of microwave ovens available. They all have the pulsed operation in common.</p>
+
+<p>The simple ones look like this:</p>
+
+<p><img src="https://i.stack.imgur.com/h7oXq.jpg" alt="enter image description here"></p>
+
+<p>It only has two dials: time and power. The power dial adjusts the pulse width and the time dial the overall duration.</p>
+
+<p>With this microwave, a lot of the control algorithm is on you. You cannot put different things into the oven, use the same settings and expect proper results. The frozen chicken and the rasins in the image will look different after 5 minutes at full power. You have to dial in the settings that work for the food you put into the oven.</p>
+
+<p>There are "smarter" microwaves look like this one, with more dials and buttons:
+<img src="https://i.stack.imgur.com/ELexV.png" alt="enter image description here">
+You can tell it what you put inside and what you want to do with it. The oven will then figure out what to do. It might even vary the settings over time, to get better heat penetration, even cooking, etc.</p>
+
+<p>It could be as smart as to first run some defrosting program, then cooking and finally turn on the grill. As it knows that you placed a frozen chicken of a certain weight into it, it will be able to figure out how to do all that, without overheating during defrosting, drying out while cooking or burning while grilling. Well, at least in theory.</p>
+
+<p>As you can see, even something as primitive as a simple on/off pulse can do rather sophisticated things if wrapped into a good control loop.</p>
+
+<p>Would it be even better if they could continuously change values of the valve?
+Probably yes, but not by that much as you know from the averaged PWM signal. Additionally an adjustable valve is a more complex part than a simple on/off solenoid valve. Simple stuff fails less often. Stuff failing in space is a <strong>bad</strong> thing.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7730" data-toggle = "popover">
+				<p>user name : Bending Unit 22</p>
+				<p> user reputation : 1335</p>
+				<p class = "tagcontent" id = "usertaginfo-7730">{'None': 93}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7730" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7730" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7730">
+					<img id="start_img-7730" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7730">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

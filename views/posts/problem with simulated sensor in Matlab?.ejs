@@ -1,0 +1,192 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>problem with simulated sensor in Matlab?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2326" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2326" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 145</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>problem with simulated sensor in Matlab?</h2>
+<p>I'm simulating a sensor in 3D. The sensor should determine ($p, \theta, \phi$) from the origin  where $\theta$ is the rotation about z-axis and $\phi$ is the rotation about x-axis. The sensor is given position of a point($x, y, z$). This is what I did</p>
+
+<pre><code>    p = sqrt(x^2 + y^2 + z^2);
+theta = acos(z/p);   &lt;---- I'm guessing the problem here
+  phi = atan2(y,x);
+</code></pre>
+
+<p>Now I need to get the Cartesian coordinates ($x',y',z'$). This is what I did</p>
+
+<pre><code>    [p theta phi] = getmeasurement(x, y, z);
+    x' = p*cos(theta)*sin(phi);
+    y' = p*sin(theta)*sin(phi);
+    z' = p*cos(phi); 
+</code></pre>
+
+<p>The sensor is working fine at the beginning but at a particular point it behaves strangely. I have the state vector to compare it with the measurement. I'm guessing that $\theta$ might be the problem. </p>
+
+<hr>
+
+<p>Edit: </p>
+
+<p>I'm sorry for this mistake. The aforementioned calculations based on the following picture</p>
+
+<p><img src="https://i.stack.imgur.com/BYMzR.png" alt="spherical Coordinates"></p>
+
+<p>So, the point will rotate first about z-axis ($\theta$) and then rotate about x-axis ($\phi$)</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2326" data-toggle = "popover">
+				<p>user name : CroCo</p>
+				<p> user reputation : 1040</p>
+				<p class = "tagcontent" id = "usertaginfo-2326">{'control': 18, 'pid': 4, 'slam': 16, 'manipulator': 3, 'mobile-robot': 14, 'dynamics': 6, 'errors': 2, 'data-association': 1, 'kinematics': 3, 'matlab': 6, 'kalman-filter': 21, 'motion-planning': 3, 'None': 41, 'noise': 24, 'theory': 1, 'localization': 14, 'microcontroller': 5, 'mapping': 5, 'sensor-error': 1, 'sensors': 7, 'quadcopter': 8, 'ekf': 26, 'simulation': 1, 'motion': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2326" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2326" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2326">
+					<img id="start_img-2326" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2326">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-2327"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2327" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Your first set of formulas are calculating the spherical coordinates for the sensor which are different from the angles of rotation around the x-axis (which you have called $\phi$) and the y-axis (which you have called $\theta$)</p>
+
+<p>When using the formulas for converting cartesian coordinates to spherical coordinates you  end up with $\phi$ as the rotation about the x-axis and $\theta$ as the angle between the vector to the x,y,z location and the z-axis (the polar angle)</p>
+
+<p>So the calculation with $\theta$ is correct it just isn't calculating what you thought.</p>
+
+<p>The problem you have isn't with any of that though, it is with the calculation of z', the formula should be</p>
+
+<pre><code>z' = p*cos(theta);    
+</code></pre>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2327" data-toggle = "popover">
+				<p>user name : Matthew Gordon</p>
+				<p> user reputation : 303</p>
+				<p class = "tagcontent" id = "usertaginfo-2327">{'None': 15}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2327">Load Comments</button></br>
+			<div id = "commentsection-2327" class = 'collapse'>
+			<div id = "comment-4547" class = "comment">
+				<p>@Mathew Cordon, thanks for the reply. I've edited my post. $\theta$ is the rotation about z-axis and $\phi$ is the rotation about x-axis.</p>
+			</div>
+			<div id = "comment-4548" class = "comment">
+				<p>The formula above should have resolved the issue, I tried a couple of simple test cases and the outputs looked right. I think you are still misinterpreting what $/phi$ is though. It is the angle between the vector to the 'sensor' and the axis, not the rotation around the axis.</p>
+			</div>
+			<div id = "comment-4551" class = "comment">
+				<p>I think you're right. I've solved the problem by switching Phi with Theta. 
+  Phi = acos(pz/d);  
+Theta = atan2(py,px);</p>
+			</div>
+			</div>
+				<textarea id = "speech-2327" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2327">
+					<img id="start_img-2327" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2327">Comment</button>
+			<br><div id = "ans-2366"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2366" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I found the problem by switching the following</p>
+
+<pre><code>    p = sqrt(x^2 + y^2 + z^2);
+  Phi = acos(z/p);   &lt;---- Phi not Theta
+Theta = atan2(y,x);  &lt;---- Theta not Phi
+</code></pre>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2366" data-toggle = "popover">
+				<p>user name : CroCo</p>
+				<p> user reputation : 1040</p>
+				<p class = "tagcontent" id = "usertaginfo-2366">{'control': 18, 'pid': 4, 'slam': 16, 'manipulator': 3, 'mobile-robot': 14, 'dynamics': 6, 'errors': 2, 'data-association': 1, 'kinematics': 3, 'matlab': 6, 'kalman-filter': 21, 'motion-planning': 3, 'None': 41, 'noise': 24, 'theory': 1, 'localization': 14, 'microcontroller': 5, 'mapping': 5, 'sensor-error': 1, 'sensors': 7, 'quadcopter': 8, 'ekf': 26, 'simulation': 1, 'motion': 3}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2366" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2366" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2366">
+					<img id="start_img-2366" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2366">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,267 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Using Quaternions to feed a quadcopter PID stabilizing controller to avoid Gimbal lock
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-10196" class = "post">
+			<h2>Question</h2>
+			<div id="vote-10196" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 185</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Using Quaternions to feed a quadcopter PID stabilizing controller to avoid Gimbal lock</h2>
+<p>I am trying to control my F450 dji quadcopter using a PID controller. From my IMU, I am getting the quaternions, then I convert them to Euler's angles, this is causing me to have the Gimbal lock issue. However, is there a way that I directly use the quaternions to generate my control commands without converting them to Euler's angle?</p>
+
+<p>This conversation <a href="https://robotics.stackexchange.com/questions/3137/how-to-use-quaternions-to-feed-a-pid-quadcopter-stabilization-loop/4483#4483?newreg=e2857a59984a4df59536d648f360dec1">here</a> discusses a similar issue but without mentioning a clear answer for my problem.</p>
+
+<p>The three errors so far I am trying to drive to 0 are:</p>
+
+<pre><code>double errorAlpha  = rollMaster  - rollSlave;
+double errorTheta  = pitchMaster - pitchSlave;
+double errorPsi    = yawMaster   - yawSlave;
+</code></pre>
+
+<p>where the Master generates the desired rotation and the Slave is the IMU.</p>
+
+<p>UPDATE:</p>
+
+<p>Here are some pieces of my code:</p>
+
+<p>Getting the current and the reference quaternions for bot the Master and the Slave from the <strong>ROTATION_VECTOR</strong>:</p>
+
+<pre><code>/** Master's current quaternion */
+double x   = measurements.get(1);
+double y   = measurements.get(2);
+double z   = measurements.get(3);
+double w   = measurements.get(4);
+
+/** Slave's current quaternion */
+double xS  = measurements.get(5);
+double yS  = measurements.get(6);
+double zS  = measurements.get(7);
+double wS  = measurements.get(8);
+
+/** Master's Reference quaternion */
+double x0  = measurements.get(9);
+double y0  = measurements.get(10);
+double z0  = measurements.get(11);
+double w0  = measurements.get(12);
+
+/** Slave's Reference quaternion.
+ *  If the code has not been initialized yet, save the current quaternion
+ *  of the slave as the slave's reference orientation. The orientation of
+ *  the slave will henceforth be computed relative to this initial
+ *  orientation.
+ */
+if (!initialized) {
+    x0S = xS;
+    y0S = yS;
+    z0S = zS;
+    w0S = wS;
+    initialized = true;
+}
+</code></pre>
+
+<p>Then I want to know the orientation of the current quaternion relative to the reference quaternion for both the Master and the Slave. </p>
+
+<pre><code>/**
+     * Compute the orientation of the current quaternion relative to the
+     * reference quaternion, where the relative quaternion is given by the
+     * quaternion product: q0 * conj(q)
+     *
+     * (w0 + x0*i + y0*j + z0*k) * (w - x*i - y*j - z*k).
+     *
+     * &lt;pre&gt;
+     * See: http://gamedev.stackexchange.com/questions/68162/how-can-obtain-the-relative-orientation-between-two-quaternions
+     * http://www.mathworks.com/help/aerotbx/ug/quatmultiply.html
+     * &lt;/pre&gt;
+     */
+    // For the Master
+    double wr = w * w0 + x * x0 + y * y0 + z * z0;
+    double xr = w * x0 - x * w0 + y * z0 - z * y0;
+    double yr = w * y0 - x * z0 - y * w0 + z * x0;
+    double zr = w * z0 + x * y0 - y * x0 - z * w0;
+
+    // For the Slave
+    double wrS = wS * w0S + xS * x0S + yS * y0S + zS * z0S;
+    double xrS = wS * x0S - xS * w0S + yS * z0S - zS * y0S;
+    double yrS = wS * y0S - xS * z0S - yS * w0S + zS * x0S;
+    double zrS = wS * z0S + xS * y0S - yS * x0S - zS * w0S;
+</code></pre>
+
+<p>Finally, I calculate the Euler angles:</p>
+
+<pre><code>/**
+     * Compute the roll and pitch adopting the Tait Bryan angles. z-y'-x" sequence.
+     *
+     * &lt;pre&gt;
+     * See https://en.wikipedia.org/wiki/Rotation_formalisms_in_three_dimensions#Quaternion_.E2.86.92_Euler_angles_.28z-y.E2.80.99-x.E2.80.B3_intrinsic.29
+     * or  http://nghiaho.com/?page_id=846
+     * &lt;/pre&gt;
+     */
+    double rollMaster  =  Math.atan2(2 * (wr * xr + yr * zr), 1 - 2 * (xr * xr + yr * yr));
+    double pitchMaster =  Math.asin( 2 * (wr * yr - zr * xr));
+    double yawMaster   =  Math.atan2(2 * (wr * zr + xr * yr), 1 - 2 * (yr * yr + zr * zr));
+</code></pre>
+
+<p>and I do the same thing for the Slave. </p>
+
+<p>At the beginning, the reference quaternion should be equal to the current quaternion for each of the Slave and the Master, and thus, the relative roll, pitch and yaw should be all zeros, but they are not!</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10196" data-toggle = "popover">
+				<p>user name : M.A.</p>
+				<p> user reputation : 6</p>
+				<p class = "tagcontent" id = "usertaginfo-10196">{'quadcopter': 1, 'stability': 1, 'None': 0, 'pid': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10196">Load Comments</button></br>
+			<div id = "commentsection-10196" class = 'collapse'>
+			<div id = "comment-18157" class = "comment">
+				<p>What data do you have that shows you are having gimbal lock? What are your symptoms? How are you converting to Euler angles? I ask because, to get to gimbal lock, two of your motion axes need to coincide. This means that generally either the roll or pitch axis has to get to 90 degrees to coincide with yaw, but a quadcopter at 90 degrees of roll or pitch doesn't have any lift.</p>
+			</div>
+			<div id = "comment-18174" class = "comment">
+				<p>For the Master and the Slave units, I first calculate the relative quaternion for each one (to know the new orientation of each), and then I use the formulas in this [link](https://en.wikipedia.org/wiki/Rotation_formalisms_in_three_dimensions#Quaternion_.E2.86.92_Euler_angles_.28z-y.E2.80.99-x.E2.80.B3_intrinsic.29) to calculate the roll, pitch, and yaw of the Master and the Slave, then I calculate the errors as shown above. When I first run the system, i.e. without moving the Master nor the Slave, I get zeros for the rolls and pitches (as expected) but not for the yaws. That's my problem.</p>
+			</div>
+			<div id = "comment-18177" class = "comment">
+				<p>Can you post a block diagram or code showing what you're doing? How are you calculating the quaternions to start with? What are you expecting the yaws to be, what are you getting, and how are you initializing them? This sounds like a problem either in calculating the quaternion and back or in initializing the code. If roll and pitch are both zero then you are probably not in gimbal lock. (Depending on the order of rotations you take)</p>
+			</div>
+			<div id = "comment-18182" class = "comment">
+				<p>I already updated my question above. Please have a look.</p>
+			</div>
+			</div>
+				<textarea id = "speech-10196" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10196">
+					<img id="start_img-10196" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10196">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-10209"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10209" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>you should not be seeing a singularity. For the standard roll, pitch, and yaw Euler angles, which are defined by a 3-2-1 rotation from level to the vehicle attitude, there is only a singularity at pitch=+-n*180 +90. This is not a scenario you should be seeing unless you are doing something acrobatic and aggressive. This is an attitude where the vehicle is totally sideways.</p>
+
+<p>Look at how you are converting to Euler angles.  </p>
+
+<p>-</p>
+
+<p>I recommend commanding psi like this
+\begin{equation}
+\psi_{error} = \left(\psi_{master} - \psi_{master,0} \right) - \left(\psi_{slave} - \psi_{slave,0} \right)
+\end{equation}</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10209" data-toggle = "popover">
+				<p>user name : holmeski</p>
+				<p> user reputation : 1338</p>
+				<p class = "tagcontent" id = "usertaginfo-10209">{'pose': 3, 'None': 101, 'computer-vision': 3, 'kalman-filter': 3}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10209">Load Comments</button></br>
+			<div id = "commentsection-10209" class = 'collapse'>
+			<div id = "comment-18199" class = "comment">
+				<p>I've checked the quaternion to Euler angles conversion formulas many times actually. Do you see something wrong there?</p>
+			</div>
+			<div id = "comment-18216" class = "comment">
+				<p>its possible they are correct, just near a singularity. if this is the case you should construct a rotation matrix that will transform your desired level state  to be 0 pitch and zero roll. Pre-multiply this rotation matrix by the rotation matrix constructed from the quaternions. The final matrix will allow you to recover the expected Euler angles.</p>
+			</div>
+			<div id = "comment-18227" class = "comment">
+				<p>The rotation matrix I get from the quaternions already transforms my desired level state to be 0 pitch and 0 roll. My current problem is with the relative yaw, which is non-zero. I can't see how your suggestion would solve this issue.</p>
+			</div>
+			<div id = "comment-18231" class = "comment">
+				<p>are you initializing you master yaw with the yaw from the imu? The imu  yaw will likely be driven by a magnetometer ( if it has one). If there is no magnetometer there will be drift in the imu yaw estimates because it will naively be integrating measured yaw-rate without any method for correcting bias in the  gyro</p>
+			</div>
+			<div id = "comment-18232" class = "comment">
+				<p>zero heading from the imu will likely be north, not the orientation of the imu when powered on</p>
+			</div>
+			<div id = "comment-18238" class = "comment">
+				<p>I have 2 IMUs, the Master and the on-board Slave, the task is that the quadcopter (carrying the Slave IMU) should mimic the orientation of the Master. So I am initialing both the Master and the Slave each with its own initial orientation, and then I do my calculations relative to these initial frames, not relative to magnetic north and so on. I started believing now that there is a problem with my IMUs calculating the Yaw, this is because the yaw changes (say of the Master) just by putting a mobile phone close to it or even a magnet. Motors inductance might also affect the Slave IMU readings.</p>
+			</div>
+			<div id = "comment-18241" class = "comment">
+				<p>yaw is measured by a magnetometer which measures magnetic field. placing magnetic things near it (especially a magnet!!!) will change the field and will change the orientation. When you boot the system, is the initial orientation for both the master and slave zero or are they measured from magnetic north. double chech this</p>
+			</div>
+			<div id = "comment-18242" class = "comment">
+				<p>this means that I can't use the yaw obtained from the Slave, since it is on-board and the inductance of the rotating motors will significantly affect the results, is that the case? Also, after booting the system, the initial values of the Master and Slave are different and not related to the magnetic north, that's what confuses me the most. It is worth mentioning that I am using an Android phone as the Slave IMU.</p>
+			</div>
+			<div id = "comment-18243" class = "comment">
+				<p>throttle the motors up and check if the heading changes. I cant trouble shoot hardware without and real data.  I would recommend commanding changes in heading rather than absolute heading. So the result of a 45 degree change in heading from the master commands a 45 degree change in the slave, not the absolute heading</p>
+			</div>
+			<div id = "comment-18244" class = "comment">
+				<p>i think its time for a new question, or at least some revisions in your initial question</p>
+			</div>
+			</div>
+				<textarea id = "speech-10209" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10209">
+					<img id="start_img-10209" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10209">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

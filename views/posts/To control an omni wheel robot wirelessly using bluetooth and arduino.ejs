@@ -1,0 +1,153 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>To control an omni wheel robot wirelessly using bluetooth and arduino
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-5152" class = "post">
+			<h2>Question</h2>
+			<div id="vote-5152" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 361</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>To control an omni wheel robot wirelessly using bluetooth and arduino</h2>
+<p>I am trying to control an omni wheel robot which has 4 motors using 2 joysticks, plus there are some actuation switches which I want to control too. I am using arduino mega and a pair of bluetooth wireless module(HC-05).</p>
+
+<p>This bluetooth modules works on serial communication. How should I program arduino to send both the analog values provided by the joystick and the input from the switch continuously?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-5152" data-toggle = "popover">
+				<p>user name : Kaustubh Mhatre</p>
+				<p> user reputation : 11</p>
+				<p class = "tagcontent" id = "usertaginfo-5152">{'communication': 2, 'None': 0, 'serial': 2, 'arduino': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-5152" class = 'collapse'>
+			</div>
+				<textarea id = "speech-5152" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-5152">
+					<img id="start_img-5152" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-5152">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-5160"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-5160" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The simplest solution is throwing all values into a comma seperated string:</p>
+
+<p>use the the standard strcat():<br></p>
+
+<pre><code> char data[256];
+ chat temp[16];
+ data[0]=0;
+ temp[0]=0;
+
+ itoa(analogRead(A1),temp,10); 
+ strcat(data,temp);
+ strcat(data,",");
+ itoa(analogRead(A2),temp,10);
+ strcat(data,temp);
+ strcat(data,",");
+ itoa(analogRead(A3),temp,10);
+ strcat(data,temp);
+ strcat(data,",");
+ itoa(analogRead(A4),temp,10);
+ strcat(data,temp);
+ strcat(data,",");
+ itoa(digitalRead(5),temp,10);
+ strcat(data,temp);
+ strcat(data,",");
+ itoa(digitalRead(6),temp,10);
+ strcat(data,temp);
+</code></pre>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-5160" data-toggle = "popover">
+				<p>user name : TobiasK</p>
+				<p> user reputation : 1572</p>
+				<p class = "tagcontent" id = "usertaginfo-5160">{'control': 1, 'None': 102, 'communication': 0, 'wireless': 0, 'imu': 0, 'sensor-fusion': 0, 'gps': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-5160">Load Comments</button></br>
+			<div id = "commentsection-5160" class = 'collapse'>
+			<div id = "comment-9753" class = "comment">
+				<p>A good idea would be to add some starting character to show where data frame begins. So, assuming you would start your frame with '#' you would get: #VAL1,VAL2,VAL3...</p>
+			</div>
+			<div id = "comment-9993" class = "comment">
+				<p>In addition to a start character, you should also consider sending a check-sum or [crc](http://en.wikipedia.org/wiki/Cyclic_redundancy_check).  This will help ensure the integrity of the data.</p>
+			</div>
+			</div>
+				<textarea id = "speech-5160" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-5160">
+					<img id="start_img-5160" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-5160">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

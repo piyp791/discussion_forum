@@ -1,0 +1,135 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How do you determine EKF process noise for pre-recorded data sets?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-741" class = "post">
+			<h2>Question</h2>
+			<div id="vote-741" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">7</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 365</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How do you determine EKF process noise for pre-recorded data sets?</h2>
+<p>I've seen <a href="https://robotics.stackexchange.com/questions/18/what-are-good-methods-for-tuning-the-process-noise-on-kalman-filters">this question</a>, which asks about determining the process noise for an EKF.  I don't see anything there about pre-recorded data sets.  </p>
+
+<p>My thought on how to determine the noise parameters, assuming ground truth is available, would be to run the data several times with the EKF and minimize the mean square error, while varying the noise parameters.</p>
+
+<p>Is this an acceptable way to determine noise for a pre recorded data set?  Are there better (or just other) ways from determining the optimal noise values based just on the data set?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-741" data-toggle = "popover">
+				<p>user name : munk</p>
+				<p> user reputation : 406</p>
+				<p class = "tagcontent" id = "usertaginfo-741">{'None': 2, 'noise': 7, 'theory': 7, 'ekf': 14, 'mapping': 13, 'slam': 41, 'kalman-filter': 26}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-741" class = 'collapse'>
+			</div>
+				<textarea id = "speech-741" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-741">
+					<img id="start_img-741" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-741">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-742"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-742" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Yes, such a method can give you a reasonable estimates of noise. Note that it is susceptible to systematic error. For instance if you are flying a quadrotor in the presence of a fan. This would show up in your findings which is generally undesirable.</p>
+
+<p>With that said you could improve your estimates by using the <a href="http://en.wikipedia.org/wiki/Forward%E2%80%93backward_algorithm">forward-backward algorithm</a>. This algorithm is named from the fact that it consists of a forward pass and a backward pass. The forward pass is basically just an application of a Kalman-Filter, which as you may already realize, only includes data available up until the time step for which the state is being estimated. The backward pass then improves these estimates by including data available after the time in question.</p>
+
+<p>I have only used the forward-backward algorithm with a KF (i.e. not an EKF). As such I don't know the precise implementation details when using an EKF. However there does appear to be some <a href="http://ieeexplore.ieee.org/xpl/login.jsp?tp=&amp;arnumber=4518436&amp;url=http%3A%2F%2Fieeexplore.ieee.org%2Fxpls%2Fabs_all.jsp%3Farnumber%3D4518436">literature</a> on the topic.</p>
+
+<p>Edit: As I think about this further it occurs to me that you can use <a href="http://en.wikipedia.org/wiki/Expectation%E2%80%93maximization_algorithm">expectation maximization</a> (EM) and <a href="http://en.wikipedia.org/wiki/Coordinate_descent">coordinate descent</a> (CD) to automatically determine the noise parameters. The process would treat the covariance matrices for the process model (call it P) and observation models (call it O) as EM parameters and proceeds as follows:</p>
+
+<ol>
+<li>Start with your best guess for one of the matrices. Say P for the
+sake of an example. Then use EM to identify O.</li>
+<li>Use the O found in step 1 with EM to improve the estimate of P.</li>
+<li>Repeat steps 1 and 2 until the log-likelihood of using O and P reaches some stopping criterion (e.g. stops varying, varies very little, or is minimized).</li>
+</ol>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-742" data-toggle = "popover">
+				<p>user name : DaemonMaker</p>
+				<p> user reputation : 3321</p>
+				<p class = "tagcontent" id = "usertaginfo-742">{'control': 4, 'stereo-vision': 15, 'None': 271, 'computer-vision': 15, 'battery': 7, 'cameras': 15, 'research': 4, 'troubleshooting': 7}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-742" class = 'collapse'>
+			</div>
+				<textarea id = "speech-742" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-742">
+					<img id="start_img-742" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-742">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

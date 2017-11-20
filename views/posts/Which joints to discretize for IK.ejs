@@ -1,0 +1,239 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Which joints to discretize for IK
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7786" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7786" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 333</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Which joints to discretize for IK</h2>
+<p>I am using <a href="http://openrave.org/docs/latest_stable/openravepy/ikfast/" rel="nofollow noreferrer">ikfast</a> in <a href="http://openrave.org/" rel="nofollow noreferrer">OpenRave</a> for my inverse kinematics.  This is an analytical solver, so if your robot's DOF matches the IK type's DOF, then you get all possible solutions.  But if your robot has more DOFs, then you need to pick some joints to have a constant value.  (However, if you use OpenRave's Python interface it will discretize that joint for you.  i.e. give you a set of solutions for every 0.1 radians of that joint.  But my question holds for either interface.)  I have a 7 DOF anthropomorphic arm with joints: Roll-Pitch-Roll-Pitch-Roll-Pitch-Yaw as seen in this image:</p>
+
+<p><a href="https://i.stack.imgur.com/QIfLq.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/QIfLq.png" alt="7 DOF arm"></a></p>
+
+<p>The discretized joints are call "free joints" in OpenRave's terminology.  If I let ikfast decide, it picks joint 3 (upper arm roll) to be the free joint.  However, I have been using joint 4 (elbow) to be the free joint because it is easier for me to think about.  But then I realized that perhaps joint 5, 6, or 7 would be better to discretize because they are closer to the end of the chain.  Won't the IK solutions suffer if joints closer to the start of the chain have a large discretization?  Or is OpenRave picking the optimal joint to discretize?</p>
+
+<p>I was just wondering if there is some standard practices or known conventions for this sort of thing.</p>
+
+<p>Put simply: I want a set of IK solutions for the end-effector at some pose.  I will fix a joint either near the start or end of the kinematic chain.  And what i set it to isn't going to be perfect.  Lets say it is off from some "ideal" position by some epsilon.  Now you can imagine that if i want the hand in-front of the robot, and I pick a bad angle for the shoulder (like straight up for example), the rest of the joints will have a hard time getting the end-effector to the target pose, if at all.  But If I fix the wrist to be at some awkward angle, there is still a good chance of getting the end-effector there, or at lease close.  What kind of trade-offs are there?  Which will have a "better" set of solutions?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7786" data-toggle = "popover">
+				<p>user name : Ben</p>
+				<p> user reputation : 3608</p>
+				<p class = "tagcontent" id = "usertaginfo-7786">{'None': 277, 'inverse-kinematics': 3, 'accelerometer': 5, 'calibration': 10, 'kinematics': 14, 'robotic-arm': 8, 'jacobian': 6, 'dh-parameters': 8, 'imu': 5, 'sensors': 5}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7786" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7786" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7786">
+					<img id="start_img-7786" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7786">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7789"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7789" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>So I have some experience with kinematic models, but I'm by no means an expert. What do you mean you are "discretizing" a joint? From the documentation you linked:</p>
+
+<pre><code>For chains containing more degrees of freedom (DOF) than the IK type requires, the user can set arbitrary values of a subset of the joints until the number of unknown joints matches the degrees of freedom of the IK type.
+</code></pre>
+
+<p>This makes sense to me. You have an end effector for which you want six degrees of freedom, so you get enough joints chained together for six degrees of freedom. If you have more than six degrees of freedom, you <strong>fix</strong> ("set arbitrary values of") the excess joints, eliminating degrees of freedom until you're left with what "fits" in the IK solver. </p>
+
+<p>So what I'm not sure about is what you mean by "discretizing". As I read their documentation (I couldn't seem to find an in-depth guide at a glance), and as conceptually makes sense to me, you <strong>must fix</strong> the extra joints, and you must fix them at whatever "arbitrary value" you chose when configuring the IK solver.</p>
+
+<p>For my reasoning on this, consider a thought experiment: You want to model how your hands move when you bend your elbow, and you make the assumption that your hands are out in front of you and your palms are down. Your model shows your hands move in toward your body. Now you run a test, with your palms up. Should you be surprised that your model didn't predict your hands moving toward your face? </p>
+
+<p>It sounds like the IK solver is returning closed solutions to the inverse kinematics. How can you expect it to account for a motion you don't model, or a joint position/location that's incorrect because your "arbitrary value" doesn't match how it's actually configured?</p>
+
+<p>Can you link to documentation that shows a procedure for discretizing a joint? I didn't see anything on a preliminary search. </p>
+
+<p>I'm assuming this is related to <a href="https://robotics.stackexchange.com/questions/7763/arm-kinematic-calibration">your other question</a>, I think my advice from there still stands - measure your physical robot and check that it matches your model. In this case, with the information you gave, I would look squarely at whatever joint you dicretized and check that it is both fixed and in the orientation you gave in the IK model configuration.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7789" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-7789">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7789">Load Comments</button></br>
+			<div id = "commentsection-7789" class = 'collapse'>
+			<div id = "comment-11321" class = "comment">
+				<p>Yes, you do get closed solutions from ikfast. And you are correct about fixing the excess joints.  I should have described OpenRave's discretization procedure.  And no, this is not related to my other question.  Please see the elaborated question.</p>
+			</div>
+			<div id = "comment-11322" class = "comment">
+				<p>A comment and a question then: Yes, if you fix the shoulder to point away from the region of interest, the rest of the joints might have a tough time getting to the target location, but it's up to you, the designer, to fix the joint such that the operating envelope encompasses the region of interest. But my question: if you're okay with fixing a joint, why bother adding it to begin with?</p>
+			</div>
+			<div id = "comment-11323" class = "comment">
+				<p>And I guess a follow up question, if your joint actuator can't drive the joint accurately to the value you chose and keep it there, how are you expecting the robot arm to function correctly?</p>
+			</div>
+			<div id = "comment-11329" class = "comment">
+				<p>Well, I'm not fixing a joint.  I am discretizing it's range.  I am getting solutions for the joint at 0, 0.1, 0.2, and so on.  Again, this question is about IK theory, and unrelated to hardware, physical implementation, or control.</p>
+			</div>
+			<div id = "comment-11333" class = "comment">
+				<p>Is this a procedure you read that is published somewhere or is this something you are trying to implement on your own? Regarding the IK theory, you either derive the closed equations yourself, use a solver like you are now, or you do approximated IK calculations at each time step. You have opted to use a solver, but you do not appear to be complying with the fixed joint requirement for the solver to return a valid answer. I understand what you're going for, but I don't think it's going to give you what you want.</p>
+			</div>
+			<div id = "comment-11334" class = "comment">
+				<p>To answer your explicit question, of course positional accuracy matters most in the joint physically farthest from the end effector, because arc length is equal to $r \theta$. That being said, as I asked before, why bother moving the discretized joint at all? The 6dof solution already puts the end effector at any location and pose.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7789" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7789">
+					<img id="start_img-7789" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7789">Comment</button>
+			<br><div id = "ans-7798"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7798" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Rosen Diankov answered this question for me in <a href="http://openrave-users-list.185357.n3.nabble.com/ikfast-solver-does-not-find-solutions-tc4027528.html#a4027535" rel="nofollow">a separate thread</a>:</p>
+
+<blockquote>
+  <p>That's an excellent question, and actually very difficult to answer.
+  The general rule of thumb is that the closer it is to the end effector
+  the better, but this is not always the case. For example, there's only
+  one set of 3 intersecting axes and that's the final 3 joints, then
+  choosing a free joint at the end will mean the resulting IK solver
+  cannot exploit the 3 intersecting axis property to simplify the IK.</p>
+  
+  <p>The only way I've found to truly get the best free joint is to solve
+  for all of them and see which one is better </p>
+</blockquote>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7798" data-toggle = "popover">
+				<p>user name : Ben</p>
+				<p> user reputation : 3608</p>
+				<p class = "tagcontent" id = "usertaginfo-7798">{'None': 277, 'inverse-kinematics': 3, 'accelerometer': 5, 'calibration': 10, 'kinematics': 14, 'robotic-arm': 8, 'jacobian': 6, 'dh-parameters': 8, 'imu': 5, 'sensors': 5}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7798" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7798" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7798">
+					<img id="start_img-7798" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7798">Comment</button>
+			<br><div id = "ans-7800"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7800" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><blockquote>
+  <p>Which will have a "better" set of solutions?</p>
+</blockquote>
+
+<p>I could think of some requirements so "better" becomes a measurable value. A better solution:</p>
+
+<ol>
+<li><strong>exists</strong>: As you say, fixing a joint in one position can make it difficult for other joints to reach the position, but it could also become impossible. This may or may not be a real problem, but I think keeping the possibility in mind that there might be no solution due to the choice of a fixed joint is important.</li>
+<li><strong>is reached quickly</strong>: Each actuator has to move a certain distance (angle). Given that some actuators move quicker than others the time it takes to reach the target position can be optimised. It seems desireable to distribute the motion in a way that minimises the overall time it takes to reach the target position.</li>
+<li><strong>is efficient</strong>: The first joint has to hold all other parts. It might require more torque/force to move it instead of several other joints. Maybe the joint has a built in break/clamping mechanism that allows it to stay steady without power consumption. If it has no break, how much power is required to stay in the target position? Is there a target position that minimises the overall consumed power (due to different power consumption of joints and/or loads they have to hold in that position)? Power is consumed during the motion and while holding the target position. Given that the target position is only held for a certain amount of time, there could be a trade-off between how to move and what target position to reach in terms of overall power consumption.</li>
+<li><strong>is precise</strong>: How precise is the motion of the joints? Maybe the last joint has a smaller actuator and is more precise than the first joint (or any other) Is precision necessary?</li>
+<li><strong>is aware of the application</strong>: Let's not forget that there's a hand at the end of the arm that's supposed to do something. If each joint can apply different amount of force/torque, a certain motion of all the joints might cause a minimum load that the hand can hold. Take your own hand as an example: consider how much force (in x,y,z direction) your hand can hold. Now keep your hand steady and move your arm. The values probably changed.</li>
+<li><strong>happens in minimum/appropriate space</strong>: Requiring less space to perform a motion is generally desirable. Are there solutions that keep the overall bounding box of the robot small?</li>
+</ol>
+
+<p>That list is probably incomplete. As you see, there is a lot of maybe, could, should, probably, in this answer. I guess that a lot of these points are not even worth considering, but then you might have an application that does have very strict requirements.</p>
+
+<p>Depending on the available computational power and time you have for the IK calculation, run the algorithm for every joint. You can then compare different solutions depending on your requirements. Give each requirement a weight so each solution has a certain score, pick the solution with the highest score.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7800" data-toggle = "popover">
+				<p>user name : Bending Unit 22</p>
+				<p> user reputation : 1335</p>
+				<p class = "tagcontent" id = "usertaginfo-7800">{'None': 93}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7800">Load Comments</button></br>
+			<div id = "commentsection-7800" class = 'collapse'>
+			<div id = "comment-11341" class = "comment">
+				<p>You are right that "best" depends on the application, so some heuristic must be used.  I like your list, it is pretty comprehensive, however, you did leave off a few metrics that you typically read about in textbooks. i.e. manipulability measure, distance from joint limits, and distance from obstacles.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7800" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7800">
+					<img id="start_img-7800" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7800">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

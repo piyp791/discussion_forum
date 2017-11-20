@@ -1,0 +1,126 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How can there be a difference in quaternion values of two points taken from sensors where the orientation is exactly same?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-12434" class = "post">
+			<h2>Question</h2>
+			<div id="vote-12434" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 52</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How can there be a difference in quaternion values of two points taken from sensors where the orientation is exactly same?</h2>
+<p>I have two situations-</p>
+
+<p>A) One, the body with sensor embedded in it kept at rest. 
+B) Second, the body is at rest for 10 secs, then undergoes some movement randomly and comes back to the exact orientation as the initial one (at rest) and kept there for rest for 10 secs again.</p>
+
+<p>In the first case, the quaternion values are constant and that is what is expected. But in the second case, these values from the first 10 secs do not match with the last 10 secs. As the orientation is unchanged in both the situations, how can the quaternion values be different? Also, the accelerometer, gyroscope and magnetometer values for corresponding situations is same. </p>
+
+<p>The sensors which I am using are accelerometer and gyroscope. I dont know the exact way how the quaternion values are getting computed from these sensor values here but I will try to give you a better understanding. So, the quaternion values initially at rest are [1,0,0,0]. If the object is kept at rest, it remains the same (should be like that) but if it moves randomly and then again comes to rest with the exact same orientation as the initial point, the quaternion values are [0.708547,-0.4962,-.4316,-0.2556]. If this is not matching, then what are the absolute quaternion values signifying?</p>
+
+<p>Is there any flaw from my end in understanding the derivation of quaternion values at the conceptual level or I am missing something substantial?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12434" data-toggle = "popover">
+				<p>user name : Pratik</p>
+				<p> user reputation : 6</p>
+				<p class = "tagcontent" id = "usertaginfo-12434">{'robotics-library': 1, 'None': 0, 'sensors': 1, 'accelerometer': 1, 'gyroscope': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-12434">Load Comments</button></br>
+			<div id = "commentsection-12434" class = 'collapse'>
+			<div id = "comment-21875" class = "comment">
+				<p>How do the values look like? How do you compute the quaternions? Are they computed (e.g. with a filter) from the mentioned sensors?</p>
+			</div>
+			<div id = "comment-21876" class = "comment">
+				<p>more information is needed here. At a minimum, what are the quaternion values? Quaternions are not the same as rotations and they have double coverage of the rotation space (in other words, there are two different possible quaternions values for every rotation).</p>
+			</div>
+			<div id = "comment-21881" class = "comment">
+				<p>Please update the question instead of adding the info to a a comment. Your quaternions look strange, they should normally be float values and the norm of the quaternion should be 1. You update the pose with imperfect sensors so you will never get exactly the same values when you return as measurement error of the sensors are adding up.</p>
+			</div>
+			<div id = "comment-21882" class = "comment">
+				<p>Pratik, the only conclusion we can draw from this information is that the orientation algorithm is misbehaving. If the sensor is reporting those numbers to you (running it's own algorithm) then you might need to test a different sensor or implement your own algorithm using the raw gyro, accel, mag values. Also, as a sanity check, make sure those raw sensor readings are the same before and after you shake the sensor</p>
+			</div>
+			<div id = "comment-21883" class = "comment">
+				<p>@ryan0270- I am using these values directly from invensense's own API. I am assuming these values are computed correctly. Logically speaking, I dont see any reason why there is a difference in quaternion values for the exact same orientation. May be there is something I am missing in terms of understanding the interpretation of this algorithm. Any thoughts?</p>
+			</div>
+			<div id = "comment-21884" class = "comment">
+				<p>Yes, you should get the same quaternion for the same angle (up to a possible +/- sign difference).  Either the raw sensors values are different (which you should check) or the algorithm is wrong. When sitting still the only thing that should matter are the values of accel and mag. Check those</p>
+			</div>
+			<div id = "comment-21888" class = "comment">
+				<p>Well, thanks for your valuable input. I am going to check the working of this algorithm by testing for some pilot values. If I still get different values, I will have to anyway calculate these values from scratch. Also, the corresponding values of acc, gyro and mag are similar for the exact orientation(should be like that). I dont have any idea how these quaternion values are derived from acc, gyro and mag raw values. Anything on the calculation front?</p>
+			</div>
+			</div>
+				<textarea id = "speech-12434" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12434">
+					<img id="start_img-12434" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12434">Comment</button>
+
+<h1>Answers</h1>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

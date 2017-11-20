@@ -1,0 +1,163 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>serial monitor not showing proper output
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11809" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11809" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 26</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>serial monitor not showing proper output</h2>
+<p>I was reading the encoder value in arduino uno. But the output is not comming properly. It is coming like this:
+<a href="https://i.stack.imgur.com/MMtD4.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/MMtD4.png" alt="enter image description here"></a>
+I am using this arduino code to read encoder:</p>
+
+<pre><code>/* Rotary encoder read example */
+#define ENC_A 14
+#define ENC_B 15
+#define ENC_PORT PINC
+
+void setup()
+{
+  /* Setup encoder pins as inputs */
+  pinMode(ENC_A, INPUT);
+  digitalWrite(ENC_A, HIGH);
+  pinMode(ENC_B, INPUT);
+  digitalWrite(ENC_B, HIGH);
+  Serial.begin (115200);
+  Serial.println("Start");
+}
+
+void loop()
+{
+ static uint8_t counter = 0;      //this variable will be changed by encoder input
+ int8_t tmpdata;
+ /**/
+  tmpdata = read_encoder();
+  if( tmpdata ) {
+    Serial.print("Counter value: ");
+    Serial.print(counter, DEC);
+    counter += tmpdata;
+  }
+}
+
+/* returns change in encoder state (-1,0,1) */
+int8_t read_encoder()
+{
+  static int8_t enc_states[] = {0,-1,1,0,1,0,0,-1,-1,0,0,1,0,1,-1,0};
+  static uint8_t old_AB = 0;
+  /**/
+  old_AB &lt;&lt;= 2;                   //remember previous state
+  old_AB |= ( ENC_PORT &amp; 0x03 );  //add current state
+  return ( enc_states[( old_AB &amp; 0x0f )]);
+}
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11809" data-toggle = "popover">
+				<p>user name : Dinesh Lama</p>
+				<p> user reputation : 160</p>
+				<p class = "tagcontent" id = "usertaginfo-11809">{'control': 0, 'stability': 1, 'None': 2, 'inverse-kinematics': 0, 'arduino': 4, 'python': 1, 'gazebo': 0, 'lidar': 0, 'servomotor': 0, 'motor': 0, 'real-time': 1, 'actuator': 0, 'serial': 1, 'ros': 2, 'servos': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11809" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11809" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11809">
+					<img id="start_img-11809" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11809">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-11813"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11813" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Looks line your terminal has the wrong baud rate, in your code you set it to 115200 baud with the line <code>Serial.begin (115200);</code> You can change th baud rate on your serial terminal by using the highlighted drop down menu:</p>
+
+<p><a href="https://i.stack.imgur.com/baTrN.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/baTrN.png" alt="menu"></a></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11813" data-toggle = "popover">
+				<p>user name : Mark Omo</p>
+				<p> user reputation : 1786</p>
+				<p class = "tagcontent" id = "usertaginfo-11813">{'None': 119}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11813" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11813" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11813">
+					<img id="start_img-11813" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11813">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,202 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How can we use the accelerometer for altitude estimation?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9456" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9456" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 914</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How can we use the accelerometer for altitude estimation?</h2>
+<p>I am currently implementing an autonomous quadcopter which I recently got flying and which was stable, but is unable to correct itself in the presence of significant external disturbances. I assume this is because of insufficiently tuned PID gains which have to be further tweaked inflight.</p>
+
+<h3>Current progress:</h3>
+
+<ul>
+<li>I ruled out a barometer since the scope of my research is only indoor flight and the barometer has a deviation of +-5 meters according to my colleague.</li>
+<li>I am currently using an ultrasonic sensor (HC-SR04) for the altitude estimation which has a resolution of 0.3cm.  However I found that the ultrasonic sensor's refresh rate of 20Hz is too slow to get a fast enough response for altitude correction.</li>
+<li>I tried to use the accelerations on the Z axis from the accelerometer to get height data by integrating the acceleration to get velocity to be used for the rate PID in a cascaded pid controller scheme. The current implementation for the altitude PID controller is a single loop pid controller using a P controller with the position input from the ultrasonic sensor.</li>
+<li>I had taken into account the negative acceleration measurements due to gravity but no matter how much I compute the offset, there is still the existence of a negative acceleration (eg. -0.0034). I computed the gravitational offset by setting the quadcopter to be still on a flat surface then collecting 20,000 samples from the accelerometer z axis to be averaged to get the "offset" which is stored as a constant variable. This variable is then subtracted from the accelerometer z-axis output to remove the offset and get it to "zero" if it is not accelerating. As said in the question, there is still the existence of a negative acceleration (eg. -0.0034). My quad then proceeds to just constantly climb in altitude. With only the ultrasonic sensor P controller, my quad oscillates by 50 cm.</li>
+</ul>
+
+<blockquote>
+  <p>How can this consistent negative acceleration reading be effectively dealt with?</p>
+</blockquote>
+
+<p><strong>Possible Solution</strong>:
+I am planning to do a cascading PID contoller for the altitude hold with the innerloop (PID controller) using the accelerometer and the outer loop (P controller) using the sonar sensor. My adviser said that even a single loop P controller is enough to make the quadcopter hold its altitude even with a slow sensor. Is this enough? I noticed that with only the P gain, the quadcopter would overshoot its altitude.</p>
+
+<p><a href="https://i.stack.imgur.com/rdARR.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/rdARR.jpg" alt="enter image description here"></a></p>
+
+<ul>
+<li><p>Leaky Integrator: I found this article explaining how he dealt with the negative accelerations using a leaky integrator however I have a bit of trouble understanding why would it work since I think the negative error would just turn to a positive error not solving the problem. I'm not quite sure. <a href="http://diydrones.com/forum/topics/multi-rotors-the-altitude-yoyo-effect-and-how-to-deal-with-it" rel="nofollow noreferrer">http://diydrones.com/forum/topics/multi-rotors-the-altitude-yoyo-effect-and-how-to-deal-with-it</a></p></li>
+<li><p>Single loop PD controller with the ultrasonic sensor only:
+Is this feasible using feedback from a slow sensor?</p></li>
+</ul>
+
+<p><strong>Sources:</strong></p>
+
+<ul>
+<li><p>LSM303DLHC Datasheet: <a href="http://www.st.com/web/en/resource/technical/document/datasheet/DM00027543.pdf" rel="nofollow noreferrer">http://www.st.com/web/en/resource/technical/document/datasheet/DM00027543.pdf</a></p></li>
+<li><p>Leaky integrator: <a href="http://diydrones.com/forum/topics/multi-rotors-the-altitude-yoyo-effect-and-how-to-deal-with-it" rel="nofollow noreferrer">http://diydrones.com/forum/topics/multi-rotors-the-altitude-yoyo-effect-and-how-to-deal-with-it</a></p></li>
+<li><p>ArduPilot PID Loop: <a href="http://copter.ardupilot.com/wp-content/uploads/sites/2/2012/12/Alt-Hold-PID-version-3.0.1.jpg" rel="nofollow noreferrer">http://copter.ardupilot.com/wp-content/uploads/sites/2/2012/12/Alt-Hold-PID-version-3.0.1.jpg</a></p></li>
+</ul>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9456" data-toggle = "popover">
+				<p>user name : user123456098</p>
+				<p> user reputation : 415</p>
+				<p class = "tagcontent" id = "usertaginfo-9456">{'control': 16, 'stereo-vision': 2, 'communication': 0, 'pid': 19, 'uav': 0, 'stability': 13, 'mobile-robot': 2, 'sensor-error': 0, 'tuning': 2, 'cameras': 0, 'integration': 0, 'opencv': 2, 'differential-drive': 0, 'motion-planning': 0, 'None': 13, 'raspberry-pi': 14, 'localization': 0, 'microcontroller': 0, 'mapping': 0, 'path-planning': 0, 'real-time': 1, 'sensors': 0, 'quadcopter': 19, 'computer-vision': 2, 'vfh': 0, 'c++': 2, 'filter': 0, 'dead-reckoning': 0, 'sensor-fusion': 5, 'sonar': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9456">Load Comments</button></br>
+			<div id = "commentsection-9456" class = 'collapse'>
+			<div id = "comment-16744" class = "comment">
+				<p>How are you computing the gravitational offset? What accelerometer is it? Can you link a datasheet?</p>
+			</div>
+			<div id = "comment-16755" class = "comment">
+				<p>oscillation means you need damping!!!</p>
+			</div>
+			<div id = "comment-16758" class = "comment">
+				<p>Remember that on stack exchange, it is better to edit your question to add information requested in comments, rather than adding more comments. Comments are for helping to improve questions and answers, and are distracting, so we try to keep them to a minimum. If all of the information needed to answer the question is contained within it, the comments can be tidied up (deleted).</p>
+			</div>
+			<div id = "comment-16761" class = "comment">
+				<p>@Chuck I have edited the post with the relevant information :)</p>
+			</div>
+			</div>
+				<textarea id = "speech-9456" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9456">
+					<img id="start_img-9456" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9456">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9458"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9458" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">9</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The barometer carried on the pixhawk has an altitude resolution of 10 cm. If that isn't enough, you could write a kalman filter that uses the accelerometer data in the prediction step and the ultrasonic sensor and/or the barometer in the correction step. </p>
+
+<p>But I don't see this solving your problem. An accurate measurement of altitude at 20hz should be plenty if all you're trying to do is hold altitude. </p>
+
+<p>What is the time constant / natural frequency and damping on your controller? </p>
+
+<p>I guess I hadn't finished reading your question this morning ( it was before my coffee). The acceleration from the imu is the measurement of acceleration plus gravity. To get the inertial acceleration of the imu, subtract the gravity vector from the measurement. You'll never be able to control on integrated acceleration measurements. The measurements are corrupted by noise and you have no way to correct for this. </p>
+
+<p>--- answer to control portion of the question</p>
+
+<p>Lets assume that all you are trying to do is hold an altitude and are not concerned about holding a position for now ( though this approach will work for that as well). And assuming that you can command whatever thrust you want ( within reason), then this becomes an easy problem.</p>
+
+<p>A first pass at the system dynamics looks like</p>
+
+<p>$\ddot z = \frac{u}{m} - g$</p>
+
+<p>where positive $z$ is up. Lets add a hover component to our throttle that deals with gravity. So</p>
+
+<p>$ u = u_{fb} + u_{hover}$</p>
+
+<p>Our new dynamics look like</p>
+
+<p>$\ddot z = \frac{u_{fb} + u_{hover}}{m} - g = \frac{u_{fb}}{m}$</p>
+
+<p>Cool! Now we design a control law so we can tack a desired altitude.</p>
+
+<p>Our control system is going to be a virtual spring and damper between our quad and desired altitude ( this is a pd controller).</p>
+
+<p>$ \ddot z = k_p(z_{des} - z) + k_d(\dot z_{des} - \dot z)$</p>
+
+<p>The system should now behave like a second order system. $k_p$ and $k_d$ can be chosen to achieve the damping ratio and natural frequency you're looking for.</p>
+
+<p>At this point I would like to reiterate that integrating accelerometer data is not an okay way to generate state estimates. If you really want to hack something together fast, feed the sonar measurements through a lowpass filter with an appropriate dropoff frequency. Your vehicle isn't going to be oscillating at 20hz so controlling off just the sonar data will be fine.  </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9458" data-toggle = "popover">
+				<p>user name : holmeski</p>
+				<p> user reputation : 1338</p>
+				<p class = "tagcontent" id = "usertaginfo-9458">{'pose': 3, 'None': 101, 'computer-vision': 3, 'kalman-filter': 3}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9458">Load Comments</button></br>
+			<div id = "commentsection-9458" class = 'collapse'>
+			<div id = "comment-16797" class = "comment">
+				<p>Thank you, I just finished implementing this 4 days ago and it worked with very minute oscillations +-2cm</p>
+			</div>
+			<div id = "comment-16801" class = "comment">
+				<p>glad to hear it! you should be able to kill the oscillations by increasing kd assuming you have a good estimate of velocity :)</p>
+			</div>
+			</div>
+				<textarea id = "speech-9458" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9458">
+					<img id="start_img-9458" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9458">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,181 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Software libraries for parsing sensor data
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2597" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2597" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 198</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Software libraries for parsing sensor data</h2>
+<p>What software libraries are there for assisting the general problem of parsing a stream of sensor data?</p>
+
+<p>We use various sensors like LIDARs and GPSINS units that provide messages in proprietary binary formats, and have to write drivers for each one. Even though there's a lot of similar concepts used in each sensor (like a general purpose datagram for all messages, consisting e.g. of start/end sentinels, length specifications and a checksum, and then a variety of well-defined message formats for the payload), it ends up being a lot of tedious work to develop a driver each time.</p>
+
+<p>I'd love a solution where I can write out packet/message specifications in some format, and have a library that finds &amp; extracts valid messages from a stream, and provides them in a simple data structure format.</p>
+
+<p>I'm not too fussed about what language, but basically want a general purpose datagram parsing library. There's a lot of customisation with sensors, maybe some odd format parsing, and probably some initial configuration to start the data stream, so this is really something I want as a library for processing the data in real-time that can be used as part of a driver/application.</p>
+
+<p>Everything I find is either too basic (the low level tools for interpreting individual elements, so still lots of time spent extracting individual elements explicitly), or too specific (i.e. parsers written specifically for one particular protocol).</p>
+
+<p>As a concrete example, consider NMEA messages:</p>
+
+<ul>
+<li>There's a basic outer datagram (starts with <code>$</code> followed by message name, then comma separated data, and ends with <code>*</code>, checksum and line terminating character)</li>
+<li>Data is in ASCII so needs to be parsed to binary for computational use</li>
+<li>Outer datagram allows for validation and removal of incomplete/corrupted messages</li>
+<li>Message name &amp; content would be further parsed for consumption</li>
+<li>Field names can be specified for ease of use</li>
+</ul>
+
+<p>A 'GPGLL' message might be turned from <code>$GPGLL,4533.21,N,17739.11,W,113215.22,A*31</code> into a programmatic data structure containing latitude, longitude, UTC timestamp and its validity.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2597" data-toggle = "popover">
+				<p>user name : drfrogsplat</p>
+				<p> user reputation : 113</p>
+				<p class = "tagcontent" id = "usertaginfo-2597">{'None': 0, 'driver': 2, 'sensors': 2, 'software': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2597">Load Comments</button></br>
+			<div id = "commentsection-2597" class = 'collapse'>
+			<div id = "comment-4937" class = "comment">
+				<p>If you have already written one of the drivers, then you can simply extract the common parsing part out into a library and use it in the other drivers.</p>
+			</div>
+			</div>
+				<textarea id = "speech-2597" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2597">
+					<img id="start_img-2597" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2597">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-2599"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2599" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I have a feeling you won't get a generic solution for you problem. The reason for that is that you normally need to keep some sort of state on your device. Finding a general form to handle all different cases will end up in a construct that is likely quite complex. So why not use the general purpose tool that you have to handle such complexity (e.g. C++ or whatever other language you use).</p>
+
+<p>That being said, there are some generic parts you could factor. In <a href="http://rock-robotics.org" rel="nofollow">Rock</a> for Example, we derive most drivers from a base library called <a href="https://gitorious.org/rock-drivers/iodrivers_base" rel="nofollow">iodrivers_base</a>. This would do all the annoying IO stuff, and you just need to implement package parsing, package assembly and your state machine.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2599" data-toggle = "popover">
+				<p>user name : Jakob</p>
+				<p> user reputation : 2519</p>
+				<p class = "tagcontent" id = "usertaginfo-2599">{'ransac': 3, 'None': 210, 'computer-vision': 1, 'cameras': 1, 'c++': 3, 'slam': 12, 'rock': 1, 'i2c': 3, 'servos': 3, 'software': 1}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2599" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2599" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2599">
+					<img id="start_img-2599" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2599">Comment</button>
+			<br><div id = "ans-2608"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2608" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p><a href="http://www.tldp.org/HOWTO/Lex-YACC-HOWTO.html" rel="nofollow">YACC and Lex</a> to the rescue.</p>
+
+<p>They are exactly what you ask for: "a general purpose datagram parsing library".  Bytes go in one end, and structured data comes out the other end.  You are responsible for doing 2 things:</p>
+
+<h2>Tokenizing</h2>
+
+<p><a href="http://www.cs.rug.nl/~jjan/vb/lextut.pdf" rel="nofollow">Lex</a> is used for tokenizing &ndash; deciding how the input stream of bytes should be grouped.  For example, to tokenize the text of a book, you'd want the tokens to be the words (i.e. all the letters and the apostrophe), and the punctuation.  In the GPS message you showed, the tokens would be the literal string <code>$GPGLL</code> (and separately, any other GPS commands that start with <code>$</code>), commas, groups of digits, <code>N</code>, <code>W</code>, and a few others.  This is essentially regular expression matching.</p>
+
+<h2>Parsing</h2>
+
+<p><a href="http://www.cs.rug.nl/~jjan/vb/yacctut.pdf" rel="nofollow">YACC</a> is used for parsing &ndash; deciding how the sequence of tokens should form structure.  To use the example of text in a book, parsing would allow you to tell whether certain text was a quotation (or parenthetical text) by keeping track of the opening and closing marks.  <em>As an aside: try as you might, there is no regular expression that can tell you whether quotes or parenthesis are evenly matched; hence the need for parsing.</em>  In the GPS example, the parse rules would be something like "a GPGLL command is the <code>$GPGLL</code> token followed by <code>,</code>, followed by a float (which itself is an <code>integer</code> token followed by a <code>.</code> optionally followed by another <code>integer</code>), followed by an <code>N</code> or <code>S</code> token"... and so on.</p>
+
+<p>Writing a parser is essentially writing a <a href="https://people.cs.umass.edu/~mccallum/courses/inlp2007/lect5-cfg.pdf" rel="nofollow">context-free grammar</a>.</p>
+
+<p>Although these may sound scary and difficult (they certainly sounded so to me...), I can say from personal experience that learning how to use these tools is much <em>much</em> <strong>much</strong> easier than trying to write your own parser from scratch and then maintain it.  There are many examples and tutorials online that should help you get started.  </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2608" data-toggle = "popover">
+				<p>user name : Ian</p>
+				<p> user reputation : 9640</p>
+				<p class = "tagcontent" id = "usertaginfo-2608">{'planning': 10, 'None': 809, 'power': 1, 'algorithm': 10, 'battery': 1, 'slam': 7, 'coverage': 10, 'mobile-robot': 9, 'sensors': 9}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2608" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2608" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2608">
+					<img id="start_img-2608" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2608">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

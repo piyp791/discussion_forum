@@ -1,0 +1,149 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Which is more useful? Instantaneous rate of change of displacement or Average rate of change of displacement?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-4764" class = "post">
+			<h2>Question</h2>
+			<div id="vote-4764" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 100</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Which is more useful? Instantaneous rate of change of displacement or Average rate of change of displacement?</h2>
+<p>Instantaneous rate of change of displacement is given by,</p>
+
+<pre><code>v(t) = (s(t + dt) - s(t))/dt, where dt tends to 0
+</code></pre>
+
+<p>while average rate of change of displacement is given by, </p>
+
+<pre><code>v(t) = (s(t[n]) - s(t[n-1]))/(t[n] - t[n-1])
+</code></pre>
+
+<p>The first one gives the slope or derivative of a displacement function at a particular instant of time and thus varies with time. I was wondering how is it going to help me calculate the velocity of my robot's end effector, which is the foot of the leg of the robot(bipedal). If i make a reading of the position of the robot every 1ms to keep the approximation as accurate as possible, my instantaneous velocity would be zero wouldn't it? Since my robot wouldn't have moved anywhere in 1ms time. Agreed, 't' would increment as t+dt, dt == 0.001s. Then v(t) would be v(0.001) = s(0.002) - s(0.001) which is zero, because there is no displacement in that small time frame, right? Am I doing something wrong here? Or on the other hand, do I just use average rate of change?
+I have this question, since, if there is a manipulator, in my case the foot of my robot, and it's trajectory is given by a 3x3 homogenous matrix,</p>
+
+<pre><code>[{c(t),-s(t), 0},
+ {s(t), c(t), 0},
+ {  0,    0,  1}], where c,s are cos(theta) and sin(theta)respectively,
+</code></pre>
+
+<p>if on paper, this is differentiated, this would give me a spatial/body velocity matrix as </p>
+
+<pre><code>[{0, -d(theta)/dt, 0},
+ {d(theta)/dt,  0, 0},
+ {    0,        0, 0}]
+</code></pre>
+
+<p>So how do I compute this differentiation in code. I just need something of the sort of a pseudocode.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4764" data-toggle = "popover">
+				<p>user name : Tva </p>
+				<p> user reputation : 356</p>
+				<p class = "tagcontent" id = "usertaginfo-4764">{'product-of-exponentials': 2, 'None': 17, 'inverse-kinematics': 3, 'algorithm': 1, 'c': 1, 'books': 1, 'kinematics': 1, 'mobile-robot': 0, 'sensors': 1, 'dynamics': 1, 'micromouse': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-4764" class = 'collapse'>
+			</div>
+				<textarea id = "speech-4764" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4764">
+					<img id="start_img-4764" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4764">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-4767"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4767" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You are confusing continuous time concepts and discrete time concepts. The instantaneous velocity is a continuous time concept and doesn't directly apply to systems where time is measured discretely, e.g. every 1 ms. If you have a system where dt is very small, what you call average velocity is an approximation of the instantaneous velocity. To my knowledge, for real systems there is no practical way to directly measure instantaneous velocity so this approximation is the best we can do.</p>
+
+<p>So the example you give of measuring displacement every 1ms is really a discrete time example. Also, your intuition is off: if you have non-zero velocity then no matter how small dt is (except dt=0) there will be a change in real position. Depending on how good your measurement system is, though, you may not be able to measure that change.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4767" data-toggle = "popover">
+				<p>user name : ryan0270</p>
+				<p> user reputation : 1814</p>
+				<p class = "tagcontent" id = "usertaginfo-4767">{'None': 133}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-4767">Load Comments</button></br>
+			<div id = "commentsection-4767" class = 'collapse'>
+			<div id = "comment-7442" class = "comment">
+				<p>Spot on answer, +1.</p>
+			</div>
+			</div>
+				<textarea id = "speech-4767" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4767">
+					<img id="start_img-4767" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4767">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

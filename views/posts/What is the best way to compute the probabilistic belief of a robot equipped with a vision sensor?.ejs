@@ -1,0 +1,120 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>What is the best way to compute the probabilistic belief of a robot equipped with a vision sensor?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11156" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11156" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">6</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 208</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>What is the best way to compute the probabilistic belief of a robot equipped with a vision sensor?</h2>
+<p>I am trying to implement 'belief space' planning for a robot that has a camera as its main sensor. Similar to SLAM, the robot has a map of 3D points, and it localizes by performing 2D-3D matching with the environment at every step. For the purpose of this question, I am assuming the map does not change. </p>
+
+<p>As part of belief space planning, I want to plan paths for the robot that take it from start to goal, but in a way that its localization accuracy is always maximized. Hence, I would have to sample possible states of the robot, without actually moving there, and the observations the robot would make if it were at those states, which together (correct me if I am wrong) form the 'belief' of the robot, subsequently encoding its localization uncertainty at those points. And then my planner would try to connect the nodes which give me the least uncertainty (covariance).</p>
+
+<p>As my localization uncertainty for this camera-based robot depends entirely on things like how many feature points are visible from a given locations, the heading angle of the robot etc.: I need an estimate of how 'bad' my localization at a certain sample would be, to determine if I should discard it. To get there, how do I define the measurement model for this, would it be the camera's measurement model or would it be something relating to the position of the robot? How do I 'guess' my measurements beforehand, and how do I compute the covariance of the robot through those guessed measurements?</p>
+
+<p>EDIT: The main reference for me is the idea of <a href="http://groups.csail.mit.edu/rrg/papers/abry_icra11.pdf" rel="noreferrer">Rapidly exploring Random Belief Trees</a>, which is an extension of the method <a href="https://people.csail.mit.edu/prentice/papers/isrr07.pdf" rel="noreferrer">Belief Road Maps</a>. Another <a href="http://www.mycopter.eu/fileadmin/mycopter_user_upload/files/Downloads/Publications/201406_JFR_Achtelik.pdf" rel="noreferrer">relevant paper</a> uses RRBTs for constrained planning. In this paper, states are sampled similar to conventional RRTs, represented as vertices as a graph, but when the vertices are to be connected, the algorithm propagates the belief from the current vertex to the new, (PROPAGATE function in section V of <a href="http://groups.csail.mit.edu/rrg/papers/abry_icra11.pdf" rel="noreferrer">1</a>), and here is where I am stuck: I don't fully understand how I can propagate the belief along an edge without actually traversing it and obtaining new measurements, thereby new covariances from the localization. The <a href="http://groups.csail.mit.edu/rrg/papers/abry_icra11.pdf" rel="noreferrer">RRBT paper</a> says "the covariance prediction and cost expectation equations are implemented in the PROPAGATE function": but if only the prediction is used, how does it know, say, whether there are enough features at the future position that could enhance/degrade the localization accuracy?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11156" data-toggle = "popover">
+				<p>user name : HighVoltage</p>
+				<p> user reputation : 398</p>
+				<p class = "tagcontent" id = "usertaginfo-11156">{'stereo-vision': 2, 'probability': 10, 'multi-agent': 4, 'planning': 10, 'manipulator': 2, 'cameras': 1, 'matlab': 1, 'kalman-filter': 7, 'None': 19, 'noise': 3, 'inverse-kinematics': 2, 'localization': 8, 'pose': 4, 'mapping': 0, 'rotation': 1, '3d-reconstruction': 0, 'computer-vision': 8, 'algorithm': 3, 'c++': 3, 'slam': 2, 'exploration': 0, 'path-planning': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11156">Load Comments</button></br>
+			<div id = "commentsection-11156" class = 'collapse'>
+			<div id = "comment-20135" class = "comment">
+				<p>Have you read any literature on this?</p>
+			</div>
+			<div id = "comment-20151" class = "comment">
+				<p>Yes, I have added some more details in the question about relevant papers I've come across.</p>
+			</div>
+			<div id = "comment-20243" class = "comment">
+				<p>Ooooh I think I understand. Let me paraphrase to see if I understand it and for reference for others. You want to sample an entire region such that you can determine potential views at a large number of locations, and then want to pick a series of locations that offers both a route from start to finish *and* views that enable views of "good" landmarks to utilize with SLAM-style localizing. Your question is how to quantify how "good" or "bad" a view is and how that "view goodness" then relates to covariance. Is this a fair summary?</p>
+			</div>
+			<div id = "comment-20244" class = "comment">
+				<p>In a nutshell, yes! This has already been achieved before in the RRBT paper, but I am having trouble grasping the math behind it.</p>
+			</div>
+			<div id = "comment-20245" class = "comment">
+				<p>This sounds like a cool concept. I'm on mobile today, but I'll read the papers tomorrow and try to chime in. I'm going to guess that the entire algorithm is based on guesses (beliefs) of what you *think* you'll sense at any particular step, which means actual measurements don't belong in the algorithm and that's why you shouldn't need to actually traverse any space. It sounds like the entire algorithm is built around an a priori knowledge of the map and depends on that to be accurate for quality results.</p>
+			</div>
+			<div id = "comment-20259" class = "comment">
+				<p>I'm without my laptop right now but I remember seeing a paper on Auv path planning that maximized the observability of the water currents.  I'm not sure if it's of use but I believe the team was in Maryland</p>
+			</div>
+			</div>
+				<textarea id = "speech-11156" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11156">
+					<img id="start_img-11156" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11156">Comment</button>
+
+<h1>Answers</h1>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

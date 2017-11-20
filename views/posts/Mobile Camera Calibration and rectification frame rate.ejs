@@ -1,0 +1,149 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Mobile Camera Calibration and rectification frame rate
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-6395" class = "post">
+			<h2>Question</h2>
+			<div id="vote-6395" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 369</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Mobile Camera Calibration and rectification frame rate</h2>
+<p>I've been searching the internet for an answer to this question, but I haven't come across anything that will help me. Basically, we have a Meka Humanoid Robot in our lab, which has a shell head in which a PointGrey USB 3.0 camera is embedded. I use the <a href="http://wiki.ros.org/pointgrey_camera_driver" rel="nofollow">pointgrey_camera_driver</a>  for obtaining the images from the camera. The head has 2 degrees of freedom (up/down, left/right). I am intending to use this camera with the ar_pose package to detect and track AR tags on objects. I understand that camera's must be calibrated for effective use (forgive me, I don't know much about camera) which I do with the camera_calibration package.</p>
+
+<p>My question is: Since this camera is "mobile" meaning since the head can move so does the camera, how would I go about calibrating it? Currently, I have the head fixed at a position and I've calibrated the camera in that position and got the parameters in the yaml file which I can load for rectification. In particular, if the head moves does the calibration file that I obtained in the previous position become invalid? If so, as asked before, how would I calibrate this camera for all of its possible field's of view (which can be obtained by moving)?</p>
+
+<p>This camera has different video modes and in the mode I'm using I can get a frame rate of 21Hz (i.e. after driver is launched I get 21Hz for rostopic hz /camera/image_raw). However, when I rectify the image using image_proc, I get a frame rate of only about 3Hz on rostopic hz /camera/image_rect_color. Is this normal? Is there a way for me to increase this frame rate?</p>
+
+<p>Please let me know if any more information is required.
+Thanks for your help!</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6395" data-toggle = "popover">
+				<p>user name : shaun</p>
+				<p> user reputation : 1</p>
+				<p class = "tagcontent" id = "usertaginfo-6395">{'None': 0, 'ros': 0, 'cameras': 0, 'calibration': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-6395" class = 'collapse'>
+			</div>
+				<textarea id = "speech-6395" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6395">
+					<img id="start_img-6395" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6395">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-6396"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6396" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>When you refer to "camera calibration" I assume you mean the estimation of the camera/lens principal point, focal lengths and distortion coefficient; these are called the <em>intrinsic parameters</em>. From a calibration you can also determine the <strong>extrinsic parameters</strong> (camera position and orientation) at the time the image was taken. From what I can understand you do not need the extrinsics.</p>
+
+<p>Your questions:</p>
+
+<blockquote>
+  <p>how would I calibrate this camera for all of its possible field's of view (which can be obtained by moving)?</p>
+  
+  <p>if the head moves does the calibration file that I obtained in the previous position become invalid?</p>
+</blockquote>
+
+<p>If your camera and lens are constant-zoom and not auto-focus (as many Point Grey research cameras are, unsure what lens you're using) then you can simply calibrate the camera once and you are done. The intrinsics will not change and remain valid.</p>
+
+<p>I always calibrate using the MATLAB <a href="http://www.vision.caltech.edu/bouguetj/calib_doc/" rel="nofollow">CALTECH camera calibration toolbox</a>, however there are less time-consuming automated software such as <a href="http://downloads.agisoft.ru/lens/doc/en/lens.pdf" rel="nofollow">Agisoft Lens</a> (I can't find the official website for some reason). As a standard I usually calibrate using at least 21 images (the 21 is from wisdom from a lecturer). When you get the values it is very important to save ALL the values as you do not want to recalibrate twice, one calibration may take up to an hour if you are quick.</p>
+
+<p>If your camera is not constant-zoom or is auto-focus then your camera intrinsics change almost constantly, I have never tried to work with such a camera due to its difficulty.</p>
+
+<p>EDIT:
+When the "field of view" (please read <a href="https://en.wikipedia.org/wiki/Field_of_view#Machine_vision" rel="nofollow">definition</a>) changes the focal length or zoom has changed, which will invalidate the intrinsics acquired from camera calibration. <strong>Simply changing the pose of the camera will not invalidate the intrinsic parameters acquired from calibration</strong>.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6396" data-toggle = "popover">
+				<p>user name : Gouda</p>
+				<p> user reputation : 632</p>
+				<p class = "tagcontent" id = "usertaginfo-6396">{'control': 0, 'None': 39, 'computer-vision': 1, 'calibration': 1, 'cameras': 1, 'kalman-filter': 0, 'jacobian': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-6396">Load Comments</button></br>
+			<div id = "commentsection-6396" class = 'collapse'>
+			<div id = "comment-9237" class = "comment">
+				<p>Thanks! [This](http://www.rmaelectronics.com/kowa-lm6ncm-1-2-6mm-f1-2-manual-iris-c-mount-lens-2-megapixel-rated/) is the lens that we use. The [ROS calibration pkg](http://wiki.ros.org/camera_calibration/Tutorials/MonocularCalibration) requires we move the checkerboard so that the X, Y, Size, Skew parameters are detected. It spits out the camera matrix (I'm assuming this is intrinsic?). Idk if the X,Y it detects comes from the camera's FOV which would change if the head of the robot moves. Hence, my question.</p>
+			</div>
+			<div id = "comment-9239" class = "comment">
+				<p>@shaun I think you are confused about the definition of "FOV". The FOV would not change if the robot head moves, please see the updated answer. Also the lens looks suitable as it is not auto-focus.</p>
+			</div>
+			</div>
+				<textarea id = "speech-6396" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6396">
+					<img id="start_img-6396" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6396">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

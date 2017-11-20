@@ -1,0 +1,236 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Problems about Complementary Filter IMU tuning
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7558" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7558" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 298</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Problems about Complementary Filter IMU tuning</h2>
+<p>I'm developing a project consists of an IMU controlled by Arduino through which you can send via a radio module, the data to the PC of the three Euler angles and raw data from the sensors.
+For filtering I used the code made available by SparkFun: Razor AHRS 9 dof</p>
+
+<p><a href="https://github.com/ptrbrtz/razor-9dof-ahrs/tree/master/Arduino/Razor_AHRS" rel="nofollow">https://github.com/ptrbrtz/razor-9dof-ahrs/tree/master/Arduino/Razor_AHRS</a></p>
+
+<p>The code does not provide radio transmissions and is tuned for 50 Hz sampling rate, in fact its parameters are:</p>
+
+<pre><code>// DCM parameters
+#define Kp_ROLLPITCH (0.02f)
+#define Ki_ROLLPITCH (0.00002f)
+#define Kp_YAW (1.2f)
+#define Ki_YAW (0.00002f)
+</code></pre>
+
+<p>in this project data is read every 20ms (50Hz) and records of the sensors are set to the accelerometer odr 50hz and 25 bandwidth. with the gyroscope 50 Hz odr.
+In my project I used a gyroscope different, namely that I used L3G4200D frequency odr starting at 100Hz, I set then registers with the 100Hz. My global data rate is 33Hz max, beacouse the use of a radio, i read the complete date with a frequency of 33Hz.
+How can i tune the <code>Ki</code> and <code>Kp</code> of my setup? the <code>Kp</code> is the period, I have to consider the frequency odr that I set to register in the individual sensors or i have to set the global system sample rate limited to 33Hz by the radio transmission?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7558" data-toggle = "popover">
+				<p>user name : Giacomo Bonatti</p>
+				<p> user reputation : 1</p>
+				<p class = "tagcontent" id = "usertaginfo-7558">{'None': 0, 'imu': 0, 'sensor-fusion': 0, 'gyroscope': 0, 'arduino': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7558" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7558" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7558">
+					<img id="start_img-7558" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7558">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7559"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7559" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Yes and no.</p>
+
+<p>I just had a quick view at the code which is somehow hard to read what they are actually doing. 
+But in digital Signal processing the Kp value is never normalized to the samplingtime. Instead the Ki is sometimes.... depends on the implementation.</p>
+
+<p>For digital Signal processing the integral term is dividing the IntegralValue by the SampleTime of the system to normalize it for 1second. In this implementation I cannot see such an operation. This means for you yes the I-Term has to be adjusted : Multiply by 0.02 and divide by 0.03/0.01</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7559" data-toggle = "popover">
+				<p>user name : TobiasK</p>
+				<p> user reputation : 1572</p>
+				<p class = "tagcontent" id = "usertaginfo-7559">{'control': 1, 'None': 102, 'communication': 0, 'wireless': 0, 'imu': 0, 'sensor-fusion': 0, 'gps': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7559">Load Comments</button></br>
+			<div id = "commentsection-7559" class = 'collapse'>
+			<div id = "comment-10930" class = "comment">
+				<p>Multiply it by 0.02 to normalize the parameters on 1 second. Then you have to know how often your code runs: if the samplerate of the code is 100Hz then divide by 0.01. If it is 33Hz then divide by 0.03</p>
+			</div>
+			<div id = "comment-10936" class = "comment">
+				<p>So even if I raise the odr datarate of my gyroscope to 100 Hz (25 Hz bandwidth) instead of the original one is 50 Hz, I have to change only the ki value multiply by 0.02 and divide by 0.03/0.01?
+In the original code the kp value was 0.02 (this does it means 0.02 s or 20 ms), in fact the sample rate of that code is set to 50 Hz. I think that i need to change even the kp values no?</p>
+			</div>
+			</div>
+				<textarea id = "speech-7559" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7559">
+					<img id="start_img-7559" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7559">Comment</button>
+			<br><div id = "ans-8532"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8532" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><blockquote>
+  <p>the <code>Kp</code> is the period</p>
+</blockquote>
+
+<p>No it's not, Kp is a proportional gain. If your sampling times are very stable, then it becomes possible to modify gains because of the associative properties of multiplication and division. For a PID controller:</p>
+
+<p>$$
+\mbox{Controller Output = Proportional Term + Integral Term + Derivative Term} \\
+$$
+$$
+\mbox{Controller Output} = k_P*e_P + k_I*e_I + k_D*e_D \\
+$$</p>
+
+<p>where $e_P$, $e_I$, and $e_D$ are the proportional, integral, and derivative error terms, as defined by:</p>
+
+<p>$$
+e_{P_k} = \mbox{reference - output} \\
+e_{I_k} = e_{I_{k-1}} + e_{P_k}*dT \\
+e_{D_k} = e_{P_k}/dT \\
+$$</p>
+
+<p>Note that there is no $dT$ term in the proportional error equation! So you do not tune the proportional gain for any given sample time. $k_P$ should always be the same $k_P$. If the starting errors are all set to zero, then the first sample ($k = 1$) for integral and derivative gains should look like the following:</p>
+
+<p>$$
+e_{I_1} = e_{I_{0}} + e_P*dT \\
+e_{I_1} = 0 + e_P*dT \\
+e_{D_1} = e_P/dT \\
+$$</p>
+
+<p>Here, because derivative gain never "remembers" any previous states, it should be clear that you can move the sample rate into the gain as follows:</p>
+
+<p>$$
+\mbox{Derivative Term} = k_D*eD \\
+\mbox{Derivative Term} = k_D*(e_P/dT) \\
+\boxed{\mbox{Derivative Term} = (k_D/dT)*e_P} \\
+$$</p>
+
+<p>For the integral error, <em>because the initial error is set to zero</em>, try writing out the first few samples to get the pattern:</p>
+
+<p>$$
+e_{I_1} = 0 + e_{P_1}*dT \\
+e_{I_1} = e_{P_1}*dT \\
+$$</p>
+
+<p>$$
+e_{I_2} = e_{I_1} + e_{P_2}*dT \\
+e_{I_2} = e_{P_1}*dT + e_{P_2}*dT \\
+$$</p>
+
+<p>$$
+e_{I_3} = e_{I_2} + e_{P_3}*dT \\
+e_{I_3} = e_{P_1}*dT + e_{P_2}*dT + e_{P_3}*dT \\
+$$</p>
+
+<p>And so again, <em>if the sample rate is constant</em>, you can simplify:</p>
+
+<p>$$
+e_{I_N} = \left( \Sigma_{i=1}^N  e_{P_i} \right) *dT
+$$</p>
+
+<p>Which gives:</p>
+
+<p>$$
+\mbox{Integral Term} = k_I * e_I \\
+\mbox{Integral Term} = k_I * \left( \left( \Sigma_{i=1}^N  e_{P_i} \right) *dT \right) \\
+\boxed{ \mbox{Integral Term} = \left( k_I *dT \right) * \left( \Sigma_{i=1}^N  e_{P_i} \right) }\\
+$$</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8532" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-8532">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8532" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8532" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8532">
+					<img id="start_img-8532" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8532">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

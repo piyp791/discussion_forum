@@ -1,0 +1,128 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Noise in motion and measurement models
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-690" class = "post">
+			<h2>Question</h2>
+			<div id="vote-690" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">6</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 390</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Noise in motion and measurement models</h2>
+<p>When using an EKF for SLAM, I often see the motion and measurement models being described as having some noise term.  </p>
+
+<p>This makes sense to me if you're doing a simulation, where you need to add noise to a simulated measurement to make it stochastic.  But what about when using real robot data?  Is the noise already in the measurement and thus does not need to be added, or does the noise matrix mean something else?</p>
+
+<p>For example, in Probabilistic Robotics (on page 319), there is a measurement model: $z_t^i = h(y,j) + Q_t$, where $Q_t$ is a noise covariance.  Does $Q_t$ need to be calculated when working with real data?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-690" data-toggle = "popover">
+				<p>user name : munk</p>
+				<p> user reputation : 406</p>
+				<p class = "tagcontent" id = "usertaginfo-690">{'None': 2, 'noise': 7, 'theory': 7, 'ekf': 14, 'mapping': 13, 'slam': 41, 'kalman-filter': 26}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-690" class = 'collapse'>
+			</div>
+				<textarea id = "speech-690" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-690">
+					<img id="start_img-690" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-690">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-691"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-691" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">8</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>When using the EKF (or standard KF) on a real robot, you will want to tell the filter how much noise there is in each measurement, and in the process.</p>
+
+<p>The purpose of this is so that the Kalman filter can decide how much it "trusts" each source of data, and therefore, the weighting to give each measurement in its final estimation.</p>
+
+<p>For real robot data, the noise is already in the measurement. I think when you say "noise matrix", you are referring to the covariance matrix. This is not the actual noise per se, but rather, the noise covariance matrix describes the magnitude of the noise (that can be expected by the Kalman Filter), and the correlation between different noise terms, for a normal distribution of noise. You will generally want as accurate a noise covariance as possible, however, it can simply be estimated. When working with real data, you can perform a quick experiment to estimate the noise covariance, or you can also estimate it by consulting datasheets, or select a somewhat sensible value. Where there is not much data available, the covariance will normally be a diagonal matrix (ie. no correlation). The diagonal elements of the covariance matrix is also referred to as the <strong>variance</strong>. That means that you are telling the Kalman filter what the variance of the different noise sources are (square of standard deviation of the noise).</p>
+
+<p>If on the other hand, you are wondering why the models related to the Kalman Filter may have a noise term (as opposed to a noise covariance), they are only models, and those equations are not actually used in the algorithm. The equations used by the algorithm will have terms representing the noise covariance (not the actual noise - which is unknown), which it normally keeps an online estimate of.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-691" data-toggle = "popover">
+				<p>user name : ronalchn</p>
+				<p> user reputation : 2449</p>
+				<p class = "tagcontent" id = "usertaginfo-691">{'None': 187, 'two-wheeled': 20, 'inverse-kinematics': 15, 'interrupts': 5, 'microcontroller': 13, 'wiring': 7, 'c': 8, 'avr': 5, 'brushless-motor': 2, 'joint': 15, 'kinematics': 15, 'hall-sensor': 2, 'mobile-robot': 20, 'arm': 15}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-691" class = 'collapse'>
+			</div>
+				<textarea id = "speech-691" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-691">
+					<img id="start_img-691" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-691">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

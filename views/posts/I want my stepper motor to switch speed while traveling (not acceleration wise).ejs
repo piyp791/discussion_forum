@@ -1,0 +1,251 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>I want my stepper motor to switch speed while traveling (not acceleration wise)
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-1947" class = "post">
+			<h2>Question</h2>
+			<div id="vote-1947" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 3146</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>I want my stepper motor to switch speed while traveling (not acceleration wise)</h2>
+<p>I have this project I'm working on where I'll need the speed of the stepper motor to change set speed at a certain distance, I just can't figure out a way to do it. I'm using arduino and a stepper motor, this is the current code.</p>
+
+<pre><code>#include &lt;AccelStepper.h&gt;
+
+AccelStepper stepper1(AccelStepper::FULL4WIRE, 0, 1, 2, 3);
+
+void setup()
+{  
+    stepper1.setMaxSpeed(200.0);
+    stepper1.setAcceleration(400.0);
+    stepper1.moveTo(5000);
+
+}
+
+void loop()
+{
+    // Change direction at the limits
+    if (stepper1.distanceToGo() == 0)
+    stepper1.moveTo(-stepper1.currentPosition());
+    stepper1.run();
+</code></pre>
+
+<p>What I want it to do basically is to first <code>moveTo(2500)</code>  at the current speed 200 then after 2500 I want it to increase speed to 400. After it has moved 5000 it turns and moves back to position but that's implemented already.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1947" data-toggle = "popover">
+				<p>user name : hollander</p>
+				<p> user reputation : 42</p>
+				<p class = "tagcontent" id = "usertaginfo-1947">{'control': 3, 'None': 0, 'arduino': 7, 'c': 2, 'sensors': 2, 'stepper-motor': 5}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1947">Load Comments</button></br>
+			<div id = "commentsection-1947" class = 'collapse'>
+			<div id = "comment-3994" class = "comment">
+				<p>Can you explain the exact wiring you have between the Arduino and the stepper motor? Are you using a stepper driver board (PCB), or are the coils for the stepper motor plugged directly into your Arduino?</p>
+			</div>
+			<div id = "comment-3995" class = "comment">
+				<p>The arduino(UNO) is connected to a double H-bridge. From there it's connected to a 4 wire nema 23 stepper motor. The H-bridge has it's own power supply.</p>
+			</div>
+			<div id = "comment-3997" class = "comment">
+				<p>Can't you just make another call to stepper1.setMaxSpeed(400) in an if statement: if(stepper1.currentPosition() == 2500) { stepper1.setMaxSpeed(400)) }</p>
+			</div>
+			<div id = "comment-4002" class = "comment">
+				<p>Thank you very much! It works great. There's one thing with it that I didn't expect though. It first moves 2500 at one speed, then accelerates at 2500 speed, then the direction reverses and it goes back to start position, but after that it doesn't accelerate when it goes forward again. Is there anything I can do about that?</p>
+			</div>
+			</div>
+				<textarea id = "speech-1947" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1947">
+					<img id="start_img-1947" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1947">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-1951"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1951" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>For this task; increase speed when a certain distance is reached.</p>
+
+<p>I would use encoders on the wheels which will workout the distance travelled and when the target distance is reached then increase speed.  </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1951" data-toggle = "popover">
+				<p>user name : OricTosh</p>
+				<p> user reputation : 86</p>
+				<p class = "tagcontent" id = "usertaginfo-1951">{'None': 7}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-1951" class = 'collapse'>
+			</div>
+				<textarea id = "speech-1951" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1951">
+					<img id="start_img-1951" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1951">Comment</button>
+			<br><div id = "ans-2309"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2309" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You can do what yu want with the standard arduino "Stepper" library.  You are using something called "accelsteper.h".</p>
+
+<p>Using the standard one....</p>
+
+<p>This c-like psudocode will run a motor at some speed for 2000 steps then run and some other speed for 4000 steps and then go back an do it again.</p>
+
+<p>loop{
+setspeed(speed1)
+step(2000)
+setspeed(speed2)
+step(4000)
+}</p>
+
+<p>Look here for details on the standard stepper library
+<a href="http://arduino.cc/en/Reference/Stepper" rel="nofollow">http://arduino.cc/en/Reference/Stepper</a></p>
+
+<p>Get this to work FIRST.  then make it nicer if you need to.  for example place a half way between speed in there like this "set speed((speed1+speed2)/2). and run a few steps.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2309" data-toggle = "popover">
+				<p>user name : user3150208</p>
+				<p> user reputation : 431</p>
+				<p class = "tagcontent" id = "usertaginfo-2309">{'None': 27}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2309" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2309" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2309">
+					<img id="start_img-2309" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2309">Comment</button>
+			<br><div id = "ans-6827"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6827" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><pre><code>#include &lt;AccelStepper.h&gt;
+
+//AccelStepper Xaxis(1, 2, 5); // pin 2 = step, pin 5 = direction
+AccelStepper Xaxis(1, 12, 6); // pin 3 = step, pin 6 = direction
+
+void setup() 
+{
+  Xaxis.setMaxSpeed(4000);
+
+  //Xaxis.setSpeed(10);
+  pinMode (3, INPUT);
+}
+
+void loop() 
+{  
+   //Xaxis.runSpeed();
+   if (digitalRead (3) == HIGH)
+   {
+     //Xaxis.stop();
+     Xaxis.setSpeed(20);
+
+     Xaxis.runSpeed();
+   }
+
+   if (digitalRead (3) == LOW)
+   {
+     Xaxis.runSpeed();
+     Xaxis.setSpeed(-10);  // - sign change direction !!!!!
+   }
+}
+</code></pre>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6827" data-toggle = "popover">
+				<p>user name : gerd</p>
+				<p> user reputation : 11</p>
+				<p class = "tagcontent" id = "usertaginfo-6827">{'None': 1}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-6827">Load Comments</button></br>
+			<div id = "commentsection-6827" class = 'collapse'>
+			<div id = "comment-9949" class = "comment">
+				<p>Welcome Gerd - a little bit of explanation would be useful :-)</p>
+			</div>
+			</div>
+				<textarea id = "speech-6827" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6827">
+					<img id="start_img-6827" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6827">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,322 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>calculating position based on accelerometer data
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8680" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8680" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 1593</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>calculating position based on accelerometer data</h2>
+<p>Please help me with the following task. I have MPU 9150 from which I get acceleration/gyro and magnetometer data. What I'm currently interested in is to get the orientation and position of the robot. I can get the position using quaternions. Its quite stable. Rarely changes when staying still.
+But the problem is in converting accelerometer data to calculate the displacement.</p>
+
+<p>As I know its required to to integrate twice the accel. data to get position.
+Using quaternion I can rotate the vector of acceleration and then sum it's axises to get velocity then do the same again to get position. But it doesn't work that way. First of all moving the sensor to some position and then moving it back doesn't give me the same position as before. The problem is that after I put the sensor back and it stays without any movement the velocity doesn't change to zero though the acceleration data coming from sensors are zeros.</p>
+
+<p>Here is an example (initially its like this):
+the gravity: -0.10  -0.00   1.00<br>
+raw accel: -785 -28 8135<br>
+accel after scaling to +-g: -0.10   -0.00   0.99<br>
+the result after rotating accel vector using quaternion: 0.00   -0.00   -0.00</p>
+
+<p>After moving the sensor and putting it back it's acceleration becomes as:
+ 0.00   -0.00   -0.01
+ 0.00   -0.00   -0.01
+ 0.00   -0.00   -0.00
+ 0.00   -0.00   -0.01
+and so on.
+If I'm integrating it then I get slowly increasing position of Z.</p>
+
+<p>But the worst problem is that the velocity doesn't come back to zero</p>
+
+<p>For example if I move sensor once and put it back the velocity will be at:
+-0.089 for vx and
+0.15 for vy</p>
+
+<p>After several such movements it becomes:
+-1.22 for vx
+1.08 for vy 
+-8.63 for vz</p>
+
+<p>and after another such movement:</p>
+
+<p>vx -1.43
+vy 1.23
+vz -9.7</p>
+
+<p>The x and y doesnt change if sensor is not moving but Z is changing slowly.
+Though the quaternion is not changing at all.</p>
+
+<p>What should be the correct way to do that task?</p>
+
+<p>Here is the part of code for integrations:</p>
+
+<pre><code>vX += wX * speed;
+vY += wY * speed;
+vZ += wZ * speed;
+
+posX += vX * speed;
+posY += vY * speed;
+posZ += vZ * speed;
+</code></pre>
+
+<p>Currently set speed to 1 just to test how it works.</p>
+
+<p><strong>EDIT 1:</strong> Here is the code to retrieve quaternion and accel data, rotate and compensate gravity and get final accel data.</p>
+
+<pre><code>        // display initial world-frame acceleration, adjusted to remove gravity
+        // and rotated based on known orientation from quaternion
+        mpu.dmpGetQuaternion(&amp;q, fifoBuffer);
+        mpu.dmpGetAccel(&amp;aaReal, fifoBuffer);
+        mpu.dmpGetGravity(&amp;gravity, &amp;q);
+
+        //Serial.print("gravity\t");
+        Serial.print(gravity.x);
+        Serial.print("\t");
+        Serial.print(gravity.y);
+        Serial.print("\t");
+        Serial.print(gravity.z);
+        Serial.print("\t");
+
+
+        //Serial.print("accell\t");
+        Serial.print(aaReal.x);
+        Serial.print("\t");
+        Serial.print(aaReal.y);
+        Serial.print("\t");
+        Serial.print(aaReal.z);
+        Serial.print("\t"); 
+
+        float val = 4.0f;
+        float ax = val * (float)aaReal.x / 32768.0f;
+        float ay = val * (float)aaReal.y / 32768.0f;
+        float az = val * (float)aaReal.z / 32768.0f; 
+
+        theWorldF.x = ax;            
+        theWorldF.y = ay;
+        theWorldF.z = az;
+
+        //Serial.print("scaled_accel\t");
+        Serial.print(ax);
+        Serial.print("\t");
+        Serial.print(ay);
+        Serial.print("\t");
+        Serial.print(az);
+        Serial.print("\t"); 
+
+        theWorldF.x -= gravity.x;
+        theWorldF.y -= gravity.y;
+        theWorldF.z -= gravity.z;
+
+        theWorldF.rotate(&amp;q);
+        //gravity.rotate(&amp;q);
+        //Serial.print("gravity_compensated_accel\t");
+        Serial.print(theWorldF.x);
+        Serial.print("\t");
+        Serial.print(theWorldF.y);
+        Serial.print("\t");
+        Serial.print(theWorldF.z);
+        Serial.print("\t");
+        Serial.print(deltaTime); 
+        Serial.println();
+</code></pre>
+
+<blockquote>
+  <p>EDIT 2:</p>
+</blockquote>
+
+<p>dmpGetQuaternion, dmpGetAccel functions are just reading from the FIFO buffer of MPU. </p>
+
+<p>dmpGetGravity is:</p>
+
+<pre><code>uint8_t MPU6050::dmpGetGravity(VectorFloat *v, Quaternion *q) {
+    v -&gt; x = 2 * (q -&gt; x*q -&gt; z - q -&gt; w*q -&gt; y);
+    v -&gt; y = 2 * (q -&gt; w*q -&gt; x + q -&gt; y*q -&gt; z);
+    v -&gt; z = q -&gt; w*q -&gt; w - q -&gt; x*q -&gt; x - q -&gt; y*q -&gt; y + q -&gt; z*q -&gt; z;
+    return 0;
+}
+</code></pre>
+
+<p><strong>EDIT 3:</strong>
+the library for using MPU 9150:
+<a href="https://github.com/sparkfun/MPU-9150_Breakout" rel="nofollow">https://github.com/sparkfun/MPU-9150_Breakout</a></p>
+
+<p><strong>EDIT 4: Another example</strong> </p>
+
+<p>gravity vector: -1.00   -0.02   0.02<br>
+raw accel data: -8459   -141    125 
+accel data scaled (+-2g range): -1.03   -0.02   0.02<br>
+gravity compensation and rotation of accel data: -0.01  0.00    0.33    </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8680" data-toggle = "popover">
+				<p>user name : maximus</p>
+				<p> user reputation : 118</p>
+				<p class = "tagcontent" id = "usertaginfo-8680">{'None': 0, 'algorithm': 3, 'accelerometer': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8680" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8680" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8680">
+					<img id="start_img-8680" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8680">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8681"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8681" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You're trying to do numeric integration, which takes the form:</p>
+
+<p>$$
+\mbox{integrated value } +=\mbox{derivative} * \mbox{elapsed time}
+$$</p>
+
+<p>What you have instead of <code>elapsed time</code> is some value called <code>speed</code>. Try setting up your numeric integration code on an interrupt, where the interrupt timing is what you would use in place of <code>elapsed time</code>. </p>
+
+<p>I'm not sure what method you're using to get from quaternions to the rotated acceleration vector, but I would like to point out that you can't just do numeric integration on quaternions like you can with accelerations or velocities. See <a href="http://www-users.cs.umn.edu/~trawny/Publications/Quaternions_3D.pdf">page 11 of this document</a> for more detail, but briefly, take your gyroscope angular accelerations $\omega_x \omega_y \omega_z$ and the existing quaternion $q(t)$ and calculate the quaternion derivative:</p>
+
+<p>$$
+\dot{q}(t) = \frac{1}{2} \left[ \begin{array}{cccc}
+0 &amp; \omega_z &amp; -\omega_y &amp; \omega_x \\
+-\omega_z &amp; 0 &amp; \omega_x &amp; \omega_y \\
+\omega_y &amp; -\omega_x &amp; 0 &amp; \omega_z \\
+-\omega_x &amp; -\omega_y &amp; -\omega_z &amp; 0 \end{array} \right] q(t)
+$$</p>
+
+<p>Then you numerically integrate <em>that</em>, such that, for a discrete system,</p>
+
+<p>$$
+q_k = q_{k-1} + \dot{q}_k * dT
+$$</p>
+
+<p>You do not provide any code on how you're updating your acceleration vector, no code on how you're getting a quaternion, etc., so it's not possible to give you any more specific feedback than this.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8681" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-8681">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8681">Load Comments</button></br>
+			<div id = "commentsection-8681" class = 'collapse'>
+			<div id = "comment-14170" class = "comment">
+				<p>I'd just like to point out that your quaternion update would not result in a unit quaternion (no longer unit norm). Instead, the quaternion can be updated via (quaternion) multiplication, which maintains the unit constraint.</p>
+			</div>
+			<div id = "comment-14171" class = "comment">
+				<p>@kamek - True, and your statement reinforces the fact that numeric integration of a quaternion is not a trivial process and does *not* take the form of numeric integration of "usual" terms.</p>
+			</div>
+			<div id = "comment-14172" class = "comment">
+				<p>@Chuck Actually I just use the MPU 9150's internal Motion Processor, which does the quaternion estimation and filtering if enabled. For acceleration I just get those data from sensor. Each interrupt I get new quaternion and accel data. Can't I just use that quaternion or should I integrade quaternions too? Kind of confused now.</p>
+			</div>
+			<div id = "comment-14177" class = "comment">
+				<p>@Chuck same for me. Here is dmp documentation that does quaternion computation : https://www.digikey.com/document-redirector?doc=https://www.digikey.com/Web%20Export/Supplier%20Content/invensense-1428/pdf/invensense-motion-driver-6.1-guide.pdf</p>
+			</div>
+			<div id = "comment-14178" class = "comment">
+				<p>I just rotate the acceleration vector by quaternion provided.</p>
+			</div>
+			<div id = "comment-14180" class = "comment">
+				<p>@Chuck Check the code above (Edit to the question) please.</p>
+			</div>
+			<div id = "comment-14228" class = "comment">
+				<p>@Chuck I mean that I also can't find the quaternion information in more details. dmpGetGravity is taken from the library provided it says that its same for MPU 6050. (common things). I do use gravity in the code above: I subtract to compensate it as follows: theWorldF.x -= gravity.x;
+And only after that I rotate the accel vector to make it in world coordinates. Do you mean that I'm using compensation incorrectly?</p>
+			</div>
+			<div id = "comment-14229" class = "comment">
+				<p>@Chuck please check the Edit 3 for the link to the library code.</p>
+			</div>
+			<div id = "comment-14235" class = "comment">
+				<p>@maximus - Yes, I think you are not rotating your accelerometer data correctly. You need to update it by converting your quaternion to a rotation matrix, invert that to get the rotation back to world coordinates, then multiply it with the accelerometer data to get (properly) rotated acceleration data in world coordinates.</p>
+			</div>
+			<div id = "comment-14250" class = "comment">
+				<p>@Chuck one more question then, if I correctly understand you, current quaternion is the one I get from MPU. I estimate the derivative then and finally calculate the q_k (integration). The question is what to take as the initial quaternion (q_0)?</p>
+			</div>
+			<div id = "comment-14251" class = "comment">
+				<p>@maximus - No, the quaternion should give you the current orientation of your craft with respect to either the initial position of the craft or with respect to some "global" frame like magnetic North and the gravity down vector. In any event, you just convert the quaternion to a rotation matrix and use that to modify your accelerometer data such that it reflects how your craft moves with respect to the world instead of with respect to itself.</p>
+			</div>
+			<div id = "comment-14252" class = "comment">
+				<p>@Chuck could you please check the following guide, I think there is some info about quaternions: https://www.digikey.com/Web%20Export/Supplier%20Content/invensense-1428/pdf/invensense-motion-driver-6.0-features.pdf?redirected=1</p>
+			</div>
+			<div id = "comment-14265" class = "comment">
+				<p>@Chuck could you please suggest literature to understand all this things from zero (like where quaternions are got from etc). I dont need math as I'm mathematician, I only need to understand the logic of all those things combined together.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8681" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8681">
+					<img id="start_img-8681" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8681">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

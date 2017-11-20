@@ -1,0 +1,203 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to create a model for temperature control?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-10119" class = "post">
+			<h2>Question</h2>
+			<div id="vote-10119" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 93</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to create a model for temperature control?</h2>
+<p>I have a heated compartment, inside which, there is another object heated up by independent heater. I want to control temperatures of both chamber and the object. </p>
+
+<p>I could achieve this by simple PID (or PI) controllers for both chamber and object, but I would like to try more thoughtful approach :) I have two temperature sensors, and two PWM outputs for heaters. How do I identify a model for an object I want to control?   </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10119" data-toggle = "popover">
+				<p>user name : mactro</p>
+				<p> user reputation : 925</p>
+				<p class = "tagcontent" id = "usertaginfo-10119">{'control': 1, 'None': 59, 'radio-control': 1, 'pid': 1, 'wifi': 1, 'wheeled-robot': 1, 'mechanism': 1, 'automation': 1, 'wireless': 1, 'industrial-robot': 2, 'design': 1, 'cnc': 2, 'actuator': 2, 'mobile-robot': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-10119" class = 'collapse'>
+			</div>
+				<textarea id = "speech-10119" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10119">
+					<img id="start_img-10119" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10119">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-10120"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10120" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Generally you would only develop a model if (as in your case), you have something that you want to control. In that case, you should start by:</p>
+
+<ol>
+<li>List the outputs that you want to control. </li>
+<li>List the inputs that you can modulate. </li>
+</ol>
+
+<p>In your case, you want to control chamber temperature and object temperature. You can modulate the chamber heater and the object heater. Now, you have to ask yourself:</p>
+
+<ol start="3">
+<li>How do the inputs affect the outputs? You should shoot for an equation in the form of $\mbox{[outputs] = f(inputs)}$</li>
+</ol>
+
+<p>This is important because you generally only want to model the things that are pertinent to the task at hand. </p>
+
+<p>For example, say you want to develop cruise control for a car. The output you want to control is vehicle speed and the input you can modulate is throttle position. Can you model coolant reservoir level? Sure, but you can also <em>assume</em> the coolant system is functioning normally. Can you model the internals of an automatic transmission? Sure, but you can also <em>assume</em> that the automatic transmission gives output power equal to input power minus some losses.</p>
+
+<p>The point is, you <em>have</em> to make some set of assumptions about the "nominal" scenario. Once you have your initial model, you attempt to <em>validate</em> the model by getting test data. Typically this means feeding an actual system a particular set of inputs and recording the response, then feeding the same inputs to your model and recording the response. The results should be (very close to) the same. How close is "good enough" depends on your application, and could be anywhere from "it generally trends the same" to virtually no error. </p>
+
+<p>You can try developing a rudimentary controller around an unvalidated model if you've got time to kill, but you should generally wait for validation before expending a lot of effort on the controller because math errors and faulty assumptions can cause you to have to start over with controller development. </p>
+
+<p>You can also skip the mathematical description if the system is too complex to be described mathematically, or if doing so would take too much time. "Empirical modelling" runs a similar sort of tests you would use to validate a model, but with the concept that, by seeing how a particular set of inputs create an output, you can derive some pattern that you can extrapolate a model that gives outputs for other inputs. </p>
+
+<p>In your case, if you're really concerned with better control, I would probably suggest trying to build an empirical model. Try a variety of inputs on only one heater and record how that impacts chamber and object temperatures. Then do the same on the other heater. Best case is the effect of each heater is decoupled or weakly correlated to the other temperature - the space heater only heats the space and the object heater only heats the object. In that scenario you can have independent control, though I would imagine this would probably only happen if you had significant chamber losses relative to the output of the object heater and/or the chamber had a large thermal mass relative to the object.</p>
+
+<p>And on a final note, I'll just add that, when gathering test data for a particular model, you should try varying all of the "nominal" conditions that you assumed to make sure it doesn't have an effect you should be modelling. For you, that would probably mean checking the ambient air temperature around the chamber is varied through all of the expected conditions. As I mention above you're probably more likely to achieve independent temperature control with large chamber losses (because your heaters are not bi-directional; they only <em>make</em> heat and cannot remove it), and the chamber losses are going to be related to ambient temperature. Testing in only hot weather (or vice-versa) will skew your results, model, and thus controller to a point that it might not be useful when the weather changes. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10120" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-10120">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10120">Load Comments</button></br>
+			<div id = "commentsection-10120" class = 'collapse'>
+			<div id = "comment-18004" class = "comment">
+				<p>Your answer is great. In addition to your response, it is noteworthy that temperature control is a non-linear control problem, which deserves some thought outright, and the dynamics of heat transfer/dissipation must be taken into account in the controller. For insulated chambers, this will be very important because it will be easier to increase temperature than to decrease it; this asymmetry will require consideration, and if nothing else, make sure that the closed-loop system is overdamped so that you might avoid this problem.</p>
+			</div>
+			</div>
+				<textarea id = "speech-10120" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10120">
+					<img id="start_img-10120" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10120">Comment</button>
+			<br><div id = "ans-10121"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10121" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Chuck is right; you need to build a model so that you can appropriately choose your controller.</p>
+
+<p>Temperature control is non-trivial because the underlying dynamics are non-linear. Because heat transfer has been studied extensively (see thermodynamics), you may be able to build a decent model for your system using only existing models and parameter characterization of your specific system. However, if this doesn't work for you, perhaps your system is too complex or non-linearities are not modeled correctly, you can apply machine learning to learn the model of your system.</p>
+
+<p>The task of learning the model of your system is a regression task. <a href="http://www.gaussianprocess.org/" rel="nofollow">Gaussian Process Regression</a> will work, but k-Nearest Neighbors is a good place to start. The link is very thorough on how GPR is and can be used--KNN is on wikipedia. You will still need data from your system, but using GPR or some other machine learning technique will have the benefit of not requiring hand-crafting your model. </p>
+
+<p>I know it sounds like a lot of work, and it might be overkill for what you are trying to do, but by using ML to build the model, you can confidently apply a non-linear controller--linearization may or may not be possible.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10121" data-toggle = "popover">
+				<p>user name : NBCKLY</p>
+				<p> user reputation : 741</p>
+				<p class = "tagcontent" id = "usertaginfo-10121">{'None': 44, 'roomba': 4, 'irobot-create': 4, 'arduino': 2}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-10121" class = 'collapse'>
+			</div>
+				<textarea id = "speech-10121" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10121">
+					<img id="start_img-10121" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10121">Comment</button>
+			<br><div id = "ans-10548"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10548" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Classical modelling techniques like "PID control" are based on mathematical equations. That makes them difficult to implement. A better way for modelling heated compartment is to use object oriented design. An example for modelling a  <a href="https://stackoverflow.com/questions/26938629/how-is-the-waittime-calculated-in-printer-simulation-python-program">printer with python</a> uses variables which represents the internal state and methods for statechange of the physical system. Its a little bit like designing a computer game.</p>
+
+<p>It the simulation works, a solver is needed. The solver uses sampling techniques (brute-force-search) for reaching a given goal of the system. For example: if the object inside the heater should stay within a temperature range of 150 and 180 degree, the solver generates random inputs to the systems until some of them results into the given output range. A good example of how a naive physics engine works is given in the computergame "The Sims" where an oven can be <a href="https://www.youtube.com/watch?v=SSzGnQcCLhM" rel="nofollow noreferrer">set on fire</a>.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10548" data-toggle = "popover">
+				<p>user name : Manuel Rodriguez</p>
+				<p> user reputation : 463</p>
+				<p class = "tagcontent" id = "usertaginfo-10548">{'None': 18, 'motion-planning': 0, 'machine-learning': 1, 'algorithm': 0}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-10548" class = 'collapse'>
+			</div>
+				<textarea id = "speech-10548" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10548">
+					<img id="start_img-10548" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10548">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

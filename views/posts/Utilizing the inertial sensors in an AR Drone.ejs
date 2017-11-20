@@ -1,0 +1,141 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Utilizing the inertial sensors in an AR Drone
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-10719" class = "post">
+			<h2>Question</h2>
+			<div id="vote-10719" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 90</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Utilizing the inertial sensors in an AR Drone</h2>
+<p>I'm trying to figure out how to use the inertial sensors in an AR Drone to perform a rough version of dead reckoning. I want to move the drone around a room (without flying it) and using the velocity and orientation data from the drone to plot the trajectory that I have moved it so far.</p>
+
+<p>I know that inertial odometry data is prone to heavy drift with continuous use, but for a short term exploration, I am ok with that.</p>
+
+<p>I'm running the ardrone_autonomy package on ROS and I am using the odometry data from the drone to plot my trajectory on Rviz. However, Rviz only shows me the orientation of my drone and does not update movement whatsoever.</p>
+
+<p>This is how my Rviz looks: </p>
+
+<p><a href="https://i.stack.imgur.com/oFgXD.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/oFgXD.png" alt="enter image description here"></a></p>
+
+<p>As you can see, even if I move the drone around the entire room, the position on the map does not get updated, but the orientation does.</p>
+
+<p>Can anyone tell me what I am doing wrong here?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10719" data-toggle = "popover">
+				<p>user name : ReiJin ThunderKeg</p>
+				<p> user reputation : 11</p>
+				<p class = "tagcontent" id = "usertaginfo-10719">{'quadcopter': 1, 'None': 0, 'accelerometer': 0, 'localization': 2, 'uav': 0, 'dead-reckoning': 2, 'imu': 1, 'ros': 1, 'gyroscope': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10719">Load Comments</button></br>
+			<div id = "commentsection-10719" class = 'collapse'>
+			<div id = "comment-19317" class = "comment">
+				<p>Possible duplicate of [ROS : Performing 2-D Pedestrian Dead Reckoning on an AR Drone and displaying location on a floorplan](http://robotics.stackexchange.com/questions/10714/ros-performing-2-d-pedestrian-dead-reckoning-on-an-ar-drone-and-displaying-loc)</p>
+			</div>
+			<div id = "comment-19888" class = "comment">
+				<p>I think, movement is updated from the velocity values integrated over (1/frequency). When you are moving the drone using hands, since the motors are not rotating, the velocity values are not updated(velocity values seems to be calculated from the current values sent to the motors). That might be the reason. {couldn't comment as it requires 50 reputations and I signed up just to answer this}</p>
+			</div>
+			</div>
+				<textarea id = "speech-10719" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10719">
+					<img id="start_img-10719" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10719">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-10721"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10721" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>That's because your fixed frame is set to /odom (Essentially, you're setting your global frame to your local frame, so relative to the vehicle itself, the vehicle never moves!). The solution would be to set it to /map or /world, depending on what the name of the frame is that the package provides. The list can be seen in the dropdown menu of fixed frames. You also seem to have an issue with transforms between odom and map, so I am guessing you would need some sort of a static transform between odom and some other local frame such as base_link. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10721" data-toggle = "popover">
+				<p>user name : HighVoltage</p>
+				<p> user reputation : 398</p>
+				<p class = "tagcontent" id = "usertaginfo-10721">{'stereo-vision': 2, 'probability': 10, 'multi-agent': 4, 'planning': 10, 'manipulator': 2, 'cameras': 1, 'matlab': 1, 'kalman-filter': 7, 'None': 19, 'noise': 3, 'inverse-kinematics': 2, 'localization': 8, 'pose': 4, 'mapping': 0, 'rotation': 1, '3d-reconstruction': 0, 'computer-vision': 8, 'algorithm': 3, 'c++': 3, 'slam': 2, 'exploration': 0, 'path-planning': 3}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10721">Load Comments</button></br>
+			<div id = "commentsection-10721" class = 'collapse'>
+			<div id = "comment-19315" class = "comment">
+				<p>I just tried actually flying the drone instead of simply moving it using my hands, and I see movement on the map. Do you know why there's no update on the map when I just push the drone around? Thanks!</p>
+			</div>
+			</div>
+				<textarea id = "speech-10721" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10721">
+					<img id="start_img-10721" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10721">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

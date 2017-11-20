@@ -1,0 +1,179 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Accelerometer bias removal
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-1570" class = "post">
+			<h2>Question</h2>
+			<div id="vote-1570" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 1211</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Accelerometer bias removal</h2>
+<p>I found <a href="http://www.kionix.com/sites/default/files/AN012%20Accelerometer%20Errors.pdf" rel="nofollow">a good explanation</a> on how to remove accelerometer bias (when on flat table only one axis should show values, the other two should be 0). I've calculated S and B factors (page 3):</p>
+
+<blockquote>
+  <p>Record $B_x^{0g}$, $B_y^{0g}$, $B_z^{0g}$, $S_{xx}$, $S_{yy}$, and $S_{zz}$ in EEPROM or flash memory
+  and use these values in all subsequent calculations of acceleration to
+  get the corrected outputs.</p>
+</blockquote>
+
+<p>I don't know how to incorporate these into the final calculation of accelerations. I guess the bias should be substracted from my sensor reading. What about sensitivities (S)?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1570" data-toggle = "popover">
+				<p>user name : Primo  Kralj</p>
+				<p> user reputation : 167</p>
+				<p class = "tagcontent" id = "usertaginfo-1570">{'None': 0, 'errors': 4, 'accelerometer': 12, 'calibration': 12, 'design': 8, 'electronics': 8, 'sensors': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-1570" class = 'collapse'>
+			</div>
+				<textarea id = "speech-1570" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1570">
+					<img id="start_img-1570" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1570">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-1573"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1573" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>As noted at the top of the second page:</p>
+
+<blockquote>
+  <p>$B_z^{0g} = a_{z1}-S_{zz}*1g$</p>
+</blockquote>
+
+<p>The "ground truth" z-axis acceleration (of an accelerometer sitting flat on the table) is $1g$, which is affected by the sensitivity of the accelerometer along that axis.  You could rewrite it as follows:</p>
+
+<p>$$Bias = a_{measured} - Sensitivity * a_{actual}$$</p>
+
+<p>Since you want to calculate the actual acceleration from the measured acceleration, you'd rewrite it like this:</p>
+
+<p>$$a_{actual}=\frac{a_{measured}-Bias}{Sensitivity}$$</p>
+
+<p>Or in terms of the original variables,</p>
+
+<p>$$a_{z1}^{corrected}=\frac{a_{z1}-B_z^{0g}}{S_{zz}}$$</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1573" data-toggle = "popover">
+				<p>user name : Ian</p>
+				<p> user reputation : 9640</p>
+				<p class = "tagcontent" id = "usertaginfo-1573">{'planning': 10, 'None': 809, 'power': 1, 'algorithm': 10, 'battery': 1, 'slam': 7, 'coverage': 10, 'mobile-robot': 9, 'sensors': 9}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1573">Load Comments</button></br>
+			<div id = "commentsection-1573" class = 'collapse'>
+			<div id = "comment-3295" class = "comment">
+				<p>Thank you, the results are better but still not that good. I found an enhanced better bias removal technique but don't know how to get some of the sensitivites. If you have the will I would very much be grateful for help. The question: http://robotics.stackexchange.com/questions/1579/accelerometer-calibration</p>
+			</div>
+			</div>
+				<textarea id = "speech-1573" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1573">
+					<img id="start_img-1573" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1573">Comment</button>
+			<br><div id = "ans-1574"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1574" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Ian's answer is mathematically correct.  However, on most processors division takes longer than multiplication.  So if you're at all pressed for processor resources you would want to precalculate a gain and offset for each channel, and apply it:</p>
+
+<p>$k_{zz} = \frac{1}{S_{zz}}$</p>
+
+<p>$b_{zz} = -\frac{B_z^{0g}}{S_{zz}}$</p>
+
+<p>$a_{z1}^{corrected} = k_{zz} a_{z1} + b_{zz}$</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1574" data-toggle = "popover">
+				<p>user name : TimWescott</p>
+				<p> user reputation : 1336</p>
+				<p class = "tagcontent" id = "usertaginfo-1574">{'None': 107}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1574">Load Comments</button></br>
+			<div id = "commentsection-1574" class = 'collapse'>
+			<div id = "comment-3294" class = "comment">
+				<p>Thanks for the optimization, will definatelly be aware of!</p>
+			</div>
+			</div>
+				<textarea id = "speech-1574" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1574">
+					<img id="start_img-1574" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1574">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

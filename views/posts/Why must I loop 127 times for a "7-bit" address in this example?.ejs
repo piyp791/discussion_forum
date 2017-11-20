@@ -1,0 +1,263 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Why must I loop 127 times for a "7-bit" address in this example?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-848" class = "post">
+			<h2>Question</h2>
+			<div id="vote-848" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 270</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Why must I loop 127 times for a "7-bit" address in this example?</h2>
+<p>I am learning about I2C on the Arduino. I was looking at a sample program to scan for I2C devices and saw this:</p>
+
+<pre><code>// This sketch tests the standard 7-bit addresses
+// from 0 to 127. Devices with higher bit address
+// might not be seen properly.
+</code></pre>
+
+<p>With the following code. </p>
+
+<pre><code>    for(address = 0; address &lt;= 127; address++ ) 
+      {
+        // The i2c_scanner uses the return value of
+        // the Write.endTransmisstion to see if
+        // a device did acknowledge to the address.
+        Wire.beginTransmission(address);
+        error = Wire.endTransmission();
+
+        if (error == 0)
+        {
+          Serial.print("I2C device found at address 0x");
+          if (address&lt;16) 
+            Serial.print("0");
+          Serial.print(address,HEX);
+          Serial.println(" !");
+    }
+}
+</code></pre>
+
+<p>As far as I understand it, a bit is just 1.  So, why how do 7 bits loop from 0 - 127? </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-848" data-toggle = "popover">
+				<p>user name : Kenn</p>
+				<p> user reputation : 143</p>
+				<p class = "tagcontent" id = "usertaginfo-848">{'nxt': 4, 'None': 0, 'i2c': 4, 'arduino': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-848">Load Comments</button></br>
+			<div id = "commentsection-848" class = 'collapse'>
+			<div id = "comment-2180" class = "comment">
+				<p>Why did this get down voted? The question is as clear as I could make given my understanding of the subject (which isn't much) and I learned a lot from the other posters responses.</p>
+			</div>
+			</div>
+				<textarea id = "speech-848" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-848">
+					<img id="start_img-848" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-848">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-849"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-849" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">9</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>If I understood your question correctly, you have a problem understanding binary numbers, right?</p>
+
+<p>Think of a decimal digit. A digit is only either of 0, 1, 2, 3, 4, 5, 6, 7, 8 or 9, right? But a 7-digit number can be between 0000000 and 9999999. I presume you do understand this.</p>
+
+<p>Now a decimal number, for example 2569 is actually a short form of writing like this (again in base 10 (i.e. decimal)):</p>
+
+<pre><code>9 * 10^0   +   6 * 10^1   +   5 * 10^2   +   2 * 10^3
+</code></pre>
+
+<p>If you have a number in another base, for example 1423 in base 5, then that is equivalent to writing the following (in base 10):</p>
+
+<pre><code>3 * 5^0   +   2 * 5^1   +   4 * 5^2   +   1 * 5^3
+</code></pre>
+
+<p>Which is basically the same, except all the <code>10</code>s are changed for <code>5</code>. That is, in the expanded form, each digit is multiplied by <code>b^p</code> where <code>b</code> is the base and <code>p</code> is its position in the number.</p>
+
+<p>Now you know that in base 10, you have digits from 0 to 9. Similarly, in base 5, you have digits from 0 to 4. In base 2, you have digits from 0 to 1, which in other words is just 0 and 1.</p>
+
+<p>So if you have a binary number like 1101, its expanded form is (in base 10):</p>
+
+<pre><code>1 * 2^0   +   0 * 2^1   +   1 * 2^2   +   1 * 2^3   = 13
+</code></pre>
+
+<p>If you have a 7 digit number in binary, which we normally call a 7-bit number, you can represent all numbers from 0000000 to 1111111. The first number corresponds to 0 and the second one corresponds to:</p>
+
+<pre><code>1*2^0 + 1*2^1 + 1*2^2 + 1*2^3 + 1*2^4 + 1*2^5 + 1*2^6
+= 1 + 2 + 4 + 8 + 16 + 32 + 64
+</code></pre>
+
+<p>or simply 127.</p>
+
+<hr>
+
+<p>P.S. The following loop:</p>
+
+<pre><code>for (address = 0; address &lt;= 127; address++)
+</code></pre>
+
+<p>loops 128 times! ;)</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-849" data-toggle = "popover">
+				<p>user name : Shahbaz</p>
+				<p> user reputation : 2615</p>
+				<p class = "tagcontent" id = "usertaginfo-849">{'None': 193, 'usb': 12, 'distributed-systems': 7, 'microcontroller': 1, 'embedded-systems': 7, 'servomotor': 1, 'platform': 18, 'can': 1, 'machine-learning': 12, 'real-time': 18, 'mobile-robot': 1, 'rs232': 12, 'software': 20}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-849" class = 'collapse'>
+			</div>
+				<textarea id = "speech-849" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-849">
+					<img id="start_img-849" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-849">Comment</button>
+			<br><div id = "ans-850"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-850" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>"7-bit" is like saying "7-digit", but implies base two instead of base ten.  So, a 7-bit number can represent $2^7=128$ values in the same way that a "conventional" 7-digit number can represent $10^7=10000000$ values.  </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-850" data-toggle = "popover">
+				<p>user name : Ian</p>
+				<p> user reputation : 9640</p>
+				<p class = "tagcontent" id = "usertaginfo-850">{'planning': 10, 'None': 809, 'power': 1, 'algorithm': 10, 'battery': 1, 'slam': 7, 'coverage': 10, 'mobile-robot': 9, 'sensors': 9}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-850" class = 'collapse'>
+			</div>
+				<textarea id = "speech-850" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-850">
+					<img id="start_img-850" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-850">Comment</button>
+			<br><div id = "ans-852"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-852" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The comments in this example are not quite clear. <a href="http://en.wikipedia.org/wiki/I%C2%B2C" rel="nofollow">I2C uses 7-bit or 10-bit addresses.</a> This example simply walks through the address possibilities of a 7-bits only, 0-127 decimal or (0x00-0x7f hex), and tries to read the status from each one. If 'no error' is encountered, it means a valid device(slave) was found at that address. It does not look at 10-bit addresses.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-852" data-toggle = "popover">
+				<p>user name : Spiked3</p>
+				<p> user reputation : 1881</p>
+				<p class = "tagcontent" id = "usertaginfo-852">{'None': 125}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-852" class = 'collapse'>
+			</div>
+				<textarea id = "speech-852" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-852">
+					<img id="start_img-852" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-852">Comment</button>
+			<br><div id = "ans-980"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-980" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>As mentioned above 7-bits means possibility of 128 slave devices attached to the same i2c bus.</p>
+
+<p>This loop is run 128 times(0-127) to determine how many slaves are present on the bus by asking them to respond(via ack) and prints whenever a device presence is detected. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-980" data-toggle = "popover">
+				<p>user name : Rahul Ranjan 1</p>
+				<p> user reputation : 21</p>
+				<p class = "tagcontent" id = "usertaginfo-980">{'None': 2}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-980">Load Comments</button></br>
+			<div id = "commentsection-980" class = 'collapse'>
+			<div id = "comment-2306" class = "comment">
+				<p>Thanks - I have learned much about that stuff since I got into it. It totally makes sense now.</p>
+			</div>
+			</div>
+				<textarea id = "speech-980" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-980">
+					<img id="start_img-980" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-980">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

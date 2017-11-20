@@ -1,0 +1,143 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to update the cartesian target when the robotic arm has a communication delay?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-12448" class = "post">
+			<h2>Question</h2>
+			<div id="vote-12448" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 37</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to update the cartesian target when the robotic arm has a communication delay?</h2>
+<p>My robot system uses a 3D mouse to teleoperate the robotic arm's TCP. The robot returns its TCP's position every 10-20 milliseconds to the remote PC. The remote PC returns the new destination based on the current position and an input from the 3D mouse (new destination = current position + delta input from the mouse).</p>
+
+<p>The problem is that the communication between the robot and the remote PC has delay around 100 milliseconds. Because of this condition, the robot can't generate a smooth trajectory, but it goes back and forth (jittered motion), or it repeats stop and start to move. I understand that this is because the current position is not updated in real-time and that leads to generating a wrong destination (even backward when the robot moves forward). </p>
+
+<p>One thing I already tried was to filter out the target if the length between it and the current position was smaller than the one between the previous destination and the current position. However, I couldn't succeed because the robot requires the target update every 10-20 msec, and if not sending (or if sending the previous destination again), the robot stopped to move. So, this solution didn't work.</p>
+
+<p>Does anyone know how to calculate/update the new destination every cycle in this condition? Do I need to forecast the new destination based on the past trajectory?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12448" data-toggle = "popover">
+				<p>user name : kangaroo</p>
+				<p> user reputation : 3</p>
+				<p class = "tagcontent" id = "usertaginfo-12448">{'control': 0, 'None': 0, 'inverse-kinematics': 0, 'communication': 0, 'industrial-robot': 0, 'kinematics': 0, 'robotic-arm': 0, 'motion-planning': 0, 'forward-kinematics': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-12448" class = 'collapse'>
+			</div>
+				<textarea id = "speech-12448" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12448">
+					<img id="start_img-12448" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12448">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-12449"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-12449" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You should update the robot references (and current position) independently if there is an update from the mouse or not. If there is an update (i.e. after 100 ms) you should update the value sent each 20ms to the robot. This way the robot shoudl never move backwards. I assume the backwards motion comeing from sending a new target position, and then sending the old (not updated) current position with a 0 delta. </p>
+
+<p>Furhter improvmnet can be made by sending velocity references not postion references. Instead of positon targets, get directions and amplitude from the 3D mouse and use it as a velocities reference. Instead of </p>
+
+<blockquote>
+  <p>new destination = current position + delta input</p>
+</blockquote>
+
+<p>use</p>
+
+<p><code>new velocity = mouse direction + amplitude</code></p>
+
+<p>This way you can control he velocity of the robot from the mouse which is helpful in many scenarios. A more advanced approach which is used by many is a hybrid approach. If the motion amplitude on the mouse is low, then it is a position control if the amplitude is high then it is a velocity reference. This alows both comfortable input of large amplitude motions and precise fine positioning. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12449" data-toggle = "popover">
+				<p>user name : 50k4</p>
+				<p> user reputation : 2800</p>
+				<p class = "tagcontent" id = "usertaginfo-12449">{'geometry': 0, 'None': 193, 'kinematics': 0, 'robotic-arm': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-12449">Load Comments</button></br>
+			<div id = "commentsection-12449" class = 'collapse'>
+			<div id = "comment-21899" class = "comment">
+				<p>The mouse update is faster than 20 ms and the input is not zero. Also, the velocity is fixed in my setting, so I want to know how to update the destination. How do you think in this case?</p>
+			</div>
+			<div id = "comment-21900" class = "comment">
+				<p>Could you please better describe the setup? Where is the delay? Who is acting as master in the communication? Which protocol is used? Which controller?</p>
+			</div>
+			</div>
+				<textarea id = "speech-12449" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12449">
+					<img id="start_img-12449" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12449">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,189 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Aligning datasets with drift
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8245" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8245" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 70</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Aligning datasets with drift</h2>
+<p>I have a dataset that contains position information from tracking a robot in the environment. The position data comes both from a very accurate optical tracking system (Vicon or similar) and an IMU. I need to compare both position data (either integrating the IMU or differentiating the optical tracking data).</p>
+
+<p>The main problem is that both systems have different reference frames, so in order to compare I first need to align both reference frames. I have found several solutions; the general problem of aligning two datasets seems to be called "the absolute orientation problem".</p>
+
+<p>My concern is that if I use any of these methods I will get the rotation and translation that aligns both datasets minimizing the error over the whole dataset, which means that it will also compensate up to some extent for the IMU's drift. But I am especially interested in getting a feeling of how much the IMU drifts, so that solution does not seem to be applicable.</p>
+
+<p>Anyone has any pointer on how to solve the absolute orientation problem when you do not want to correct for the drift?</p>
+
+<p>Thanks</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8245" data-toggle = "popover">
+				<p>user name : rhymeface</p>
+				<p> user reputation : 13</p>
+				<p class = "tagcontent" id = "usertaginfo-8245">{'None': 0, 'calibration': 2, 'imu': 2, 'sensors': 2, 'localization': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8245">Load Comments</button></br>
+			<div id = "commentsection-8245" class = 'collapse'>
+			<div id = "comment-13196" class = "comment">
+				<p>I'm not sure I understand the problem. Can you not just calculate the rotation and translation from one origin to the other, then apply that transform to all the points?</p>
+			</div>
+			<div id = "comment-13211" class = "comment">
+				<p>Yes, you cn use for example [Horn's method](http://www.mathworks.com/matlabcentral/fileexchange/26186-absolute-orientation-horn-s-method) ; the problem is that if one of the datasets has drift, you will calculate the transformation that minimizes the error through the whole dataset, meaning that the transformation will try to compensate for the drift</p>
+			</div>
+			</div>
+				<textarea id = "speech-8245" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8245">
+					<img id="start_img-8245" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8245">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8257"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8257" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Use a method to solve the absolute orientation problem so that you have a result for the IMU data that does compensate for drift. Separately, use a dead reckoning method (i.e., integration) to compute the result without compensating for drift. Then you can subtract the first result from the second result and the difference should be the drift you are looking for.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8257" data-toggle = "popover">
+				<p>user name : Brian Lynch</p>
+				<p> user reputation : 1237</p>
+				<p class = "tagcontent" id = "usertaginfo-8257">{'None': 85}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8257">Load Comments</button></br>
+			<div id = "commentsection-8257" class = 'collapse'>
+			<div id = "comment-13212" class = "comment">
+				<p>Could you elaborate on this? I can use the angular rate and/or acceleration, integrate to get position, then use Horn's method for absolute orientation to get the transformation in respect to the position data from the optical sensor. That transformation will be compensating for drift. And then?</p>
+			</div>
+			<div id = "comment-13220" class = "comment">
+				<p>As Chuck is suggesting, you probably need to expand your question with more information. How is your initial pose defined? If you have two sets of data as you described and no initial pose defined for each of them then this problem is impossible to solve.</p>
+			</div>
+			<div id = "comment-13221" class = "comment">
+				<p>I am assuming that your two data-sets are at least aligned in terms of samples (so the first sample for each of them is the initial condition -- and should be the same pose). They may be different poses when you examine the values of the data but they represent the same pose of the robot in the global frame. So just choose one of them as your reference frame and transform all of the data in the other set to that frame. Now you have both sets of data in the same reference frame and the paths will originate from the same position and orientation.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8257" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8257">
+					<img id="start_img-8257" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8257">Comment</button>
+			<br><div id = "ans-8264"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8264" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You gave two methods of comparison - "either integrating the IMU or differentiating the optical tracking data". I'm talking about one basic transform to convert from the vision frame to the global frame and vice-versa.</p>
+
+<p>One transform, that you calculate in advance, that relates one <em>origin</em> to another <em>origin</em>. You seem to be talking about methods of best-fit to get good correspondence, but I'm saying to use one fixed, somewhat generic transform. </p>
+
+<p>All you need to do is shift from one frame to another. This will preserve drift.</p>
+
+<p>:EDIT: </p>
+
+<p>I may have misunderstood the question, or your particular scenario. I thought that you could just go out and measure the location and orientation of the camera, measure the location and orientation of the robot, and make your own transform. </p>
+
+<p>In the event that you can't or don't want to (too time consuming, lots of trials, etc.), then you could "cheat" by exploiting the fact that drift is a slow event, where a very small error is added over a very large number of samples. </p>
+
+<p>What you might be able to try is to use the <a href="http://www.mathworks.com/matlabcentral/fileexchange/26186-absolute-orientation-horn-s-method" rel="nofollow">method you already found</a> and apply that to only the first few samples of your data set. </p>
+
+<p>If your robot is in motion from the start of the set, then the first sample should be enough to fix a position and the second sample should fix a heading/rotation. Use the resulting transform you get from only these two samples and apply that transform to all the others. Noise may be an issue, but that seems to be the point of what you're trying to do. </p>
+
+<p>If you think it's too noisy or there's too much error, then you could try the algorithm with the first 3 samples, or first 4, or 5, etc. As you've noted, the more samples you include the more this will account for drift, but if you can't physically measure the transform you don't really have any other option. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8264" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-8264">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8264">Load Comments</button></br>
+			<div id = "commentsection-8264" class = 'collapse'>
+			<div id = "comment-13217" class = "comment">
+				<p>The whole point is that the transformation that related one origin to another origin is unknown. This transformation (translation and orientation) is what I am trying to find.</p>
+			</div>
+			<div id = "comment-13218" class = "comment">
+				<p>@rhymeface - see the updated answer.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8264" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8264">
+					<img id="start_img-8264" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8264">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

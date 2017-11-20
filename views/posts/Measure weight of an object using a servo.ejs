@@ -1,0 +1,134 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Measure weight of an object using a servo
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9374" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9374" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 294</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Measure weight of an object using a servo</h2>
+<p>Assuming a quality industrial servo, would it possible to calculate the weight/resistance of a load? Maybe by comparing current draw in a holding position, or by the time it takes to lift/lower an object. Could it accurately measure grams, kilograms? What kind of tolerance could be achieved?</p>
+
+<p>I'm trying to eliminate the need for a dedicated weight measurement sensor.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9374" data-toggle = "popover">
+				<p>user name : skibulk</p>
+				<p> user reputation : 110</p>
+				<p class = "tagcontent" id = "usertaginfo-9374">{'None': 0, 'power': 0, 'arduino': 0, 'servomotor': 1, 'robotic-arm': 1, 'sensors': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-9374" class = 'collapse'>
+			</div>
+				<textarea id = "speech-9374" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9374">
+					<img id="start_img-9374" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9374">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9375"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9375" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>This is going to depend on the style of motor in the servo and the style of gearbox. If the servo can't be back-driven when unpowered, then it's likely some form of a worm gear assembly that will prevent static force transmission back to the motor. This means that you won't be able to tell weight by current draw for holding position because the holding current draw will (probably) be zero.</p>
+
+<p>You won't be able to tell anything about holding current draw if the motor is a stepper motor, either, because the stepper motor simply energizes a particular set of poles to full strength; any applied load under that holding torque is held, any applied load over causes the motor to slip. </p>
+
+<p>In both of those cases, you may still be able to glean some information about the load based on the torque required to <em>accelerate</em> the load, by $\tau = I\alpha$, but then this gives you the <em>moment of inertia</em> of the load, and not its weight. This is an important distinction because the moment of inertia depends on the <em>shape</em> of the load as well as its mass. </p>
+
+<p>If you know the shape of the load before hand, or if the load is something like a mass attached to a pulley (winch), then you can use the moment of inertia to calculate mass. If you don't know the shape, though, the moment of inertia alone doesn't get you enough information to find the mass. </p>
+
+<p>Finally, even if you have a back-drivable servo that is actuated by a continuous rotation motor (not stepper), the holding current is going to be based on the <em>torque</em> applied to the servo, where $\tau = mgL\sin{\theta}$. If you get into a situation where $\sin{\theta} = 0$, then you'll wind up with a zero applied torque to hold the load, and you won't be able to get a load mass estimation. </p>
+
+<p>In order to do what you want, you have to have a pretty specific situation setup where you have a lot of information in advance. That said, even if you <em>do</em> have all of that information, there are still other aspects that need to be taken into account: friction/damping losses in the gear box, gear box inertia, motor efficiency (input power (current@voltage) versus mechanical output power (torque@speed)), motor inertia, motor frictional and damping losses, etc.</p>
+
+<p>None of this means it <em>can't</em> be done, but it means that you have to have the system modeled well enough that you can take a "snapshot" of motor inputs and speed and be able to turn that into a useful output torque. The accuracy you can achieve is entirely dependent on your ability to model everything pertinent to the system and the system's ability to stay as-modeled (oil/grease doesn't age/cake, bearings don't wear, motor feedback stays true, etc.).</p>
+
+<p>You will probably find that the effort required to adequately model the servo system is more expensive (time and labor) than purchasing a weight sensor. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9375" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-9375">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-9375" class = 'collapse'>
+			</div>
+				<textarea id = "speech-9375" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9375">
+					<img id="start_img-9375" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9375">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

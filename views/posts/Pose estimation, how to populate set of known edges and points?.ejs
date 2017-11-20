@@ -1,0 +1,147 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Pose estimation, how to populate set of known edges and points?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-6315" class = "post">
+			<h2>Question</h2>
+			<div id="vote-6315" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 199</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Pose estimation, how to populate set of known edges and points?</h2>
+<p>I am building an estimator that solves for the camera pose relative to a reference frame which contains a known set of features and edges. Currently, the system works with an unscented kalman filter with four known points (red leds) in the reference frame. I am now hoping to improve robustness by adding edges to the model as well as robust features. I would like to add additional points that are uncovered by some opencv feature finding function (fast,cornerHarris,...).</p>
+
+<p>So far I found the paper "Fusing Points and Lines for High Performance Tracking" and "Robust Extended Kalman Filtering For Camera Pose Tracking Using 2D to 3D Lines Correspondences" which seem to detail how to fuse edge and feature matching for pose estimation.</p>
+
+<p>Is there a strategy to populate the known set of edges and features when it is impractical to measure them with a ruler/tape measure? My first thought is to start with a small known set of features, my red leds, then run some slam algorithm and keep all features/edges that have some minimum certainty.</p>
+
+<p>Thanks a bunch!</p>
+
+<p>I have misunderstood the RANSAC algorithm. This is not appropriate for my application. </p>
+
+<p>For those interested, I am hoping to use a similar approach to the one presented in the following paper.</p>
+
+<p>Youngrock Yoon, Akio Kosaka, Jae Byung Park and Avinash C. Kak. "A New Approach to the Use of Edge Extremities for Model-based Object Tracking." International Conference on Robotics and Automation, 2005.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6315" data-toggle = "popover">
+				<p>user name : holmeski</p>
+				<p> user reputation : 1338</p>
+				<p class = "tagcontent" id = "usertaginfo-6315">{'pose': 3, 'None': 101, 'computer-vision': 3, 'kalman-filter': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-6315" class = 'collapse'>
+			</div>
+				<textarea id = "speech-6315" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6315">
+					<img id="start_img-6315" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6315">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-6369"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6369" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>First some terminology, finding camera pose is known in computer vision as external camera calibration. Since you mentioned Kalman filter, I assume you need to need to "update" the so-called external parameters of the camera continously (i.e. the camera is moving). </p>
+
+<p>If the camera moves in front of the reference frame you might use the usual chessboard pattern as a calibration rig. If however the camera moves about the reference frame, you might want to use other object and test robust feature detectors (like SIFT)  but you have to make sure your object doesn't have symmetrics that might lead to ambiguities..</p>
+
+<p>In case you don't have control over the envionment, there are the so-called automatic calibraiton methods (see reference). The problem with this approach is that you have the assumption that the features you find in your envionment belongs to rigid bodies (on Mars you can make such assumption safely ;) </p>
+
+<p>References:</p>
+
+<ul>
+<li>SIFT <a href="http://en.wikipedia.org/wiki/Scale-invariant_feature_transform" rel="nofollow">http://en.wikipedia.org/wiki/Scale-invariant_feature_transform</a></li>
+<li>OpenCV Camera Calibration <a href="http://docs.opencv.org/trunk/modules/calib3d/doc/camera_calibration_and_3d_reconstruction.html" rel="nofollow">http://docs.opencv.org/trunk/modules/calib3d/doc/camera_calibration_and_3d_reconstruction.html</a></li>
+<li>Carrera et al, "SLAM-Based Automatic Extrinsic Calibration of a Multi-Camera Rig", 2011</li>
+<li>Miksch et al, "Automatic Extrinsic Camera Self-Calibraiton Based on Homography and Epipolar Geometry", 2010</li>
+</ul>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6369" data-toggle = "popover">
+				<p>user name : Haider</p>
+				<p> user reputation : 44</p>
+				<p class = "tagcontent" id = "usertaginfo-6369">{'None': 2}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-6369">Load Comments</button></br>
+			<div id = "commentsection-6369" class = 'collapse'>
+			<div id = "comment-9186" class = "comment">
+				<p>I am using a model-based object tracker. The model of my object currently contains four points. I am hoping to add more points and some edges to my model. I am looking for a method to populate my model with new features and edges.</p>
+			</div>
+			</div>
+				<textarea id = "speech-6369" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6369">
+					<img id="start_img-6369" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6369">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

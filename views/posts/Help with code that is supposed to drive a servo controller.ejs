@@ -1,0 +1,238 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Help with code that is supposed to drive a servo controller
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-6601" class = "post">
+			<h2>Question</h2>
+			<div id="vote-6601" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 513</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Help with code that is supposed to drive a servo controller</h2>
+<p>I posted a similar question before as I was just getting started with the project but I wasn't specific enough so got a weak response from the SE community. But now I am at a point where I have Python code which is supposed to rotate a servo through Pololu's Maestro Serial servo controller (<a href="https://www.pololu.com/product/207" rel="nofollow">https://www.pololu.com/product/207</a>). Based on the "Serial Interface" section of the user's guide (<a href="https://www.pololu.com/product/207/resources" rel="nofollow">https://www.pololu.com/product/207/resources</a>), I sent a sequence of numbers starting with decimal 170 and 12, which are the "first command byte" and the "device number data byte", respectively. The user guide says that 12 is the default device number, so I tried changing it to 18 because that's how many servos my servo controller can drive. But that doesn't make much difference because the servo doesn't rotate at all. The numbers after that are the same as the example from the user's guide. I am not sure what the 4, 112 and 46 are doing, but the 0 targets the servo port "0" on the servo controller (the port to which my servo is connected). The servo doesn't move, regardless of what sequence of numbers I put in. I have very little experience, so if you guys could point me in the right direction or at least point to some useful resources on the web, I'd be very grateful.</p>
+
+<pre><code>import serial
+import struct
+import time
+import Adafruit_BBIO.UART as UART
+
+drive_Motor_Port = serial.Serial(port = "/dev/ttyO1", baudrate=9600)
+drive_Motor_Port.close()
+drive_Motor_Port.open()
+
+drive_Motor_Port.write(chr(170)); # User guide says we must start with OxAA = 170
+drive_Motor_Port.write(chr(18)); # Device number
+drive_Motor_Port.write(chr(04));
+drive_Motor_Port.write(chr(00));
+drive_Motor_Port.write(chr(112));
+drive_Motor_Port.write(chr(46));
+
+time.sleep(5);
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6601" data-toggle = "popover">
+				<p>user name : vasiq shair</p>
+				<p> user reputation : 6</p>
+				<p class = "tagcontent" id = "usertaginfo-6601">{'python': 0, 'None': 0, 'microcontroller': 1, 'motor': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-6601" class = 'collapse'>
+			</div>
+				<textarea id = "speech-6601" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6601">
+					<img id="start_img-6601" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6601">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-6616"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6616" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>According to the <a href="https://www.pololu.com/file/0J37/ssc03a_guide.pdf" rel="nofollow">manual</a> you link, byte 3 '04' is the command. </p>
+
+<blockquote>
+  <p>Command 4: Set Position, Absolute (2 data bytes)
+  This command allows direct control of the internal servo position variable. Neutral,
+  range, and direction settings do not affect this command. Data 2 contains the lower 7
+  bits, and Data 1 contains the upper bits. The range of valid values is 500 through 5500.
+  Setting a servo position will automatically turn the servo on.</p>
+</blockquote>
+
+<p>if the valid values are from 500 to 5500 the values you have in Byte 5 and 6 are out of range, and the manual is not clear as to the effect this will have. </p>
+
+<p>PS Doesn't it say byte 1 is supposed to be 128?</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6616" data-toggle = "popover">
+				<p>user name : Frank</p>
+				<p> user reputation : 118</p>
+				<p class = "tagcontent" id = "usertaginfo-6616">{'None': 8, 'design': 4}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-6616" class = 'collapse'>
+			</div>
+				<textarea id = "speech-6616" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6616">
+					<img id="start_img-6616" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6616">Comment</button>
+			<br><div id = "ans-7353"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7353" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Have you figured out yet that these two devices use incompatible protocols?:</p>
+
+<ul>
+<li>Pololu Mini Maestro 18-Channel USB Servo Controller <a href="https://www.pololu.com/product/1354" rel="nofollow">https://www.pololu.com/product/1354</a></li>
+<li>Pololu 8-channel Micro Serial Servo Controller <a href="https://www.pololu.com/product/207" rel="nofollow">https://www.pololu.com/product/207</a></li>
+</ul>
+
+<p>I'm guessing that you're using a Pololu Mini Maestro 18-Channel USB Servo Controller, connected to UART1 of a Beaglebone Black,
+following the instructions at
+<a href="https://learn.adafruit.com/setting-up-io-python-library-on-beaglebone-black/uart" rel="nofollow">"Setting up IO Python Library on BeagleBone Black: UART"</a>.</p>
+
+<p>If I were you, here are the first few things I'd do to debug the problem of "servo doesn't move":</p>
+
+<ul>
+<li><p>I would print out the pinout and pin labels of the hardware on paper -- see <a href="https://www.pololu.com/docs/0J40/1.b" rel="nofollow">"Mini Maestro Pinout and Components"</a></p></li>
+<li><p>Is the ground of the Maestro connected to the ground of the BeagleBone?</p></li>
+<li><p>To rule out power interference, does it work any better when I hook it up to a test jig with an independent, overkill power supply for each part?</p>
+
+<ul>
+<li>5V, at least 2A, power to the BeagleBone barrel connector</li>
+<li>5V to 16 V, at least 500 mA, power to the Pololu Maestro (see <a href="https://www.pololu.com/docs/0J40/7.a" rel="nofollow">"Powering the Maestro"</a>)</li>
+<li>5V to 16 V, at least 2A, power to the servos (check servo datasheet for details)</li>
+<li>(In particular, trying to run all 3 using the power from a single laptop USB port is unlikely to work).</li>
+<li>See <a href="https://www.pololu.com/docs/0J40/7.a" rel="nofollow">"Powering the Maestro"</a></li>
+</ul></li>
+<li><p>Check power between VCC and GND on the Maestro board; between VCC and GND on the 3-wire servo cable, and between VCC and GND on the Beaglebone -- ideally check that voltage with an o'scope while the test program is running, but even a multimeter is enough to diagnose some problems.</p></li>
+<li><p>Are the LEDs blinking the way that the <a href="https://www.pololu.com/docs/0J40/1.c" rel="nofollow">"Indicator LEDs"</a> section of the manual says they should?</p></li>
+<li><p>I might consider disconnecting the Beaglebone entirely, and trying to get an Arduino to control the Maestro over the "serial" pins -- see <a href="https://www.pololu.com/docs/0J40/5.h.5" rel="nofollow">"Arduino library"</a>. That would at least distinguish between a problem in the Beaglebone software vs a problem in the power supply hardware.</p></li>
+<li><p>Next I would try disconnecting the Beaglebone entirely, and seeing if I could get a servo to turn with the Maestro Control Center running on my Linux laptop (or a Windows laptop or a Mac OSX laptop), as described in <a href="https://www.pololu.com/docs/0J40/3.b" rel="nofollow">"Installing Linux Drivers and Software"</a>.</p></li>
+<li><p>If I could get a laptop to make the servos turn with USB control, I would use that laptop with USB control to reset the Maestro to the default settings, as described in <a href="https://www.pololu.com/docs/0J40/3.c" rel="nofollow">"Using the Maestro without USB"</a>.</p></li>
+<li><p>After getting a servo to move while that servo is connected to a Maestro which is in turn connected to a USB cable to a laptop, and resetting everything to the default settings, I would disconnect the USB cable and re-connect the GND and other pins between the Maestro and the Beaglebone -- see <a href="https://www.pololu.com/docs/0J40/7.c" rel="nofollow">"Connecting to a Microcontroller"</a>.</p></li>
+</ul>
+
+<p>Then I would try to make a program on the Beaglebone as close as possible to the example code ( <a href="https://www.pololu.com/docs/0J40/5.h.3" rel="nofollow">PIC18F4550</a>, etc. ):</p>
+
+<pre><code>import serial
+import struct
+import time
+import Adafruit_BBIO.UART as UART
+# warning: untested code
+def main():
+    drive_Motor_Port = serial.Serial(port = "/dev/ttyO1", baudrate=9600)
+    drive_Motor_Port.close()
+    drive_Motor_Port.open()
+    while True:
+        # move to position 1000 us (typical minimum for servos)
+        drive_Motor_Port.write(chr(0xAA)) # User guide says we must start with OxAA.
+        drive_Motor_Port.write(chr(0x0c)) # "The Pololu Protocol device number is 12" -- https://www.pololu.com/docs/0J40/3.c
+        drive_Motor_Port.write(chr(0x04)) # command 4: set target
+        drive_Motor_Port.write(chr(0x00)) # channel
+        # target position 0x1f20 = 1000 us
+        drive_Motor_Port.write(chr(0x20))
+        drive_Motor_Port.write(chr(0x1f))
+        time.sleep(2)
+        #
+        # move to position 1500 us (typical neutral for servos)
+        drive_Motor_Port.write(chr(0xAA)) # User guide says we must start with OxAA.
+        drive_Motor_Port.write(chr(0x0c)) # "The Pololu Protocol device number is 12" -- https://www.pololu.com/docs/0J40/3.c
+        drive_Motor_Port.write(chr(0x04)) # command 4: set target
+        drive_Motor_Port.write(chr(0x00)) # channel
+        # target position 0x2e70 = 1000 us
+        drive_Motor_Port.write(chr(0x70))
+        drive_Motor_Port.write(chr(0x2e))
+        time.sleep(2)
+
+main()
+</code></pre>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7353" data-toggle = "popover">
+				<p>user name : David Cary</p>
+				<p> user reputation : 3365</p>
+				<p class = "tagcontent" id = "usertaginfo-7353">{'quadcopter': 38, 'stepper-driver': 9, 'None': 256, 'multi-rotor': 2, 'force-sensor': 9, 'stability': 36, 'industrial-robot': 1, 'design': 18, 'motor': 2, 'stepper-motor': 9}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7353" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7353" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7353">
+					<img id="start_img-7353" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7353">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,282 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Quadcopter: Stabilization along the z-axis (for holding altitude)
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-4409" class = "post">
+			<h2>Question</h2>
+			<div id="vote-4409" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">7</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 1168</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Quadcopter: Stabilization along the z-axis (for holding altitude)</h2>
+<p>I recently spent some work on my quadcopter firmware.
+The model is stabilizing its attitude relatively well now.
+However I noticed, that it is changing its altitude sometimes (maybe pressure changes, wind or turbulence).
+Now I want to get rid of these altitude drops and found not much literature.
+My approach is using the accelerometer:</p>
+
+<ul>
+<li>Calculates the current g-force of the z-axis</li>
+<li>if the g-force is > 0.25 g and longer than 25 ms, then I feed the accelerometer term (cm per s ) into the pid</li>
+<li>the output is sent to the motors</li>
+</ul>
+
+<p>The model now reacts when it is falling down with an up-regulation of the motors.
+However, I am not sure, whether it is smart to feed the current acceleration into the regulator and I currently wonder, whether there is a smarter method to deal with sudden and smaller changes in altitude.</p>
+
+<p>Current code: </p>
+
+
+
+<pre><code># define HLD_ALTITUDE_ZGBIAS 0.25f
+# define HLD_ALTITUDE_ZTBIAS 25
+
+const float fScaleF_g2cmss = 100.f * INERT_G_CONST;
+int_fast16_t iAccZOutput = 0; // Accelerometer
+
+// Calc current g-force
+bool bOK_G;
+float fAccel_g = Device::get_accel_z_g(m_pHalBoard, bOK_G); // Get the acceleration in g
+
+// Small &amp; fast stabilization using the accelerometer
+static short iLAccSign = 0; 
+if(fabs(fAccel_g) &gt;= HLD_ALTITUDE_ZGBIAS) {
+  if(iLAccSign == 0) {
+    iLAccSign = sign_f(fAccel_g);
+  }
+
+  // The g-force must act for a minimum time interval before the PID can be used
+  uint_fast32_t iAccZTime = m_pHalBoard-&gt;m_pHAL-&gt;scheduler-&gt;millis() - m_iAccZTimer;
+  if(iAccZTime &lt; HLD_ALTITUDE_ZTBIAS) {
+     return; 
+  }
+
+  // Check whether the direction of acceleration changed suddenly
+  // If so: reset the timer
+  short iCAccSign = sign_f(fAccel_g);
+  if(iCAccSign != iLAccSign) {
+    // Reset the switch if acceleration becomes normal again
+    m_iAccZTimer = m_pHalBoard-&gt;m_pHAL-&gt;scheduler-&gt;millis();
+    // Reset the PID integrator
+    m_pHalBoard-&gt;get_pid(PID_ACC_RATE).reset_I();
+    // Save last sign
+    iLAccSign = iCAccSign;
+    return;
+  }
+
+  // Feed the current acceleration into the PID regulator
+  float fAccZ_cmss = sign_f(fAccel_g) * (fabs(fAccel_g) - HLD_ALTITUDE_ZGBIAS) * fScaleF_g2cmss;
+  iAccZOutput = static_cast&lt;int_fast16_t&gt;(constrain_float(m_pHalBoard-&gt;get_pid(PID_ACC_RATE).get_pid(-fAccZ_cmss, 1), -250, 250) );
+} else {
+  // Reset the switch if acceleration becomes normal again
+  m_iAccZTimer = m_pHalBoard-&gt;m_pHAL-&gt;scheduler-&gt;millis();
+  // Reset the PID integrator
+  m_pHalBoard-&gt;get_pid(PID_ACC_RATE).reset_I();
+}
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4409" data-toggle = "popover">
+				<p>user name : dgrat</p>
+				<p> user reputation : 213</p>
+				<p class = "tagcontent" id = "usertaginfo-4409">{'quadcopter': 14, 'magnetometer': 1, 'None': 0, 'ardupilot': 4, 'orientation': 0, 'accelerometer': 4, 'arduino': 2, 'multi-rotor': 7, 'c++': 1, 'mavlink': 1, 'calibration': 1, 'compass': 1, 'sensors': 5, 'navigation': 3, 'gyroscope': 1, 'gps': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-4409">Load Comments</button></br>
+			<div id = "commentsection-4409" class = 'collapse'>
+			<div id = "comment-6974" class = "comment">
+				<p>How about using a sonar pointing down to measure the altitude?</p>
+			</div>
+			<div id = "comment-6975" class = "comment">
+				<p>Why do you use a threshold of 0.4g? Why not, as you say, always send the Z acceleration into the PID?</p>
+			</div>
+			<div id = "comment-6976" class = "comment">
+				<p>The sonar is working just for 6m and I wanted to use the accelerometer just for sudden and small changes.
+
+I thought I should use a cutoff, because the accelerometer is prone to sensor noise. Furthermore the PID should just work when there is a bigger change, not for every small movement.</p>
+			</div>
+			<div id = "comment-6991" class = "comment">
+				<p>Run the accelerometer data through a digital low-pass filter?</p>
+			</div>
+			<div id = "comment-6992" class = "comment">
+				<p>Yep, the get_accel_z_g() value is already filtered. At the moment I made some adaptations. Only if I measure an acceleration for more than 25 ms in one direction the PID is used. This is reducing responses to events like hits (or touching the ground).</p>
+			</div>
+			<div id = "comment-6994" class = "comment">
+				<p>Before you can hold an altitude with any accuracy, you need to be able to *measure* your altitude with accuracy.  Before you can react quickly, you need to *measure* quickly.  Assuming that you can instantaneously determine your altitude (and alter your desired thrust equally so), how long will it take your motors to speed up and how long will it take for that to have an effect on the mass & velocity of the quadcopter?  What is the difference between that optimal latency and the latency you see now?</p>
+			</div>
+			<div id = "comment-9455" class = "comment">
+				<p>A tad on the pricy side at ~$90 this [LIDAR rangefinder](https://www.sparkfun.com/products/13167) is good to a range of ~40m (~130ft)</p>
+			</div>
+			<div id = "comment-9820" class = "comment">
+				<p>For small changes I guess you could use a low pass filter</p>
+			</div>
+			</div>
+				<textarea id = "speech-4409" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4409">
+					<img id="start_img-4409" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4409">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-6562"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6562" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Cannot comment yet.</p>
+
+<p>I would add a gyro and use a complementary or Kalman filter. Accelerometers are <strong>right, on average</strong>, but <em>wrong, right now</em>. Gyros are <strong>right, right now</strong>, but are <em>wrong, on average</em>. The filter weights the two inputs based on how wrong they are and outputs a value somewhere between <strong>right</strong> and <strong>right now</strong>.</p>
+
+<p><img src="https://i.stack.imgur.com/mI8h7.png" alt="enter image description here"></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6562" data-toggle = "popover">
+				<p>user name : Jon</p>
+				<p> user reputation : 146</p>
+				<p class = "tagcontent" id = "usertaginfo-6562">{'None': 3}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-6562">Load Comments</button></br>
+			<div id = "commentsection-6562" class = 'collapse'>
+			<div id = "comment-9432" class = "comment">
+				<p>I don't see how the gyro can help in this case, since it measures angular speed and not altitude variation. The accelerometer does not give a direct measurement of the altitude but can provide feedback on linear movements through integration, well barely...</p>
+			</div>
+			<div id = "comment-9433" class = "comment">
+				<p>If you zero a gyro and an accelerometer on your copter, then turn it 45 degrees on an axis, the gyro will read 45 right now, then start to be wrong. The accelerometer will be wrong, but soon show "down" to be at 45. It is likely your accelerometer is responding to unfiltered vibration. The gyro and filter will know that there is no reason for the accelerometer reading and correct it.</p>
+			</div>
+			<div id = "comment-9435" class = "comment">
+				<p>Likewise, when the gyro says the copter is upside-down, the accelerometer knows down is still down.</p>
+			</div>
+			<div id = "comment-9436" class = "comment">
+				<p>Ok, you've mentioned the classical complementary filter adjustment for correcting acceleration readings, but I think here it's more the point to use the acceleration to get altitude estimation. I mean, "imagine we have good acceleration values then what we need here is..."</p>
+			</div>
+			<div id = "comment-9437" class = "comment">
+				<p>When the copter tilts, accelerometer-z changes and the copter sees "falling" that isn't happening. He's already coerced it to work with the null-zone but wants it to stop getting confused.</p>
+			</div>
+			<div id = "comment-9439" class = "comment">
+				<p>I know that gyro is crucial to give correct orientation and estimation of the acceleration, but this is done in the attitude control where it is normally implemented the complementary (and/or Kalman) filter. I think drat has already done this. Here we should consider ourselves to be still in the "thought experiment" phase for what concerns the control problem of altitude variation by means of acceleration data - the ones already corrected by attitude control.</p>
+			</div>
+			<div id = "comment-9440" class = "comment">
+				<p>He says that it's basically working but "sometimes" doesn't. Since he's using a cutoff factor for accel-z (0.25) which can be incorrectly interpreted as a fall if the copter is falling and tilted, accelerating "up" to fix it, when up isn't "up", produces linear velocity, not altitude. The gyro will keep the accelerometer more or less level, allowing it to correct the real z-axis. The value going to the PID is not always 100% right.</p>
+			</div>
+			<div id = "comment-9441" class = "comment">
+				<p>A significant gust of wind could turn it sideways enough to make z < 0.25, causing it to accelerate "sideways" as it plummets to the ground on it's side. If it gets turned completely upside down(z = -1), since z < 0.25 it will accelerate into the earth, upside-down.</p>
+			</div>
+			<div id = "comment-9442" class = "comment">
+				<p>I think I see what you're saying. To use just an accelerometer, he would at least need to use X and Y to ignore z when appropriate. True?</p>
+			</div>
+			<div id = "comment-9443" class = "comment">
+				<p>My assumption is that attitude is already taken into account; maybe it is so obvious to me that I overlooked the fact that drat might have not considered it in the control (of course I didn't go into the code). He used the term "calculate z-component" rather than "acquire z-component"; that was my point. My last words on that :)</p>
+			</div>
+			<div id = "comment-10593" class = "comment">
+				<p>Altitude control is usually done with sonic, infrared or barometric sensors. A gyro and accelerometer can't really do much in this aspect as you want to control a linear position. You could do an open loop control where your thrust is the projection of the thrust needed to hover which could be adequate</p>
+			</div>
+			</div>
+				<textarea id = "speech-6562" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6562">
+					<img id="start_img-6562" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6562">Comment</button>
+			<br><div id = "ans-7631"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7631" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Two approaches are possible:</p>
+
+<ol>
+<li><p>Combine the altitude (GPS or pressure) and vertical acceleration sensors' data to calculate a better geometric altitude, and tune your vertical controller using this feedback in your loop.</p></li>
+<li><p>Employ a stability augmentation loop for the z-acceleration (in body frame). In this case, if your vehicle swings, as shown on Jon's answer, your vehicle will sense a z-acceleration and will try to correct that. This may not be best practice to work on the z-acceleration in <strong>body frame</strong>, as it will couple the roll with altitude as the aircraft rolls and moves around. So a trigonometric conversion can be done to convert the a_z data (in body frame) into a_z_inertial (in Inertial frame, e.g. in gravity). It's best to work this on paper (you have both roll and pitch, affecting the result). </p></li>
+</ol>
+
+<p>About the current algorithm:</p>
+
+<ol>
+<li><p>Filter your accelerations. Try a running average (low pass filter) of your accelerations, to get rid of the noise. It will probably be OK to have a running average of the last 0.2 second, for example.</p></li>
+<li><p>Do not use cut-off, at all. It makes life non-linear, and it's not good. Let the controller handle all the events, and let it react to the small errors, before they grow high.</p></li>
+</ol>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7631" data-toggle = "popover">
+				<p>user name : G rkan  etin</p>
+				<p> user reputation : 284</p>
+				<p class = "tagcontent" id = "usertaginfo-7631">{'None': 13}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7631" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7631" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7631">
+					<img id="start_img-7631" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7631">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

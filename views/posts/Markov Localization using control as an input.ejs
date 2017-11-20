@@ -1,0 +1,155 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Markov Localization using control as an input
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11685" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11685" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 52</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Markov Localization using control as an input</h2>
+<p>When using Hidden Markov Models in Global Localization problems on the prediction step there is a need to calculate the probability of robot's pose given the actions (control <em>u</em>, odometry):</p>
+
+<pre><code>p(Xt|Xt 1, Ut 1)
+</code></pre>
+
+<p>where xt-1 and ut-1 are the robot's previous pose and control.</p>
+
+<p>There are different tutorials (this <a href="http://www1.cs.columbia.edu/~allen/F15/NOTES/localization_1_to_4.pdf" rel="nofollow noreferrer">one</a> for instance) and articles on the web with the examples, but most of these examples are for the 1D localization problem where action simply equals to 1 if the odometry is perfect.</p>
+
+<p>What if I am considering 2D space?
+For example in 1D example for time step T=1 I would compute like:</p>
+
+<pre><code>p(Xt = 2 | Xt-1 = 1, Ut = 1) = 1
+</code></pre>
+
+<p>How should I do the computations for 2D case?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11685" data-toggle = "popover">
+				<p>user name : Fabi</p>
+				<p> user reputation : 8</p>
+				<p class = "tagcontent" id = "usertaginfo-11685">{'odometry': 1, 'None': 0, 'probability': 1, 'localization': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11685" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11685" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11685">
+					<img id="start_img-11685" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11685">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-11687"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11687" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><h2>Multi-dimensional models</h2>
+
+<p>In the 2D case, $x_t$ is a vector with two components (e.g. position in $x$, $y$), but why stop at 2D? Often, the state vector $x_t$ will have your position in two or three dimensions, in addition to velocity and acceleration. Oftentimes we also include angular state in $x_t$ such as the heading and angular rate of change. </p>
+
+<p>Your control is also often multi-dimensional, for example if you have a wheeled robot it could be the velocity of the left and right wheels. </p>
+
+<h2>Linear case (Kalman filter!)</h2>
+
+<p>Typically we have a model that maps the previous state and control actions to a new state and control action. In the linear, time invariant case, we have matrices $A$ and $B$, and 
+$$x_t = A x_{t-1} + B u_t $$
+in this setting we would probably use a <a href="http://www.cs.unc.edu/~welch/kalman/" rel="nofollow noreferrer">Kalman filter</a> to keep track of our belief about the distribution of $x_t$.  The Kalman filter is nice because it gives a closed form solution to the estimation problem which is correct if noise/uncertainty is Gaussian. </p>
+
+<h2>More general models</h2>
+
+<p>The markov approach (as I understand it) let's us move past these assumptions (linearity and Gaussian noise) by using approximation methods such as particle filters to estimate the belief distribution of our state $x_t$. The markov assumption is saying that we only need the distribution of $x_t$ (and don't need to use the distribution of $x_{t-1},x_{t-2},\dots$) when computing the distribution of $x_{t+1}$. I think the figure on slide 30 of the link you posted illustrates this quite well. </p>
+
+<h2>Discrete (small) state space</h2>
+
+<p>As for your last question about how to find your belief: it depends on your application. If your state/controls are discrete, and you don't have very many of them, you can explicitly write down all of the transition probabilities $p(x_t \mid x_{t-1}, u_t)$ for every possible $x_t$, $x_{t-1}$ and $u_t$. Then when you do your estimation, you just look up the appropriate value. </p>
+
+<h2>Further reading</h2>
+
+<p>Typically states are continuous, or there are too many to compute/store every possible transition.  If you're just getting started in this, try a Kalman filter and see how that works for you (there are many tutorials on them). If you want to see what else is out there, I recommend the <a href="http://www.probabilistic-robotics.org/" rel="nofollow noreferrer">Probabilistic Robotics</a> book, which gives a still quite good overview of different approaches (including Kalman filters) for this localization problem. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11687" data-toggle = "popover">
+				<p>user name : combo</p>
+				<p> user reputation : 230</p>
+				<p class = "tagcontent" id = "usertaginfo-11687">{'None': 10}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11687" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11687" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11687">
+					<img id="start_img-11687" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11687">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

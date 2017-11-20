@@ -1,0 +1,169 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to get pure end-effector translation through Jacobian?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-4496" class = "post">
+			<h2>Question</h2>
+			<div id="vote-4496" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 281</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to get pure end-effector translation through Jacobian?</h2>
+<p>I have a 7 DOF arm that I am controlling with joint velocities computed from the Jacobian in the standard way.  For example:
+$$
+{\Large J} = \begin{bmatrix} J_P \\J_O
+\end{bmatrix}
+$$
+$$
+J^{\dagger} = J^T(JJ^T)^{-1}
+$$
+$$
+\dot{q}_{trans} = J^{\dagger}_P v_{e_{trans}}
+$$
+$$
+\dot{q}_{rot} = J^{\dagger}_O v_{e_{rot}}
+$$
+$$
+\dot{q} = \dot{q}_{trans} + \dot{q}_{rot}
+$$</p>
+
+<p>However, when specifying only translational velocities, the end-end effector also rotates.  I realized that I might be able to compute how much the end-effector would rotate from the instantaneous $\dot{q}$, then put this through the Jacobian and subtract out its joint velocities.  </p>
+
+<p>So I would do this instead of using the passed in $v_{e_{rot}}$:</p>
+
+<p>$$
+v_{e_{rot}} =  R(q) - R(q+\dot{q}_{trans})
+$$</p>
+
+<p>Where $R(q)$ computes the end-effector rotation for those joint angles.  </p>
+
+<p>Is this OK to do, or am I way off base?  Is there a simpler way?  </p>
+
+<p>I am aware that I could also just compute the IK for a point a small distance from the end-effector with no rotation, then pull the joint velocities from the delta joint angles.  And that this will be more exact.  However, I wanted to go the Jacobian route for now because I think it will fail more gracefully.</p>
+
+<p>A side question, how do I compute $R(q) - R(q+\dot{q}_{trans})$ to get global end-effector angular velocity?  My attempts at converting a delta rotation matrix to Euler angles yield wrong results.  I did some quick tests and implemented the above procedure to achieve pure end-effector rotation while maintaining global position.  (This is easier because $T(q) - T(q+\dot{q}_{rot})$ is vector subtraction.)  And it did kind of work.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4496" data-toggle = "popover">
+				<p>user name : Ben</p>
+				<p> user reputation : 3608</p>
+				<p class = "tagcontent" id = "usertaginfo-4496">{'None': 277, 'inverse-kinematics': 3, 'accelerometer': 5, 'calibration': 10, 'kinematics': 14, 'robotic-arm': 8, 'jacobian': 6, 'dh-parameters': 8, 'imu': 5, 'sensors': 5}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-4496" class = 'collapse'>
+			</div>
+				<textarea id = "speech-4496" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4496">
+					<img id="start_img-4496" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4496">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-4519"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4519" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You don't need the positional IK to solve this problem. All that is required is, that your Jacobian is <em>invertible</em>, i.e. keep away from sinuglar joint configurations. Consider, how the end effector's velocity is formed:</p>
+
+<p>$$
+\begin{bmatrix}
+v_{trans} \\
+v_{rot}
+\end{bmatrix} = J(\boldsymbol{q})\cdot \boldsymbol{\dot{q}}
+$$</p>
+
+<p>So, if I understand correctly, you want to solve the above equation with $v_{rot} = 0$ for $\boldsymbol{\dot{q}}$:</p>
+
+<p>$$
+\boldsymbol{\dot{q}} = J(\boldsymbol{q})^{-1}\begin{bmatrix} v_{trans} \\ 0 \end{bmatrix}
+$$</p>
+
+<p>Keep in mind that -- in general -- you cannot nicely separate the joints in those joints which command translation and those which command rotation of the end effector. After all, how joints are mapped to the end effector's position and angle is determined by the mechanism's structure, which dictates the Jacobian's structure (and its singularites). For example, an arm with only rotational joints (like a typical industrial robot) needs to move all its motors in some kind of "compensating" way to produce pure end effector translation.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4519" data-toggle = "popover">
+				<p>user name : Daniel Eberts</p>
+				<p> user reputation : 546</p>
+				<p class = "tagcontent" id = "usertaginfo-4519">{'None': 32, 'particle-filter': 17, 'localization': 17}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-4519">Load Comments</button></br>
+			<div id = "commentsection-4519" class = 'collapse'>
+			<div id = "comment-7127" class = "comment">
+				<p>Doh! Of course!  I was computing the translational and rotational components separately.  I should have combined them together.</p>
+			</div>
+			</div>
+				<textarea id = "speech-4519" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4519">
+					<img id="start_img-4519" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4519">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

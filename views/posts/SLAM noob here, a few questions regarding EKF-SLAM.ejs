@@ -1,0 +1,157 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>SLAM noob here, a few questions regarding EKF-SLAM
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-6905" class = "post">
+			<h2>Question</h2>
+			<div id="vote-6905" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 150</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>SLAM noob here, a few questions regarding EKF-SLAM</h2>
+<p>I've recently been learning about SLAM and have been attempting to implement EKF-SLAM in python. I've been using this <a href="http://ocw.mit.edu/courses/aeronautics-and-astronautics/16-412j-cognitive-robotics-spring-2005/projects/1aslam_blas_repo.pdf" rel="nofollow">great article</a> as a guide. Some progress has been made, but I'm still confused by certain stages.</p>
+
+<p>Firstly, does the <em>inverse sensor model</em> have to compute range and bearing, as opposed to cartesian coordinates? Why is this approach used?</p>
+
+<p>Secondly, what format should my robot provide its heading in? Currently I just use a running offset from the origin angle (0), without wrapping it between 0 and 360. Turning right yields positive degrees, and left negative. I ask this as I assume the sensor model expects a certain format.</p>
+
+<p>Thirdly, when computing the jacobians for adding new landmarks, (page 35) is Jz simply the absolute rotation of the robot (-540 degrees for example) plus the bearing the landmark was detected at?</p>
+
+<p>And finally, what's the best approach for managing the huge covariance matrix? I'm currently thinking of a good way to 'expand' P when adding new landmarks.</p>
+
+<p>Here's my current implementation: <a href="http://pastebin.com/r7wUMgY7" rel="nofollow">http://pastebin.com/r7wUMgY7</a></p>
+
+<p>Any help would be much appreciated! Thanks.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6905" data-toggle = "popover">
+				<p>user name : jabz</p>
+				<p> user reputation : 17</p>
+				<p class = "tagcontent" id = "usertaginfo-6905">{'python': 2, 'ekf': 2, 'None': 0, 'slam': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-6905">Load Comments</button></br>
+			<div id = "commentsection-6905" class = 'collapse'>
+			<div id = "comment-9868" class = "comment">
+				<p>Hi jabz and welcome to robotics SE.  It would be best if you break up your post into multiple questions, since they each address different aspects of EKF SLAM.</p>
+			</div>
+			<div id = "comment-9870" class = "comment">
+				<p>@Paul Sure, I'll split off the unanswered questions as best I can.</p>
+			</div>
+			</div>
+				<textarea id = "speech-6905" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6905">
+					<img id="start_img-6905" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6905">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-6907"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6907" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I've addressed your first two questions below.</p>
+
+<blockquote>
+  <p>Firstly, does the inverse sensor model have to compute range and bearing, as opposed to cartesian coordinates? Why is this approach used?</p>
+</blockquote>
+
+<p>Given your current state (which includes the pose of the robot and the position of the landmarks), the inverse sensor model predicts what the observation <em>should</em> be. In other words, if you have a laser scanner that reports the range and bearing of the landmark from your current pose, you want to compare that observation with what the inverse sensor model predicts. The reason why it is not converted to Cartesian coordinates is because the noise of the laser scanner observation is in range and bearing. Usually you want your observation model to generate a prediction whose form is as close to what your physical sensor provides as possible.</p>
+
+<blockquote>
+  <p>Secondly, what format should my robot provide its heading in? Currently I just use a running offset from the origin angle (0), without wrapping it between 0 and 360. Turning right yields positive degrees, and left negative. I ask this as I assume the sensor model expects a certain format.</p>
+</blockquote>
+
+<p>If the only place the heading is used is in cosines and sines, then it shouldn't matter. However, you need to be careful whenever you take the difference between two angles. For example 179 degrees minus -179 degrees gives 358 degrees. In reality, the difference is -2 degrees, (which is equivalent to 358 degrees if you know it must be wrapped), but an algorithm minimizing the error might think 358 degrees is a large error.</p>
+
+<p>Also, the traditional 2D coordinate system has the angle being report with respect to the x-axis, with x forward, y left and z up. As a result, turning right should <em>decrease</em> the heading angle.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6907" data-toggle = "popover">
+				<p>user name : kamek</p>
+				<p> user reputation : 775</p>
+				<p class = "tagcontent" id = "usertaginfo-6907">{'None': 48}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-6907">Load Comments</button></br>
+			<div id = "commentsection-6907" class = 'collapse'>
+			<div id = "comment-9869" class = "comment">
+				<p>This was super helpful, thanks. 
+
+Just to clear something up on the second question, I was meaning the rotation provided by the odometry every 'predict' step (not the current 'heading' control given to the robot). The 'x' grows up makes more sense now, even my sensor reports the samples counter clockwise. So internally I should use that model, but then flip everything when it comes to rendering the map? I think my confusion came from trying to have everything work in the graphical coordinate system, whereas as papers I've read expect the system you suggested.</p>
+			</div>
+			</div>
+				<textarea id = "speech-6907" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6907">
+					<img id="start_img-6907" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6907">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

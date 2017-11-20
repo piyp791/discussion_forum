@@ -1,0 +1,238 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How can the inverse kinematics problem be solved?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-299" class = "post">
+			<h2>Question</h2>
+			<div id="vote-299" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">15</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 6421</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How can the inverse kinematics problem be solved?</h2>
+<p>The forward kinematics of a robot arm can be solved easily. We can represent each joint using <a href="http://en.wikipedia.org/wiki/Denavit%E2%80%93Hartenberg_parameters">Denavit Hartenberg</a> transformation matrices.</p>
+
+<p>For example, if the $i^{th}$ joint is a linear actuator, it may have the transformation matrix:</p>
+
+<p>$T_i = \left[\begin{matrix}
+1&amp;0&amp;0&amp;0\\
+0&amp;1&amp;0&amp;0\\
+0&amp;0&amp;1&amp;d_i\\
+0&amp;0&amp;0&amp;1
+\end{matrix} \right]$
+where the extension length is defined by $d_i$</p>
+
+<p>whereas, a rotating link may be:</p>
+
+<p>$T_i = \left[\begin{matrix}
+1&amp;0&amp;0&amp;L\\
+0&amp;\cos\alpha_i&amp;-\sin\alpha_i&amp;0\\
+0&amp;\sin\alpha_i&amp;\cos\alpha_i&amp;0\\
+0&amp;0&amp;0&amp;1
+\end{matrix} \right]$ where $\alpha$ is the angle, and $L$ is the length of the link.</p>
+
+<p>We can then find the position and orientation of the end effector by multiplying all the transformation matrices: $\prod{T_i}$.</p>
+
+<p>The question is, how do we solve the inverse problem?</p>
+
+<p>Mathematically, for a desired end effector position $M$, find the parameters $d_i$, $\alpha_i$ such that $\prod{T_i} = M$. What methods exist to solve this equation?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-299" data-toggle = "popover">
+				<p>user name : ronalchn</p>
+				<p> user reputation : 2449</p>
+				<p class = "tagcontent" id = "usertaginfo-299">{'None': 187, 'two-wheeled': 20, 'inverse-kinematics': 15, 'interrupts': 5, 'microcontroller': 13, 'wiring': 7, 'c': 8, 'avr': 5, 'brushless-motor': 2, 'joint': 15, 'kinematics': 15, 'hall-sensor': 2, 'mobile-robot': 20, 'arm': 15}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-299">Load Comments</button></br>
+			<div id = "commentsection-299" class = 'collapse'>
+			<div id = "comment-367" class = "comment">
+				<p>You have a 0% accept rate. Don't forget to accept some answers, and it encourages people to answer your questions.</p>
+			</div>
+			</div>
+				<textarea id = "speech-299" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-299">
+					<img id="start_img-299" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-299">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-308"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-308" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">10</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Back in the day, when I was learning, making this up as I went along, I used simple gradient following to solve the IK problem.</p>
+
+<p>In your model, you try rotating each joint each joint a tiny amount, see how much difference that makes to the end point position error. Having done that, you then rotate each joint by an amount proportional to the benefit it gives. Then you do that over and over again until you're close enough.</p>
+
+<p>Generally, this is known as gradient following, or hill following. Imagine a robot arm with two degrees of freedom:</p>
+
+<p><img src="https://i.stack.imgur.com/TTFq5.gif" alt="IK"></p>
+
+<p>Rotating joint <strong>A</strong> a tiny bit moves the end point in direction <strong>a</strong>. Rotating joint <strong>B</strong> a tiny bit moves the end point in direction <strong>b</strong>.  Both of these move us closer to the target by about the same amount, so we should rotate both joints at about the same speed.</p>
+
+<p>If we were to plot a graph of the distance to the target versus joint angles, it would look like this:</p>
+
+<p><img src="https://i.stack.imgur.com/t2Nv5.gif" alt="IK"></p>
+
+<p>I have coloured in some contours just to help. We can see the path this algorithm takes. What you'll notice is that in joint space, the path taken does not look optimal. It takes a curve. However, in real space, you would see the end point taking a fairly straight line to the target. You can also see that there are actually two solutions to the problem, and the algorithm has just found the closest one.</p>
+
+<p>This is not the only way to solve the inverse kinematics problem. It's certainly not the best way either.</p>
+
+<p>Pros:</p>
+
+<ul>
+<li>It's conceptually simple, so great if you're just learnig this.</li>
+<li>It's easy to implement, even if the sight of Denavit Hartenberg transformation matrices gives you the frights.</li>
+<li>It's very general, allowing you to use all kinds of joints: rotary, linear, something else, as long as you can estimate how they cause the end point to move.</li>
+<li>It copes well, even when there are zero or an infinite number of solutions. </li>
+</ul>
+
+<p>Cons:</p>
+
+<ul>
+<li>It's slow, taking many iterations to find the solution. However, it's fine if you can just have the real arm follow the progress of the algorithm as it's calculated.</li>
+<li>It can get stuck in local minima. I.E. It might not find the best possible solution, if it finds a good enough one.</li>
+</ul>
+
+<p>There are more details about it on my very old web site: <a href="http://web.archive.org/web/20160531030510/http://freespace.virgin.net/hugo.elias/models/m_ik2.htm" rel="nofollow noreferrer">The good-looking textured light-sourced bouncy fun smart and stretchy page</a>.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-308" data-toggle = "popover">
+				<p>user name : Rocketmagnet</p>
+				<p> user reputation : 4235</p>
+				<p class = "tagcontent" id = "usertaginfo-308">{'control': 31, 'force': 8, 'multi-agent': 5, 'pid': 29, 'air-muscle': 6, 'uav': 52, 'stepper-driver': 3, 'reliability': 5, 'motor': 12, 'esc': 1, 'mobile-robot': 6, 'ros': 35, 'stepper-motor': 3, 'tuning': 12, 'swarm': 10, 'research': 5, 'platform': 17, 'imu': 4, 'kalman-filter': 49, 'hri': 4, 'None': 266, 'raspberry-pi': 24, 'localization': 7, 'python': 7, 'torque': 3, 'brushless-motor': 28, 'failure': 5, 'force-sensor': 15, 'sensors': 20, 'pwm': 10, 'wireless': 10, 'servos': 7, 'wifi': 24, 'simulation': 6, 'servomotor': 11, 'particle-filter': 0, 'sensor-fusion': 4, 'automatic': 12, 'software': 17}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-308" class = 'collapse'>
+			</div>
+				<textarea id = "speech-308" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-308">
+					<img id="start_img-308" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-308">Comment</button>
+			<br><div id = "ans-322"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-322" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>There a number of solutions to this problem that center around the Jacobian Matrix. This <a href="http://billbaxter.com/courses/290/html/img0.htm" rel="nofollow">slideshow</a> covers the Jacobian methods and also mentions a Cyclic Coordinate Descent method, which I am unfamiliar with. </p>
+
+<p>There are a plethora of resources on the subject - if you ask google for <a href="https://www.google.com/search?q=%22inverse%20kinematics%20Jacobian%22" rel="nofollow">"inverse kinematics Jacobian"</a>.</p>
+
+<p>Also, check out Chapter 5.3 of the lecture notes from M<a href="http://ocw.mit.edu/courses/mechanical-engineering/2-12-introduction-to-robotics-fall-2005/" rel="nofollow">IT's Open Course on Introductory Robotics</a>.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-322" data-toggle = "popover">
+				<p>user name : David Hernandez</p>
+				<p> user reputation : 71</p>
+				<p class = "tagcontent" id = "usertaginfo-322">{'None': 4}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-322" class = 'collapse'>
+			</div>
+				<textarea id = "speech-322" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-322">
+					<img id="start_img-322" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-322">Comment</button>
+			<br><div id = "ans-3140"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-3140" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>when you want to calculate the inverse kinematics a robot with 6DOF,you'd better use pieper's solution ,it said that when you have a robot with six degrees of freedom and three axes were intersect you can use it. there is simple proof you can easily proof it,if you need help i can hint you</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-3140" data-toggle = "popover">
+				<p>user name : Parham sagharichi ha</p>
+				<p> user reputation : 21</p>
+				<p class = "tagcontent" id = "usertaginfo-3140">{'dh-parameters': 4, 'None': 0, 'forward-kinematics': 4}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-3140">Load Comments</button></br>
+			<div id = "commentsection-3140" class = 'collapse'>
+			<div id = "comment-13488" class = "comment">
+				<p>Would you mind giving more details on the proof?</p>
+			</div>
+			<div id = "comment-22515" class = "comment">
+				<p>Welcome to *Robotics* Parhamsagharichiha. Thanks for your answer but we are looking for comprehensive answers that provide some explanation and context. One-line answers cannot do this, so please edit your answer to explain why it is right, ideally with citations. Answers that don't include explanations may be removed.</p>
+			</div>
+			</div>
+				<textarea id = "speech-3140" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-3140">
+					<img id="start_img-3140" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-3140">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

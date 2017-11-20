@@ -1,0 +1,216 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>EKF partial state update question
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2009" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2009" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 336</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>EKF partial state update question</h2>
+<p>This is a follow up to </p>
+
+<p><a href="https://robotics.stackexchange.com/questions/2000/maintaining-positive-definite-property-for-covariance-in-an-unscented-kalman-fil/2004#2004">Maintaining positive-definite property for covariance in an unscented Kalman filter update</a></p>
+
+<p>...but it's deserving of its own question, I think.</p>
+
+<p>I am processing measurements in my EKF for a subset of the variables in my state. My state vector is of cardinality 12. I am directly measuring my state variables, which means my state-to-measurement function $h$ is the identity. I am trying to update the first two variables in my state vector, which are the x and y position of my robot. My Kalman update matrices currently look like this:</p>
+
+<p>State $x$ (just test values):
+$$
+\left(\begin{array}{ccc}
+0.4018 &amp; 0.0760
+\end{array} \right) 
+$$</p>
+
+<p>Covariance matrix $P$ (pulled from log file): 
+$$
+\left(\begin{array}{ccc}
+0.1015 &amp; -0.0137 &amp; -0.2900 &amp; 0 &amp; 0 &amp; 0 &amp; 0.0195 &amp; 0.0233 &amp; 0.1004 &amp; 0 &amp; 0 &amp; 0 \\
+-0.0137 &amp; 0.5825 &amp; -0.0107 &amp; 0 &amp; 0 &amp; 0 &amp; 0.0002 &amp; -0.7626 &amp; -0.0165 &amp; 0 &amp; 0 &amp; 0 \\
+-0.2900 &amp; -0.0107 &amp; 9.6257 &amp; 0 &amp; 0 &amp; 0 &amp; 0.0015 &amp; 0.0778 &amp; -2.9359 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 0.0100 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 0.0100 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0.0100 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+0.0195 &amp; 0.0002 &amp; 0.0015 &amp; 0 &amp; 0 &amp; 0 &amp; 0.0100 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+0.0233 &amp; -0.7626 &amp; 0.0778 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1.0000 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+0.1004 &amp; -0.0165 &amp; -2.9359 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1.0000 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0.0100 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0.0100 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0.0100 \\
+\end{array} \right) 
+$$</p>
+
+<p>Measurement $z$ (just test values):
+$$
+\left(\begin{array}{ccc}
+2 &amp; 2
+\end{array} \right) 
+$$</p>
+
+<p>"Jacobean" $J$:
+$$
+\left(\begin{array}{ccc}
+1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+\end{array} \right) $$</p>
+
+<p>Measurement covariance $R$ (just test values):
+$$
+\left(\begin{array}{ccc}
+5 &amp; 0 \\
+0 &amp; 5 \\
+\end{array} \right) $$</p>
+
+<p>Kalman gain $K = PJ^T(JPJ^T + R)^{-1}$:</p>
+
+<p>$$
+\left(\begin{array}{ccc}
+0.0199 &amp; -0.0024 \\
+-0.0024 &amp; 0.1043 \\
+-0.0569 &amp; -0.0021 \\
+0 &amp; 0 \\
+0 &amp; 0 \\
+0 &amp; 0 \\
+0.0038 &amp; 0.0000 \\
+0.0042 &amp; -0.1366 \\
+0.0197 &amp; -0.0029 \\
+0 &amp; 0 \\
+0 &amp; 0 \\
+0 &amp; 0 \\
+\end{array} \right) $$</p>
+
+<p>$K$ is 12x2, meaning that my innovation - and therefore both measurement and current state - would need to be 2x1 in order to have a 12x1 result to add to the current full state:</p>
+
+<p>$x' = x + K(z - h(x_s))$</p>
+
+<p>where $x_s$ is a vector containing only the parts of the full state vector that I am measuring. </p>
+
+<p>Here's my question: $K(z - h(x_s))$ yields</p>
+
+<p>$$
+\left(\begin{array}{ccc}
+    0.0272 \\
+    0.1969 \\
+   -0.0948 \\
+         0 \\
+         0 \\
+         0 \\
+    0.0062 \\
+   -0.2561 \\
+    0.0258 \\
+         0 \\
+         0 \\
+         0 \\
+\end{array} \right) $$</p>
+
+<p>Does it make sense that this vector, which I will add to the current state, has non-zero values in positions other that 1 and 2 (the x and y positions of my robot)? The other non-zero locations correspond to the robot's z location, and the x, y, and z velocities. It seems strange to me that a measurement of x and y should yield changes to other variables in the state vector. Am I incorrect in this assumption?</p>
+
+<p>Incidentally, the covariance update works very well with the Jacobean in this form, and maintains its positive-definite property.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2009" data-toggle = "popover">
+				<p>user name : TheWumpus</p>
+				<p> user reputation : 141</p>
+				<p class = "tagcontent" id = "usertaginfo-2009">{'magnetometer': 1, 'None': 2, 'ekf': 2, 'platform': 0, 'imu': 1, 'kalman-filter': 18, 'ugv': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2009" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2009" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2009">
+					<img id="start_img-2009" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2009">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-2010"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2010" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>According to your covariance matrix it does make sense. The third column of the first row is sigma_xz, and is nonzero, which means, according to your covariance matrix, the random variable z is correlated to the random variable x, and so changes in x will affect z. If you further analyze your covariance matrix, it seems that Z is correlated to Y (element (2,3) of covariance matrix is nonzero) and, of course, itself (element (3,3) of covariance matrix). For the velocities, it certainly makes sense that updates in position will update your velocity because the EKF is simply capturing information regarding changes in state. Again if you look at the covariance matrix, I assume the 7th, 8th and 9th elements of your state vector are the velocity in x, y and z. In the covariance matrix, the elements (1,7), (1,8), and (1,9) are all nonzero so the 3 velocities are correlated to your x position...further analysis shows that they're also correlated to your Y and Z position by similar arguments.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2010" data-toggle = "popover">
+				<p>user name : Andrew Capodieci</p>
+				<p> user reputation : 826</p>
+				<p class = "tagcontent" id = "usertaginfo-2010">{'None': 54}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2010" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2010" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2010">
+					<img id="start_img-2010" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2010">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

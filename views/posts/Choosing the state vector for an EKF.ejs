@@ -1,0 +1,137 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Choosing the state vector for an EKF
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9130" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9130" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 89</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Choosing the state vector for an EKF</h2>
+<p>Could someone help me understand the logic behind choosing a particular state space vector for an EKF?</p>
+
+<p>Context: Say there is a 4 wheeled robot that operates only in 2D. It is equipped with an inertial unit (a/g/m) and wheel encoders (I understand that these alone might not satisfy accuracy constraints, but consider this as a hypothetical case).</p>
+
+<p>Now, some literature has the state as [q, x, y, vx, vy]' while a few others as [q, q_dot, x, y, vx, vy]'. My question is, what is the advantage with having certain 'rate terms' as opposed to only the normal parameters? Also, what about including bias terms in there?</p>
+
+<p>How do I go about selecting an appropriate state space vector for any use-case (in general)? Is there a set of intuitive/mathematical steps to consider/follow?</p>
+
+<p>Thanks!</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9130" data-toggle = "popover">
+				<p>user name : AKag</p>
+				<p> user reputation : 61</p>
+				<p class = "tagcontent" id = "usertaginfo-9130">{'odometry': 8, 'None': 0, 'localization': 8, 'ekf': 12, 'pose': 4, 'wheeled-robot': 12, 'differential-drive': 5, 'imu': 3, 'kalman-filter': 4}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-9130" class = 'collapse'>
+			</div>
+				<textarea id = "speech-9130" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9130">
+					<img id="start_img-9130" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9130">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9131"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9131" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>In general, I try to obey the following two rules when selecting states:</p>
+
+<ol>
+<li>Only use the states necessary for <em>control</em>, and</li>
+<li>Choose states to be measurable properties, whenever possible. </li>
+</ol>
+
+<p>For example, on my car's dashboard I could include: suspension displacement, brake pad wear, tire wear, etc. - these are all measurable properties that are critical to <em>operation</em> but, provided they are within spec, they are not critical to <em>control</em>. The more indicators (states) I attempt to include, the more "costly" it is to monitor them. For a person, it takes time to read the gauges; for a computer, every additional matrix dimension increases the computation time for state prediction, gain calculations, etc. </p>
+
+<p>Similarly, I could try to estimate fuel consumption by using a function of engine power (torque and RPM), or I could do it by monitoring fuel pump flow. In the former, fuel consumption is a function of <em>two</em> states, where the latter is a function of <em>one</em> state. </p>
+
+<p>By choosing your states to be directly measurable parameters, you can use them as direct feedback, bypassing the need for observer design for that state. This in turn allows you to use <a href="https://en.wikibooks.org/wiki/Control_Systems/Estimators_and_Observers#Reduced-Order_Observers">reduced-order observers</a>, which reduces both the controller design complexity for you and again the computational complexity for the controller. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9131" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-9131">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-9131" class = 'collapse'>
+			</div>
+				<textarea id = "speech-9131" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9131">
+					<img id="start_img-9131" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9131">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

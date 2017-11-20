@@ -1,0 +1,173 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Firmata over nRF24
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-965" class = "post">
+			<h2>Question</h2>
+			<div id="vote-965" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 588</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Firmata over nRF24</h2>
+<p>I'm having some technical problems... I'm trying to use Firmata for arduino but over nrf24, not over Serial interface. I have tested nRF24 communication and it's fine. I have also tested Firmata over Serial and it works. </p>
+
+<p>Base device is simple "serial relay". When it has data available on Serial, read it and send it over <a href="http://maniacbug.github.com/RF24Network/index.html" rel="nofollow noreferrer">nRF24 network</a>. If there is data available from network, read it and send it through Serial.</p>
+
+<p>Node device is a bit complex. It has custom <a href="https://github.com/arduino/Arduino/tree/master/libraries/Firmata" rel="nofollow noreferrer">Standard Firmata</a> where I have just added write and read override. </p>
+
+<p><img src="https://i.stack.imgur.com/nEj0s.png" alt="Diagram"></p>
+
+<p>Read override id handeled in <code>loop</code> method in this way:</p>
+
+<pre><code>while(Firmata.available())
+    Firmata.processInput();
+
+// Handle network data and send it to Firmata process method
+while(network.available()) {
+    RF24NetworkHeader header;
+    uint8_t data;
+    network.read(header, &amp;data, sizeof(uint8_t));
+    Serial.print(data, DEC); Serial.print(" ");
+    Firmata.processInputOverride(data);
+    BlinkOnBoard(50);
+}
+
+currentMillis = millis();
+</code></pre>
+
+<p>Firmata <code>processInputOverrride</code> is little changed method of <code>processInput</code> where <code>processInput</code> reads data directly from <code>FirmataSerial</code>, and in this method we pass data down to method from network. This was tested and it should work fine.</p>
+
+<p>Write method is overloaded in a different way. In <code>Firmata.cpp</code> I have added an method pointer that can be set to a custom method and used to send data using that custom method. I have then added custom method call after each of the <code>FirmataSerial.write()</code> call:</p>
+
+<pre><code>Firmata.h
+...
+size_t (*firmataSerialWriteOverride)(uint8_t);
+...
+
+void FirmataClass::printVersion(void) {
+  FirmataSerial.write(REPORT_VERSION);
+  FirmataSerial.write(FIRMATA_MAJOR_VERSION);
+  FirmataSerial.write(FIRMATA_MINOR_VERSION);
+  Firmata.firmataSerialWriteOverride(REPORT_VERSION);
+  Firmata.firmataSerialWriteOverride(FIRMATA_MAJOR_VERSION);
+  Firmata.firmataSerialWriteOverride(FIRMATA_MINOR_VERSION);
+}
+</code></pre>
+
+<p>I have then set the overrided write method to a custom method that just writes byte to network instead of <code>Serial</code>.</p>
+
+<pre><code>size_t ssignal(uint8_t data) {
+    RF24NetworkHeader header(BaseDevice);
+    network.write(header, &amp;data, sizeof(uint8_t));
+}
+
+void setup() {
+...
+Firmata.firmataSerialWriteOverride = ssignal;
+...
+}
+</code></pre>
+
+<p>All stages pass right (I guess) and then I don't get any response from Node when I request pin states</p>
+
+<pre><code>...
+&lt; f0 6a 7f 7f 7f ... 7f 0 1 2 3 4 5 6 7 8 9 a b c d e f f7 // analog mapping
+&gt; f0 6d 0 f7 // sysex request pin 0 state and value
+&gt; f0 6d 1 f7 
+&gt; f0 6d 2 f7
+...
+&gt; f0 6d 45 f7
+// And I wait for response...
+</code></pre>
+
+<p>There is no response. Any ideas why would that happen? Node receive all messages correctly and code for handling pin states exist.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-965" data-toggle = "popover">
+				<p>user name : Aleksandar Toplek</p>
+				<p> user reputation : 106</p>
+				<p class = "tagcontent" id = "usertaginfo-965">{'None': 0, 'serial': 1, 'c++': 1, 'arduino': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-965">Load Comments</button></br>
+			<div id = "commentsection-965" class = 'collapse'>
+			<div id = "comment-2276" class = "comment">
+				<p>There is a lot of information in your question, and it's a bit confusing since you were able to solve part of the problem.  Could you edit your question and remove the parts of it that are related to what's been solved?  That will make it easier to see where your issue might be.</p>
+			</div>
+			<div id = "comment-2277" class = "comment">
+				<p>Please take your solution and post it as an answer. Then we'll all happily upvote your answer as well. This also makes it appear the question was answered when people search for a similar issue.  Thanks!</p>
+			</div>
+			</div>
+				<textarea id = "speech-965" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-965">
+					<img id="start_img-965" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-965">Comment</button>
+
+<h1>Answers</h1>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,229 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Is there a way to determine which degrees of freedom are lost in a robot at a singularity position by looking at the jacobian?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-1997" class = "post">
+			<h2>Question</h2>
+			<div id="vote-1997" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 242</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Is there a way to determine which degrees of freedom are lost in a robot at a singularity position by looking at the jacobian?</h2>
+<p>For a 6DoF robot with all revolute joints the Jacobian is given by:
+$$
+\mathbf{J} = 
+\begin{bmatrix}
+\hat{z_0} \times (\vec{o_6}-\vec{o_0}) &amp; \ldots &amp; \hat{z_5} \times (\vec{o_6}-\vec{o_5})\\
+\hat{z_0} &amp; \ldots &amp; \hat{z_5}
+\end{bmatrix}
+$$
+where $z_i$ is the unit z axis of joint $i+1$(using DH params), $o_i$ is the origin of the coordinate frame connected to joint $i+1$, and $o_6$ is the origin of the end effector.  The jacobian matrix is the relationship between the Cartesian velocity vector and the joint velocity vector:
+$$
+\dot{\mathbf{X}}=
+\begin{bmatrix}
+\dot{x}\\
+\dot{y}\\
+\dot{z}\\
+\dot{r_x}\\
+\dot{r_y}\\
+\dot{r_z}
+\end{bmatrix}
+=
+\mathbf{J}
+\begin{bmatrix}
+\dot{\theta_1}\\
+\dot{\theta_2}\\
+\dot{\theta_3}\\
+\dot{\theta_4}\\
+\dot{\theta_5}\\
+\dot{\theta_6}\\
+\end{bmatrix}
+=
+\mathbf{J}\dot{\mathbf{\Theta}}
+$$</p>
+
+<p>Here is a singularity position of a Staubli TX90XL 6DoF robot:</p>
+
+<p><img src="https://i.imgur.com/Ikjas0J.png" alt="robot with joint 4 and joint 6 aligned pointed down"></p>
+
+<p>$$
+\mathbf{J} = 
+\begin{bmatrix}
+          -50     &amp;    -425     &amp;    -750      &amp;      0     &amp;    -100      &amp;      0\\
+       612.92     &amp;       0     &amp;       0      &amp;      0     &amp;       0      &amp;      0\\
+            0     &amp; -562.92     &amp;       0      &amp;      0     &amp;       0      &amp;      0\\
+            0     &amp;       0     &amp;       0      &amp;      0     &amp;       0      &amp;      0\\
+            0     &amp;       1     &amp;       1      &amp;      0     &amp;       1      &amp;      0\\
+            1     &amp;       0     &amp;       0      &amp;     -1     &amp;       0      &amp;     -1
+\end{bmatrix}
+$$</p>
+
+<p>You can easily see that the 4th row corresponding to $\dot{r_x}$ is all zeros, which is exactly the lost degree of freedom in this position.</p>
+
+<p>However, other cases are not so straightforward.</p>
+
+<p><img src="https://i.imgur.com/cAUoVq3.png" alt="robot with joint 4 and joint 6 aligned pointed at an angle">
+$$
+\mathbf{J} = 
+\begin{bmatrix}
+          -50   &amp;   -324.52  &amp;    -649.52   &amp;         0   &amp;   -86.603   &amp;         0\\
+       987.92   &amp;         0  &amp;          0   &amp;         0   &amp;         0   &amp;         0\\
+            0   &amp;   -937.92  &amp;       -375   &amp;         0   &amp;       -50   &amp;         0\\
+            0   &amp;         0  &amp;          0   &amp;       0.5   &amp;         0   &amp;       0.5\\
+            0   &amp;         1  &amp;          1   &amp;         0   &amp;         1   &amp;         0\\
+            1   &amp;         0  &amp;          0   &amp;    -0.866   &amp;         0   &amp;    -0.866
+\end{bmatrix}
+$$</p>
+
+<p>Here you can clearly see that joint 4 and joint 6 are aligned because the 4th and 6th columns are the same.  But it's not clear which Cartesian degree of freedom is lost (it should be a rotation about the end effector's x axis in red).</p>
+
+<p>Even less straightforward are singularities at workspace limits.</p>
+
+<p><img src="https://i.imgur.com/ykxmMUH.png" alt="robot at workspace limit with no aligned joint axes"></p>
+
+<p>$$
+\mathbf{J} = 
+\begin{bmatrix}
+          -50     &amp;     650   &amp;       325  &amp;          0    &amp;        0     &amp;       0\\
+       1275.8     &amp;       0   &amp;         0  &amp;         50    &amp;        0     &amp;       0\\
+            0     &amp; -1225.8   &amp;   -662.92  &amp;          0    &amp;     -100     &amp;       0\\
+            0     &amp;       0   &amp;         0  &amp;    0.86603    &amp;        0     &amp;       1\\
+            0     &amp;       1   &amp;         1  &amp;          0    &amp;        1     &amp;       0\\
+            1     &amp;       0   &amp;         0  &amp;        0.5    &amp;        0     &amp;       0
+\end{bmatrix}
+$$</p>
+
+<p>In this case, the robot is able to rotate $\dot{-r_y}$ but not $\dot{+r_y}$.  There are no rows full of zeros, or equal columns, or any clear linearly dependent columns/rows.  </p>
+
+<p>Is there a way to determine which degrees of freedom are lost by looking at the jacobian?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1997" data-toggle = "popover">
+				<p>user name : joshkarges</p>
+				<p> user reputation : 73</p>
+				<p class = "tagcontent" id = "usertaginfo-1997">{'industrial-robot': 5, 'None': 3, 'inverse-kinematics': 5, 'robotic-arm': 5}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-1997" class = 'collapse'>
+			</div>
+				<textarea id = "speech-1997" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1997">
+					<img id="start_img-1997" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1997">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-2006"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2006" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You need to find the null space, not just look for zero rows or full columns. And I don't mean the null space of <em>any particular</em> jacobian, I mean the analytic space of all singular configurations, given the closed-form Jacobian. Usually this occurs because of a <a href="https://en.wikipedia.org/wiki/Gimbal_lock" rel="nofollow">gimbal lock</a> (as opposed to just an unreachable state space)</p>
+
+<p>Doing this in closed form is very, very hard.   But sometimes you can reduce the space a little.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2006" data-toggle = "popover">
+				<p>user name : Josh Vander Hook</p>
+				<p> user reputation : 3960</p>
+				<p class = "tagcontent" id = "usertaginfo-2006">{'None': 345}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2006" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2006" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2006">
+					<img id="start_img-2006" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2006">Comment</button>
+			<br><div id = "ans-11860"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11860" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Please correct me if I am wrong. Let's check if the Jacobian matrix loses it's rank (for example using Matlab or Octave). This should indicate the singularity. Then let's try to check the rank of sub-matrices of the Jacobian, to find which degree of freedom is lost.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11860" data-toggle = "popover">
+				<p>user name : Kepler</p>
+				<p> user reputation : 1</p>
+				<p class = "tagcontent" id = "usertaginfo-11860">{'None': 0}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11860" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11860" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11860">
+					<img id="start_img-11860" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11860">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

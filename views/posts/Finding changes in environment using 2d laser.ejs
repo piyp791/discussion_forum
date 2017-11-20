@@ -1,0 +1,152 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Finding changes in environment using 2d laser
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-4440" class = "post">
+			<h2>Question</h2>
+			<div id="vote-4440" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 104</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Finding changes in environment using 2d laser</h2>
+<p>I have known map of the environment (2d occupancy grid map). I am trying to find if anything changed in environment using 2d laser while navigating by using maximum likelihood of laser with known map. </p>
+
+<p>My question is how to know <em>which measurements are corresponding to changes</em>. My environment is not static and has some changes which is differs from known map. Now i am trying to find which objects newly came into the environment or moved out of the environment using laser.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4440" data-toggle = "popover">
+				<p>user name : nayab</p>
+				<p> user reputation : 224</p>
+				<p class = "tagcontent" id = "usertaginfo-4440">{'odometry': 4, 'None': 4, 'laser': 3, 'probability': 2, 'occupancygrid': 1, 'localization': 10, 'mapping': 1, 'particle-filter': 4, 'slam': 8, 'mobile-robot': 12}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-4440">Load Comments</button></br>
+			<div id = "commentsection-4440" class = 'collapse'>
+			<div id = "comment-9425" class = "comment">
+				<p>Does your laser scan a range (horizontal and/or vertical) or just a point? Maybe you're better off with an ultrasonic?</p>
+			</div>
+			</div>
+				<textarea id = "speech-4440" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4440">
+					<img id="start_img-4440" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4440">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-4528"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4528" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Let's asume that our 2D occupancy grid map is called G. <br />
+Programmatically, G is a 2D array of float numbers between -1 and 1 called evidences.</p>
+
+<p>Now, to update the map, we need to :</p>
+
+<ol>
+<li>read the new laser mesurements</li>
+<li>calculate the distances of obstacles from the robot</li>
+<li>re-calculate the evidence values of G, and then</li>
+<li>replace the old values by the new evidence values.</li>
+</ol>
+
+<p>If we want to find the changes in the environment, we can simply store the old values of G in a temporary array before re-calculating the new evidence values (step 3).</p>
+
+<p>Therefore, the changes can be found by substracting the two arrays : C = G - old_G. <br />
+In this case: C is a 2D array representing the differences between the two grid maps, so 0 values of C represent no changes in the environement, while other values represent either new or moved objects.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4528" data-toggle = "popover">
+				<p>user name : Amine Horseman</p>
+				<p> user reputation : 176</p>
+				<p class = "tagcontent" id = "usertaginfo-4528">{'control': 1, 'quadcopter': 1, 'None': 14, 'wireless': 1}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-4528">Load Comments</button></br>
+			<div id = "commentsection-4528" class = 'collapse'>
+			<div id = "comment-7133" class = "comment">
+				<p>thanks for answer, but robot position from is not certain, i.e with some variance.</p>
+			</div>
+			<div id = "comment-7134" class = "comment">
+				<p>In this case, you need first to localize your robot. You can use particles filter for this, it's quite simple to implement.</p>
+			</div>
+			<div id = "comment-7135" class = "comment">
+				<p>Yes i am doing locazisation and using initial map and moving the robot in modified environment. But the localisation will have some variance.</p>
+			</div>
+			<div id = "comment-7137" class = "comment">
+				<p>Yes, I've meet the same problem once, the reason is that the motion model can't be so precise to handle a 0% error. But there's another localization algorithms known to have a good precision, like SLAM methods per example, which use a Kalman Filter to predict and correct the localization errors.</p>
+			</div>
+			</div>
+				<textarea id = "speech-4528" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4528">
+					<img id="start_img-4528" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4528">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

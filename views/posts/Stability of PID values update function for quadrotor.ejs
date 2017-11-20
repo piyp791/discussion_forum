@@ -1,0 +1,179 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Stability of PID values update function for quadrotor
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9825" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9825" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 88</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Stability of PID values update function for quadrotor</h2>
+<p>A reviewer of the last paper I sent replied me that the it is very dangerous to update a PID with next kind of formula (paper is about quadrotor control):</p>
+
+<p>$$
+K_p (t + 1) = K_p (t)+e(t) ( _1 (Pe(t)) +  _4 (Pe(t)))
+$$</p>
+
+<p>$Pe(t)$ is the % relationship between the desired angles and the real angles, and $e(t)$ is the difference between those angles. $ _1$ and $ _4$ are the membership functions of a fuzzy function. I think that the reviewer is talking about the time increment update rather than the fuzzy usage and specific formula.</p>
+
+<p>How can stability of this formula be tested, please?</p>
+
+<p>EDIT: </p>
+
+<p>membership functions are represented in following graph:
+<a href="https://i.stack.imgur.com/rJ3vy.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/rJ3vy.jpg" alt="enter image description here"></a></p>
+
+<p>$e(t)$ is not the absolute difference between angles, just the difference. It can be negative</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9825" data-toggle = "popover">
+				<p>user name : galtor</p>
+				<p> user reputation : 348</p>
+				<p class = "tagcontent" id = "usertaginfo-9825">{'control': 2, 'quadcopter': 5, 'None': 14, 'reinforcement-learning': 1, 'pid': 4, 'simulation': -3, 'machine-learning': 1, 'untagged': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9825">Load Comments</button></br>
+			<div id = "commentsection-9825" class = 'collapse'>
+			<div id = "comment-17513" class = "comment">
+				<p>A time step of 1 second is rather large and less general. The stability is mainly dangerous because you basically use forward Euler integration. What would be the update formula for a time step of $dt$?</p>
+			</div>
+			<div id = "comment-17520" class = "comment">
+				<p>My $ dt=0.1segs. $ I do use Euler integration for calculating displacement and velocity out of acceleration. How to proof the stability in that case? Is transfer function and Bode diagram or something similar necessary?</p>
+			</div>
+			<div id = "comment-17521" class = "comment">
+				<p>Can you give us more information? To analyze stability, we need to know more about $\mu_1$ and $\mu_4$. Also, if the system is discretized, then $dt$ might need to be in the expression for $K_p(t+1)$.</p>
+			</div>
+			<div id = "comment-17561" class = "comment">
+				<p>Done it: triangular shape functions. I've seen Gaussian too, but this aspect think doesn't matter</p>
+			</div>
+			</div>
+				<textarea id = "speech-9825" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9825">
+					<img id="start_img-9825" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9825">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9869"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9869" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I think I may have reason for your reviewer's caution. You are updating the proportional gain of a PID controller, and you are concerned with the stability of your update law. Restating your update: $$K_p(t+1)=K_p+e(t)(\mu_1(Pe(t))+\mu_4(Pe(t))).$$ You have re-stated that $e(t)$ is the difference, which means that the error is not positive semi-definite ($e(t)\geq 0$). However, the membership functions $\mu_1$ and $\mu_4$ are positive semi-definite; this implies that $E(t)=e(t)(\mu_1(Pe(t))+\mu_4(Pe(t)))$ is either positive or negative semi-definite, which means that $K_p$ grows unbounded in some region $D$. </p>
+
+<p>At this point, it is clear that the update law is not stable in some region (in the sense of Lyapunov) for $e(t)\neq 0$. We can substantiate this with discrete-time Lyapunov analysis. </p>
+
+<p>$Proof:$ Dropping the time dependence for clarity, let $$V(K_p)=\frac{1}{2}K_p^2$$ be a candidate Lyapunov function. The rate of change along solutions is given by $$\begin{align}\nabla V(K_p)&amp;=V(K_p+E)-V(K_p)\\&amp;=\frac{1}{2}(K_p+E)^2-\frac{1}{2}K_p^2\\&amp;=K_pE+\frac{1}{2}E^2\end{align}.$$ 
+For stability of the system, we must have $\nabla V(K_p)&lt;0$. This implies $$K_pE+\frac{1}{2}E^2&lt;0$$$$\to K_p&lt;-\frac{1}{2}E.$$ We can conclude from converse Lyapunov results that the system is unstable for at least $K_p&gt;-\frac{1}{2}E$, which is an obvious reason for concern. There may be a better Lyapunov candidate function to demonstrate this result, but we can be sure that the system is locally unstable.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9869" data-toggle = "popover">
+				<p>user name : NBCKLY</p>
+				<p> user reputation : 741</p>
+				<p class = "tagcontent" id = "usertaginfo-9869">{'None': 44, 'roomba': 4, 'irobot-create': 4, 'arduino': 2}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9869">Load Comments</button></br>
+			<div id = "commentsection-9869" class = 'collapse'>
+			<div id = "comment-17565" class = "comment">
+				<p>ok, I wrongly used "absolute difference" expression. It was just to differentiate from $Pe$, which is % based difference. $ e(t) $ is just the difference, but it can take negative values. Does this change your arguments?</p>
+			</div>
+			<div id = "comment-17566" class = "comment">
+				<p>This absolutely changes the argument. I will edit my response, but you should include your edit in the question.</p>
+			</div>
+			<div id = "comment-17988" class = "comment">
+				<p>@NBCKLY - Do you have time to make the edit? Your current answer is terrific for the absolute difference case; I'd love to see your response!</p>
+			</div>
+			<div id = "comment-17991" class = "comment">
+				<p>I gave it a shot. The result was clear cut for the original post, but I think my response highlights at least one concern. The more I think about it, the more I am wondering what the general effect of controlling $K_p$ based on an error function will have on the stability of a system--I suspect that this is not a good practice, but if somebody can find a paper proposing this, I'm sure that OP would appreciate it.</p>
+			</div>
+			<div id = "comment-18065" class = "comment">
+				<p>I posted original question.Thx, i'm not expert in lyapunov, but I see the problem. Finally, do you have any suggestion about alternative update?</p>
+			</div>
+			<div id = "comment-18066" class = "comment">
+				<p>Do you have any examples of published papers in which PID parameters are updated in a similar fashion to yours? It seems like you are trying to implement some sort of adaptive control, but without having a full picture of your objective, knowledge of your background, and related works, I have no suggestions.</p>
+			</div>
+			<div id = "comment-18077" class = "comment">
+				<p>I am updating a PID for a quadrotor. The paper I based on was this http://www.aedie.org/9CHLIE-paper-send/337_CHAINHO.pdf.</p>
+			</div>
+			<div id = "comment-18102" class = "comment">
+				<p>By the way, I am not an expert at Lyapunov, but I started reading this article in the Wikipedia https://en.wikipedia.org/wiki/Lyapunov_stability, and they all talk about ODE equations. My update equation is not differential, so is it still valid this criteria?</p>
+			</div>
+			<div id = "comment-18103" class = "comment">
+				<p>After reading the paper, you are doing adaptive control. As for your equation, it is a difference equation, so discrete time Lyapunov should hold; proving this would be a good exercise, but is outside of the scope of this post. If you are satisfied with the answer given, you should close this post and open up a new one with your follow-up questions.</p>
+			</div>
+			</div>
+				<textarea id = "speech-9869" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9869">
+					<img id="start_img-9869" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9869">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

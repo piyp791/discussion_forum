@@ -1,0 +1,991 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Raspberry Pi quadcopter thrashes at high speeds
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-6720" class = "post">
+			<h2>Question</h2>
+			<div id="vote-6720" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 458</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Raspberry Pi quadcopter thrashes at high speeds</h2>
+<p>I am attempting to build a Raspberry Pi based quadcopter. So far I have succeeded in interfacing with all the hardware, and I have written a PID controller that is fairly stable at low throttle. The problem is that at higher throttle the quadcopter starts thrashing and jerking. I have not even been able to get it off the ground yet, all my testing has been done on a test bench. I have ruled out bad sensors by testing each sensor individually, and they seem to be giving correct values. Is this a problem with my code, or perhaps a bad motor? Any suggestions are greatly appreciated.</p>
+
+<p>Here is my code so far:</p>
+
+<p>QuadServer.java:</p>
+
+<pre><code>package com.zachary.quadserver;
+
+import java.net.*;
+import java.io.*;
+import java.util.*;
+
+import se.hirt.pi.adafruit.pwm.PWMDevice;
+import se.hirt.pi.adafruit.pwm.PWMDevice.PWMChannel;
+
+public class QuadServer {
+    private static Sensor sensor = new Sensor();
+
+    private final static int FREQUENCY = 490;
+
+    private static double PX = 0;
+    private static double PY = 0;
+
+    private static double IX = 0;
+    private static double IY = 0;
+
+    private static double DX = 0;
+    private static double DY = 0;
+
+    private static double kP = 1.3;
+    private static double kI = 2;
+    private static double kD = 0;
+
+    private static long time = System.currentTimeMillis();
+
+    private static double last_errorX = 0;
+    private static double last_errorY = 0;
+
+    private static double outputX;
+    private static double outputY;
+
+    private static int val[] = new int[4];
+
+    private static int throttle;
+
+    static double setpointX = 0;
+    static double setpointY = 0;
+
+    static long receivedTime = System.currentTimeMillis();
+
+    public static void main(String[] args) throws IOException, NullPointerException {
+
+        PWMDevice device = new PWMDevice();
+        device.setPWMFreqency(FREQUENCY);
+
+        PWMChannel BR = device.getChannel(12);
+        PWMChannel TR = device.getChannel(13);
+        PWMChannel TL = device.getChannel(14);
+        PWMChannel BL = device.getChannel(15);
+
+        DatagramSocket serverSocket = new DatagramSocket(8080);
+
+
+        Thread read = new Thread(){
+                public void run(){
+                    while(true) {
+                    try {
+                            byte receiveData[] = new byte[1024];
+                            DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+                            serverSocket.receive(receivePacket);
+                            String message = new String(receivePacket.getData());
+                            throttle = (int)(Integer.parseInt((message.split("\\s+")[4]))*12.96)+733;
+                            setpointX = Integer.parseInt((message.split("\\s+")[3]))-50;
+                            setpointY = Integer.parseInt((message.split("\\s+")[3]))-50;
+
+                        receivedTime = System.currentTimeMillis();
+
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+        };
+        read.start();
+
+        while(true)
+        {
+            Arrays.fill(val, calculatePulseWidth((double)throttle/1000, FREQUENCY));
+
+            double errorX = -sensor.readGyro(0)-setpointX;
+            double errorY = sensor.readGyro(1)-setpointY;
+
+            double dt = (double)(System.currentTimeMillis()-time)/1000;
+
+            double accelX = sensor.readAccel(0);
+            double accelY = sensor.readAccel(1);
+            double accelZ = sensor.readAccel(2);
+
+            double hypotX = Math.sqrt(Math.pow(accelX, 2)+Math.pow(accelZ, 2));
+            double hypotY = Math.sqrt(Math.pow(accelY, 2)+Math.pow(accelZ, 2));
+
+
+            double accelAngleX = Math.toDegrees(Math.asin(accelY/hypotY));
+            double accelAngleY = Math.toDegrees(Math.asin(accelX/hypotX));
+
+            if(dt &gt; 0.01)
+            {
+
+                PX = errorX;
+                PY = errorY;
+
+                IX += errorX*dt;
+                IY += errorY*dt;
+
+                IX = 0.95*IX+0.05*accelAngleX;
+                IY = 0.95*IY+0.05*accelAngleY;
+
+                DX = (errorX - last_errorX)/dt;
+                DY = (errorY - last_errorY)/dt;
+
+                outputX = kP*PX+kI*IX+kD*DX;
+                outputY = kP*PY+kI*IY+kD*DY;
+                time = System.currentTimeMillis();
+            }
+
+            System.out.println(setpointX);
+
+            add(-outputX+outputY, 0);
+            add(-outputX-outputY, 1);
+            add(outputX-outputY, 2);
+            add(outputX+outputY, 3);
+
+            //System.out.println(val[0]+", "+val[1]+", "+val[2]+", "+val[3]);
+            if(System.currentTimeMillis()-receivedTime &lt; 1000)
+            {
+                BR.setPWM(0, val[0]);
+                TR.setPWM(0, val[1]);
+                TL.setPWM(0, val[2]);
+                BL.setPWM(0, val[3]);
+            } else 
+            {
+                BR.setPWM(0, 1471);
+                TR.setPWM(0, 1471);
+                TL.setPWM(0, 1471);
+                BL.setPWM(0, 1471);
+            }
+
+        }
+    }
+
+    private static void add(double value, int i)
+    {
+        value = calculatePulseWidth(value/1000, FREQUENCY);
+        if(val[i]+value &gt; 1471 &amp;&amp; val[i]+value &lt; 4071)
+        {
+            val[i] += value;
+        }else if(val[i]+value &lt; 1471)
+        {
+            //System.out.println("low");
+            val[i] = 1471;
+        }else if(val[i]+value &gt; 4071)
+        {
+            //System.out.println("low");
+            val[i] = 4071;
+        }
+    }
+
+    private static int calculatePulseWidth(double millis, int frequency) {
+        return (int) (Math.round(4096 * millis * frequency/1000));
+    }
+}
+</code></pre>
+
+<p>Sensor.java:</p>
+
+<pre><code>package com.zachary.quadserver;
+
+import com.pi4j.io.gpio.GpioController;
+import com.pi4j.io.gpio.GpioFactory;
+import com.pi4j.io.gpio.GpioPinDigitalOutput;
+import com.pi4j.io.gpio.PinState;
+import com.pi4j.io.gpio.RaspiPin;
+import com.pi4j.io.i2c.*;
+import com.pi4j.io.gpio.GpioController;
+import com.pi4j.io.gpio.GpioFactory;
+import com.pi4j.io.gpio.GpioPinDigitalOutput;
+import com.pi4j.io.gpio.PinState;
+import com.pi4j.io.gpio.RaspiPin;
+import com.pi4j.io.i2c.*;
+
+import java.net.*;
+import java.io.*;
+
+public class Sensor {
+    static I2CDevice sensor;
+    static I2CBus bus;
+    static byte[] accelData, gyroData;
+    static long accelCalib[] = new long[3];
+    static long gyroCalib[] = new long[3];
+
+    static double gyroX = 0;
+    static double gyroY = 0;
+    static double gyroZ = 0;
+
+    static double accelX;
+    static double accelY;
+    static double accelZ;
+
+    static double angleX;
+    static double angleY;
+    static double angleZ;
+
+    public Sensor() {
+        //System.out.println("Hello, Raspberry Pi!");
+        try {
+            bus = I2CFactory.getInstance(I2CBus.BUS_1);
+
+            sensor = bus.getDevice(0x68);
+
+            sensor.write(0x6B, (byte) 0x0);
+            sensor.write(0x6C, (byte) 0x0);
+            System.out.println("Calibrating...");
+
+            calibrate();
+
+            Thread sensors = new Thread(){
+                    public void run(){
+                        try {
+                            readSensors();
+                        } catch (IOException e) {
+                        System.out.println(e.getMessage());
+                    }
+                    }
+            };
+            sensors.start();
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private static void readSensors() throws IOException {
+        long time = System.currentTimeMillis();
+        long sendTime = System.currentTimeMillis();
+
+        while (true) {
+            accelData = new byte[6];
+            gyroData = new byte[6];
+            int r = sensor.read(0x3B, accelData, 0, 6);
+            accelX = (((accelData[0] &lt;&lt; 8)+accelData[1]-accelCalib[0])/16384.0)*9.8;
+            accelY = (((accelData[2] &lt;&lt; 8)+accelData[3]-accelCalib[1])/16384.0)*9.8;
+            accelZ = ((((accelData[4] &lt;&lt; 8)+accelData[5]-accelCalib[2])/16384.0)*9.8)+9.8;
+            accelZ = 9.8-Math.abs(accelZ-9.8);
+
+            double hypotX = Math.sqrt(Math.pow(accelX, 2)+Math.pow(accelZ, 2));
+            double hypotY = Math.sqrt(Math.pow(accelY, 2)+Math.pow(accelZ, 2));
+
+
+            double accelAngleX = Math.toDegrees(Math.asin(accelY/hypotY));
+            double accelAngleY = Math.toDegrees(Math.asin(accelX/hypotX));
+
+            //System.out.println((int)gyroX+", "+(int)gyroY);
+
+            //System.out.println("accelX: " + accelX+" accelY: " + accelY+" accelZ: " + accelZ);
+
+            r = sensor.read(0x43, gyroData, 0, 6);
+            if(System.currentTimeMillis()-time &gt;= 5)
+            {
+                gyroX = (((gyroData[0] &lt;&lt; 8)+gyroData[1]-gyroCalib[0])/131.0);
+                gyroY = (((gyroData[2] &lt;&lt; 8)+gyroData[3]-gyroCalib[1])/131.0);
+                gyroZ = (((gyroData[4] &lt;&lt; 8)+gyroData[5]-gyroCalib[2])/131.0);
+
+                angleX += gyroX*(System.currentTimeMillis()-time)/1000;
+                angleY += gyroY*(System.currentTimeMillis()-time)/1000;
+                angleZ += gyroZ;
+
+                angleX = 0.95*angleX + 0.05*accelAngleX;
+                angleY = 0.95*angleY + 0.05*accelAngleY;
+
+                time = System.currentTimeMillis();
+            }
+            //System.out.println((int)angleX+", "+(int)angleY);
+            //System.out.println((int)accelAngleX+", "+(int)accelAngleY);
+        }
+    }
+
+    public static void calibrate() throws IOException {
+        int i;
+        for(i = 0; i &lt; 3000; i++)
+        {
+            accelData = new byte[6];
+            gyroData = new byte[6];
+            int r = sensor.read(0x3B, accelData, 0, 6);
+            accelCalib[0] += (accelData[0] &lt;&lt; 8)+accelData[1];
+            accelCalib[1] += (accelData[2] &lt;&lt; 8)+accelData[3];
+            accelCalib[2] += (accelData[4] &lt;&lt; 8)+accelData[5];
+
+            r = sensor.read(0x43, gyroData, 0, 6);
+            gyroCalib[0] += (gyroData[0] &lt;&lt; 8)+gyroData[1];
+            gyroCalib[1] += (gyroData[2] &lt;&lt; 8)+gyroData[3];
+            gyroCalib[2] += (gyroData[4] &lt;&lt; 8)+gyroData[5];
+            try {
+                Thread.sleep(1);
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        gyroCalib[0] /= i;
+        gyroCalib[1] /= i;
+        gyroCalib[2] /= i;
+
+        accelCalib[0] /= i;
+        accelCalib[1] /= i;
+        accelCalib[2] /= i;
+        System.out.println(gyroCalib[0]+", "+gyroCalib[1]+", "+gyroCalib[2]);
+    }
+
+    public double readAngle(int axis)
+    {
+        switch (axis)
+        {
+            case 0:
+                return angleX;
+            case 1:
+                return angleY;
+            case 2:
+                return angleZ;
+        }
+
+        return 0;
+    }
+
+    public double readGyro(int axis)
+    {
+        switch (axis)
+        {
+            case 0:
+                return gyroX;
+            case 1:
+                return gyroY;
+            case 2:
+                return gyroZ;
+        }
+
+        return 0;
+    }
+
+    public double readAccel(int axis)
+    {
+        switch (axis)
+        {
+            case 0:
+                return accelX;
+            case 1:
+                return accelY;
+            case 2:
+                return accelZ;
+        }
+
+        return 0;
+    }
+}
+</code></pre>
+
+<p><strong>Edit:</strong></p>
+
+<p>I have re-written my code in C++ to see if it will run faster but it's still running at about the same speed(about 15 ms per cycle or about 66 Hz).</p>
+
+<p>This is my new code in C++:</p>
+
+<pre><code>#include &lt;wiringPi.h&gt;
+#include &lt;wiringPiI2C.h&gt;
+
+#include &lt;sys/socket.h&gt;
+#include &lt;netinet/in.h&gt;
+
+#include &lt;string.h&gt;
+#include &lt;string&gt;
+#include &lt;iostream&gt;
+#include &lt;unistd.h&gt;
+
+#include &lt;boost/thread.hpp&gt;
+
+#include &lt;time.h&gt;
+
+#include &lt;cmath&gt;
+
+#define axisX 0
+#define axisY 1
+#define axisZ 2
+
+#define kP 20
+#define kI 0
+#define kD 0
+
+#define FREQUENCY 490
+
+#define MODE1 0x00
+#define MODE2 0x01
+#define SUBADR1 0x02
+#define SUBADR2 0x03
+#define SUBADR13 0x04
+#define PRESCALE 0xFE
+#define LED0_ON_L 0x06
+#define LED0_ON_H 0x07
+#define LED0_OFF_L 0x08
+#define LED0_OFF_H 0x09
+#define ALL_LED_ON_L 0xFA
+#define ALL_LED_ON_H 0xFB
+#define ALL_LED_OFF_L 0xFC
+#define ALL_LED_OFF_H 0xFD
+
+// Bits
+#define RESTART 0x80
+#define SLEEP 0x10
+#define ALLCALL 0x01
+#define INVRT 0x10
+#define OUTDRV 0x04
+
+#define BILLION 1000000000L
+
+using namespace std;
+
+double accelCalX = 0;
+double accelCalY = 0;
+double accelCalZ = 0;
+
+double gyroCalX = 0;
+double gyroCalY = 0;
+double gyroCalZ = 0;
+
+double PX;
+double PY;
+
+double IX = 0;
+double IY = 0;
+
+double DX;
+double DY;
+
+double lastErrorX;
+double lastErrorY;
+
+int throttle = 1471;
+
+int sensor = wiringPiI2CSetup(0x68);
+int pwm = wiringPiI2CSetup(0x40);
+
+array&lt;int,4&gt; motorVal;
+
+struct timespec now, then;
+
+int toSigned(int unsignedVal)
+{
+    int signedVal = unsignedVal;
+    if(unsignedVal &gt; 32768)
+    {
+        signedVal = -(32768-(unsignedVal-32768));
+    }
+    return signedVal;
+}
+
+double getAccel(int axis)
+{
+    double X = (toSigned((wiringPiI2CReadReg8(sensor, 0x3B) &lt;&lt; 8)+wiringPiI2CReadReg8(sensor, 0x3C)))/1671.8;
+    double Y = (toSigned((wiringPiI2CReadReg8(sensor, 0x3D) &lt;&lt; 8)+wiringPiI2CReadReg8(sensor, 0x3E)))/1671.8;
+    double Z = (toSigned((wiringPiI2CReadReg8(sensor, 0x3F) &lt;&lt; 8)+wiringPiI2CReadReg8(sensor, 0x40)))/1671.8;
+
+    X -= accelCalX;
+    Y -= accelCalY;
+    Z -= accelCalZ;
+    Z = 9.8-abs(Z-9.8);
+
+    switch(axis)
+    {
+        case axisX:
+            return X;
+        case axisY:
+            return Y;
+        case axisZ:
+            return Z;
+    }
+}
+
+double getGyro(int axis)
+{
+    double X = (toSigned((wiringPiI2CReadReg8(sensor, 0x43) &lt;&lt; 8)+wiringPiI2CReadReg8(sensor, 0x44)))/1671.8;
+    double Y = (toSigned((wiringPiI2CReadReg8(sensor, 0x45) &lt;&lt; 8)+wiringPiI2CReadReg8(sensor, 0x46)))/1671.8;
+    double Z = (toSigned((wiringPiI2CReadReg8(sensor, 0x47) &lt;&lt; 8)+wiringPiI2CReadReg8(sensor, 0x48)))/1671.8;
+
+    X -= gyroCalX;
+    Y -= gyroCalY;
+    Z -= gyroCalZ;
+
+
+    switch(axis)
+    {
+        case axisX:
+            return X;
+        case axisY:
+            return Y;
+        case axisZ:
+            return Z;
+    }
+}
+
+void calibrate()
+{
+    int i;
+    for(i = 0; i &lt; 1500; i++)
+    {
+        accelCalX += (toSigned((wiringPiI2CReadReg8(sensor, 0x3B) &lt;&lt; 8)+wiringPiI2CReadReg8(sensor, 0x3C)))/1671.8;
+        accelCalY += (toSigned((wiringPiI2CReadReg8(sensor, 0x3D) &lt;&lt; 8)+wiringPiI2CReadReg8(sensor, 0x3E)))/1671.8;
+        accelCalZ += (toSigned((wiringPiI2CReadReg8(sensor, 0x3F) &lt;&lt; 8)+wiringPiI2CReadReg8(sensor, 0x40)))/1671.8;
+
+        gyroCalX += (toSigned((wiringPiI2CReadReg8(sensor, 0x43) &lt;&lt; 8)+wiringPiI2CReadReg8(sensor, 0x44)))/1671.8;
+        gyroCalX += (toSigned((wiringPiI2CReadReg8(sensor, 0x45) &lt;&lt; 8)+wiringPiI2CReadReg8(sensor, 0x46)))/1671.8;
+        gyroCalX += (toSigned((wiringPiI2CReadReg8(sensor, 0x45) &lt;&lt; 8)+wiringPiI2CReadReg8(sensor, 0x46)))/1671.8;
+        usleep(1000);
+    }
+
+    accelCalX /= i;
+    accelCalY /= i;
+    accelCalZ /= i;
+    accelCalZ -= 9.8;
+
+    gyroCalX /= i;
+    gyroCalY /= i;
+    gyroCalZ /= i;
+
+    cout &lt;&lt; accelCalX &lt;&lt; " " &lt;&lt; accelCalY &lt;&lt; " " &lt;&lt; accelCalZ &lt;&lt; "\n";
+}
+
+int calculatePulseWidth(double millis, int frequency) {
+    return (int)(floor(4096 * millis * frequency/1000));
+}
+
+void add(double value, int i)
+{
+    value = calculatePulseWidth(value/1000, FREQUENCY);
+    if(motorVal[i]+value &gt; 1471 &amp;&amp; motorVal[i]+value &lt; 4071)
+    {
+        motorVal[i] += value;
+    }else if(motorVal[i]+value &lt; 1471)
+    {
+        //System.out.println("low");
+        motorVal[i] = 1471;
+    }else if(motorVal[i]+value &gt; 4071)
+    {
+        //System.out.println("low");
+        motorVal[i] = 4071;
+    }
+}
+
+void getThrottle()
+{
+    int sockfd,n;
+    struct sockaddr_in servaddr,cliaddr;
+    socklen_t len;
+    char mesg[1000];
+
+    sockfd=socket(AF_INET,SOCK_DGRAM,0);
+
+    bzero(&amp;servaddr,sizeof(servaddr));
+    servaddr.sin_family = AF_INET;
+    servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
+    servaddr.sin_port = htons(8080);
+    bind(sockfd,(struct sockaddr *)&amp;servaddr,sizeof(servaddr));
+
+    while(true)
+    {
+        len = sizeof(cliaddr);
+        n = recvfrom(sockfd,mesg,1000,0,(struct sockaddr *)&amp;cliaddr,&amp;len);
+        mesg[n] = 0;
+        string message(mesg);
+        string values[5];
+
+        int valIndex = 0;
+        int lastIndex = 0;
+        for(int i = 0; i &lt; message.length(); i++)
+        {
+            if(message[i] == ' ')
+            {
+                values[valIndex] = message.substr(lastIndex+1, i);
+                lastIndex = i;
+                valIndex++;
+            }
+        }
+        values[valIndex] = message.substr(lastIndex+1, message.length());
+
+        throttle = calculatePulseWidth(((stoi(values[4])*12.96)+733)/1000, FREQUENCY);
+    }
+}
+
+void setAllPWM(int on, int off) {
+    wiringPiI2CWriteReg8(pwm, ALL_LED_ON_L, (on &amp; 0xFF));
+    wiringPiI2CWriteReg8(pwm, ALL_LED_ON_H, (on &gt;&gt; 8));
+    wiringPiI2CWriteReg8(pwm, ALL_LED_OFF_L, (off &amp; 0xFF));
+    wiringPiI2CWriteReg8(pwm, ALL_LED_OFF_H, (off &gt;&gt; 8));
+}
+
+void setPWM(int on, int off, int channel) {
+    wiringPiI2CWriteReg8(pwm, LED0_ON_L + 4 * channel, (on &amp; 0xFF));
+    wiringPiI2CWriteReg8(pwm, LED0_ON_H + 4 * channel, (on &gt;&gt; 8));
+    wiringPiI2CWriteReg8(pwm, LED0_OFF_L + 4 * channel, (off &amp; 0xFF));
+    wiringPiI2CWriteReg8(pwm, LED0_OFF_H + 4 * channel, (off &gt;&gt; 8));
+}
+
+void setPWMFrequency(double frequency) {
+    double prescaleval = 25000000.0;
+    prescaleval /= 4096.0;
+    prescaleval /= frequency;
+    prescaleval -= 1.0;
+    double prescale = floor(prescaleval + 0.5);
+    int oldmode = wiringPiI2CReadReg8(pwm, MODE1);
+    int newmode = (oldmode &amp; 0x7F) | 0x10;
+    wiringPiI2CWriteReg8(pwm, MODE1, newmode);
+    wiringPiI2CWriteReg8(pwm, PRESCALE, (floor(prescale)));
+    wiringPiI2CWriteReg8(pwm, MODE1, oldmode);
+    usleep(50000);
+    wiringPiI2CWriteReg8(pwm, MODE1, (oldmode | 0x80));
+}
+
+void initSensor()
+{
+    wiringPiI2CWriteReg8(sensor, 0x6B, 0x0);
+    wiringPiI2CWriteReg8(sensor, 0x6C, 0x0);
+}
+
+void initPWM()
+{
+    setAllPWM(0, 0);
+    wiringPiI2CWriteReg8(pwm, MODE2, OUTDRV);
+    wiringPiI2CWriteReg8(pwm, MODE1, ALLCALL);
+    usleep(50000);
+    int mode1 = wiringPiI2CReadReg8(pwm, MODE1);
+    mode1 = mode1 &amp; ~SLEEP;
+    wiringPiI2CWriteReg8(pwm, MODE1, mode1);
+    usleep(50000);
+    setPWMFrequency(FREQUENCY);
+}
+
+double millis(timespec time)
+{
+    return (time.tv_sec*1000)+(time.tv_nsec/1.0e6);
+}
+
+double intpow( double base, int exponent )
+{
+    int i;
+    double out = base;
+    for( i=1 ; i &lt; exponent ; i++ )
+    {
+        out *= base;
+    }
+    return out;
+}
+
+int main (void)
+{
+
+    initSensor();
+    initPWM();
+
+    cout &lt;&lt; "Calibrating..." &lt;&lt; "\n";
+    calibrate();
+
+    boost::thread server(getThrottle);
+
+    clock_gettime(CLOCK_MONOTONIC, &amp;then);
+
+    while(true)
+    {
+        motorVal.fill(throttle);
+
+        clock_gettime(CLOCK_MONOTONIC, &amp;now);
+
+        double dt = (millis(now)-millis(then))/1000;
+
+        then = now;
+
+        double accelX = getAccel(0);
+        double accelY = getAccel(1);
+        double accelZ = getAccel(2);
+
+        double hypotX = sqrt(intpow(accelX, 2)+intpow(accelZ, 2));
+        double hypotY = sqrt(intpow(accelY, 2)+intpow(accelZ, 2));
+
+        double accelAngleX = (180/3.14)*(asin(accelY/hypotY));
+        double accelAngleY = (180/3.14)*(asin(accelX/hypotX));
+
+        double errorX = -getGyro(0);
+        double errorY = getGyro(1);
+
+        PX = errorX;
+        PY = errorY;
+
+        IX += errorX*dt;
+        IY += errorY*dt;
+
+        IX = 0.95*IX+0.05*accelAngleX;
+        IY = 0.95*IY+0.05*accelAngleY;
+
+        DX = (errorX-lastErrorX)*dt;
+        DY = (errorY-lastErrorY)*dt;
+
+        lastErrorX = errorX;
+        lastErrorY = errorY;
+
+        double outputX = kP*PX+kI*IX+kD*DX;
+        double outputY = kP*PY+kI*IY+kD*DY;
+
+        add(outputY, 0);//-outputX+
+        add(outputY, 1);//-outputX-
+        add(outputY, 2);//outputX-
+        add(outputY, 3);//outputX+
+
+        setPWM(0, motorVal[0], 12);
+        setPWM(0, motorVal[1], 13);
+        setPWM(0, motorVal[2], 14);
+        setPWM(0, motorVal[3], 15);
+    }
+}
+</code></pre>
+
+<p>In addition two of the motors seem like they are lagging when I turn the quadcopter fast in one direction. Also for some strange reason the quadcopter seems less responsive to P gain; I have it at 20 in the C++ version and it is working about the same as when I had it at 1.5 in the java version.</p>
+
+<p><strong>Edit:</strong></p>
+
+<p>After doing some more testing I have determined that reading from the MPU6050 and writing to the PCA9685 board that I am using to control the ESCs is the source of the delay. Does anybody know how to speed this up?</p>
+
+<p><strong>Edit:</strong></p>
+
+<p>I managed to speed up my code to about 200 Hz by changing the i2c baud rate, but the quadcopter is still thrashing. I have spent hours trying to tune the pid controller, but it doesn't seem to help at all.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6720" data-toggle = "popover">
+				<p>user name : Zachary Schroeder</p>
+				<p> user reputation : 46</p>
+				<p class = "tagcontent" id = "usertaginfo-6720">{'quadcopter': 1, 'None': 4, 'pid': 1, 'raspberry-pi': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-6720">Load Comments</button></br>
+			<div id = "commentsection-6720" class = 'collapse'>
+			<div id = "comment-9639" class = "comment">
+				<p>My intention in suggesting that you post here assumed you'd also take the suggestion of analyzing data and narrowing down your problem seriously first. Reiterating from [the original](http://bit.ly/1FYguf9): There is no way to know given the information provided. Tuning PID controllers is an art, your problem could be there. Incorrect controller implementation could also be an issue. Bad sensors, motor problems, or any number of other things subtle or not-so-subtle could also be the cause. You need to perform some more tests, gather and analyze data, and narrow down your problem.</p>
+			</div>
+			<div id = "comment-9640" class = "comment">
+				<p>For a good example of formulating a question after research see http://robotics.stackexchange.com/questions/2167/quadcopter-instability-with-simple-takeoff-in-autonomous-mode?rq=1</p>
+			</div>
+			<div id = "comment-9641" class = "comment">
+				<p>have you considered how quick your code is? Java is not the fastest platform so the code may not run fast enough to capture the error/perturbation induced by the speed given by the higher throttle.... a typical commercial quadcopter corrects itself 400 times/sec or so...</p>
+			</div>
+			<div id = "comment-9666" class = "comment">
+				<p>I would guess either the PID tuning makes the quadcopter overreact at high throttle settings, or as @dm76 pointed out, your control system does not refresh fast enough. Time each iteration of your control system and make sure it is above 100 (that's what my controls professor suggested when I was working on a quad). I would read your gyro as fast as possible and average the readings rather than wait 5 ms for each one (at least).</p>
+			</div>
+			<div id = "comment-9673" class = "comment">
+				<p>what do you mean by above 100? 100 what?</p>
+			</div>
+			<div id = "comment-9674" class = "comment">
+				<p>100 iterations/sec I suppose</p>
+			</div>
+			<div id = "comment-9684" class = "comment">
+				<p>It is possible that your controller isn't completely stable. One thing which comes to mind is maybe saturation of your control.</p>
+			</div>
+			</div>
+				<textarea id = "speech-6720" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6720">
+					<img id="start_img-6720" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6720">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-6745"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6745" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Rasbian on Raspberry pi is not real time OS, when u try to read some value due to some processing factors there is a chance that values are read late and thus the overall real-time control does not occur which is very crucial for a quadcopter project. So it would be better to connect the mpu6050 and pwm out to a microcontroller rather than using Pi. You can use real time OS on Raspberry pi like FreeRTOS and ChibiOS/RT. Or instead attach a real-time hardware to serial port to make it real-time.</p>
+
+<p>But for your case the trashing maybe caused due to incorrect PID values. Maybe you for got to put a -ve sign somewhere in the code. Please check this article clearly to know the correct -ve sign placements in code : <a href="https://ghowen.me/build-your-own-quadcopter-autopilot/" rel="nofollow">How to build your own Quadcopter's Flight Controller</a>. </p>
+
+<p>But from my experience I would suggest you to trash Raspberry Pi for Quadcopter project since it might get heavy once u use a separate real-time unit, microcontroller and GPIO extensions for using more PWM pins. So instead of adding all those hardwares I would prefer you to use BeagleBone Back since it has an inbuilt Programmable real-time units that is you can use the 1GHz BBB processor for control logic and also its 2 independent PRU's to read PPM values from RC receiver and send PWM values to ESC's and it also has enough GPIO pins to read PPM and send PWM outputs to upto 12 pins. Check out <a href="https://erlerobotics.com/blog/erle-brain/" rel="nofollow">erle robot Project</a> which is an Open Hardware/Open Source quadcopter project using BBB running on ROS.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6745" data-toggle = "popover">
+				<p>user name : Anto Dominic</p>
+				<p> user reputation : 126</p>
+				<p class = "tagcontent" id = "usertaginfo-6745">{'None': 11}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-6745" class = 'collapse'>
+			</div>
+				<textarea id = "speech-6745" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6745">
+					<img id="start_img-6745" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6745">Comment</button>
+			<br><div id = "ans-6756"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6756" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Actually, Rasbian can be turned into a real time OS. Before switching to ChibiOS and the like, you could give a try to Linux RT patch. There is a simple <a href="http://docs.emlid.com/Downloads/Real-time-Linux/" rel="nofollow">tutorial</a> how to set up a RT kernel on RPi. </p>
+
+<p>If the issue you're observing is caused by the scheduler jitter, the problem might go away.</p>
+
+<p>I've managed to run a copter on 100Hz without a significant jitter. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6756" data-toggle = "popover">
+				<p>user name : staroselskii</p>
+				<p> user reputation : 11</p>
+				<p class = "tagcontent" id = "usertaginfo-6756">{'None': 1}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-6756" class = 'collapse'>
+			</div>
+				<textarea id = "speech-6756" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6756">
+					<img id="start_img-6756" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6756">Comment</button>
+			<br><div id = "ans-6763"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6763" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I hope this won't sound too harsh but from my experience building a quadcopter and asking questions here this is exactly the kind of question which won't get you an answer that you'll find helpful. From what you describe there are far too many potential points of failures in your system for the community to contribute effectively. The people who have already commented with PID tuning tips or questions about the speed of your loop are making the huge assumption that everything else you have not talked about works.</p>
+
+<p>I would suggest you test the different software modules independently and try to narrow down the problem. I appreciate you said you tested your sensors independently and they worked fine. Is that all you tested? How well does your attitude estimation algorithm work? What's its precision and its response time like? Does it still work when the motors spin (is it vibrations tolerant)? Can you control your motors directly (not through the PID)? What's their response time? Any glitches? What's the structure of your PID controllers: angle stabilisation, rate stabilisation, cascaded rate then angle stabilisation? Chances are you'll find the solution to your problem while answering one of these questions. And even if you don't you would then be able to ask a much more precise and answerable question.</p>
+
+<p>Best of luck with your project in any case: quadcopters are hard!</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6763" data-toggle = "popover">
+				<p>user name : marcv81</p>
+				<p> user reputation : 408</p>
+				<p class = "tagcontent" id = "usertaginfo-6763">{'None': 22, 'pid': 4}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-6763" class = 'collapse'>
+			</div>
+				<textarea id = "speech-6763" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6763">
+					<img id="start_img-6763" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6763">Comment</button>
+			<br><div id = "ans-6780"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6780" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You are using a PID incorrectly.  You are reading sensor values that in terms of acceleration, but you are using that to correct an error in velocity (without conversion).  Your PID should be reading and controlling the same measurement -- velocity vs velocity, acceleration vs acceleration, or position vs position.  </p>
+
+<p>The behavior you are seeing can be explained simply by $$
+a = \frac{dv}{dt}
+$$</p>
+
+<p>At low velocities, $dv$ can only be as high as your maximum velocity, so your system appears to work properly within that bound.  But as you increase the maximum velocity, your acceleration can spike much higher.  </p>
+
+<p>This is simply a logic error in your code played out in physical space.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6780" data-toggle = "popover">
+				<p>user name : Ian</p>
+				<p> user reputation : 9640</p>
+				<p class = "tagcontent" id = "usertaginfo-6780">{'planning': 10, 'None': 809, 'power': 1, 'algorithm': 10, 'battery': 1, 'slam': 7, 'coverage': 10, 'mobile-robot': 9, 'sensors': 9}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-6780">Load Comments</button></br>
+			<div id = "commentsection-6780" class = 'collapse'>
+			<div id = "comment-9716" class = "comment">
+				<p>This may be a stupid question, so forgive me, but it seems to me that I am using the angular velocity from the gyro to control the correction of the motors. So I'm not using acceleration to control velocity, I'm using angular velocity to control angular velocity. I'm sorry if I have misunderstood your answer, and please correct me if I am wrong.</p>
+			</div>
+			<div id = "comment-9722" class = "comment">
+				<p>On which axis is/was it thrashing?  I assumed the Z axis.</p>
+			</div>
+			</div>
+				<textarea id = "speech-6780" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6780">
+					<img id="start_img-6780" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6780">Comment</button>
+			<br><div id = "ans-6899"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6899" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>So, I figured out that the problem was vibration. I first tried using a running average to smooth the data that I was getting from my MPU, but the delay that it created made it oscillate a lot, so I tried a low pass filter instead, which worked GREAT! Thank you to everyone for your help!</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6899" data-toggle = "popover">
+				<p>user name : Zachary Schroeder</p>
+				<p> user reputation : 46</p>
+				<p class = "tagcontent" id = "usertaginfo-6899">{'quadcopter': 1, 'None': 4, 'pid': 1, 'raspberry-pi': 1}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-6899" class = 'collapse'>
+			</div>
+				<textarea id = "speech-6899" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6899">
+					<img id="start_img-6899" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6899">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

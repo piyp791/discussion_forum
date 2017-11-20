@@ -1,0 +1,207 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>object level sensor fusion for multiobject tracking
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-1181" class = "post">
+			<h2>Question</h2>
+			<div id="vote-1181" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 330</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>object level sensor fusion for multiobject tracking</h2>
+<p>I want to fuse objects coming from several sensors, with different (sometimes overlapping!) fields of view. Having object lists, how can I determine whether some objects observed by different sensors are in fact the same object? Only then I can truly write an algorithm to predict future state of such an object. </p>
+
+<p>From literature I read those 4 steps:</p>
+
+<ol>
+<li>Plot to track association (first update tracks estimates and then associate by "acceptance gate" or by statistical approach PDAF or JPDAF)</li>
+<li>Track smoothing (lots of algorithms for generating new improved estimate, e.g.: EKF, UKF, PF)</li>
+<li>Track initiation (create new tracks from unassociated plots)</li>
+<li>Track maintenance (delete a track if was not associated for last M turns. also: predict those tracks that were associated, their new location based on previous heading and speed)</li>
+</ol>
+
+<p>So basically I am questioning point 1, acceptance gate. For a single sensor I can imagine it can be just a comparison of xy position of object and sensor measurement, velocity with heading eventually. My case is however, I have already ready object lists from each sensor in every cycle, there are some algorithms how to merge informations about an object collected by different sensors (great source is e.g. here: <a href="http://www.mathworks.de/matlabcentral/fileexchange/37807-measurement-fusion-state-vector-fusion" rel="nofollow">http://www.mathworks.de/matlabcentral/fileexchange/37807-measurement-fusion-state-vector-fusion</a>), but question is how to decide which objects should be fused, and which left as they were? Fields of view may overlap partly, not totally.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1181" data-toggle = "popover">
+				<p>user name : josh131</p>
+				<p> user reputation : 97</p>
+				<p class = "tagcontent" id = "usertaginfo-1181">{'None': 0, 'sensor-fusion': 14, 'algorithm': 10, 'artificial-intelligence': 3, 'books': 4, 'kalman-filter': 14, 'sensors': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1181">Load Comments</button></br>
+			<div id = "commentsection-1181" class = 'collapse'>
+			<div id = "comment-2697" class = "comment">
+				<p>There are many more ways to do point 1, and point 1 is what you need. You may have to get creative, but that's the task you have.</p>
+			</div>
+			</div>
+				<textarea id = "speech-1181" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1181">
+					<img id="start_img-1181" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1181">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-1184"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1184" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>This depends on a lot of things.  What kind of sensors? Are they stationary? Are they at least fixed with respect to each other?  </p>
+
+<p>For example, if you have a system of multiple cameras that are fixed with respect to each other, you can calibrate them, so that you know their relative positions and orientations.  Then not only will you be able to determine whether two detections in different cameras are the same object, but you will be able to determine its position in 3D.</p>
+
+<p>Here is the classic paper on <a href="http://research.microsoft.com/en-us/um/people/zhang/papers/TR98-71.pdf" rel="nofollow">camera calibration</a>. To actually do the calibration you can either use OpenCV or the <a href="http://www.vision.caltech.edu/bouguetj/calib_doc/" rel="nofollow">Caltech Camera Calibration Toolbox for Matlab</a>. OpenCV has an example application for camera calibration which is easier to use than the Caltech toolbox.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1184" data-toggle = "popover">
+				<p>user name : Dima</p>
+				<p> user reputation : 191</p>
+				<p class = "tagcontent" id = "usertaginfo-1184">{'None': 9}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1184">Load Comments</button></br>
+			<div id = "commentsection-1184" class = 'collapse'>
+			<div id = "comment-2687" class = "comment">
+				<p>Sensors are fixed with respect to each other. First I am interested in type radar. And then eventually how it would work in combination with camera, or laser.
+
+What you wrote about is stereo vision right?</p>
+			</div>
+			<div id = "comment-2688" class = "comment">
+				<p>Yes, this is stereo vision. There must be also ways to calibrate a system consisting of other types of sensors. Unfortunately, I know next to nothing about radar.</p>
+			</div>
+			<div id = "comment-2689" class = "comment">
+				<p>Ok no problem. Further on I am about to move to cameras also, are there some references you recommend me to learn from, once I'm into it?</p>
+			</div>
+			<div id = "comment-2700" class = "comment">
+				<p>I have edited my answer.</p>
+			</div>
+			</div>
+				<textarea id = "speech-1184" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1184">
+					<img id="start_img-1184" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1184">Comment</button>
+			<br><div id = "ans-1186"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1186" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>This is called "data association" in tracking literature. When you measure the position of an object, you need to know which object it was you measured. If you can estimate this probability, then you are free to choose the most likely association. This is a heavily researched topic, but boils down to Bayesian analysis. </p>
+
+<p>Here's a simple way:</p>
+
+<p>Assume we have two objects $o_1$ and $o_2$, an estimate of their position $x_1$ and $x_2$, and a measurement $z$. Suppose $z$ is just a position measurement. We'd like to update $o_1$ <strong>or</strong> $o_2$'s estimated position, but we have no idea with object we just measured. So, we find the <em>most likely</em> object, and update that.</p>
+
+<ol>
+<li><p>Estimate $p(z|x_1)$ and $p(z|x_2)$. The Kalman filter gives you the tools to do this.</p></li>
+<li><p>IF $p(z|x_1)&gt;p(z|x_2)$ AND $p(z|x_1)&gt;\gamma$, then update $x_1$ using $z$, the Kalman filter gives you the tools to do this as well. </p></li>
+<li><p>ELSE IF $p(z|x_2)&gt;p(z|x_1)$ AND $p(z|x_2)&gt;\gamma$, then update $x_2$ using $z$, the Kalman filter gives you the tools to do this as well. </p></li>
+<li><p>ELSE, no probability is greater than $\gamma$, so we drop the measurement. You can set $\gamma$ to zero if you don't care. </p></li>
+</ol>
+
+<p>Two things: First, you also need to know how to <em>initialize</em> an object. That's why $\gamma$ is important. If the measurement doesn't <em>seem</em> to match any known estimates, you might have just detected a new object.</p>
+
+<p>Second, I have a suspicion that your question will be heavily edited, so I'm not putting a lot of details in just now.</p>
+
+<hr>
+
+<p><strong>EDIT</strong>
+To address your newer, revised question:</p>
+
+<p>You have a different problem, but it is totally related. First, you want to fuse objects. This is as simple as estimating the probability that all measurements of object 1 and all measurements of object 2 are in fact of the same object.  The algorithm is simple, but nearly intractable computationally. This is the same as track merger.</p>
+
+<p>To really do this with objects in 3D, you need a model of the object which allows you to estimate the probability that two partially overlapping (or possibly just nearby) objects are in fact the same object). But this is exactly the same as the acceptance gate approach.</p>
+
+<p><em>note</em></p>
+
+<p>There are only a few really useful ways to mere measurements, and they are well defined. I strongly suggest if you wish to continue with abstract tracking and estimation tasks that you read Bar-Shalom's <a href="http://rads.stackoverflow.com/amzn/click/047141655X" rel="nofollow">Tracking and Estimation book</a>. Please get it from a library if you can. I just don't know of a better reference.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1186" data-toggle = "popover">
+				<p>user name : Josh Vander Hook</p>
+				<p> user reputation : 3960</p>
+				<p class = "tagcontent" id = "usertaginfo-1186">{'None': 345}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1186">Load Comments</button></br>
+			<div id = "commentsection-1186" class = 'collapse'>
+			<div id = "comment-2693" class = "comment">
+				<p>you are right, I will shortly edit my question. I add knowledge I have, it can be a good source for the others later also. So please answer to my updated question, as if I asked you here. Regarding your 1.2.3.4., silly question maybe, but how does KF let me estimate probability of measurement conditioned on position? I thought measurement just comes and is compared with estimated in innovation part.</p>
+			</div>
+			</div>
+				<textarea id = "speech-1186" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1186">
+					<img id="start_img-1186" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1186">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

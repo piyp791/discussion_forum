@@ -18,6 +18,50 @@ module.exports = {
         return a;
     },
 
+    getActivityForUser: async function(userid, callback){
+
+        //userid = '11874';
+        useractivity = await redis.getUserActivity(userid);
+        callback(null, useractivity)
+
+    },
+
+    getQueryWordsForUser: async function(posts, callback){
+
+        //var result = {}
+        queryStr= '';
+        for(var post of posts){
+
+            queryWords = await redis.getQueryWordsForPost(post);
+            //console.log('query words for post--> ' + post.Title + '-->' +JSON.stringify(queryWords))
+            //result[post.id] = queryWords
+            var count = 0;
+            for(var obj of queryWords){
+
+                if(count==1){
+                    break;
+                }
+                queryStr+= (' ' + obj['n-gram']);
+                count++;
+
+            }
+        }
+
+        //console.log('result-->' +JSON.stringify(result))
+        //pick top 1 for all ten posts
+    
+
+        console.log('queryWords-->' +queryStr);
+        
+        //words = [{'score': 0.03171920683813774, 'n-gram': 'robot'}, {'score': 0.023516087660580193, 'n-gram': 'make'}, {'score': 0.01918319829501491, 'n-gram': 'need'}, {'score': 0.024807048059581952, 'n-gram': 'href'}, {'score': 0.0400123071484196, 'n-gram': 'com'}, {'score': 0.06688753138600217, 'n-gram': 'servo'}]
+        callback(null, queryStr)
+    },
+
+    doContentBasedQuery: async function(query, callback){
+        var response =  await (esUtil.doSearch(query));
+        callback(null, response);
+    },
+
     searchRecommendations: async function(userid, data, callback){
 
         //console.log(data);

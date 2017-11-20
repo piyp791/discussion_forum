@@ -1,0 +1,213 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>What is the right approach to write the spin controller for a soccer robot?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-1" class = "post">
+			<h2>Question</h2>
+			<div id="vote-1" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">12</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 206</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>What is the right approach to write the spin controller for a soccer robot?</h2>
+<p>Imagine programming a 3 wheel soccer robot. What type of controller would you use for spinning it? P? PID?</p>
+
+<p>The goal for this controller is that it should make the robot stand in a defined angle ( 0 degree ) and turn back if rotated by hand or other robot. </p>
+
+<p>I use stepper motors for my robot and not servos so I need to implement this in my software!</p>
+
+<p>I have written a sample P type controller already and the movement is fairly good. But I would like to make it better if possible. The code is as follows:</p>
+
+<pre><code>void spinSpeed(int devidedValue, int addedValue, int correction) {
+
+    if(degree&lt;correction &amp;&amp; degree&gt;-correction) {
+        motorSpeed = 0;
+    } else {
+        if(degree &gt; 0) {
+            motorSpeed = ((degree)/(devidedValue) + (addedValue));
+        } else {
+            motorSpeed = ((degree)/(devidedValue) - (addedValue));  
+        }
+    }
+}
+</code></pre>
+
+<p><code>correction</code> is a range , in which robot has no movement. 
+<code>degree</code> is a number between -127 and 128 which is returned from the compass.
+<code>motorSpeed</code> is a number between 0 and 255 which is applied to the PWM.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1" data-toggle = "popover">
+				<p>user name : Miro Markaravanes</p>
+				<p> user reputation : 323</p>
+				<p class = "tagcontent" id = "usertaginfo-1">{'control': 12, 'None': 8, 'i2c': 2, 'motor': 6, 'power': 6, 'pwm': 7, 'microcontroller': 2, 'mechanism': 0, 'avr': 7, 'circuit': -5, 'electronics': 6, 'soccer': 12, 'software': -3}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1">Load Comments</button></br>
+			<div id = "commentsection-1" class = 'collapse'>
+			<div id = "comment-1" class = "comment">
+				<p>Presumably this routine is run every time the compas generates a new value for `degree`?</p>
+			</div>
+			<div id = "comment-2" class = "comment">
+				<p>@MarkBooth I have my code in a while(1) so in every cycle it gets the value from the compass gives it to the function and then applies the result to the motors.</p>
+			</div>
+			<div id = "comment-4" class = "comment">
+				<p>I'd investigate what kind of controller that a servo uses, since you are trying to duplicate servo behavior in software.</p>
+			</div>
+			<div id = "comment-6" class = "comment">
+				<p>I don't use servos. I use step motors so there isn't already such a behavior in the motor.</p>
+			</div>
+			<div id = "comment-26" class = "comment">
+				<p>Hi Miro, on stack exchange it is better to edit your question in response to questions in comments, that way the comments can be tidied up (deleted) so that they don't distract from the question itself.</p>
+			</div>
+			<div id = "comment-41" class = "comment">
+				<p>@MiroMarkarian: I know, but you are looking for a similar algorithm that servos use</p>
+			</div>
+			<div id = "comment-10959" class = "comment">
+				<p>Please clarify: 1) at the definition of the goal, "turn back" means turn "backwards" (to 180 degrees), or to re-align itself to 0 degrees? 2) What does it mean to "rotate by hand", an RC command or an outside person rotating the robot by hand? The robot player would not know if it was turned by a person or another robot (unless there are other sensors to know so), maybe just its heading sensor is giving wrong data...</p>
+			</div>
+			<div id = "comment-10960" class = "comment">
+				<p>just noticed now that this question is probably an earlier version of the several other similar questions.</p>
+			</div>
+			<div id = "comment-10982" class = "comment">
+				<p>@G rkan etin This is actually the very first question on this site! 1. I meant back to a pre-defined reference point that we have agreed to call 0 degrees. It might be in any direction. 2. The source of the error is irrelevant to the correction. All that the system is concerned about is the presence of a deviation from the reference point that needs to be corrected.</p>
+			</div>
+			</div>
+				<textarea id = "speech-1" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1">
+					<img id="start_img-1" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-14"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-14" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">8</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>A PID controller would be the best, Using a compass then it is a relatively straight forward task of getting the bearing of your robot and comparing it to the bearing you want to achieve, and using some <a href="http://en.wikipedia.org/wiki/PID_controller#Overview_of_methods">PID tuning techniques</a> to achieve a smooth turning motion to your desired heading. This approach can also be applied to rotating by a given amount accurately.</p>
+
+<p>I have already done some robotics in this field, <a href="http://team759.blogspot.co.uk/2011/11/adding-compass.html">this</a> is what we used in our robot, doing a not too dissimilar task to yours...</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-14" data-toggle = "popover">
+				<p>user name : Njdart</p>
+				<p> user reputation : 311</p>
+				<p class = "tagcontent" id = "usertaginfo-14">{'None': 21}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-14">Load Comments</button></br>
+			<div id = "commentsection-14" class = 'collapse'>
+			<div id = "comment-13" class = "comment">
+				<p>Thanks for your answer. I wanted to accept the answer but I would like to see more answers, so I will accept when there were more answers ;)</p>
+			</div>
+			</div>
+				<textarea id = "speech-14" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-14">
+					<img id="start_img-14" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-14">Comment</button>
+			<br><div id = "ans-24"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-24" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">7</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The important thing to remember about a <a href="http://en.wikipedia.org/wiki/PID_controller" rel="nofollow">PID</a> control loop is that each term is intended to dominate control at different times during a move.</p>
+
+<p>The proportional term is intended to dominate and provide a larger torque (or in your case speed) the further you are away from your target position.</p>
+
+<p>The derivative term is intended to dominate during the 'cruise' phase of your typical trapezoidal move. It helps to reign back a very high proportional term and limit runaway acceleration when you are far from your destination, but it can also help increase the speed at which you converge on your destination when you get close to it and the proportional term contributes much less.</p>
+
+<p>If you are using a velocity controller rather than a torque controller then the derivative term may actually be hidden inside your speed controller and not directly accessible to your PID loop. This can make control simpler (typically it will just accelerate as quickly as it can up to the desired speed or maximum speed, whichever is lower) but it can also make it less predictable. Often an overly aggressive D (or P) term can result in getting into a <a href="http://en.wikipedia.org/wiki/Limit_cycle" rel="nofollow">limit cycle</a> (often incorrectly called <a href="http://en.wikipedia.org/wiki/Mechanical_resonance" rel="nofollow">resonance</a> or <a href="http://en.wikipedia.org/wiki/Oscillation" rel="nofollow">oscillation</a> due to the sound of the motors humming or even screaming in this state, though <em>limit-cycle</em> is a much more accurate description).</p>
+
+<p>The integral term is there to correct for residual <a href="http://en.wikipedia.org/wiki/PID_controller#Integral_term" rel="nofollow">steady-state error</a>, that is where there is a persistent, long term difference between where you are being asked to go and where you actually are. Your current <code>correction</code> (really just tolerance) value works like the opposite of an integral term, it cuts the motor entirely when you are within a <a href="http://en.wikipedia.org/wiki/Deadband" rel="nofollow">deadband</a> around the desired position.</p>
+
+<p>Due to these factors, you will gain little from implementing a full PID loop unless you also plan in a velocity profile with a distinct accelerate, cruise &amp; decelerate phases.</p>
+
+<p>Also bear in mind that the deadband and lack of I term will mean that the final position will always be somewhat random and will most likely differ depending on which direction you approach the desired position. As such, your bi-directional repeatability could be much worse than your standard repeatability.</p>
+
+<p>For more information on the difference between accuracy, repeatability and resolution, see <a href="http://www.me.mtu.edu/~microweb/chap2/ch2-1.htm" rel="nofollow">this excellent description</a>. In your case, your resolution is your compass sensor, while both accuracy, repeatability are most likely limited by your <code>correction</code> value, since if the <code>correction</code> value is larger than your compass resolution, you are throwing away some of your positional accuracy in return for being able to turn off your motor when you are close.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-24" data-toggle = "popover">
+				<p>user name : Mark Booth</p>
+				<p> user reputation : 3037</p>
+				<p class = "tagcontent" id = "usertaginfo-24">{'control': 7, 'quadcopter': 2, 'None': 258, 'tuning': 7, 'uav': 2, 'design': 2, 'stepper-motor': 7}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-24" class = 'collapse'>
+			</div>
+				<textarea id = "speech-24" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-24">
+					<img id="start_img-24" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-24">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

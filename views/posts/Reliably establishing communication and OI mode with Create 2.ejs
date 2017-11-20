@@ -1,0 +1,172 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Reliably establishing communication and OI mode with Create 2
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9371" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9371" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 75</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Reliably establishing communication and OI mode with Create 2</h2>
+<p>I've started tinkering with a Create 2, but I'm having issues reliably getting it to accept my commands.  I can occasionally get it right, but sometimes, it just seems to ignore me.  I'm guessing my cleanup code isn't getting the state fully reset or something.  Is there a good pattern to follow for fail-safe initialization code?</p>
+
+<p>Here's what I'm doing right now:</p>
+
+<ol>
+<li>Pulse BRC low for 1 second</li>
+<li>Wait 1 second</li>
+<li>Send 16x 0 bytes (to make sure if it's waiting for the rest of a command, this completes it - seemed to help a bit when I added this)</li>
+<li>Send 7 (reset)</li>
+<li>Wait 10 seconds</li>
+<li>Send 128 (start)</li>
+<li>Wait 2 seconds</li>
+<li>Send 149 35 (ask for the current OI state)</li>
+<li>Wait 1 second</li>
+<li>Send 131 (safe mode)</li>
+</ol>
+
+<p>Sometimes I'm then able to issue 137 (drive) commands and have it work.  Most times it doesn't.  The times when it doesn't, I'm seeing a lot of data coming from the Create 2 that I'm not expecting, that looks something like this (hex bytes):</p>
+
+<pre><code>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 3f 2a ff 73 21 09 cc 0a 88 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 3f 2a ff 73 21 09 cc 0a
+</code></pre>
+
+<p>There's more, but my logging cut it off.  I get the same pattern a couple of times, and it seems to be at least partially repeating.  I thought maybe it's the 16 0-bytes I sent followed by <code>003f 2aff 7321 09cc 0a88</code>, but I still don't know how to interpret that.</p>
+
+<p>Sometimes it will make some noise for the reset command, but usually ignores the start/safe mode commands completely (I can tell because the green light stays on).</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9371" data-toggle = "popover">
+				<p>user name : Jonathan Rupp</p>
+				<p> user reputation : 101</p>
+				<p class = "tagcontent" id = "usertaginfo-9371">{'None': 0, 'irobot-create': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9371">Load Comments</button></br>
+			<div id = "commentsection-9371" class = 'collapse'>
+			<div id = "comment-16595" class = "comment">
+				<p>I should mention - communication is from a Particle Photon, a 3.3V device whose serial pins are 5V tolerant, and can handle the 115200 baud serial connection.  RX/TX are direct-wired.</p>
+			</div>
+			<div id = "comment-16603" class = "comment">
+				<p>You do not need to reset the robot every time as long as you properly exit the OI mode (173 if in passive mode, 173 173 if in the other modes).
+Also, does the pattern of data start after sending the drive command or before?</p>
+			</div>
+			<div id = "comment-16606" class = "comment">
+				<p>I *think* the data was after the first drive command, but I'm not positive on that now that you mention it.  I've been having crash-out issues from the microcontroller, so I'll try adding 173 173 to my startup sequence.  Time for more experiments :)</p>
+			</div>
+			<div id = "comment-16608" class = "comment">
+				<p>You should send the stop command after you are finished using the OI (say to let the robot charge or idle, etc.). If you do that, you should not need it at startup either. (173 is the stop command).
+What data bytes are you sending with the drive command?</p>
+			</div>
+			<div id = "comment-16611" class = "comment">
+				<p>I was sending 137 1 0 0 0 (ie. about half-speed drive straight) for testing, but eventually was planning to drive it off of a gamepad input :)  As for stop-when-done - completely get that.  Like I said, my controller was crashing out sometimes, and I was looking for as "bullet-proof" of an initialization as I could that could deal with any state.  Too bad I can't just pulse BRC in a certain pattern :(</p>
+			</div>
+			<div id = "comment-16630" class = "comment">
+				<p>I figured out my problem - the '149 35' I was sending to ask for the current OI state (so I could confirm communication) was wrong.  I should be sending '149 1 35'.  From then on, it was all confused about what I was sending it, because it was expecting 35 sensor-id bytes :(</p>
+			</div>
+			<div id = "comment-16641" class = "comment">
+				<p>Ahh yes, that would definitely do it. You should switch that to the answer and mark it as accepted :)</p>
+			</div>
+			</div>
+				<textarea id = "speech-9371" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9371">
+					<img id="start_img-9371" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9371">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9399"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9399" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I figured out my problem - the '149 35' I was sending to ask for the current OI state (so I could confirm communication) was wrong. I should be sending '149 1 35'. From then on, it was all confused about what I was sending it, because it was expecting 35 sensor-id bytes.</p>
+
+<p>Short version: make sure you follow the protocol right :(</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9399" data-toggle = "popover">
+				<p>user name : Jonathan Rupp</p>
+				<p> user reputation : 101</p>
+				<p class = "tagcontent" id = "usertaginfo-9399">{'None': 0, 'irobot-create': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9399">Load Comments</button></br>
+			<div id = "commentsection-9399" class = 'collapse'>
+			<div id = "comment-16959" class = "comment">
+				<p>I should also mention - I was using this with a Particle Photon (a 3.3v device), and had a lot of issues initially with reliable communication, especially after working with it for 20 minutes or so.  After adding a level-shifter to bring the 3.3V TX up to 5V, the reliability went up a *ton*.</p>
+			</div>
+			</div>
+				<textarea id = "speech-9399" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9399">
+					<img id="start_img-9399" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9399">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

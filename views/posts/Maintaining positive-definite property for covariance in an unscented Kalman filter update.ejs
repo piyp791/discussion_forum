@@ -1,0 +1,213 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Maintaining positive-definite property for covariance in an unscented Kalman filter update
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2000" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2000" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">7</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 2539</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Maintaining positive-definite property for covariance in an unscented Kalman filter update</h2>
+<p>I have an unscented Kalman filter (UKF) that tracks the state of a robot. The state vector has 12 variables. Each time I carry out a prediction step, my transfer function (naturally) acts on the entire state. However, my sensors provide measurements of different parts of the robot's state, so I may get roll, pitch, yaw and their respective velocities in one measurement, and then linear velocity in another.</p>
+
+<p>My approach to handling this so far has been to simply create sub-matrices for the covariance, carry out my standard UKF update equations, and then stick the resulting values back into the full covariance matrix. However, after a few updates, the UKF yells at me for trying to pass a matrix that isn't positive-definite into a Cholesky Decomposition function. Clearly the covariance is losing its positive-definite properties, and I'm guessing it has to do with my attempts to update subsets of the full covariance matrix. </p>
+
+<p>As an example taken from an actual log file, the following matrix (after the UKF prediction step) is positive-definite:</p>
+
+<pre><code>   1.1969            0            0            0            0            0      0.11567            0            0            0            0            0
+        0       1.9682            0            0            0            0            0      0.98395            0            0            0            0
+        0            0       1.9682            0            0            0            0            0      0.98395            0            0            0
+        0            0            0       1.9682            0            0            0            0            0      0.98395            0            0
+        0            0            0            0       1.9682            0            0            0            0            0      0.98395            0
+        0            0            0            0            0       1.9682            0            0            0            0            0      0.98395
+  0.11567            0            0            0            0            0      0.01468            0            0            0            0            0
+        0      0.98395            0            0            0            0            0            1            0            0            0            0
+        0            0      0.98395            0            0            0            0            0            1            0            0            0
+        0            0            0      0.98395            0            0            0            0            0            1            0            0
+        0            0            0            0      0.98395            0            0            0            0            0            1            0
+        0            0            0            0            0      0.98395            0            0            0            0            0            1
+</code></pre>
+
+<p>However, after processing the correction for one variable (in this case, linear X velocity), the matrix becomes:</p>
+
+<pre><code>   1.1969            0            0            0            0            0      0.11567            0            0            0            0            0
+        0       1.9682            0            0            0            0            0      0.98395            0            0            0            0
+        0            0       1.9682            0            0            0            0            0      0.98395            0            0            0
+        0            0            0       1.9682            0            0            0            0            0      0.98395            0            0
+        0            0            0            0       1.9682            0            0            0            0            0      0.98395            0
+        0            0            0            0            0       1.9682            0            0            0            0            0      0.98395
+  0.11567            0            0            0            0            0         0.01            0            0            0            0            0
+        0      0.98395            0            0            0            0            0            1            0            0            0            0
+        0            0      0.98395            0            0            0            0            0            1            0            0            0
+        0            0            0      0.98395            0            0            0            0            0            1            0            0
+        0            0            0            0      0.98395            0            0            0            0            0            1            0
+        0            0            0            0            0      0.98395            0            0            0            0            0            1
+</code></pre>
+
+<p>The difference between the two matrices above is </p>
+
+<pre><code>        0            0            0            0            0            0            0            0            0            0            0            0
+        0            0            0            0            0            0            0            0            0            0            0            0
+        0            0            0            0            0            0            0            0            0            0            0            0
+        0            0            0            0            0            0            0            0            0            0            0            0
+        0            0            0            0            0            0            0            0            0            0            0            0
+        0            0            0            0            0            0            0            0            0            0            0            0
+        0            0            0            0            0            0     -0.00468            0            0            0            0            0
+        0            0            0            0            0            0            0            0            0            0            0            0
+        0            0            0            0            0            0            0            0            0            0            0            0
+        0            0            0            0            0            0            0            0            0            0            0            0
+        0            0            0            0            0            0            0            0            0            0            0            0
+        0            0            0            0            0            0            0            0            0            0            0            0
+</code></pre>
+
+<p>As you can see, the only difference between the two is the value in the location of the variance of linear X velocity, which is the measurement I just processed. This difference is enough to "break" my covariance matrix.</p>
+
+<p>I have two questions:</p>
+
+<ol>
+<li><p>Updating a subset of the filter doesn't appear to be the right way to go about things. Is there a better solution?</p></li>
+<li><p>Alternatively, am I missing a step that would keep my covariance matrix as positive-definite?</p></li>
+</ol>
+
+<p>Thanks!</p>
+
+<p>EDIT:</p>
+
+<p>It looks like I'm not properly placing the values back into the original covariance matrix. Simply copying the values back isn't sufficient. I need to track the correlation coefficients for the covariance matrix, and make sure that when I update a variance value, I update all the values in its row/column to maintain the correlation coefficient value. I have to do some more testing to verify that this is my issue, but some initial analysis in Matlab suggests that it is. If I'm correct, I'll answer my own question.</p>
+
+<p>EDIT 2:</p>
+
+<p>Given the response below and after trying it, I can see that my original edit idea won't fly. However, I have one more question:</p>
+
+<p>As this is a UKF, I don't actually have Jacobian matrices. I think I see how I would make it work within the UKF update equations, but even in an EKF - and I ask because I have one of those as well - my state-to-measurement function $h$ is going to end up being the identity matrix, as I am directly measuring my state variables. In the case, I take it my "Jacobian" would just be an $m \times n$ matrix with ones in the $(i, i)$ location, where $i$ is the index of the measured values in the measurement vector?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2000" data-toggle = "popover">
+				<p>user name : TheWumpus</p>
+				<p> user reputation : 141</p>
+				<p class = "tagcontent" id = "usertaginfo-2000">{'magnetometer': 1, 'None': 2, 'ekf': 2, 'platform': 0, 'imu': 1, 'kalman-filter': 18, 'ugv': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2000" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2000" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2000">
+					<img id="start_img-2000" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2000">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-2004"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2004" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">6</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>A few notes first,</p>
+
+<p>First, as you mentioned, you can't just pull out a submatrix and do an <em>update</em> on it. You <em>can</em> do a propogation step on a submatrix, however. </p>
+
+<p>This is because of the cross-covariance terms (which "spread" information across different parts of the state). This is why having a more accurate estimate of your heading will lead to more accurate position estimates, for example. </p>
+
+<p>However, following your edit, simply updating the cross-correlation (covariance) terms won't do it either, you need to update the whole matrix (unless you know <em>for sure</em> that some elements are independent, conditioned on the state estimate.  </p>
+
+<h3>Here you go:</h3>
+
+<p>To do this, form the Jacobian matrices as before, but note that there should be zeros in all off-diagonal elements when no part of that state is being measured. Then the magic of matrix inversion will spread the innovation corrections to the correct parts of the state. The Jacobian matrix <em>must</em> be of size $n\times m$ for $m$ measured values and $n$ state variables (or $m\times n$ depending on your definition of Jacobian). None of this "update part of the covariance junk" unless you know <em>for sure</em> that the Jacobian elements are equivalent to identity. The safest way is to use the full Jacobian.</p>
+
+<h3>Other hacks (once everything is theoretically correct)</h3>
+
+<p>However, this <em>still</em> won't ensure PD covariance matrices.
+I strongly <em>strongly</em> recommend you don't do the following hacks until you fix all the other mistakes. But in the end, for a field-deploy-able system that operates for non-trivial amounts of time, I've found it is almost always necessary to do the following things:</p>
+
+<ol>
+<li><p>After all updates, Let covariance $P$ be $P\gets \frac{1}{2}P + \frac{1}{2}P^{T}$, just to "even out" the off-diagonal terms -- for symmetry</p></li>
+<li><p>Let $P\gets P + \epsilon I_{n\times n}$, where $\epsilon$ is a small scalar to ensure you don't underflow (and wreck the <a href="https://en.wikipedia.org/wiki/Condition_number">condition number</a> of your matrix)</p></li>
+</ol>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2004" data-toggle = "popover">
+				<p>user name : Josh Vander Hook</p>
+				<p> user reputation : 3960</p>
+				<p class = "tagcontent" id = "usertaginfo-2004">{'None': 345}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2004">Load Comments</button></br>
+			<div id = "commentsection-2004" class = 'collapse'>
+			<div id = "comment-4048" class = "comment">
+				<p>Excellent, thank you very much!</p>
+			</div>
+			</div>
+				<textarea id = "speech-2004" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2004">
+					<img id="start_img-2004" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2004">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

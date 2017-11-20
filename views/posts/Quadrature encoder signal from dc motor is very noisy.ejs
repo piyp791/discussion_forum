@@ -1,0 +1,285 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Quadrature encoder signal from dc motor is very noisy
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-10556" class = "post">
+			<h2>Question</h2>
+			<div id="vote-10556" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 422</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Quadrature encoder signal from dc motor is very noisy</h2>
+<p>I'm starting out with robotics, got my first DC gear motor with quadrature encoder (<a href="https://www.pololu.com/product/2824" rel="nofollow noreferrer">https://www.pololu.com/product/2824</a>):</p>
+
+<p><a href="https://i.stack.imgur.com/sxUXp.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/sxUXp.png" alt="enter image description here"></a></p>
+
+<p>I ultimately plan to hook it up to a motor driver connected to a Tiva Launchpad. However, since I'm a noob, and curious, I am starting by just playing with it with my breadboard, oscilloscope, and voltage source. E.g., when I plug in the motor power lines into my (variable) voltage source the axis spins nicely as expected between 1 and 12 V.</p>
+
+<p>The problems start when I try to check how the encoder works. To do this, first I plug a a 5V source into the encoder GND/Vcc, and then try to monitor the encoder output.</p>
+
+<p>While the motor is running, I check the Yellow (encoder A output) cable (referencing it to the green (encoder GND) cable).  <a href="https://youtu.be/uxve5Ou4Qqg" rel="nofollow noreferrer">I made a video</a> that shows a representative output from one of the lines (no USB on my old oscilloscope so I took a video of it using my phone).</p>
+
+<p>As you would see at the video, the output doesn't look anything like the beautiful square waves you typically see in the documentation. Instead, it is an extremely degraded noisy sin wave (at the correct frequency for the encoder). The amplitude of the sin is not constant, but changes drastically over time. Strangely, sometimes it "locks in" and looks like the ideal square wave, for about a second or two, but then it gets all wonky again.</p>
+
+<p>Both of the lines (encoder A and B output) act this way, and they act this way at the same time (e.g., they will both lock in and square up at the same time, for those brief glorious moments of clarity). Both of my motors are the same, so I don't think it's that I have a bad motor.</p>
+
+<p>I have also checked using Vcc=12V, but it made no difference other than changing the amplitude of the output.</p>
+
+<p>Note I already posted this question at reddit:
+<a href="https://www.reddit.com/r/robotics/comments/502vjt/roboredditors_my_quadrature_encoder_output_is/" rel="nofollow noreferrer">https://www.reddit.com/r/robotics/comments/502vjt/roboredditors_my_quadrature_encoder_output_is/</a></p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10556" data-toggle = "popover">
+				<p>user name : neuronet</p>
+				<p> user reputation : 173</p>
+				<p class = "tagcontent" id = "usertaginfo-10556">{'None': 3, 'quadrature-encoder': 3, 'hardware': 5, 'chassis': 5, 'design': 5, 'motor': 3, 'manufacturing': 5, 'software': 5}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10556">Load Comments</button></br>
+			<div id = "commentsection-10556" class = 'collapse'>
+			<div id = "comment-18973" class = "comment">
+				<p>Are you just connecting the "Encoder A Output" (for example) directly to the Oscilloscope input? If so I would suggest also adding a pull-up resistor (maybe 5k or 10k ohms) from each output to "Encoder Vcc". This **might** be necessary to get the proper output from the encoders, if they are Hall-effect types.</p>
+			</div>
+			<div id = "comment-18976" class = "comment">
+				<p>If you look at the encoder board on the motor, you will see it already has pull up resistors and even some filtering caps. I would suggest fiddling a little with a sensor. Try to bend it towards the magnet and see if it helps.</p>
+			</div>
+			<div id = "comment-18978" class = "comment">
+				<p>After resetting everything, it worked for about 10 minutes last night: 5V square waves from both outputs, out of phase. Then I fiddled with it (I unplugged one of the grounds to see what would happen), and it is fubar again: saggy little 50mV waves completely in phase and don't change with rotation speed of motor (yes, I plugged the ground back in). Already did re-check in second motor, is acting the same. Not sure how to fiddle with sensor, and my experience last night suggests it isn't that, no? Maybe my wire isn't fitting snugly in breadboard, will get lower-gauge, and reset everything.</p>
+			</div>
+			<div id = "comment-18979" class = "comment">
+				<p>@neurone - yes, it sounds like you just have a dodgy connection somewhere in the setup. (Maybe either the pullup resistors or one of the 0V connections.) At least you know now the encoders are definitely OK. The waves you're seeing may be noise, completely unrelated to the encoder signal...</p>
+			</div>
+			<div id = "comment-18980" class = "comment">
+				<p>Oh crap I reversed Encoder Vcc/Encoder Ground last night when I "fiddled with it". And that's when it stopped working. Seems to be close now. Oh, and one of my connections was fubar in my breadboard so I was only getting ~50 mV through from 5V. Not sure how that is possible...but I checked and there it was. Dear lord I am such a noob (if you can't tell...programmer here, not hardware guy).</p>
+			</div>
+			<div id = "comment-18982" class = "comment">
+				<p>Umm, while I hate to admit this, I have to do it. I haven't done electronics in a few years, and never did it much. I forgot the top/bottom power rails on a breadboard are separate. There was no bad connection on my breadboard. I was a freaking idiot (Napolean Dynamite voice).</p>
+			</div>
+			<div id = "comment-18986" class = "comment">
+				<p>Thank you for updating - it's always good for the rest of us to know where the missing link was!</p>
+			</div>
+			</div>
+				<textarea id = "speech-10556" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10556">
+					<img id="start_img-10556" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10556">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-10558"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10558" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I followed the link to your Reddit post and, after checking the <a href="https://www.pololu.com/product/2824" rel="nofollow">datasheet for your motor</a>, I agree with what some people are saying there, but I'll expand their answers and hopefully give you some insight into what I think is happening.</p>
+
+<p><a href="https://www.reddit.com/user/zevryn" rel="nofollow">/u/zevryn</a> <a href="https://www.reddit.com/r/robotics/comments/502vjt/roboredditors_my_quadrature_encoder_output_is/d71r82p" rel="nofollow">said</a>,</p>
+
+<blockquote>
+  <p>I hope this doesn't come off as mean since I'm not trying to be, but how good are you with the oscilloscope? I could see if the scope is configured wrong, it will not be displaying properly. <strong>If you have it set to trigger on one of the rising edges and have the sample frequency high enough to get multiple samples per square wave, they should all overlap and look nice and stable.</strong></p>
+</blockquote>
+
+<p>(Emphasis added)</p>
+
+<p><a href="https://www.reddit.com/user/Ttimoffi" rel="nofollow">/u/Ttimoffi</a> <a href="https://www.reddit.com/r/robotics/comments/502vjt/roboredditors_my_quadrature_encoder_output_is/d71hgbs" rel="nofollow">said</a></p>
+
+<blockquote>
+  <p>I think u have to read it at a frequency specified on the encoder data sheet.</p>
+</blockquote>
+
+<p>I think what is happening, that the others are commenting on, is that you are not sampling the output at a high enough frequency. You haven't commented as to what the motor speed is when you monitor the encoder output, but let's assume it's the full unloaded output speed of 200rpm. </p>
+
+<p>The encoder is setup to output 3,200 counts per revolution of the output shaft. At 200rpm, that means you're getting $(200*3200) = 640,000 \mbox{ counts/min}$ which is equivalent to $10.6 \mbox{ kHz}$. </p>
+
+<p>As explained in <a href="https://www.youtube.com/watch?v=yJqseTIWwVY&amp;t=5m50s" rel="nofollow">this video on aliasing</a>, when you under-sample a signal you get false signals - signals that, as far as your instruments are concerned, are real but don't actually exist. They "appear" because of instrument inadequacies.</p>
+
+<p>Finally, as explained in <a href="https://www.youtube.com/watch?v=uWADu0aKk0w&amp;t=2m10s" rel="nofollow">this video on oscilloscope sampling rates</a>, the person says, </p>
+
+<blockquote>
+  <p>Note by the way also the trigger is not working. This is maybe your first clue if you're playing with your scope and you can't get it to trigger right, "What's going on here, why isn't it triggering correctly?" It's triggering on the aliased signal.</p>
+</blockquote>
+
+<p>Your video is very blurry, so it's very hard to read what anything is set to on your scope, but it kinda looks like, at the bottom, it says, "&lt;10Hz". Also, at the top, it looks like it says, "M Pos: 270.0ms". This all makes it seem like your scope is set <em>way</em> too slow to be able to see the signal correctly. </p>
+
+<p>At 10.6 kHz, the signal period is (1/10666) = 0.000094 seconds, or 94$\mu$s. An oscilloscope setting of 100$\mu$s per division should get the actual signal when the motor is at full speed.</p>
+
+<p>tl;dr - Set the scope to 100$\mu$s per division. You're reading an aliased signal, not the real signal, which is why it keeps jumping around like that. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10558" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-10558">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10558">Load Comments</button></br>
+			<div id = "commentsection-10558" class = 'collapse'>
+			<div id = "comment-18981" class = "comment">
+				<p>Unfortunately, my errors were way more basic than this (see comments above), but this is a good answer so I'll upvote it, and won't delete my question because this is useful. The engineer where I work also went right to this as a problem. The problem was so basic I literally wasn't getting the right signals, and once I did I got the osc settings right pretty quickly (despite my incompetence with wires, I can do oscilloscope settings).</p>
+			</div>
+			<div id = "comment-18983" class = "comment">
+				<p>Frankly I was about to delete my question, because it was based on such basic stupid mistakes, but then your answer popped up, so now here we are. A monument to my amateurishness with basic breadboard electronics.</p>
+			</div>
+			<div id = "comment-18984" class = "comment">
+				<p>@neuronet - Glad you figured it out! If you leave the question open, it gets put in a "question purgatory" where it gets bumped occasionally and never marked as resolved. If you could, please post an answer (you can answer your own question) and, after the time limit expires you can accept it as the answer. I think it's maybe a day or two until you can accept it. This will mark the question as resolved (and help future visitors find the correct answer quickly!)</p>
+			</div>
+			<div id = "comment-18985" class = "comment">
+				<p>Thanks, will do. Must run to work but will post when I get a chance. Will try to actually post something useful for people who want to monitor their quad encoders on their tabletops like I did, so at least there will be a little tutorial on that. Dear lord I'm so embarrassed.</p>
+			</div>
+			<div id = "comment-18987" class = "comment">
+				<p>@neuronet - Eh I wouldn't worry about it too much. Hopefully you didn't spend too much time on it. I've done terrible, terrible simple things like this before, too - wondering why a value isn't changing when I'm not actually referencing that value, wondering why a file looks so strange when I loaded the wrong file, wondering where my glasses are when I'm holding them, etc. Mistakes happen! :-P</p>
+			</div>
+			</div>
+				<textarea id = "speech-10558" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10558">
+					<img id="start_img-10558" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10558">Comment</button>
+			<br><div id = "ans-10559"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10559" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p><strong>tl;dr</strong><br>
+You made a bunch of noob errors because you suck at electronics.</p>
+
+<p><strong>Full answer</strong><br>
+Conceptually you had everything set up correctly, but you made a lot of basic mistakes that caused the signal to go fubar. Here is the setup you should use to record the signal from one of the encoder outputs:</p>
+
+<p><a href="https://i.stack.imgur.com/c8sba.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/c8sba.png" alt="enter image description here"></a></p>
+
+<p>If you set it up exactly this way, without any errors, you should get a clean signal if your motor/encoder is not broken. Once it's up and running, seeing the signal is simple. It's as easy as checking the square wave coming off of any common function generator: fiddle with your oscilloscope until it looks good (or just hit autoset and any good oscilloscope will do it for you, or read the excellent post by Chuck for more help on that).</p>
+
+<p>Your problems seemed to stem from an accumulation of rust when it comes to dealing with real, wire and breadboard, electronics projects:    </p>
+
+<ol>
+<li>You forgot that the top/bottom of the breadboard power rails are typically separated, assuming continuity between them. Always keep a multimeter handy and do simple continuity tests before doing more esoteric troubleshooting. When stuff's busted, never assume continuity. <em>Test</em> for continuity.</li>
+<li>The fact that the green wire from the motor is ground confused you, and you swapped your connections to the green and blue jacks (encoder Gnd and encoder Vcc) on the motor, so this trashed your signal. Checking that your wires are connected correctly is pretty much the electronics equivalent of "Is your computer plugged in?". Just like you should always make sure your computer is plugged in and turned on, in the world of circuits, always make sure your wires are attached in the correct spots (especially if you are prone to get disoriented when using non-black ground wires).</li>
+</ol>
+
+<p>Basically, I'm embarrassed and would prefer to have deleted the question than write this answer. But screw it, here it is. I'm rusty and I blew it.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10559" data-toggle = "popover">
+				<p>user name : neuronet</p>
+				<p> user reputation : 173</p>
+				<p class = "tagcontent" id = "usertaginfo-10559">{'None': 3, 'quadrature-encoder': 3, 'hardware': 5, 'chassis': 5, 'design': 5, 'motor': 3, 'manufacturing': 5, 'software': 5}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10559">Load Comments</button></br>
+			<div id = "commentsection-10559" class = 'collapse'>
+			<div id = "comment-18992" class = "comment">
+				<p>I'll add to your comment about testing for continuity - whenever you get a printed circuit board (PCB) that you ordered, BEFORE you solder anything to it, check continuity between power and ground, power and signal buses, ground and signal buses, and the individual lines in all the signal buses. Some manufacturers, cheap ones especially, may not etch the board correctly and this will bridge two buses together. Similarly, if your power, ground, or signal buses are very long (service a large number of components), spot check between the "source" and each device to check.</p>
+			</div>
+			<div id = "comment-18993" class = "comment">
+				<p>Once you solder devices onto the board, the impedances of those devices (filter capacitor, etc.) makes it really hard to determine if there's really a short between V+ and GND or similar. I would have saved weeks of my life if this had been my practice from the start.</p>
+			</div>
+			</div>
+				<textarea id = "speech-10559" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10559">
+					<img id="start_img-10559" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10559">Comment</button>
+			<br><div id = "ans-14073"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-14073" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I have a same motor like yours and when I made a setup like your picture to measure the output signal of the encoder, I still notice some noises and jitters. Then I connect the Aout with says 15kOhm resistor and measure again. The noise is reduce but the jitters still remain. I don't know how to get very clean signals like the one they post on their website. Do you have any ideas?</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-14073" data-toggle = "popover">
+				<p>user name : Nguyen Cong Trinh</p>
+				<p> user reputation : 1</p>
+				<p class = "tagcontent" id = "usertaginfo-14073">{'None': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-14073">Load Comments</button></br>
+			<div id = "commentsection-14073" class = 'collapse'>
+			<div id = "comment-22936" class = "comment">
+				<p>Sounds like your motor power source may be wonky. Is the motor moving smooth? Bump that sucker up to a good 12V, make sure you have the full 5V on the encoder. When it is wired like I have it wired, it works really well. If you have a second motor, maybe test that to make sure your encoder isn't defective?</p>
+			</div>
+			<div id = "comment-22943" class = "comment">
+				<p>I don't think there is a problem with the power supply. I used 12V adapter, which is for a scanner, and 5V from the Raspberry Pi. I have measured both of them and they're fine. There are still lots of jitters. I think probably the encoder is defective.</p>
+			</div>
+			<div id = "comment-22954" class = "comment">
+				<p>Welcome to *Robotics* NguyenCongTrinh. On Stack exchange *answers* need to answer the question. If you have a related question, it should be asked as a new question (ideally referencing this one). Note that we prefer *[practical, answerable questions based on actual problems that you face](https://robotics.stackexchange.com/help/dont-ask)*. Please take a look at [ask] and [about] for more information on how stack exchange works. For advice on how to write a good question, see the [*Robotics* question checklist](https://robotics.meta.stackexchange.com/q/1302/37).</p>
+			</div>
+			</div>
+				<textarea id = "speech-14073" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-14073">
+					<img id="start_img-14073" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-14073">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

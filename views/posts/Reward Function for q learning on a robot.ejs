@@ -1,0 +1,290 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Reward Function for q learning on a robot
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-10463" class = "post">
+			<h2>Question</h2>
+			<div id="vote-10463" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 157</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Reward Function for q learning on a robot</h2>
+<p>I have 2 wheeled differential drive robot which I use pid for low level control to follow line. I implemented <strong>q learning</strong> which uses samples for 16 iterations then uses them to decide the best position to be on the line so car takes the turn from there. This allows PID to setup and smooth fast following. My question is how can I setup a reward function that improves the performance i.e. lets the q learning to find the best</p>
+
+<p><strong>Edit</strong></p>
+
+<p>What it tries to learn is this, it has 16 inputs which contains the line positions for the last 15 iterations and this iteration. Line position is between <code>-1</code> and <code>1</code> which <code>-1</code> means only left most sensor sees the line and 0 means the line is in the center. I want it to learn a line position that when it faces this input again it will set that line position like its the center and take the curve according to that line position. For example error is required position - line position so let say I had 16 <code>0</code> as input then I calculated the required as <code>0.4</code>. So after that the car will center itself at <code>0.4</code> I hope this helps :)</p>
+
+<p>You asked for my source code i post it below</p>
+
+<pre><code>void MainController::Control(void){
+
+    float linePosition = sensors-&gt;ReadSensors();
+
+    if(linePosition == -2.0f){       
+      lost_line-&gt;FindLine(lastPos[1] - lastPos[0]);
+    } 
+    else{
+        line_follower-&gt;Follow(linePosition);
+        lastPos.push_back(linePosition);
+        lastPos.erase(lastPos.begin());   
+    }
+}
+</code></pre>
+
+<p>My Sensor reading returns a value between <code>-1.0f</code> and <code>1.0f</code>. <code>1.0f</code> means Outer Sensor on the right is only the line. I have 8 sensors.</p>
+
+<pre><code>void LineFollower::Follow(float LinePosition){
+
+    float requiredPos = Qpredictor.Process(LinePosition,CurrentSpeed);
+    float error = requiredPos - LinePosition;
+
+    float ErrorDer = error -LastError;
+
+    float diffSpeed = (KpTerm * error + (KdTerm * ErrorDer));
+
+    float RightMotorSpeed = CurrentSpeed - diffSpeed;
+    float LeftMotorSpeed = CurrentSpeed + diffSpeed;
+
+    LastError = error;
+
+    driver-&gt;Drive(LeftMotorSpeed,RightMotorSpeed);
+}
+</code></pre>
+
+<p>Here is the logic for the value for QPredictor(I call the learning part as this). And Finally QPredictor</p>
+
+<pre><code>float Memory[MemorySize][DataVectorLength] =
+{
+  {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+  {0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3},
+  {0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6},
+  {0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8},
+
+  {0.000, 0.012, 0.050, 0.113, 0.200, 0.312, 0.450, 0.613, 0.800, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000},
+  {0.000, 0.000, 0.012, 0.050, 0.113, 0.200, 0.312, 0.450, 0.613, 0.800, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000},
+  {0.000, 0.000, 0.000, 0.012, 0.050, 0.113, 0.200, 0.312, 0.450, 0.613, 0.800, 1.000, 1.000, 1.000, 1.000, 1.000},
+  {0.000, 0.000, 0.000, 0.000, 0.012, 0.050, 0.113, 0.200, 0.312, 0.450, 0.613, 0.800, 1.000, 1.000, 1.000, 1.000},
+  {0.000, 0.000, 0.000, 0.000, 0.000, 0.012, 0.050, 0.113, 0.200, 0.312, 0.450, 0.613, 0.800, 1.000, 1.000, 1.000},
+  {0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.012, 0.050, 0.113, 0.200, 0.312, 0.450, 0.613, 0.800, 1.000, 1.000},
+  {0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.012, 0.050, 0.113, 0.200, 0.312, 0.450, 0.613, 0.800, 1.000},
+
+  {0.000, 0.025, 0.100, 0.225, 0.400, 0.625, 0.900, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000},
+
+  {0.000, 0.050, 0.200, 0.450, 0.800, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000},
+
+
+  {0.000, 0.100, 0.400, 0.900, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000},
+  {0.000, 0.000, 0.100, 0.400, 0.900, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000},
+  {0.000, 0.000, 0.000, 0.100, 0.400, 0.900, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000},
+  {0.000, 0.000, 0.000, 0.000, 0.100, 0.400, 0.900, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000},
+  {0.000, 0.000, 0.000, 0.000, 0.000, 0.100, 0.400, 0.900, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000},
+  {0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.100, 0.400, 0.900, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000},
+  {0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.100, 0.400, 0.900, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000},
+  {0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.100, 0.400, 0.900, 1.000, 1.000, 1.000, 1.000, 1.000},
+  {0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.100, 0.400, 0.900, 1.000, 1.000, 1.000, 1.000},
+  {0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.100, 0.400, 0.900, 1.000, 1.000, 1.000},
+  {0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.100, 0.400, 0.900, 1.000, 1.000},
+  {0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.100, 0.400, 0.900, 1.000}
+};
+
+
+QPredictor::QPredictor(){
+    for(int i=0;i&lt;MemorySize;i++){
+        output[i]=0.0f;
+        input[i]=0.0f;
+    }
+
+    state = 0;
+    PrevState = 0;
+}
+
+float QPredictor::Process(float linePosition,float currentBaseSpeed){
+    for(int i=1;i&lt;DataVectorLength;i++){
+        input[i] = input[i-1];
+    }
+
+    input[0] = m_abs(linePosition);
+
+    int MinIndex = 0;
+    float Distance = 10000.0f;
+
+    float sum = 0.0f;
+
+    for(int i=0;i&lt;MemorySize;i++){
+        sum = 0.0f;
+        for(int j=0;j&lt;DataVectorLength;j++){
+            sum +=m_abs(input[j] - Memory[i][j]);
+        }
+
+        if(sum &lt;= Distance){
+            MinIndex = i;
+            Distance = sum;     
+       }
+    }
+
+    sum = 0.0f;
+    for(int i=0;i&lt;DataVectorLength;i++){
+        sum += input[i];
+    }
+
+    float eta = 0.95f;
+
+    output[MinIndex] = eta * output[MinIndex] + (1 - eta) * sum;
+
+    return -m_sgn(linePosition) * output[MinIndex];
+}
+
+
+float QPredictor::rewardFunction(float *inputData,float currentBaseSpeed){
+    float sum = 0.0f;
+
+    for(int i=0;i&lt;DataVectorLength;i++){
+        sum += inputData[i];
+    }
+
+    sum /= DataVectorLength;
+
+    return sum;
+}
+</code></pre>
+
+<p>I now only have average Error and currently not using learning because it's not complete without reward function. How can I adjust it according to the dimensions of my Robot?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10463" data-toggle = "popover">
+				<p>user name : Ege Keyvan</p>
+				<p> user reputation : 41</p>
+				<p class = "tagcontent" id = "usertaginfo-10463">{'None': 0, 'two-wheeled': 4, 'differential-drive': 5, 'machine-learning': 4}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10463">Load Comments</button></br>
+			<div id = "commentsection-10463" class = 'collapse'>
+			<div id = "comment-18819" class = "comment">
+				<p>I think your question needs some improvement before it can be answered.  E.g. what are you trying to learn? The PID parameters? What is your goal for the final systems behaviour?</p>
+			</div>
+			<div id = "comment-18820" class = "comment">
+				<p>linked question: http://robotics.stackexchange.com/questions/361/programming-a-line-following-robot-with-reinforcement-learning</p>
+			</div>
+			<div id = "comment-18882" class = "comment">
+				<p>The memory-array stores the past experience of robot, not the future. Negative rewards must given if all array elements are white. For simple curves this will work.</p>
+			</div>
+			<div id = "comment-18887" class = "comment">
+				<p>Yes that makes sense but what if i havent lost line how can i increase or decrease the reward or punishment</p>
+			</div>
+			<div id = "comment-21419" class = "comment">
+				<p>+1 for attempt; You can use a simple webcam for validation; Use simple check to determine how close your robot is to the centre of the line. Then, use that and add rewards (like +1 indicating "continue on the lane" every second) and punishments (if one of the wheels cross the line; -50 for every second).</p>
+			</div>
+			</div>
+				<textarea id = "speech-10463" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10463">
+					<img id="start_img-10463" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10463">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-10466"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10466" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Adaptive PID control is based on a manual coded algorithm for line-following which is modified by reinforcement learning. The idea is, that in the PID function a parameter is unknown (e.g. the distance from line which can be tolerated as deviation) and this parameter will be calculated on-the-fly while driving the robot. The rewards are given manual by an operator <a href="https://en.wikipedia.org/wiki/Clicker_training" rel="nofollow">Clicker training</a> or can be determined in a loop. The robot is driving a parcurs, the time is measured. The robot drives the parcurs again and the goal is to decrease the time.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10466" data-toggle = "popover">
+				<p>user name : Manuel Rodriguez</p>
+				<p> user reputation : 463</p>
+				<p class = "tagcontent" id = "usertaginfo-10466">{'None': 18, 'motion-planning': 0, 'machine-learning': 1, 'algorithm': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10466">Load Comments</button></br>
+			<div id = "commentsection-10466" class = 'collapse'>
+			<div id = "comment-18821" class = "comment">
+				<p>I have seen it but i have kohonen maps and q learning that i use kohonen to cluster the input vector and use q learning to decide the output can i adapt this system to mine ?</p>
+			</div>
+			<div id = "comment-18822" class = "comment">
+				<p>Sure, the self-organizing map can be used as associative memory (Q-KOHON, Claude F. Touzet).</p>
+			</div>
+			<div id = "comment-18823" class = "comment">
+				<p>Do you suggest according to the input should the system change the parameters ?</p>
+			</div>
+			<div id = "comment-18827" class = "comment">
+				<p>@EgeKeyvan: please post your soucecode or a screenshot of NXT-G GUI</p>
+			</div>
+			<div id = "comment-18860" class = "comment">
+				<p>I posted it now</p>
+			</div>
+			</div>
+				<textarea id = "speech-10466" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10466">
+					<img id="start_img-10466" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10466">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

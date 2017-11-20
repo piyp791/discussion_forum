@@ -1,0 +1,210 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Prototyping a device with 25-100 small DC 3.0V motors, is Arduino a good fit?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-1064" class = "post">
+			<h2>Question</h2>
+			<div id="vote-1064" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 282</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Prototyping a device with 25-100 small DC 3.0V motors, is Arduino a good fit?</h2>
+<p>I want to prototype a therapeutic device that will have a lot of tiny mobile-phone type vibration motors <a href="http://www.cutedigi.com/robotics/vibration-motor.html" rel="nofollow">like this one</a> in it, and I want to be able to activate them in any configuration I want.  I'm going to need analogue control, and support for logic like perlin noise functions and so on.  I'm not really going to need sensor data or any other kind of feedback beyond a few buttons for control.  I just need fine control over lots of little motors.  Depending on what results I can get out of, say, 25 motors on the initial prototype, I may decide that I'm done, or that it needs more motors.  I also don't have an enormous budget.</p>
+
+<p>So the question is, is Arduino a good fit for a project like this?  Is it feasible to get that many motors working off the same controller?  I know some of the Arduino boards have up to 50-something serial outputs, but from what I can tell, that may only translate to 25 or so motors, so I'd need a way to extend the board with more serial outputs if I wanted to try more.</p>
+
+<p>Additionally, if Arduino isn't a good fit, what would be better?  Could I try something directly out of a serial port on my PC?  I've never tried to home-cook a robotics application before, so I'm not really aware of the options.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1064" data-toggle = "popover">
+				<p>user name : Excrubulent</p>
+				<p> user reputation : 120</p>
+				<p class = "tagcontent" id = "usertaginfo-1064">{'None': 0, 'pwm': 1, 'power': 1, 'motor': 3, 'arduino': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-1064" class = 'collapse'>
+			</div>
+				<textarea id = "speech-1064" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1064">
+					<img id="start_img-1064" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1064">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-1065"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1065" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The issue may not be what micro is the best choice. Note 25 to 50 IO can be expensive if implemented on the micro itself. A ATmega2560 with the most pins is significantly more in price then a 328 or Tiny. Same goes for other chips. All those additional pins may not have the function you need. </p>
+
+<p>You can use the micro's SPI (or I2C) port to shift out the IO. For SPI you could daisy chain as many 74HC595 as you need until you get your desired amount of Digital Output. There are equivalents for Input. </p>
+
+<p>And if you wanted to control the intensity of the motor, you can use PWM. And there are SPI or I2C chips for these too.</p>
+
+<p>Note a big problem will be power. If you were to connect 25 motors to a single micro the initial inrush if not the continuous load of turning on all the motors would likely brown out the micro as each IO may individually support the supply for the motor. Combined they all need to feed through the chips VCC pins. Hence breaking it up to individual 74HC595 would spread out the heat and load away from the micro. These are cheap chips and easily ported to any micro. You can even get evals of them on break out PCB's.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1065" data-toggle = "popover">
+				<p>user name : mpflaga</p>
+				<p> user reputation : 326</p>
+				<p class = "tagcontent" id = "usertaginfo-1065">{'None': 18}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1065">Load Comments</button></br>
+			<div id = "commentsection-1065" class = 'collapse'>
+			<div id = "comment-2482" class = "comment">
+				<p>All those additional pins may not have the function you need. - I had read that one of the boards had a lot of pins that could be turned into "virtual" serial outs using software.  That said, those 74HC595's are cheap as chips and they're extensible, so that looks like a much better way to go.  Thanks!</p>
+			</div>
+			</div>
+				<textarea id = "speech-1065" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1065">
+					<img id="start_img-1065" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1065">Comment</button>
+			<br><div id = "ans-1109"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1109" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><blockquote>
+  <p>"I'm going to need analogue control"</p>
+</blockquote>
+
+<p>This is almost always done by rapidly connecting and disconnecting the motor to power, using PWM or something similar.
+The switching is faster than the motor can respond, and often the designer picks a switching frequency faster than the 20 kHz humans can hear.</p>
+
+<h2>generating PWM signals</h2>
+
+<p>There are 3 popular methods of generating PWM signals: ( <a href="https://electronics.stackexchange.com/questions/6676/which-sipo-chip-is-better-74hc4094-or-74hc595-or-something-else">a</a>, <a href="https://electronics.stackexchange.com/questions/11633/pov-globe-speed-questions/11664#11664">b</a> )</p>
+
+<ul>
+<li>Generate the PWM in software ("Bit-banging Pulse Width Modulation"). Typically this is the lowest-cost approach. With enough 74HC595 or TPIC6595 chips, one Arduino can control any number of motors. (But I doubt you'll be able to get 20 kHz PWM frequency this way).</li>
+<li>Generate the PWM using on-chip PWM hardware on the microcontroller. With enough Arduinos, you can control any number of motors at a high PWM frequency with 3 or 4 motors per Arduino.</li>
+<li>Generate the PWM using dedicated PWM peripheral chips such as the TLC5947, which the microcontroller occasionally loads with a new PWM duty cycle. With enough TLC5947 chips, one Arduino can control any number of motors and still maintain a high PWM frequency.</li>
+</ul>
+
+<h2>Converting PWM signals into something that can drive a motor</h2>
+
+<p>It appears your motors are rated at 85 mA start, 75 mA continuous.
+That is really tiny for a motor.
+But it's still more power than most digital logic chips can drive directly.
+As you can see from this list, only one of the chips mentioned above (the TPIC6595) is really designed to directly drive that amount of power:</p>
+
+<ul>
+<li>TPIC6595 datasheet: test conditions ... 250 mA continuous sink current capability.</li>
+<li>TLC5947 datasheet: test conditions ... 30 mA continuous sink current</li>
+<li>ATmega328P datasheet: "test conditions ... 20 mA at VCC = 5V, 10 mA at VCC = 3V... Pins are not guaranteed to source current greater than the listed test condition."</li>
+<li>74HC595 datasheet: test conditions ... 7.8 mA.</li>
+</ul>
+
+<p>We typically use some kind of "buffer" between the digital logic chips (any of the above chips) and a motor.</p>
+
+<p>For motors that we only need to turn in one direction, we typically we use flyback diode and either a nFET or a npn transistor as the "buffer":</p>
+
+<ul>
+<li>ULN2803A or ULQ2803A (transistor + flyback diode array) datasheet: test conditions ... over 150 mA continuous.</li>
+<li>There are thousands of discrete transistors and diodes that can easily handle: 10 V, 1 A. ( <a href="https://electronics.stackexchange.com/questions/57831/how-to-determine-what-transistor-is-needed">a</a> )</li>
+</ul>
+
+<p>For motors that we need to turn both "forwards" and "reverse", we typically use 4 transistors arranged in a H bridge as the "buffer":</p>
+
+<ul>
+<li>L293D H bridge datasheet: test conditions ... 600 mA.</li>
+<li>There are thousands of discrete transistors and diodes that can easily handle: 10 V, 1 A.</li>
+</ul>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1109" data-toggle = "popover">
+				<p>user name : David Cary</p>
+				<p> user reputation : 3365</p>
+				<p class = "tagcontent" id = "usertaginfo-1109">{'quadcopter': 38, 'stepper-driver': 9, 'None': 256, 'multi-rotor': 2, 'force-sensor': 9, 'stability': 36, 'industrial-robot': 1, 'design': 18, 'motor': 2, 'stepper-motor': 9}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1109">Load Comments</button></br>
+			<div id = "commentsection-1109" class = 'collapse'>
+			<div id = "comment-2573" class = "comment">
+				<p>I'm marking this as the correct answer because it has a lot more useful information.  It seems I really wouldn't have been able to get enough motors working using just 74HC595 chips.  Just a question, though, would you send the greyscale data to the TLC5947 chips, then push their PWM signals through something else to provide the required power?  The TLC5947 datasheet says it has a "30-mA Capability".</p>
+			</div>
+			<div id = "comment-2590" class = "comment">
+				<p>Yes, sending the data from the Arduino to the TLC5947, then send the signals from that to a transistor or more complex power driver, looks like a good approach. Go ahead and post a fresh question asking "how do I interface a TLC5947 to a small motor?"</p>
+			</div>
+			<div id = "comment-2600" class = "comment">
+				<p>Hey, did just that:  http://robotics.stackexchange.com/questions/1143/how-do-i-interface-a-tlc5947-with-small-motors</p>
+			</div>
+			</div>
+				<textarea id = "speech-1109" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1109">
+					<img id="start_img-1109" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1109">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

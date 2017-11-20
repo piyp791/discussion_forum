@@ -1,0 +1,202 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>problem in serial communication between PC and ATMEGA 8535(AVR)
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-987" class = "post">
+			<h2>Question</h2>
+			<div id="vote-987" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 825</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>problem in serial communication between PC and ATMEGA 8535(AVR)</h2>
+<p>I have written code to send data from controller to pc through serialport using interrupt
+but it echos garbage value exactly 3 times back.</p>
+
+<pre><code>    ISR(USART_RX_vect)
+{
+    unsigned char index = UDR;
+
+    UDR = index;        
+}
+
+void uartInit()
+{
+    UCSRA=0x00;
+    UCSRB=0x18;
+    UCSRC=0x86;
+    UBRRH=0x00;
+    UBRRL=0x67;
+    UCSRB |= (1 &lt;&lt; RXCIE); // Enable the USART Receive Complete interrupt (USART_RXC)
+    _delay_ms(10);
+}
+
+int main(void)
+{
+    uartInit();
+    lcd_init(); 
+    sei();
+
+   while(1)
+    {
+     }
+}
+</code></pre>
+
+<p><strong>EDIT:</strong>
+Function used to set baud rate..</p>
+
+<pre><code>#define FOSC 16000000// Clock Speed
+#define BAUD 9600
+#define MYUBRR FOSC/16/BAUD-1
+
+
+void USART_Init( unsigned int baud )
+{
+/* Set baud rate */
+UBRRH = (unsigned char)(baud&gt;&gt;8);
+UBRRL = (unsigned char)baud;
+/* Enable receiver and transmitter */
+UCSRB = (1&lt;&lt;RXEN)|(1&lt;&lt;TXEN);
+/* Set frame format: 8data, 1stop bit */
+UCSRC = (0&lt;&lt;USBS)|(3&lt;&lt;UCSZ0);
+}
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-987" data-toggle = "popover">
+				<p>user name : user1551103</p>
+				<p> user reputation : 6</p>
+				<p class = "tagcontent" id = "usertaginfo-987">{'None': 0, 'serial': 1, 'avr': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-987">Load Comments</button></br>
+			<div id = "commentsection-987" class = 'collapse'>
+			<div id = "comment-2336" class = "comment">
+				<p>How exactly are you connecting your AVR to the PC? I assume you have a TTL-RS232 tranceiver setup with an IC such as the MAX232. Is that so?</p>
+			</div>
+			<div id = "comment-2337" class = "comment">
+				<p>yes thats how it is connected.</p>
+			</div>
+			<div id = "comment-2339" class = "comment">
+				<p>This frequently a result of the client baud rate being set incorrectly.</p>
+			</div>
+			<div id = "comment-2340" class = "comment">
+				<p>@DaemonMaker - When there isn't enough information in the question to determine if a suggestion like this is an answer or not, it's probably best making a comment asking for clarification rather than posting a one line answer which may or may not be relevant.</p>
+			</div>
+			<div id = "comment-2342" class = "comment">
+				<p>I appreciate what you are saying @Mark Booth. However I have seen this error enough that I am confident in my answer. I qualify with "frequently" only because it is by no means always the case.</p>
+			</div>
+			<div id = "comment-2343" class = "comment">
+				<p>@DaemonMaker - I agree that there is a possibility that this is the reason and hopefully the edit will provide enough information for someone to answer the question authoritatively.</p>
+			</div>
+			<div id = "comment-2344" class = "comment">
+				<p>@user1551103 What serial settings are you using on your computer?</p>
+			</div>
+			<div id = "comment-2949" class = "comment">
+				<p>I just noticed your macro MY_UBRR, sorry about that. Are you calling USART_Init with baud = MY_UBRR? If so, I'll delete [this answer](http://robotics.stackexchange.com/a/991/37).</p>
+			</div>
+			</div>
+				<textarea id = "speech-987" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-987">
+					<img id="start_img-987" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-987">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-991"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-991" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You are setting the UBRR register incorrectly: it should not directly hold the desired baudrate, but a value that depends on your CPU speed (which you defined as the macro FOSC, but never used) and the baudrate. The exact calculation is described in the <a href="http://www.atmel.com/images/doc2502.pdf" rel="nofollow">ATMega8535 datasheet</a> (p.147).</p>
+
+<p>See the <a href="http://www.josephn.net/avr/avr_ubrr_calculator" rel="nofollow">AVR UBRR Calculator</a> for easy calculation of the proper UBRR register values (note that the calculator assumes U2X = 0, as seen in Table 72, p.173).</p>
+
+<p><strong>EDIT:</strong> I just noticed your macro MY_UBRR, sorry about that. Are you calling USART_Init with baud = MY_UBRR? If so, I'll delete this answer.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-991" data-toggle = "popover">
+				<p>user name : georgebrindeiro</p>
+				<p> user reputation : 1266</p>
+				<p class = "tagcontent" id = "usertaginfo-991">{'computer-vision': 9, 'None': 98, 'slam': 9}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-991">Load Comments</button></br>
+			<div id = "commentsection-991" class = 'collapse'>
+			<div id = "comment-2950" class = "comment">
+				<p>I've just added your edit as a comment to the question to prompt the questioner to see if we can't resolve this.</p>
+			</div>
+			</div>
+				<textarea id = "speech-991" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-991">
+					<img id="start_img-991" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-991">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

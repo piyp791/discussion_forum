@@ -1,0 +1,136 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How do I interface a TLC5947 with small motors?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-1143" class = "post">
+			<h2>Question</h2>
+			<div id="vote-1143" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 255</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How do I interface a TLC5947 with small motors?</h2>
+<p>This is a follow-up to this question:  <a href="https://robotics.stackexchange.com/questions/1064/prototyping-a-device-with-25-100-small-dc-3-0v-motors-is-arduino-a-good-fit">Prototyping a device with 25-100 small DC 3.0V motors, is Arduino a good fit?</a></p>
+
+<p>I've decided based on the answer that sending the control signals through multiple TLC5947 chips, then sending the PWM signal to the motors is the best way to go.  What I need to know is how to turn the PWM signals into something of the required power, since the TLC5947's won't be able to drive the motors by themselves.</p>
+
+<p>I'm guessing an amplifier is what I'll need to make, but what's the best way to boost that many signals?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1143" data-toggle = "popover">
+				<p>user name : Excrubulent</p>
+				<p> user reputation : 120</p>
+				<p class = "tagcontent" id = "usertaginfo-1143">{'None': 0, 'pwm': 1, 'power': 1, 'motor': 3, 'arduino': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-1143" class = 'collapse'>
+			</div>
+				<textarea id = "speech-1143" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1143">
+					<img id="start_img-1143" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1143">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-1144"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1144" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The <a href="https://robotics.stackexchange.com/a/1109/478">accepted answer</a> to your previous question presents several ways of developing enough drive for the vibrating motor, in its section called  Converting PWM signals into something that can drive a motor .  </p>
+
+<p>One of the most direct ways is using one ULN2803 device per 8 motors, or one ULN2003 per 7 motors.  In some packages these devices support up to 500 mA/channel when properly heatsinked; other packages allow less but should have no problem with the 85 mA start current and 75 mA run current of the vibration motor (<a href="http://www.cutedigi.com/robotics/vibration-motor.html" rel="nofollow noreferrer">1</a>, <a href="http://www.cutedigi.com/pub/Robot/310-101_datasheet.pdf" rel="nofollow noreferrer">2</a>).</p>
+
+<p>An alternative is to substitute LED drivers with higher drive capability in place of the TLC5947. For example, the 16-channel <a href="http://www.toshiba-components.com/products/DriverLSI/LEDDrivers.html" rel="nofollow noreferrer">Toshiba TC62D722</a> allows up to 90mA/channel.  (I don't know what the availability of these parts is.)  Like the TI  TLC5947, the TC62D722 has per-channel PWM settings.  Both parts use an external current-limit-setting resistor and the TC62D722 also has an 8-bit (256 level) output current gain control.  </p>
+
+<p>Note that TLC5947 channels can be paralleled.  On page 7 the <a href="http://www.ti.com/lit/ds/sbvs114a/sbvs114a.pdf" rel="nofollow noreferrer">data sheet</a> says multiple outputs can be tied together to increase the constant current capability.  Thus you could use each TLC5947 to drive eight 90mA devices; or could use a 25mA-setting resistor and parallel 3 outputs to get 75mA.  Anyhow, <em>n</em> TLC5947's, daisy-chained together, would drive <em>n</em> 24/3 = 8 <em>n</em> vibration motors.  </p>
+
+<p>If you have motors on hand, you could use a 12V power supply in series with a 166 ohm resistor (or 150 or 200 ohms for other testing) to run about 60mA through a motor and see if it starts and runs satisfactorily.  If so, you might be able to use two TLC5947 channels instead of three per motor.  </p>
+
+<p>Drivers like ULN2003 or ULN2803 have internal clamp diodes so they can drive inductive loads without needing such diodes added on.  As an LED driver, the TLC5947 doesn't include clamp diodes for high-going voltage excursions since LED's are not much of an inductive load.  (The output diagram on page 8 of specs shows a diode from ground to OUT_n for OUT0 through OUT23, which would clamp negative-going voltages, but no rating is shown for the diode.)  You probably would need to add one clamp diode per motor.  However, it certainly is possible that you could run motor tests and find that the motor transients don't exceed the 33 volt output ratings of the TLC5947   whenever you test it on the bench.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1144" data-toggle = "popover">
+				<p>user name : James Waldby - jwpat7</p>
+				<p> user reputation : 1856</p>
+				<p class = "tagcontent" id = "usertaginfo-1144">{'None': 134}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1144">Load Comments</button></br>
+			<div id = "commentsection-1144" class = 'collapse'>
+			<div id = "comment-2613" class = "comment">
+				<p>Thanks.  Just FYI, the author of the accepted answer to my previous question [suggested](http://robotics.stackexchange.com/questions/1064/prototyping-a-device-with-25-100-small-dc-3-0v-motors-is-arduino-a-good-fit/1109#comment2590_1109) that I write this question.  That said, I was obviously tired when I read that answer, because there's a massive heading that clearly explains that he's talking about providing power for the motors.</p>
+			</div>
+			</div>
+				<textarea id = "speech-1144" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1144">
+					<img id="start_img-1144" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1144">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

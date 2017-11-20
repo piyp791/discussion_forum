@@ -1,0 +1,155 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>The aerial refueling problem: sketch of a feedback controller
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-5260" class = "post">
+			<h2>Question</h2>
+			<div id="vote-5260" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 705</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>The aerial refueling problem: sketch of a feedback controller</h2>
+<p>At first happy new 2015!!!</p>
+
+<p>I'm looking for my next simulator development: a Tanker is flying at constant speed (350 Knots) (no acceleration, no change of altitude or direction). The Tanker is approached from behind by a UAV which needs to refuel or transfer data through a wire. The UAV knows the direction, the speed and <em>relative position</em> from the tanker in order to approach it smoothly. It knows that at about 5 m from the tanker is the contact successful.
+Here a picture I found on internet but it is clear more than thousand words:</p>
+
+<p><img src="https://i.stack.imgur.com/XR2Rv.jpg" alt="Bild 1"></p>
+
+<p>To achieve the task I thought to implement a "simple" PID which controls the position and the velocity, but for this I have in my mind two different designs approaches:</p>
+
+<ol>
+<li><strong>Solution one</strong>: the motion equation of my system provide the position $x,y,z$ and velocity $Vx, Vy, Vz$ of the UAV (to simplify things I will consider just $x$ but of course $y,z$ must be eventually considered too). Those are feedback with the desired position (5m) and velocity (350 Knots) of the tanker. The feedback line is separated for each state and PIDs are working quite indipendently as in the following picture:</li>
+</ol>
+
+<p><img src="https://i.stack.imgur.com/q6VbZ.png" alt="PID 1"></p>
+
+<p>please note that to simplify things I never considered the acceleration.</p>
+
+<ol start="2">
+<li><strong>Solution two</strong>: this is the most tricky one and I was yesterday thinking about it all the time. In this case <strong>only one state</strong> vector is going to be feedback to the desired setpoints. In this case I would feedback only the velocity then integrate it and feed the result into the second PID. Maybe the following picture is clearer:</li>
+</ol>
+
+<p><img src="https://i.stack.imgur.com/OEcFF.png" alt="PID 2"></p>
+
+<p>But here I'm not really sure if the second idea is conceptually wrong or could be affordable. I'm pretty sure that the first one is working and leads to good result, but I was wondering if the second one is affordable or is not recommended for a control design.</p>
+
+<p>Regards</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-5260" data-toggle = "popover">
+				<p>user name : Dave</p>
+				<p> user reputation : 294</p>
+				<p class = "tagcontent" id = "usertaginfo-5260">{'control': 10, 'quadcopter': 11, 'None': 6, 'pid': 13, 'uav': 3, 'matlab': 0, 'mobile-robot': 0, 'ros': 2, 'movement': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-5260" class = 'collapse'>
+			</div>
+				<textarea id = "speech-5260" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-5260">
+					<img id="start_img-5260" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-5260">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-5263"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-5263" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Both the solutions you proposed do suffer from unwanted interaction among the two PIDs. You're basically trying to assign two simultaneous goals - i.e. final relative position along with terminal non null speed - when the system has only one input variable, let's say the "<em>thrust</em>" driving the UAV dynamics.</p>
+
+<p>The correct scheme should be the one depicted below:
+<img src="https://i.stack.imgur.com/yQ0xT.png" alt="enter image description here"></p>
+
+<p>There exists only one PID providing the driving force to the system, which is fed by the error between the modeled dynamics of the Tanker (plus the relative offset) and the current UAV position.</p>
+
+<p>A typical outcome is plotted here for the plant $m\ddot{x}=-d\dot{x}+u$, where $m=10$, $d=0.1$ $x(0)=(0,0)'$, and the controller's parameters are $P=22.608$, $I=0.874$, $D=51.891$, $N=10.413$ (PID in parallel form).
+<img src="https://i.stack.imgur.com/DDlzP.png" alt="enter image description here"></p>
+
+<p>As it is visible in the graph, the unique goal of the UAV is to catch up the increasing position of the flying Tanker; the fact that eventually also the terminal speed turns to be equal to the desired one comes out exclusively as positive consequence of the good position tracking performance. When you track a position very well, then you also track how it changes over time (i.e. its velocity).</p>
+
+<p>Take-home message about hierarchical control loops: when the designer opts for a combination of inner and outer loops with two nested PIDs, he can only assign as set-point the final position for the outer loop, whereas the inner PID is tuned to have some given performance of dynamic behavior but not to get any steady-state velocity.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-5263" data-toggle = "popover">
+				<p>user name : Ugo</p>
+				<p> user reputation : 1482</p>
+				<p class = "tagcontent" id = "usertaginfo-5263">{'None': 99}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-5263" class = 'collapse'>
+			</div>
+				<textarea id = "speech-5263" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-5263">
+					<img id="start_img-5263" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-5263">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

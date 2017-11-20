@@ -1,0 +1,181 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Udoo board + Kinect sensor?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2224" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2224" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 883</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Udoo board + Kinect sensor?</h2>
+<p>I am wondering if it would be possible to get Kinect to work with Udoo board (Quad). I have found that there is now support for <a href="http://wiki.ros.org/hydro/Installation/UDOO" rel="nofollow">ROS + Udoo</a>. Also saw a question asked about <a href="http://answers.ros.org/question/113131/can-use-freenect-library-for-asus-xtion/" rel="nofollow">Xtion + Udoo</a> which shows some more interest. It would really be great if it could be possible for Kinect+Udoo. Was hoping to implement perhaps a miniature version of TurtleBot. I wish someone could give some insights on this matter. Thanks.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2224" data-toggle = "popover">
+				<p>user name : Kalmah</p>
+				<p> user reputation : 26</p>
+				<p class = "tagcontent" id = "usertaginfo-2224">{'kinect': 5, 'None': 0, 'ros': 5, 'arm': 5, 'embedded-systems': 5}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2224" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2224" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2224">
+					<img id="start_img-2224" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2224">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-4576"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4576" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Someone I know has tested the Kinect on the Udoo and it works fairly well on the quad core Udoo, the resources might be tighter on the dual core. You can install the debs for everything you need in ROS, including the freenect packages, from <code>.deb</code> binaries. Just follow the guide here:</p>
+
+<p><a href="http://wiki.ros.org/hydro/Installation/UDOO" rel="nofollow">http://wiki.ros.org/hydro/Installation/UDOO</a></p>
+
+<p>Then you can install the debs with this command:</p>
+
+<pre><code>$ sudo apt-get install ros-hydro-freenect-launch
+</code></pre>
+
+<p>Afterwards you should be able to plugin the Kinect and run this:</p>
+
+<pre><code>$ roslaunch freenect_launch freenect.launch
+</code></pre>
+
+<p>In another terminal you can do something like this to make sure it is working:</p>
+
+<pre><code>$ rostopic hz /camera/rgb/image_raw
+</code></pre>
+
+<p>Some tips to using the Kinect and the freenect drivers in ROS on a resource constrained system like the Udoo:</p>
+
+<ul>
+<li>Use nodelets (wiki.ros.org/nodelet)</li>
+</ul>
+
+<p><code>freenect_camera</code> provides a <code>nodelet</code> version and if you write your code as <code>nodelet</code>'s you can run them in the same process and save a lot of processing due to IPC.</p>
+
+<ul>
+<li>If you need a simulated laserscan and the Kinect is level with the ground, use <code>depthimage_to_laserscan</code></li>
+</ul>
+
+<p><code>depthimage_to_laserscan</code> is more efficient than <code>pointcloud_to_laserscan</code> because then you don't need to convert the images from the Kinect into a point cloud first. (Both of these come in <code>nodelet</code> form as well)</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4576" data-toggle = "popover">
+				<p>user name : wjwwood</p>
+				<p> user reputation : 128</p>
+				<p class = "tagcontent" id = "usertaginfo-4576">{'None': 11}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-4576" class = 'collapse'>
+			</div>
+				<textarea id = "speech-4576" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4576">
+					<img id="start_img-4576" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4576">Comment</button>
+			<br><div id = "ans-7183"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7183" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>the kinect now is working with the UDOO. I tested it in the UDOO quad.
+Just follow this steps: </p>
+
+<p><a href="http://www.mariolukas.de/2015/04/proof-of-concept-3d-scanner-with-kinect-and-raspberry-pi2/" rel="nofollow noreferrer">http://www.mariolukas.de/2015/04/proof-of-concept-3d-scanner-with-kinect-and-raspberry-pi2/</a></p>
+
+<p>Regards<img src="https://i.stack.imgur.com/8Sx9x.jpg" alt="Kinect working with the UDOO quad"></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7183" data-toggle = "popover">
+				<p>user name : Daniel Ernesto Espitia</p>
+				<p> user reputation : 1</p>
+				<p class = "tagcontent" id = "usertaginfo-7183">{'None': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7183">Load Comments</button></br>
+			<div id = "commentsection-7183" class = 'collapse'>
+			<div id = "comment-10236" class = "comment">
+				<p>Could you give a brief overview of what you did? This helps prevent link rot and ensures people take the right answer away from this question.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7183" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7183">
+					<img id="start_img-7183" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7183">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

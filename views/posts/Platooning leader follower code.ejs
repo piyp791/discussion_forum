@@ -1,0 +1,312 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Platooning leader follower code
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-10932" class = "post">
+			<h2>Question</h2>
+			<div id="vote-10932" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 94</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Platooning leader follower code</h2>
+<p>I'm trying to develop a platoon leader follower formation for two robots in Matlab. The paper I'm trying to follow is <a href="http://ieeexplore.ieee.org/document/6347812/?reload=true" rel="nofollow noreferrer">this</a>.</p>
+
+<p><a href="https://i.stack.imgur.com/To8A0.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/To8A0.jpg" alt="image from the paper"></a></p>
+
+<p>I've got next code, where I want follower robot to follow the leader robot's path, just in a very simple way, no kinematics. But I cannot get it. Does anybody know which is my error?</p>
+
+<pre><code>x1=linspace(0,10,100); //x1 and y1 represent the leader's path
+y1=sin(x1);
+plot(x1(1:100),y1(1:100));
+hold on;
+
+x2=zeros(1,100);
+y2=zeros(1,100);
+
+x2(1)=-5; //x2, y2 represent the follower's position
+x2(2)=-4;
+landa=0.1; //represents the euclidean distance between robots
+
+theta_leader(2)=atan((y1(2)-y1(1))/(x1(2)-x1(1)));
+theta_follower(2)=atan((y2(2)-y2(1))/(x2(2)-x2(1)));
+alfa(2)=atan((y1(2)-y2(2))/(x1(2)-x2(2)))-theta_follower(2);
+phi(2)=pi-(theta_leader(2) - alfa(2) - theta_follower(2));
+
+for i=3:100
+     landa(i)=0.1;
+      x2(i)=x1(i)*cos(theta_leader(i-1))-landa(i)*cos(alfa(i-1)+theta_follower(i-1));
+      y2(i)=y1(i)*sin(theta_leader(i-1))-landa(i)*sin(alfa(i-1)+theta_follower(i-1));
+
+      theta_leader(i)=atan((y1(i)-y1(i-1))/(x1(i)-x1(i-1)));
+
+      alfa(i)=atan((y1(i)-y2(i))/(x1(i)-x2(i)))-theta_follower(i-1);
+      phi(i)=pi-(theta_leader(i) - alfa(i) - theta_follower(i-1));
+      theta_follower(i)=phi(i)-alfa(i)+theta_leader(i)-3.1415;
+  end
+
+  plot(x2,y2,'or');
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10932" data-toggle = "popover">
+				<p>user name : galtor</p>
+				<p> user reputation : 348</p>
+				<p class = "tagcontent" id = "usertaginfo-10932">{'control': 2, 'quadcopter': 5, 'None': 14, 'reinforcement-learning': 1, 'pid': 4, 'simulation': -3, 'machine-learning': 1, 'untagged': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-10932" class = 'collapse'>
+			</div>
+				<textarea id = "speech-10932" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10932">
+					<img id="start_img-10932" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10932">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-10936"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10936" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I don't have access to the article, so I have to guess about the expected behavior. </p>
+
+<p>Looking at your code, the first thing I did was to change all of your <code>atan</code> functions to <code>atan2</code> because atan doesn't work correctly in all quadrants. <strong>Never use atan</strong>.</p>
+
+<p>That didn't fix it. So the second thing I did was to change how you calculate the follower heading (theta_follower) from the way it was calculated in the loop (which seems to be based on the leader's heading) to the way it was calculated the first time, which is based on the difference in the current position and previous position. Still no dice. </p>
+
+<p>So, then I was trying to figure out how else the follower's position is determined and I noticed it's not based on the leader's position. It's based on the leader's position times the sine/cosine of the leader's heading. I don't know why the sine/cosine of the leader's heading was included in the calculation, but I removed it. And then it worked. </p>
+
+<p>Now, the only thing I'm not sure about is whether the follower's heading is supposed to be the way you have it in the loop or the way you have it the first time. That is, I can't tell if you want the follower's heading to be <strong>what it actually is</strong> or if you want it to be <strong>based on the leader's heading</strong>. The first time you calculate the heading, you calculated it to be the actual heading. </p>
+
+<p>If you leave the theta_follower code in the loop the way you have it, then the follower's heading is set to be whatever the leader's heading is <strong>and the follower can never catch the leader</strong>. The follower's path is offset from the leader. </p>
+
+<p>If you set the theta_follower code to be the actual heading, then the follower's path looks "messier", but it is actually tracking the path of the leader. It overshoots one side, overshoots the other, then back-and-forth oscillating <strong>about the leader's path</strong>. I think this is the behavior you want, because behavior like this would have the follower on the same road as the leader. The way it was written, the leader would be on the road and the follower would (smoothly) drive on the sidewalk because it can't course-correct to the same path. </p>
+
+<p>Here's the code:</p>
+
+<pre><code>x1=linspace(0,10,100); %x1 and y1 represent the leader's path
+y1=sin(x1);
+plot(x1(1:100),y1(1:100));
+hold on;
+
+x2=zeros(1,100);
+y2=zeros(1,100);
+
+x2(1)=-5; %x2, y2 represent the follower's position
+x2(2)=-4;
+landa=0.1; %represents the euclidean distance between robots
+
+%-------
+% Moved from atan to atan2
+%-------
+%theta_leader(2)=atan((y1(2)-y1(1))/(x1(2)-x1(1)));
+%theta_follower(2)=atan((y2(2)-y2(1))/(x2(2)-x2(1)));
+%alfa(2)=atan((y1(2)-y2(2))/(x1(2)-x2(2)))-theta_follower(2);
+theta_leader(2)=atan2((y1(2)-y1(1)),(x1(2)-x1(1)));
+theta_follower(2)=atan2((y2(2)-y2(1)),(x2(2)-x2(1)));
+alfa(2)=atan2((y1(2)-y2(2)),(x1(2)-x2(2)))-theta_follower(2);
+
+phi(2)=pi-(theta_leader(2) - alfa(2) - theta_follower(2));
+
+for i=3:100
+    landa(i)=0.1;
+
+    %-------
+    % THIS APPEARS TO HAVE BEEN THE PROBLEM
+    %-------
+    %x2(i)=x1(i)*cos(theta_leader(i-1))-landa(i)*cos(alfa(i-1)+theta_follower(i-1));
+    %y2(i)=y1(i)*sin(theta_leader(i-1))-landa(i)*sin(alfa(i-1)+theta_follower(i-1));
+    x2(i)=x1(i)-landa(i)*cos(alfa(i-1)+theta_follower(i-1));
+    y2(i)=y1(i)-landa(i)*sin(alfa(i-1)+theta_follower(i-1));
+
+    %-------
+    % Moved from atan to atan2
+    %-------
+    %theta_leader(i)=atan((y1(i)-y1(i-1))/(x1(i)-x1(i-1)));
+    theta_leader(i)=atan2((y1(i)-y1(i-1)),(x1(i)-x1(i-1)));
+    %alfa(i)=atan((y1(i)-y2(i))/(x1(i)-x2(i)))-theta_follower(i-1);
+    alfa(i)=atan2((y1(i)-y2(i)),(x1(i)-x2(i)))-theta_follower(i-1);
+
+    phi(i)=pi-(theta_leader(i) - alfa(i) - theta_follower(i-1));
+
+    %--------
+    % Questionable code here
+    %--------
+    theta_follower(i)=phi(i)-alfa(i)+theta_leader(i)-3.1415;  % Side comment - you add pi and then subtract it for some reason.
+    %theta_follower(i)=atan2((y2(i)-y2(i-1)),(x2(i)-x2(i-1)));
+
+    %--------
+    % Moved plot inside the loop to watch it for more intuition regarding
+    % what's happening.
+    %--------
+    plot(x2(i),y2(i),'or');
+    pause(0.1)
+end
+</code></pre>
+
+<h2>:EDIT:</h2>
+
+<p>The authors of the paper don't include the code they used to generate any of the plots. Further, it looks like implementing the block diagram they provided doesn't work either. They do state that Equation 8 is used by referencing figure 5, which means that they have, in fact, incorrectly included the sine/cosine terms. The heading of the leader does not at all affect the position of the follower. </p>
+
+<p>That said, I tried implementing their block diagram after making that change and I believe it works. You skipped quite a bit in your implementation, including finding the derivative of position and heading and then performing the numeric integration. See the revised code below (the earlier code above should not be used, but I'll leave it for posterity).</p>
+
+<p>Note the value <code>k</code> is used, as described in the paper, as a control gain to decide how well the follower tracks the leader. Play around with it to see how well the follower does or does not track the leader. Also, the initial path is odd because the follower starts so far from the leader. </p>
+
+<pre><code>x1=linspace(0,10,100); %x1 and y1 represent the leader's path
+y1=sin(x1);
+figure(1)
+clf;
+plot(x1(1:100),y1(1:100));
+hold on;
+
+x2=zeros(1,100);
+y2=zeros(1,100);
+
+x2(1)=-5; %x2, y2 represent the follower's position
+
+%------- END ORIGINAL CODE ---------%
+y2(1)=-4; % &lt;---- NOTE: Originally this was x2(2) = -4. I'm assuming it should have been y2(1) = -4.
+alpha_d = 0;
+rho_d = 0.1;
+rho = sqrt((x1(1)-x2(1))^2 + (y1(1)-y2(1))^2);
+alpha = 0;
+phi = 0;
+prevLeaderAngle = 0;
+followerAngle = 0;
+
+dT = x1(2) - x1(1); % I don't have any reference for time scales or speed so I have to fake it.
+k = 1;
+fullIntegral = [rho; alpha; phi];
+
+for i = 2:numel(x1)
+    leaderLinearVelocity = sqrt((x1(i)-x1(i-1))^2 + (y1(i)-y1(i-1))^2)/dT;
+    % Linear velocity is change in position divided by change in time.
+    leaderAngle = atan2((y1(i)-y1(i-1)),(x1(i)-x1(i-1)));
+    leaderAngularVelocity = (leaderAngle-prevLeaderAngle)/dT;
+    prevLeaderAngle = leaderAngle;
+
+    leaderSpeed = [leaderLinearVelocity; leaderAngularVelocity];
+
+    formationDerivative = (k*eye(2))*[(rho_d-rho);(alpha_d-alpha)];
+    followerSpeed = [-(1/cos(alpha)) , 0; -(tan(alpha)/rho) , -1] * ...
+        (formationDerivative - [-(cos(phi)) , 0; (sin(phi)/rho) , 0] * leaderSpeed);
+
+    fullDerivative = [-cos(alpha) , 0; sin(alpha)/rho , -1; sin(alpha)/rho , 0]*...
+        followerSpeed + [-cos(phi) , 0; sin(phi)/rho , 0; sin(phi)/rho , -1]*...
+        leaderSpeed;
+    fullIntegral = fullIntegral + fullDerivative*dT;
+    rho = fullIntegral(1);
+    alpha = fullIntegral(2);
+    phi = fullIntegral(3);
+
+    x2(i) = x1(i) - rho*cos(alpha + followerAngle);
+    y2(i) = y1(i) - rho*sin(alpha + followerAngle);
+    followerAngle = phi - alpha + leaderAngle - pi;
+
+    newHeading = followerAngle + followerSpeed(2)*dT;
+    dS = followerSpeed(1)*dT;
+    plot(x2(i),y2(i),'o','Color',[1 0 0]);
+    plot(x1(i),y1(i),'x','Color',[0 0 1]);
+    drawnow;
+    pause(0.1)
+end
+</code></pre>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10936" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-10936">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10936">Load Comments</button></br>
+			<div id = "commentsection-10936" class = 'collapse'>
+			<div id = "comment-19684" class = "comment">
+				<p>Thanks a lot. Yep, the code you let represents platooning behaviour according to the paper.</p>
+			</div>
+			<div id = "comment-19685" class = "comment">
+				<p>@galtor - Glad to help! For my own curiosity, which code was described by the paper? With the theta_follower based on the leader's heading or based on its true heading? (Smooth curve or zig-zag around the leader's path?)</p>
+			</div>
+			<div id = "comment-19686" class = "comment">
+				<p>However, I checked the leader robot to run across a straight line, and still the follower will never catch it. They go parallel. I must change the follower's heading somehow to be able to follow the path, as appearing in this video https://www.youtube.com/watch?v=xA0OUqG6BE0. Here you have the original paper https://www.dropbox.com/s/hod9f509vwyv2xd/platooning%201.pdf?dl=0.</p>
+			</div>
+			<div id = "comment-19696" class = "comment">
+				<p>Thanks after the edit. Works perfect. I am trying to guide robots through voronoi edges, and so platooning formation is the best for me.</p>
+			</div>
+			<div id = "comment-19697" class = "comment">
+				<p>@galtor - Glad to help! You should consider contacting the authors and letting them know the block diagram isn't correct. They could then contact the IEEE journal and get the article revised so people don't have the same trouble in the future.</p>
+			</div>
+			</div>
+				<textarea id = "speech-10936" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10936">
+					<img id="start_img-10936" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10936">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

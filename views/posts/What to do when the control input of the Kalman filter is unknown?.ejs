@@ -1,0 +1,139 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>What to do when the control input of the Kalman filter is unknown?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-1767" class = "post">
+			<h2>Question</h2>
+			<div id="vote-1767" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">6</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 501</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>What to do when the control input of the Kalman filter is unknown?</h2>
+<p>I am implementing a simple Kalman Filter that estimates the heading direction of a robot. The robot is equipped with a compass and a gyroscope.</p>
+
+<p>Say at time $t-dt$, the compass reports a reading $\theta_{t-dt}$, and the gyroscope reports a reading $\omega_{t-dt}$. Then I assume from time $t-dt$ to $t$, the rotation rate can be regarded as a constant. Thus, my current heading direction is $$\theta_{t}=\theta_{t-dt}+\omega_{t-dt}\cdot dt$$
+As can be seen, the $\theta$ can be easily time-updated.</p>
+
+<p>But what about my $\omega$? The robot is not at my control. So its rotation rate at next moment is <strong>unpredictable</strong>.</p>
+
+<p><strong>How should I do the time update in this case?</strong></p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1767" data-toggle = "popover">
+				<p>user name : Sibbs Gambling</p>
+				<p> user reputation : 186</p>
+				<p class = "tagcontent" id = "usertaginfo-1767">{'magnetometer': 6, 'None': 0, 'localization': 5, 'kalman-filter': 11, 'compass': 11, 'gyroscope': 17}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1767">Load Comments</button></br>
+			<div id = "commentsection-1767" class = 'collapse'>
+			<div id = "comment-3661" class = "comment">
+				<p>See my answer to your closely-related question here: http://robotics.stackexchange.com/questions/1766/how-to-model-unpredictable-noise-in-kalman-filter</p>
+			</div>
+			</div>
+				<textarea id = "speech-1767" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1767">
+					<img id="start_img-1767" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1767">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-1770"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1770" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>For both states, you are using sensors to give you the required information. </p>
+
+<p>One way to make this work properly: Use the gyroscope reading for your   and your previous state estimate for your   (or initial state estimate if its the first iteration). This is the <strong>predict</strong> step of the filter. </p>
+
+<p>Then for the <strong>update</strong> step you can use your compass measurement (this will correct the gyro drift).</p>
+
+<p>For both states, you are relying on sensors to provide information about heading, not the control inputs of the robot itself. </p>
+
+<p>This method is common in attitude heading and reference systems. </p>
+
+<p>For your application a <a href="http://www.pieter-jan.com/node/11" rel="nofollow">complementary filter</a> may be better suited since its easily implemented and is easy to tune and can have comparable performance to a Kalman filter in many situations.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1770" data-toggle = "popover">
+				<p>user name : ddevaz</p>
+				<p> user reputation : 503</p>
+				<p class = "tagcontent" id = "usertaginfo-1770">{'None': 34}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-1770" class = 'collapse'>
+			</div>
+				<textarea id = "speech-1770" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1770">
+					<img id="start_img-1770" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1770">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

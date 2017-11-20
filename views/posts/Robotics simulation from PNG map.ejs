@@ -1,0 +1,287 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Robotics simulation from PNG map
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-4914" class = "post">
+			<h2>Question</h2>
+			<div id="vote-4914" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 247</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Robotics simulation from PNG map</h2>
+<p>I am a complete beginner at this.</p>
+
+<p>I have an arbitrary map as a PNG file (black and white, only). And I'm supposed to draw a robot at a position(x,y) and then I'm supposed to simulate the robot taking a laser-scan measurement for an opening angle of 130 degrees, separation of each scan-line is 2 degrees. So, obviously: each laser scanline is supposed to be obstructed by black pixels in the PNG map, while the other lines just keep on going for an n distance.</p>
+
+<p>I've attempted drawing scanlines around the object, but I'm running into issues when it comes to getting each line to be obstructed by the black-lines. To my mind, it requires a completely different approach.</p>
+
+<p>Any helpful advice on how to get started would be greatly appreciated.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4914" data-toggle = "popover">
+				<p>user name : fruhstuck</p>
+				<p> user reputation : 3</p>
+				<p class = "tagcontent" id = "usertaginfo-4914">{'python': 0, 'None': 0, 'mapping': 0, 'simulation': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-4914">Load Comments</button></br>
+			<div id = "commentsection-4914" class = 'collapse'>
+			<div id = "comment-7627" class = "comment">
+				<p>Is the goal to find the nearest obstruction in any scan line?</p>
+			</div>
+			<div id = "comment-7634" class = "comment">
+				<p>Basically, to simulate laser-scanning.</p>
+			</div>
+			<div id = "comment-7655" class = "comment">
+				<p>I'm asking you to explain what it means to simulate laser-scanning.</p>
+			</div>
+			</div>
+				<textarea id = "speech-4914" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4914">
+					<img id="start_img-4914" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4914">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-4915"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4915" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><h2>Using scanlines</h2>
+
+<p>A naive approach could be something like this:</p>
+
+<pre><code>for (angle = 0; angle &lt; 360; angle += precision)
+    draw_line_from_robot(robot, angle)
+</code></pre>
+
+<p>which tries to draw many lines from the robot, reaching out to as far as it can. You could use <a href="https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm" rel="nofollow noreferrer">Bresenham's line algorithm</a> for example and as you draw your line, make sure you don't hit a black pixel. When you do, simply stop and try the next angle.</p>
+
+<p>This approach has a couple of problems. Take this map for example:</p>
+
+<p><img src="https://i.stack.imgur.com/sxo8w.png" alt="The map"></p>
+
+<p>And the following map with a few lines drawn:</p>
+
+<p><img src="https://i.stack.imgur.com/wjcNF.png" alt="Scanlines"></p>
+
+<p>You can see the first problem here. As you get farther from the robot, you get gaps in the scanlines. You could get precision higher, but you could also change your algorithm a bit to make sure you cover every surrounding pixel:</p>
+
+<pre><code>for (i = 0; i &lt; x; ++i)
+    draw_line_from_robot_to_destination(robot, i, 0)
+    draw_line_from_robot_to_destination(robot, i, y - 1)
+
+for (i = 1; i &lt; y - 1; ++i)
+    draw_line_from_robot_to_destination(robot, 0, i)
+    draw_line_from_robot_to_destination(robot, x - 1, i)
+</code></pre>
+
+<p>This way, you are sure to cover all pixels. However, there is a second problem. <em>a lot</em> of pixels close to the robot are being redrawn over and over again.</p>
+
+<h2>A better way</h2>
+
+<p>Given these limitations (either not covering all pixels, or being highly inefficient), I'm going to propose a different algorithm.</p>
+
+<p>You can use <a href="https://en.wikipedia.org/wiki/Breadth-first_search" rel="nofollow noreferrer">breadth-first search</a> on the pixels of the image (as if it was a graph) starting from the robot. Additionally, keep a <a href="https://en.wikipedia.org/wiki/Binary_search_tree" rel="nofollow noreferrer">binary-search tree</a> of disjoint angle-ranges visible to the robot.</p>
+
+<p>First, let's talk about what the binary-search tree does for you. In the beginning, the tree holds only one node:</p>
+
+<pre><code>                       [0, 360)
+</code></pre>
+
+<p>which means the robot can see from angle 0 to 360.</p>
+
+<p>Let's say at some point you meet an obstacle, at angle <code>x</code>. You need to block the view of the robot by a certain range, which is blockable by a pixel.</p>
+
+<p><img src="https://i.stack.imgur.com/G5IUP.png" alt="Blocked view"></p>
+
+<p>In the picture above, gray pixels are just to show the distance between the robot and the blocked pixel. The green pixel is the robot and the black is the obstacle. The $\alpha$ and $\beta$ are easily calculated. Assuming the block to be at:</p>
+
+<p>$\alpha = arctan(b_x - r_x + 0.5, b_y - r_y - 0.5)$</p>
+
+<p>$\beta = arctan(b_x - r_x - 0.5, b_y - r_y + 0.5)$</p>
+
+<p>The computed, you reduce the blocked range from your tree and get a new tree:</p>
+
+<pre><code>                       [0, a)
+                           \
+                           (b, 360)
+</code></pre>
+
+<p>If later you decide to reduce $[\gamma, \delta]$ from your tree, where they are below $\alpha$, you would get:</p>
+
+<pre><code>                       (d, a)
+                       /    \
+                   [0, g)   (b, 360)
+</code></pre>
+
+<p>If you want to reduce $[\epsilon, \alpha]$ from the tree, you get:</p>
+
+<pre><code>                       (d, e)
+                       /    \
+                   [0, g)   (b, 360)
+</code></pre>
+
+<p>You get the idea!</p>
+
+<p>So what's the final algorithm?</p>
+
+<pre><code>/* this is a BFS */
+init_tree(range_tree)
+insert_queue(Q, robot_pos)
+mark_visited(robot_pos)
+
+while (!empty(Q))
+    pos = queue_pop(Q);
+    for (all neighbors of pos, n)
+        if (n is outside the map or visited before)
+            continue
+        if (n is black)
+            remove_blocked_view(range_tree, robot_pos, n)
+        else if (visible_in_ranges(range_tree, robot_pos, n))
+            mark_visited(n)
+            insert_queue(Q, n)
+</code></pre>
+
+<p>In the end, the pixels that you have visited are the visible pixels from the robot. In the above algorithm, <code>remove_blocked_view</code> is the algorithm I described above, and <code>visible_in_ranges</code> is a simply binary-search tree lookup that tells whether the angle from <code>robot_pos</code> to <code>n</code> ($arctan(n_x - r_x, n_y - r_y)$) is in the tree or not.  If it is in the tree, the pixel is visible. If it is not, then it's not visible.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4915" data-toggle = "popover">
+				<p>user name : Shahbaz</p>
+				<p> user reputation : 2615</p>
+				<p class = "tagcontent" id = "usertaginfo-4915">{'None': 193, 'usb': 12, 'distributed-systems': 7, 'microcontroller': 1, 'embedded-systems': 7, 'servomotor': 1, 'platform': 18, 'can': 1, 'machine-learning': 12, 'real-time': 18, 'mobile-robot': 1, 'rs232': 12, 'software': 20}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-4915" class = 'collapse'>
+			</div>
+				<textarea id = "speech-4915" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4915">
+					<img id="start_img-4915" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4915">Comment</button>
+			<br><div id = "ans-4932"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4932" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>If I understand the problem correctly, this is very straightforward. Given a set of grid points that can be either filled or unfilled, a point of origin, and a set of scan angles, you want to find the distance of the closest filled point for any scan angle.</p>
+
+<p>To do this optimally, you will need to find an algorithm that can give you the full set of points that would be covered by your scan angles, up to distance n.  For now, we can skip that -- the rest of the algorithm is the same.</p>
+
+<pre><code>x_o, y_o    = get_origin_point()
+theta_o     = get_center_angle_of_desired_scan_direction()
+n           = get_max_sensor_distance()
+sweep_angle = 130
+beam_width  = 2   
+num_bins    = sweep_angle / beam_width
+
+# initialize the array of scanned lines to the maximum sensor distance
+scan_results = []
+for angle in range(bins):
+    scan_results[angle] = n
+
+# iterate over all points in the grid
+for (x, y) in all_points:
+
+    if not point_is_filled(x, y): continue
+
+    # distance from scanner
+    r = math.hypot(x - x_o, y - y_o)     
+    if n &lt; r: continue
+
+    # the angle of this point relative to scanner
+    theta = math.atan2(y - y_o, x - x_o) 
+
+    # the corresponding scan line bin this angle is in
+    bin = (theta - theta_o - (sweep_angle / 2)) / beam_width
+    if bin &lt; 0 or num_bins &lt;= bin: continue
+
+    # update value if this point is closer than what was already sensed
+    scan_results[bin] = min(scan_results[bin], r)
+</code></pre>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4932" data-toggle = "popover">
+				<p>user name : Ian</p>
+				<p> user reputation : 9640</p>
+				<p class = "tagcontent" id = "usertaginfo-4932">{'planning': 10, 'None': 809, 'power': 1, 'algorithm': 10, 'battery': 1, 'slam': 7, 'coverage': 10, 'mobile-robot': 9, 'sensors': 9}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-4932" class = 'collapse'>
+			</div>
+				<textarea id = "speech-4932" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4932">
+					<img id="start_img-4932" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4932">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,210 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Find the robot pose from three beacon measurement
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-12618" class = "post">
+			<h2>Question</h2>
+			<div id="vote-12618" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 35</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Find the robot pose from three beacon measurement</h2>
+<p>At every timestep my robot gets sensor measurements from a scanner that finds three beacons with known poses $B_1 = (B_{1x}, B_{1y})^T, B_2 = (B_{2x}^T, B_{2y}) , B_3 = (B_{3x}, B_{3y})^T$ these measurements include the distance and angle to the beacon, the measuremnt for $B_1$ would be $m_{1t} = (d_{it}, \omega_{1t})^T$. and equivalently for the other beacons.</p>
+
+<p>From these measurements i want to calculate the robots pose containing its position and orientaion $x_t = (p_{xt}, p_{yt}, \Theta_{xt})^T$. </p>
+
+<p>Calculating the position can be done by trilateration, but I can't seem to find a way to get the orientation of the robot from these measurements. Is there possible a model to calculate both in a single calculation?   If not a solution for finding the orientation of the robot would be great.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12618" data-toggle = "popover">
+				<p>user name : migraf</p>
+				<p> user reputation : 13</p>
+				<p class = "tagcontent" id = "usertaginfo-12618">{'mobile-robot': 2, 'None': 0, 'localization': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-12618" class = 'collapse'>
+			</div>
+				<textarea id = "speech-12618" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12618">
+					<img id="start_img-12618" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12618">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-12619"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-12619" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>If you have already computed the position of the robot, a single(!) angle towards a beacon is sufficient to get its orientation. </p>
+
+<p>The computation could look roughly like</p>
+
+<p>// b1 is position of beacon1, r is computed position of robot
+alpha = atan2(b1.x-r.x, b1.y-r.y)  </p>
+
+<p>So if the robot is looking towards east, the angle-measurement of B1 should alpha. So roughly alpha-b1.w is your robot's orientation. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12619" data-toggle = "popover">
+				<p>user name : FooBar</p>
+				<p> user reputation : 578</p>
+				<p class = "tagcontent" id = "usertaginfo-12619">{'untagged': 0, 'None': 33, 'laser': 3, 'industrial-robot': 4}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-12619">Load Comments</button></br>
+			<div id = "commentsection-12619" class = 'collapse'>
+			<div id = "comment-22117" class = "comment">
+				<p>I think I get what you, but only if the b1.w is the w of the first robot postition, otherwise i dont get it since the beacon do not have an orientation.</p>
+			</div>
+			<div id = "comment-22118" class = "comment">
+				<p>b1.w is the measured angle towards beacon 1</p>
+			</div>
+			</div>
+				<textarea id = "speech-12619" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12619">
+					<img id="start_img-12619" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12619">Comment</button>
+			<br><div id = "ans-12621"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-12621" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You cannot directly find the direction (heading) of your robot. You only can derive the triangulated x, y positions.</p>
+
+<p>However, if you have some constraints in motion dynamics (for example if your robot only moves in its body-x direction when steering is zero) you may have a time-derivative of the position and find the velocity vector. </p>
+
+<p>And if you filter the velocity and position data to an estimation algorithm (I.e. Kalman filter) you may get an accurate position and velocity in time. Naturally, it does not give a solution when the robot is stationary.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12621" data-toggle = "popover">
+				<p>user name : G rkan  etin</p>
+				<p> user reputation : 284</p>
+				<p class = "tagcontent" id = "usertaginfo-12621">{'None': 13}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-12621" class = 'collapse'>
+			</div>
+				<textarea id = "speech-12621" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12621">
+					<img id="start_img-12621" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12621">Comment</button>
+			<br><div id = "ans-12622"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-12622" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I'm not sure where you're having the trouble with this. As you mention:</p>
+
+<p><strong>Step 1</strong> - Find the position of the robot by trilateration with the three beacon distances. </p>
+
+<p><strong>Step 2</strong> - Find the heading of a straight line between the location you are at and any of the three beacons</p>
+
+<p><strong>Step 3</strong> - Find your heading by subtracting your local heading from the result of Step 2</p>
+
+<p><strong>Step 4</strong> - Put bounds on your heading (0-360 degrees, for example).</p>
+
+<p>So, for instance, say you have beacons at (x,y) positions of (1,0), (1,1), and (0,1). You trilaterate your own location to be (0,0), because the distance reading from each beacon was 1. </p>
+
+<p>Great. </p>
+
+<p>Now, you have to define what "heading" means to you. Is this an "engineering" heading, where 0 is the +x-axis and the angle goes positive counter-clockwise? Or is this a navigation heading where 0 is "up" (North) and the angle goes positive clockwise? </p>
+
+<p>Whatever the case, let's chose to look at the beacon located at (1,0). There is a heading <em>from</em> your location <em>to</em> that beacon. If you're using navigation coordinates, it's 90 degrees (East).</p>
+
+<p>Now, what is the angle of that beacon <em>as it appears to your robot</em>? </p>
+
+<p>If you are measuring it with an angle of zero, then that means that you are pointed directly at it, which means that your heading is the same as the heading between your point and that beacon, which means that your (navigation) heading is also 90 degrees. </p>
+
+<p>Say you measure it as being at -90 degrees relative to your robot (again, on a navigation setup). If the beacon is -90 degrees relative to you, then <em>you</em> are +90 degrees relative <em>to the beacon</em>. This means that your heading is whatever the heading is to the beacon, <em>plus</em> 90 degrees. That is, your robot's heading is 180 degrees (South). </p>
+
+<p>You should be able to do this with any of the beacons and get the same answer. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12622" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-12622">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-12622" class = 'collapse'>
+			</div>
+				<textarea id = "speech-12622" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12622">
+					<img id="start_img-12622" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12622">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

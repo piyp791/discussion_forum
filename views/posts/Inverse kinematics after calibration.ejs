@@ -1,0 +1,171 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Inverse kinematics after calibration
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9152" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9152" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 137</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Inverse kinematics after calibration</h2>
+<p>I am working on a 6DOF robot arm project and I have one big question. When I first derived the inverse kinematics (IK) algorithm after decoupling (spherical wrist), I could easily get the equations based on nominal DH values, where alpha are either 0 or 90 degrees and there are many zeros in $a_i$ and $d_i$. However, after kinematics calibration, the identified DH parameters are no longer ideal ones with a certain small, but non-zero, bias added to the nominal values. </p>
+
+<p>So my question is, can the IK algorithm still be used with the actual DH parameters? If yes, definitely there will be end-effector errors in actual operation. If not, how should I change the IK algorithm? </p>
+
+<p>P.S. I am working on a modular robot arm which means the DH bias could be bigger than those of traditional robot arms. </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9152" data-toggle = "popover">
+				<p>user name : David Lin</p>
+				<p> user reputation : 18</p>
+				<p class = "tagcontent" id = "usertaginfo-9152">{'None': 0, 'inverse-kinematics': 3, 'calibration': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9152">Load Comments</button></br>
+			<div id = "commentsection-9152" class = 'collapse'>
+			<div id = "comment-15187" class = "comment">
+				<p>@Greenonline and ben, thank you for making my post better by correcting the errors. I am not a native English speaker, but I will try to make my next post less errors.</p>
+			</div>
+			</div>
+				<textarea id = "speech-9152" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9152">
+					<img id="start_img-9152" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9152">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9153"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9153" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The analytic inverse kinematics solutions you found do depend on those $0$ terms in your transformation matrices.   Those values are, as you've implied, based on the $0$ and $90$ degree values for the axes relationships.   The kinematic mapping process works for other $a_i$ and $d_i$ values, too, but it becomes difficult to find closed-form inverse solutions when those nice zeroes become other values.  </p>
+
+<p>The solution most often implemented is to use numerical solutions for the inverse kinematics after calibration.   The closed-form, analytic, inverse kinematics are a good starting estimate for the numerical solver, but you must then account for the as-built errors with some (often iterative) approach to find the actual joint angles given the EE pose.  There are many published approaches to the numerical solution methods.  </p>
+
+<p>EDIT (Industrial robots):  For general-purpose industrial robots the above is rarely done.   Instead of calibrating to eliminate as-built errors in the kinematics, the robots are usually calibrated to align the task space coordinate system with the robot's base coordinate system (resulting in a single additional transformation matrix of constant values).  The end effector destination locations are then taught (in either task, end-effector, or joint coordinates).  Because they use a "teach and repeat" method of programming, the small errors in the calibration are absorbed by the teaching process.</p>
+
+<p>Additional calibrations of the robot may be accomplished by the robot manufacturer.  In my experience those calibrations generally set precise values for the link lengths and encoder home, or zero, values - but not joint axis offset angles.  It's possible that some robot manufacturers calibrate more precisely, then use numerical methods to find inverse solutions, but I have not seen this absolute precision needed in an industrial setting.  </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9153" data-toggle = "popover">
+				<p>user name : SteveO</p>
+				<p> user reputation : 2960</p>
+				<p class = "tagcontent" id = "usertaginfo-9153">{'None': 222}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9153">Load Comments</button></br>
+			<div id = "commentsection-9153" class = 'collapse'>
+			<div id = "comment-15169" class = "comment">
+				<p>SteveO, thank you very much for the answer. To use numerical method, even with good starting estimates, could cause some delay, although at this moment I am not sure how much the delay would be. Is it the common practice to do so for industrial robots?</p>
+			</div>
+			<div id = "comment-15172" class = "comment">
+				<p>Edited to include industrial robot overview.</p>
+			</div>
+			<div id = "comment-15173" class = "comment">
+				<p>SteveO, I really appreciate your detailed explanations. Thanks a lot!</p>
+			</div>
+			</div>
+				<textarea id = "speech-9153" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9153">
+					<img id="start_img-9153" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9153">Comment</button>
+			<br><div id = "ans-9165"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9165" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You might want to try <a href="http://openrave.org/docs/latest_stable/openravepy/ikfast/" rel="nofollow">IKFast</a> in OpenRave.  It can supposedly handle "robots with arbitrary joint complexity like non-intersecting axes".  </p>
+
+<p>However, I had the same problem as you.  After kinematic calibration, my joint axes were no longer at right angles.  But when I tried my new robot kinematics in IKFast, it would crash and I was never able to get valid IK.  I had a 7 DOF arm on a 1 DOF torso though.  You might have better luck with a 6 DOF robot.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9165" data-toggle = "popover">
+				<p>user name : Ben</p>
+				<p> user reputation : 3608</p>
+				<p class = "tagcontent" id = "usertaginfo-9165">{'None': 277, 'inverse-kinematics': 3, 'accelerometer': 5, 'calibration': 10, 'kinematics': 14, 'robotic-arm': 8, 'jacobian': 6, 'dh-parameters': 8, 'imu': 5, 'sensors': 5}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9165">Load Comments</button></br>
+			<div id = "commentsection-9165" class = 'collapse'>
+			<div id = "comment-16224" class = "comment">
+				<p>Hi, ben, thanks for the advice. We will give it a try soon.</p>
+			</div>
+			</div>
+				<textarea id = "speech-9165" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9165">
+					<img id="start_img-9165" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9165">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,172 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Extended Kalman Filter for IMU
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-12633" class = "post">
+			<h2>Question</h2>
+			<div id="vote-12633" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 162</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Extended Kalman Filter for IMU</h2>
+<p>I am trying to use a multilayer perceptron to make a flight controller for a ROV. I have a MPU-9250 IMU and I need to remove the noise from the sensor before I can train my MLP. The IMU has a accelerometer, gyro and a magnetometer. I know my state vector is supposed to be </p>
+
+<pre><code>[acc_x, Acc_y, Acc_z, gyro_x, gyro_y, gyro_z, mag_x, magy, mag_z]
+</code></pre>
+
+<p>I am not sure about the rest. Since I want the clean Acc, gyro and mag's x, y and z values can I just use an identity matrix for everything in EKF?</p>
+
+<p>I want to pass the IMU data to the MLP after cleaning it and try to predict the control signal for all my thrusters. For my dataset I recoded the IMU information from a ROV2 and I also recorded the pwm signals for each thruster. If it does work I won't be able to control things like PID values of the thrusters but for now I don't really care about it.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12633" data-toggle = "popover">
+				<p>user name : Kalvik Jakkala</p>
+				<p> user reputation : 1</p>
+				<p class = "tagcontent" id = "usertaginfo-12633">{'ekf': 0, 'None': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-12633">Load Comments</button></br>
+			<div id = "commentsection-12633" class = 'collapse'>
+			<div id = "comment-22142" class = "comment">
+				<p>Could you please be more specific with what you're trying to do? You want to use a neural network to do what, exactly? What would the inputs and outputs be? The problem with IMU data generally isn't noise but sensor bias and especially bias drift. You could of course record data and then filter it to remove noise (like the Matlab function `filtfilt`), but then you're left training a neural network with unrealistic (unobtainable) data. Did you want to use the NN to get from raw IMU output to a pose estimate or are you trying to use the NN to get from a reference error to a control signal?</p>
+			</div>
+			<div id = "comment-22147" class = "comment">
+				<p>Why do you decide to use EKF? UKF is looks like easy to implement and it's performance usually is better than EKF.</p>
+			</div>
+			<div id = "comment-22148" class = "comment">
+				<p>From what I understand about Kalman Filters EKF is better over KF cause it can handle non gaussian distributions and UKF is better when the data is very non linear.So, I thought about using a UKF but then I say that Ardupilot is using a EKF and I figured an EKF is better suited for the problem.</p>
+			</div>
+			<div id = "comment-22150" class = "comment">
+				<p>@Chuck About the drift I read that by using sensor fusion with a 9dof IMU we can get stable values from an IMU for long periods. So I figured the bias wouldn't be a big issue.</p>
+			</div>
+			</div>
+				<textarea id = "speech-12633" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12633">
+					<img id="start_img-12633" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12633">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-12639"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-12639" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>When I was writing my own flight for quad-copter, this article helped me a lot and I think it could help: 
+<a href="http://www.starlino.com/imu_kalman_arduino.html" rel="nofollow noreferrer">Arduino code for IMU Guide algorithm. Using a 5DOF IMU (accelerometer and gyroscope combo)</a>:</p>
+
+<blockquote>
+  <p>This article introduces an  implementation of a simplified filtering algorithm that was inspired by Kalman filter. The Arduino code is tested using a 5DOF IMU unit from GadgetGangster   <a href="http://www.gadgetgangster.com/367" rel="nofollow noreferrer">Acc_Gyro</a>. The theory behind this algorithm was first introduced in my <a href="http://www.starlino.com/imu_guide.html" rel="nofollow noreferrer">Imu Guide article</a>.</p>
+</blockquote>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12639" data-toggle = "popover">
+				<p>user name : user3699039</p>
+				<p> user reputation : 32</p>
+				<p class = "tagcontent" id = "usertaginfo-12639">{'quadcopter': 2, 'None': 0, 'usb': 2, 'accelerometer': 2, 'arduino': 2, 'imu': 0, 'sensors': 0, 'gyroscope': 2}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-12639" class = 'collapse'>
+			</div>
+				<textarea id = "speech-12639" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12639">
+					<img id="start_img-12639" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12639">Comment</button>
+			<br><div id = "ans-14027"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-14027" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>There are a couple of potential traps with the scenario you seem to be outlining. Many of them have already been addressed in literature on inertial navigation. You can find many good references on inertial navigation and dead reckoning using IMUs, and you may want to look into that, depending on your goals.</p>
+
+<p>What you are asking for is a method to clean up your raw IMU data using an EKF. This is a bit of a strange request, because the EKF is generally designed for dynamic systems. In our context, it's sufficient to say that dynamic systems are driven by some known process in between measurements; for instance, if you were estimating position and velocity, there is a known relationship (derivative) that describes how the velocity affects position in between measurements from, e.g., a GPS receiver. You have not mentioned any other measurements, like GPS, that you want to use in the filter. If you don't have any other measurements available, then an EKF is not going to buy you anything in practice, and is probably much more challenging to set up.</p>
+
+<p>If all you want is filtered accelerometer, gyroscope, and magnetometer data, then I would suggest designing a low-pass filter to smooth those data instead. You would also want to make sure to calibrate the bias of the accelerometer and gyros by reading the first N measurements, and then subtracting the average of those values from all subsequent measurements. Depending on your application and the motion of your vehicle, you might have usable data for as many as several minutes. I'm making some fairly wild guesses about your IMU bias drift rates, since I'm not familiar with the MPU-9250. In general, I would not trust a MEMS IMU output for too long, since there will always be bias drift. There are ways to address this limitation: you could augment the IMU with additional sensors, or you could re-calibrate periodically by stopping the vehicle and taking measurements. Unfortunately, the latter approach is only really very realistic if you have a ground vehicle moving over fairly level terrain.</p>
+
+<p>It's not clear if your application is for a flying vehicle or for an underwater one, nor is it clear what your desired inputs and outputs for an ANN-based controller are. For instance, if all you are giving the controller is IMU data, what will be its objectives? It sounds like what you may want to do is perform inertial navigation. Assuming you have an underwater vehicle, you will mostly likely want to perform dead reckoning. Essentially, dead reckoning integrates the accelerometer histories twice to estimate the position of the vehicle, and the gyro histories once to estimate its orientation. If you have estimates of the position, then you could give your controller simple commands, such as "go to position X = 5 m" and then have the controller try to do that. (You can do the same thing with accelerations, of course, but I'm not sure what the point would be, since the vehicle won't be capable of even basic autonomy.)</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-14027" data-toggle = "popover">
+				<p>user name : Tim</p>
+				<p> user reputation : 11</p>
+				<p class = "tagcontent" id = "usertaginfo-14027">{'None': 1}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-14027" class = 'collapse'>
+			</div>
+				<textarea id = "speech-14027" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-14027">
+					<img id="start_img-14027" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-14027">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

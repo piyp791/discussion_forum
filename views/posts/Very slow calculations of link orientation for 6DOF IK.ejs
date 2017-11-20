@@ -1,0 +1,368 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Very slow calculations of link orientation for 6DOF IK
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11977" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11977" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 140</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Very slow calculations of link orientation for 6DOF IK</h2>
+<p>I have written a matlab code to solve IK for 6 DOF robotic arm. I use Newton method to numerically solve IK. Also i use Tikhonov regularization to hand bad conditioned Jacobians. It works fast and reliable when i want just to move the last link in certain position, when i use difference between X,Y,Z coordinates as condition to interrupt loop of Newtoon method. But when i want also to get into the right orientation (use difference between Euler angles as interrupt condition) it takes a very long time 2, 5, 10 minutes even more, regardless i want to get to the right coordinates also or not. So there are questions:</p>
+
+<ol>
+<li>How can i accelerate calculations, or why is it so slow?</li>
+<li>Can i use quternions instead of Euler angles? Quternions will increase dimension of Jacobian so it will not be a square matrix anymore and it will not be possible to use Tikhonov regularization that works so good.</li>
+<li>How often people use numerical methods to solve such things? I saw may examples of using analitycal solutions but not numerical.</li>
+<li>How to get sure that programm will find solution using Newton method and programm will find it in finite number of interations?</li>
+</ol>
+
+<p>UPD: here is my matlab code, that was rewritten using damped least squares method and quaternion. But still i have the same problem.
+In this code we move along trajectory, but we can remove it and try to jump directly to the destination point.</p>
+
+<pre><code>%Derivative step for Jacobian composing
+step = 0.01;
+
+%Generalized coordinates for start position
+q_prev = [34; 89; 1; 1; 89; 0];
+
+%Generalized coordinates for end position. To be sure we can reach it
+q_fin = [170; 150; 120; 156; 9; 158];
+
+%get_coordinates() function returns 4x4 matrix of homogeneous transformations. It contains forward kinematics equations
+%Coordinates we are at 
+A_forward = get_coordinates( q_prev ); 
+
+%Coordinates we need to reach
+Dest = get_coordinates( q_fin );
+
+%Getting rotation matrices for start and finish positions
+rotmat_curr = A_forward(1:3, 1:3);
+rotmat_dest = Dest(1:3, 1:3);
+
+%Matrix_to_quat() - is my analog of rotm2quat() function
+%Getting quternions for start and finish positions
+quat_curr = matrix_to_quat(rotmat_curr);
+quat_dest = matrix_to_quat(rotmat_dest);
+
+%Next steps are not inmportant, but i still comment them
+
+%Here i make a trajectory, and move along it with small steps. It was
+%needed for Newton's method but also useful if it is needed to move along a
+%real trajectory
+                       %X coordinate    Y coordinate    Z coordinate    Quaternion
+coordinates_current = [ A_forward(1,4); A_forward(2,4); A_forward(3,4); quat_curr ];
+coordinates_destination = [ Dest(1,4); Dest(2,4); Dest(3,4); quat_dest ];
+
+%Coordinate step
+step_coord = 5; 
+
+%Create table - trajectory
+distance = sqrt( (coordinates_destination(1) - coordinates_current(1)).^2 + (coordinates_destination(2) - coordinates_current(2)).^2 +(coordinates_destination(3) - coordinates_current(3)).^2 );
+
+%Find out the number of trajectory points
+num_of_steps = floor(distance / step_coord);
+
+%Initialize trajectory table
+table_traj = zeros(7,(5*num_of_steps));
+
+%Calculate steps size for each coordinate
+step_x = (coordinates_destination(1) - coordinates_current(1)) / num_of_steps;
+step_y = (coordinates_destination(2) - coordinates_current(2)) / num_of_steps;
+step_z = (coordinates_destination(3) - coordinates_current(3)) / num_of_steps;
+step_qw = (coordinates_destination(4) - coordinates_current(4)) / num_of_steps;
+step_qx = (coordinates_destination(5) - coordinates_current(5)) / num_of_steps;
+step_qy = (coordinates_destination(6) - coordinates_current(6)) / num_of_steps;
+step_qz = (coordinates_destination(7) - coordinates_current(7)) / num_of_steps;
+
+new_coord = coordinates_current;
+%Fill trajectory table
+for ind = 1:num_of_steps
+    new_coord = new_coord + [step_x; step_y; step_z; step_qw; step_qx; step_qy; step_qz];
+    table_traj(:,ind) = new_coord;  
+end;
+
+%Set lambda size. I found out that algorithm works better when lambda is
+%small
+lambda = 0.1;
+
+%In next steps i inialize Jacobian, build new destination matrix, calculate
+%orientation error at the first step. As orientation error i use max
+%element of quaternions difference.
+for ind = 1:num_of_steps
+    J = zeros(7, 6);
+
+    %quat_to_matrix() - analog of quat2rotm() function
+    rot_matr = quat_to_matrix(table_traj(4:7, ind));
+
+    Dest = [ rot_matr, table_traj(1:3, ind);
+             0, 0, 0, 1  ]; 
+
+    %mat_to_coord_quat() function takes matrix of homogeneous
+    %transformations and returns 7x1 vector of coorditaes
+    %X Y Z and quaternion
+    differ = mat_to_coord_quat(Dest) - mat_to_coord_quat(A_forward);
+    error = max(abs(differ(4:6)));
+
+    %Here is the algorithm. It works until we have coordinates and
+    %orientation error less that was set
+     while (abs(differ(1)) &gt; 0.05) || (abs(differ(2)) &gt; 0.05) || (abs(differ(3)) &gt; 0.05) || error &gt; 0.01
+
+         %first - calculating Jacobian
+         for ind2 = 1:6  %for every coordinate
+                %Calculating of partial derivatives:
+                q_prev_m1 = q_prev;
+                q_prev_m1(ind2) = q_prev_m1(ind2) - step;
+                q_prev_p1 = q_prev;
+                q_prev_p1(ind2) = q_prev_p1(ind2) + step;
+                Fn1 = mat_to_coord_quat(get_coordinates(q_prev_m1)); % in q_prev vector ind1 element is one step smaller than in original q_prev
+                Fn2 = mat_to_coord_quat(get_coordinates(q_prev_p1)); % in q_prev vector ind1 element is one step bigger than in original q_prev
+                deltaF = Fn2 - Fn1; %delta functions vector
+                deltaF = deltaF/(2*step); %devide by step to get partial derivatives for every function
+                %composing Jacobian from column of partian derivatives
+                J(:,ind2) = deltaF;
+        end;
+        %Next according to damped least squares method
+        %calculate velosities along all coordinates
+            A_forward = get_coordinates( q_prev );
+            differ = mat_to_coord_quat(Dest) - mat_to_coord_quat(A_forward);
+
+            %calculating generalized coordinates velosities
+            dq = (J.'*J + lambda * eye(6))\ J.' * differ;
+
+            %integrate generalized coordinates velosities
+            q_prev = q_prev + dq;
+
+            %calculate max orientation error
+            error = max(abs(differ(4:7)));   
+    end;
+end;
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11977" data-toggle = "popover">
+				<p>user name : mishaskt</p>
+				<p> user reputation : 11</p>
+				<p class = "tagcontent" id = "usertaginfo-11977">{'None': 0, 'inverse-kinematics': 2, 'robotic-arm': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11977">Load Comments</button></br>
+			<div id = "commentsection-11977" class = 'collapse'>
+			<div id = "comment-21258" class = "comment">
+				<p>I think that it's because Jacobian maps joint velocities to end-effector _angular velocity_ and that the direct difference between Euler angles does not reflect the angular velocity. Have you tried [axis-angle representation](https://en.wikipedia.org/wiki/Axis%E2%80%93angle_representation)?</p>
+			</div>
+			<div id = "comment-21389" class = "comment">
+				<p>I think what you put into the Jacobian (`deltaF`) are just end-effector velocities, not the intended partial derivatives.</p>
+			</div>
+			<div id = "comment-21392" class = "comment">
+				<p>You are right they are velocities, but also they are partial derivatives with respect to every joint rotation. Isn't it what I need to put into the Jacobian?</p>
+			</div>
+			</div>
+				<textarea id = "speech-11977" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11977">
+					<img id="start_img-11977" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11977">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-11989"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11989" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><blockquote>
+  <p>How can i accelerate calculations, or why is it so slow?</p>
+</blockquote>
+
+<p>I think the reason it is really slow is that your calculated joint velocities do not steer the system towards a solution. Consider the time derivative of the forward kinematics equation</p>
+
+<p>$$
+\begin{bmatrix}
+v\\ \omega
+\end{bmatrix} = 
+\begin{bmatrix}
+J_v\\ J_\omega
+\end{bmatrix}
+\dot{q},
+$$
+where $v, \omega$ are the end-effector linear and angular velocities, respectively, and $J_v, J_\omega$ map the joint velocity to $v, \omega$ respectively. Difference in X, Y, Z coordinates is actually $v$ in the above equation, that is why you can get $\dot{q}$ (or rather $dq$) that drives the system towards the correct position.</p>
+
+<p>Now the problem is that the difference in Euler angles do not give you angular velocity suitable to use in the above equation. Changing the orientation representation to axis-angle representation should solve the problem.</p>
+
+<blockquote>
+  <p>Can i use quternions instead of Euler angles? Quternions will increase dimension of Jacobian so it will not be a square matrix anymore and it will not be possible to use Tikhonov regularization that works so good.</p>
+</blockquote>
+
+<p>Yes, you can. But the lower part of the Jacobian, i.e., $J_\omega$, needs to be changed to something like $J_{quat}$ which is a $4 \times n$ matrix ($n$ is the dimension of the joint vector). So the velocity equation above will be</p>
+
+<p>$$
+\begin{bmatrix}
+v \\ u
+\end{bmatrix} = 
+\begin{bmatrix}
+J_v\\ J_{quat}
+\end{bmatrix}
+\dot{q},
+$$
+where $u$ can be thought of as a difference in quaternion. (Actually <a href="http://openrave.org/docs/latest_stable/" rel="nofollow noreferrer">OpenRAVE</a> does have a function for calculating Jacobians suitable to use with quaternions.) It's true that the overall Jacobian will then not a square matrix but as far as I know, that should not prevent you from using Tikhonov regularization.</p>
+
+<blockquote>
+  <p>How often people use numerical methods to solve such things? I saw may examples of using analitycal solutions but not numerical.</p>
+</blockquote>
+
+<p>I'm not sure how most people do but solving for IK solutions numerically is useful when one needs their robot to track some end-effector trajectory. Although one may be able to solve for an IK solution analytically, there can be multiple solutions for a single end-effector pose and it is not obvious how one can choose a solution for each time step such that the resulting joint trajectory is smooth. Instead, the IK solution for the consecutive time step along the trajectory is computed numerically by using a differential IK method, which is actually based on the Jacobian equation above.</p>
+
+<blockquote>
+  <p>How to get sure that programm will find solution using Newton method and programm will find it in finite number of iterations?</p>
+</blockquote>
+
+<p>Convergence of Newton method depends on a number of factors. I'm not sure if we can have such universal criteria.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11989" data-toggle = "popover">
+				<p>user name : Petch Puttichai</p>
+				<p> user reputation : 570</p>
+				<p class = "tagcontent" id = "usertaginfo-11989">{'None': 29, 'manipulator': 6, 'inverse-kinematics': 0, 'industrial-robot': 6, 'redundant-robots': 0, 'kinematics': 3, 'robotic-arm': 6, 'singularity': 3}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11989">Load Comments</button></br>
+			<div id = "commentsection-11989" class = 'collapse'>
+			<div id = "comment-21372" class = "comment">
+				<p>Thank you for your answer, it helped me to think once more about my approach. The point was that previously i worked not with velosities. Now i wrote my code according to your answer and some articles, like this one [link](http://www.andreasaristidou.com/publications/CUEDF-INFENG,%20TR-632.pdf) I used Damped Least Squares method and also quaternion. As you said Jacobian dimension increasing was not a problem, but i still have the same result: fast calculations for coordinates only and very slow or even jams for both orientation and coordinates.</p>
+			</div>
+			<div id = "comment-21373" class = "comment">
+				<p>Let me give some details. This manipulator is 2100mm long when outstretched, three joints are 400mm long and i want to get 1-0.5 degree orientation accuracy. Reducing of accuracy makes calculations faster what is quite expected. But when i want it to be more accurate, i stuck. Interesting point is that it is different for coordinates. When i increase coordinates accurancy it still works fast. So maybe there are some techniques that can help in this situation?</p>
+			</div>
+			<div id = "comment-21374" class = "comment">
+				<p>I also use the method in the answer and I can get to a tolerance of 1e-7 in the squared of norm of difference in end-effector poses for a 6-DOF arm. So I still think there may be something in your code when you use the equation with Jacobian. Maybe you can post some sample code?</p>
+			</div>
+			<div id = "comment-21381" class = "comment">
+				<p>Of course i can, thank you for helping.</p>
+			</div>
+			<div id = "comment-21385" class = "comment">
+				<p>Just curious. Have you made sure you use a correct & consistent unit for rotations?</p>
+			</div>
+			<div id = "comment-21386" class = "comment">
+				<p>Sorry i forgot to mention it, i use radians, of course. For convinience i set joints angels in degrees but then convert them in radians.</p>
+			</div>
+			<div id = "comment-21387" class = "comment">
+				<p>I currently cannot spot anything from the code except 1. when calculating `error` (the one before entering while-loop), I think the indexing should be `4:7` instead, right? 2. Maybe this will help: making sure that, when calculating the diff between two quats, the first elements of the two have the same sign (both + or -). (Note that quaternion q and -q give the same rotation). This will enforce [slerp](https://en.wikipedia.org/wiki/Slerp) shortest path. Apart from that I still have no idea.</p>
+			</div>
+			<div id = "comment-21391" class = "comment">
+				<p>Yes, you are right indexing there should be 4:7, my mistake, but in my working version I used right indexing. Sorry.</p>
+			</div>
+			</div>
+				<textarea id = "speech-11989" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11989">
+					<img id="start_img-11989" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11989">Comment</button>
+			<br><div id = "ans-12082"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-12082" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>If you have 6 DOF in your joints, and you want a particular 6 DOF pose, and you have some kind of preferred movement envelope, then there is at most one solution. There is also a closed-form solution to this that you can calculate. Typically, you'll want to design your armature to make this solution easy.</p>
+
+<p>If you have a known desired XYW position and UVW orientation of the end effector, and each axis of rotation is individually controlled, then you can start by posing the endmost three axes (presumably with short translations) to get you to an "ideal plane" for positioning, and then post the other three axes (presumably with longer translations) to get to the point of wherever the third-outmost actuator ended up when getting orientation right.</p>
+
+<p>Another option, which is useful when you have a "desired shape" and "desired end goal" incrementally from the current position, is to simply minimize the amount of joint movement (or some other penalty function, such as desired shape) to move between the current state and the desired end state. As long as the end state varies smoothly, the incremental movement between each solution step is small, and the solution converges quickly.</p>
+
+<p>That being said, 1 minutes to solve a 6DOF system sounds wrong. Either you're running into numerical problems (denormalized numbers?) or you're implementing the solution wrong, or you're running on some piece of hardware that is not suitable for the task (like, an 8-bit microcontroller without floating point support.)</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12082" data-toggle = "popover">
+				<p>user name : Jon Watte</p>
+				<p> user reputation : 645</p>
+				<p class = "tagcontent" id = "usertaginfo-12082">{'None': 43, 'cooling': 7, 'servos': 7, 'heat-management': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-12082">Load Comments</button></br>
+			<div id = "commentsection-12082" class = 'collapse'>
+			<div id = "comment-21427" class = "comment">
+				<p>I tried to divide positioning from orientation. and positioning works very fast, but when the algorithm start orientating it slows down. I tried to use the same algorithm for orientating Cardan suspension (3 dof) and have the same result. Too slow. I don't know what i'm doing wrong, because i do everything accordringly to literature.</p>
+			</div>
+			<div id = "comment-21439" class = "comment">
+				<p>If each joint can only move around one axis, then you can calculate the desired orientation of each joint using the triangle cosine formula. That's a single square root and a single acos function, so that shouldn't take perceptible time. You don't need to use a constraint solver for this.
+
+Sit down, draw out the geometry on paper, and derive what the desired angles/triangles are for each of the joints, based on the previously solved joints. Then write out the solution you want.
+
+Note: This will force you to make choices about the solution (going "one way" vs "the other.")</p>
+			</div>
+			</div>
+				<textarea id = "speech-12082" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12082">
+					<img id="start_img-12082" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12082">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

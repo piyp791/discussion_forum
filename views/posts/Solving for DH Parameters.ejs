@@ -1,0 +1,169 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Solving for DH Parameters
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8368" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8368" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 282</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Solving for DH Parameters</h2>
+<p>Given three sets of joint angles in which the end effector is in the same position, is it possible to find the DH parameters?</p>
+
+<p>If the robot has 2 DOF in shoulder, 2 DOF in elbow, and 1 dof in wrist, with DH parameters as upper arm length, elbow offset in 1 axis, lower arm length, can this be solved, if so how?</p>
+
+<p>I tried iterating through DH parameters to minimize position of end effector with forward kinematics, but this doesnt seem to work as DH parameters of 0 for everything makes 0 minimal distance.</p>
+
+<p>Reason for this; given a physical robot, no DH parameters are known, and measuring by hand is not accurate.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8368" data-toggle = "popover">
+				<p>user name : user1938107</p>
+				<p> user reputation : 113</p>
+				<p class = "tagcontent" id = "usertaginfo-8368">{'dh-parameters': 0, 'None': 0, 'design': 2, 'humanoid': 2, 'mechanism': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8368" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8368" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8368">
+					<img id="start_img-8368" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8368">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8370"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8370" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>For a 5-DOF manipulator you will have 15 DH parameters. Three sets of joint angles will yield 9 equations, so that will not be enough to determine the parameters. And this is assuming you know the end-effector position, whereas if you are simply trying to use the constraint that all three positions are equal then you will have even fewer equations to work with.</p>
+
+<p>You should be able to estimate the $\alpha$ parameters simply by inspecting the robot -- hopefully they are all 0 deg or $\pm$90 deg.</p>
+
+<p>If you are measuring the end-effector position then you can simply set up as many test points as are necessary to get all of the parameters. This can be done strategically to simplify the process. Start with the outermost link, rotate that joint only, and look at how the end-effector position changes, then you can determine that link's parameters. Then move to the next link and repeat.</p>
+
+<p>Alternatively, you can use the forward kinematics in a differential form as would be used to determine end-effector velocity, $\dot{p}$, in terms of joint angle velocities, $\dot{\theta}$, based on the Jacobian, $J$.</p>
+
+<p>$\dot{p} = J \dot{\theta}$</p>
+
+<p>Consider this relationship in terms of differences in end-effector position related to differences in joint angles:</p>
+
+<p>$\Delta p = J \Delta \theta$</p>
+
+<p>The above relationship can then be used to solve for the DH parameters given a series of measured $\Delta p$ and $\Delta \theta$ values using a non-linear least-squares solution.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8370" data-toggle = "popover">
+				<p>user name : Brian Lynch</p>
+				<p> user reputation : 1237</p>
+				<p class = "tagcontent" id = "usertaginfo-8370">{'None': 85}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8370">Load Comments</button></br>
+			<div id = "commentsection-8370" class = 'collapse'>
+			<div id = "comment-13436" class = "comment">
+				<p>based on the actual robot, the only dh parameters are the ones i list, upper arm length, elbow offset x, lower arm length.  The issue is not knowing exactly where the end effector is, as I can not measure the center of the shoulder joint (which is what I use as base frame so the shoulder has no offset).</p>
+			</div>
+			<div id = "comment-13438" class = "comment">
+				<p>Are you asking if your particular set of equations are determinate?</p>
+			</div>
+			<div id = "comment-13439" class = "comment">
+				<p>I am asking if there is a known method for solving dh parameters given some physical robot where the parameters are unknown, so it is not possible to measure inside the joint, and not possible to know the possition of the end effector relative to any frame within the robot.</p>
+			</div>
+			<div id = "comment-13440" class = "comment">
+				<p>If it is not possible to know the end-effector position then you cannot identify the DH parameters. Surely you must be measuring the end-effector position somehow? If so then just do as I said, work backwards from the outermost link. One method that you can use for identifying the link parameters is to setup fiduciary markers and use a camera, but that is quite a bit of work.</p>
+			</div>
+			<div id = "comment-13441" class = "comment">
+				<p>I can know end effector relative to another end effector location, but not the robot frame, if I could measure EE to robot frame (which is inside the robot), then I could measure the DH parameter.  I do have a mocap sytem.</p>
+			</div>
+			<div id = "comment-13442" class = "comment">
+				<p>So you can measure relative end-effector movement but not the actual end-effector position?</p>
+			</div>
+			<div id = "comment-13443" class = "comment">
+				<p>Correct, since the actual ee is relative to a position inside the robot, and I can not measure from there, and since the DH is unknown, i cant use kinematics to calculate it accurately.</p>
+			</div>
+			<div id = "comment-13444" class = "comment">
+				<p>You can still determine link lengths by working backwards from the end-effector and actuating only one joint at a time. Move only the outermost link and record the EE position as you sweep through the angles, this will then form an arc segment in 3D space from which you can determine the axis and arc radius.</p>
+			</div>
+			<div id = "comment-13445" class = "comment">
+				<p>Yes, That is possible, I was hoping there was a better way.</p>
+			</div>
+			<div id = "comment-13446" class = "comment">
+				<p>I think that is the simplest method. You can also try setting up equations relating changes in joint angles to changes in EE position through the forward kinematics Jacobian. Then solve that system of equations using a non-linear least-squares solution for a series of measurements.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8370" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8370">
+					<img id="start_img-8370" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8370">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

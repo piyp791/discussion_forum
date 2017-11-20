@@ -1,0 +1,161 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Using an RGB + Depth Camera to locate X,Y,Z coordinates of a ball
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8400" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8400" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 946</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Using an RGB + Depth Camera to locate X,Y,Z coordinates of a ball</h2>
+<p>I've recently been trying to use Gazebo to do some modelling for a couple tasks. I have a robot that's effectively able to locate a ball and get x,y coordinates in terms of pixels using a simple RGB camera from the Kinect. I also have a point cloud generated from the same Kinect, where I hope to find the depth perception of the ball using the X,Y coords sent from the circle recognition from my RGB camera. My plan earlier was to convert the X,Y coordinates from the RGB camera into meters using the DPI of the Kinect, but I can't find any info on it. It's much, much harder to do object recognition using a Point Cloud, so I'm hoping I can stick to using an RGB camera to do the recognition considering it's just a simple Hough Transform. Does anybody have any pointers for me?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8400" data-toggle = "popover">
+				<p>user name : Iche</p>
+				<p> user reputation : 114</p>
+				<p class = "tagcontent" id = "usertaginfo-8400">{'planning': 1, 'None': 6, 'computer-vision': 1, 'mobile-robot': 1, 'inverse-kinematics': 4, 'localization': 2, 'python': 0, 'forward-kinematics': 0, 'cameras': 1, 'kinect': 2, 'joint': 0, 'slam': 1, 'kinematics': 0, 'matlab': 0, 'robotic-arm': 3, 'jacobian': 0, 'dh-parameters': 0, 'motion-planning': 1, 'gazebo': 2, 'rrt': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8400">Load Comments</button></br>
+			<div id = "commentsection-8400" class = 'collapse'>
+			<div id = "comment-13513" class = "comment">
+				<p>The approach I posted earlier doesn't work, I wasn't thinking.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8400" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8400">
+					<img id="start_img-8400" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8400">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8402"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8402" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The critical part is the registration between depth data and RGB data. If the registration is calibrated properly then you can just extract the depth for the particular target pixel (X,Y), using interpolation for sub-pixel coordinates. See <a href="https://stackoverflow.com/questions/17012585/how-do-you-map-kinects-depth-data-to-its-rgb-color">this answer</a> for help with the registration -- it is a common problem that has already been solved.</p>
+
+<p>Once you have the depth for the pixel coordinates of interest, you can easily get the Cartesian coordinates relative to the camera using the camera matrix (based on the field of view and image size). Note that you also have to account for distortion in the RGB camera. <a href="http://docs.opencv.org/2.4/modules/calib3d/doc/camera_calibration_and_3d_reconstruction.html" rel="nofollow noreferrer">This OpenCV documentation page</a> should help start you off, and there are plenty of resources out there addressing transformation between camera pixel coordinates, camera homogeneous coordinates, and actual world Cartesian coordinates given the pixel depth.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8402" data-toggle = "popover">
+				<p>user name : Brian Lynch</p>
+				<p> user reputation : 1237</p>
+				<p class = "tagcontent" id = "usertaginfo-8402">{'None': 85}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8402">Load Comments</button></br>
+			<div id = "commentsection-8402" class = 'collapse'>
+			<div id = "comment-13514" class = "comment">
+				<p>A great, straight to the point response! This is exactly what I was looking for! Thank you.</p>
+			</div>
+			<div id = "comment-13515" class = "comment">
+				<p>Excellent, hopefully those resources are enough and you can connect all the dots. Are you using the Kinect v1 or v2?</p>
+			</div>
+			<div id = "comment-13516" class = "comment">
+				<p>I'm using an Openni Kinect. I'm just doing simulations in Gazebo at the moment but I'll probably end up using a v2 Kinect when I get all the simulations done.</p>
+			</div>
+			<div id = "comment-13517" class = "comment">
+				<p>If you do end up using the Kinect v2 then you might be able to use the infrared intensity image to locate the target -- in which case you can avoid needing to register between depth and RGB (since the depth data is produced from the same infrared camera data). The problem of converting from pixel coordinates to world coordinates then shifts to the infrared camera configuration instead of the RGB configuration.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8402" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8402">
+					<img id="start_img-8402" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8402">Comment</button>
+			<br><div id = "ans-8410"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8410" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Very common problem which calls for using the "Pointcloud Library" PCL: <a href="http://www.pointclouds.org" rel="nofollow">www.pointclouds.org</a>
+This datastructures in the library also make it easy to find according 3D-Points when you segmented your RGB image. There are lots of tutorials and a very busy community.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8410" data-toggle = "popover">
+				<p>user name : Squelsh</p>
+				<p> user reputation : 94</p>
+				<p class = "tagcontent" id = "usertaginfo-8410">{'None': 4}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8410" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8410" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8410">
+					<img id="start_img-8410" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8410">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,277 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Forward kinematic computing the transformation matrix
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8621" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8621" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 459</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Forward kinematic computing the transformation matrix</h2>
+<p>I am the moment trying to compute the transformation matrix for robot arm, that is made of 2 joints (serial robot arm), with which I am having some issues. L = 3, L1 = L2 = 2, and q = ($q_1$,$q_2$,$q_3$) = $(0 , \frac{-\Pi}{6},\frac{\Pi}{6})$</p>
+
+<p>Based on this information I have to compute the forward kinematic, and calculate the position of each joint. </p>
+
+<p>Problem here is though, how do I compute the angle around x,y,z.. for the transformation matrix.  Using sin,cos,tan is of course possible, but what do their angle corresponds? which axis do they correspond to?</p>
+
+<p><a href="https://i.stack.imgur.com/EIBNn.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/EIBNn.png" alt="Sketch of the robot"></a></p>
+
+<p>I tried using @SteveO answer to compute the $P_0^{tool}$ using the method he provided in his answer, but I somehow mess up something, as the value doesn't resemble the answer given in the example.. </p>
+
+<p><a href="https://i.stack.imgur.com/zcDfO.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/zcDfO.png" alt="Mathmatica calculation"></a> </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8621" data-toggle = "popover">
+				<p>user name : user11263</p>
+				<p> user reputation : 16</p>
+				<p class = "tagcontent" id = "usertaginfo-8621">{'forward-kinematics': 3, 'None': 0, 'kinematics': 3, 'orientation': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8621">Load Comments</button></br>
+			<div id = "commentsection-8621" class = 'collapse'>
+			<div id = "comment-14082" class = "comment">
+				<p>Why are your cosine values 0 for R02, and your sine values 0 for R03?  Your final R03 matrix should have the upper left 2x2 submatrix populated with terms that include both $q_2$ and $q_3$.</p>
+			</div>
+			<div id = "comment-14083" class = "comment">
+				<p>If your robot is this simple, and only moves in plane...well...orientation about the X and Y axis is always 0 and rotation about the Z axis is q1+q2+q3 (but only if you defined the q motions as it generally would be in robotics, example here http://www2.inf.fh-brs.de/~jthoma2s/FE2Report/node40.html)</p>
+			</div>
+			<div id = "comment-14084" class = "comment">
+				<p>Oh, I see it.  Use 'dot' for matrix multiplication.   The asterisk is doing an element-wise multiplication.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8621" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8621">
+					<img id="start_img-8621" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8621">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8622"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8622" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">7</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Start with coordinate systems.  I've drawn one example.  </p>
+
+<p><a href="https://i.stack.imgur.com/it3Dp.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/it3Dp.png" alt="Original robot with coordinate systems"></a></p>
+
+<p>In my analysis, if all $q_i = 0$ then the manipulator would point straight up.  You can choose other coordinate frames to get the same result.  Build your rotation matrices from the coordinate systems you set up.</p>
+
+<p>The rotation matrix from coordinate system $0$ to coordinate system $1$ is
+$$_0^1R = \begin{bmatrix}
+\cos q_1&amp;-\sin q_1&amp;0\\
+\sin q_1&amp;\cos q_1&amp;0\\
+0&amp;0&amp;1
+\end{bmatrix}
+$$</p>
+
+<p>The mapping from coordinate system $1$ to coordinate system $2$ is</p>
+
+<p>$$_1^2R = \begin{bmatrix}
+-\sin q_2&amp;-\cos q_2&amp;0\\
+\cos q_2&amp;-\sin q_2&amp;0\\
+0&amp;0&amp;1
+\end{bmatrix}
+$$</p>
+
+<p>And the mapping from system $2$ to $3$ is</p>
+
+<p>$$_2^3R = \begin{bmatrix}
+\cos q_3&amp;-\sin q_3&amp;0\\
+\sin q_3&amp;\cos q_3&amp;0\\
+0&amp;0&amp;1
+\end{bmatrix}
+$$</p>
+
+<p>Notice that all of the joint angles are taken as positive rotations around the $z$ axis.  I'm not sure from your problem statement or drawing if that is your intention.</p>
+
+<p>So to compute the position of point $p$ with respect to the global $0$ coordinate system, apply the vector loop</p>
+
+<p>$$ \vec p = L \vec y_1 + L_1 \vec x_2 + L_3 \vec x_3$$</p>
+
+<p>$\vec y_1$ is the second column from $_0^1R$.  $\vec x_2$ is the first column from $_0^2R$, and $\vec x_3$ is the first column from $_0^3R$.</p>
+
+<p>You compute $_0^2R$ by multiplying $_0^1R _1^2R$, and $_0^3R$ is $_0^2R _2^3R$.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8622" data-toggle = "popover">
+				<p>user name : SteveO</p>
+				<p> user reputation : 2960</p>
+				<p class = "tagcontent" id = "usertaginfo-8622">{'None': 222}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8622">Load Comments</button></br>
+			<div id = "commentsection-8622" class = 'collapse'>
+			<div id = "comment-14069" class = "comment">
+				<p>Looking at this i am bit confused.. here.. 
+So i et that you compute the rotation matrix, but why only for the Z - axis..
+
+My understanding that the Tranformation matrix takes the rotation matrix using RPY.. ?</p>
+			</div>
+			<div id = "comment-14070" class = "comment">
+				<p>According to your figure, all of the links are in the same plane, with each axis of rotation coming out of the plane.  I just chose coordinate systems which made all of these the $Z$ axes.   When the joint axes do not align in parallel, the rotation matrices then require all three columns to be used as you work your way along the manipulator.</p>
+			</div>
+			<div id = "comment-14071" class = "comment">
+				<p>As this is taken from an example.. I already know the points.. 
+
+It is part of an example at which I compute the jacobian.. 
+
+$p^1_0$ (q) = $p^2_0$ (q) = (0, 0, 3)  $p^3_0$ (q) = (1, 0, 3 +  3) ; $p^{tool}_0$ (q) = (3, 0, 3 +  3)
+
+My understanding was that to compute a forward kinematic you would need.. position and orientation of all joints which would give you a state q describing it..</p>
+			</div>
+			<div id = "comment-14072" class = "comment">
+				<p>My problem is that i know the state.. and the length of each joint.. I am not sure how to retrieve the position, or the angle, thereby compute the forward kinematics.</p>
+			</div>
+			<div id = "comment-14073" class = "comment">
+				<p>Writing from my phone so please excuse the formatting.  You can follow the answer below to get your 4x4 matrix.  Alternately, you can put $_0^3R$ into the upper left 3x3, and $\vec p$ into the top three elements of the fourth column.  Adding a row of 0, 0, 0, 1 will give you the forward kinematics.    Can you do the vector loop equation I wrote to compute $\vec p$?</p>
+			</div>
+			<div id = "comment-14074" class = "comment">
+				<p>I am pretty open for anything , as long it makes sense..  
+
+Is it the same rotation matrix ($R_z$) you apply on $R_0^1$ and $R_1^2$...  (as the signs are different in each case..)</p>
+			</div>
+			<div id = "comment-14075" class = "comment">
+				<p>The signs are different because my coordinate system 2 is a bit goofy.  If $\hat y_2$ pointed along the link (instead of $\hat x_2$) then the rotation matrices would all look the same.  But math is consistent - the final rotation of the tool, which I call $_0^3R$, will be exactly the same expression regardless of the intermediate coordinate systems.  You need to multiply the rotation matrices, starting at system $0$, out to $3$, to get the rotation of the end effector in the base (or $0$) system.  That is your upper left 3x3.  Use the vector loop equation to get $\vec p$.</p>
+			</div>
+			<div id = "comment-14080" class = "comment">
+				<p>I tried to make the computation, using mathmatica, and the computation seems to be incorrect according to the position given in the example..
+
+Please look at the update i have made..</p>
+			</div>
+			<div id = "comment-14081" class = "comment">
+				<p>Check your picture and the signs of $q_2$ and $q_3$.  I think your angle for $q_3$ is in the wrong direction.  I think your original question has been answered.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8622" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8622">
+					<img id="start_img-8622" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8622">Comment</button>
+			<br><div id = "ans-8628"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8628" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>In your forward kinematics transformation matrix (4x4, incl. also translation, of just 3x3) the orientation of the end-effector is expressed relative to the base (or world) coordinate system. </p>
+
+<p>SteveO described very well how to obtain the 3x3 rotation matrix, similarly you can obtain also the 4x4 transformation matrix</p>
+
+<p>If you have the matrix you have to choose how do you want to express the coordinates. Commonly in robotics euler angles are used, with successive rotations about the axes of a coordinate system. After choosing the <a href="https://en.wikipedia.org/wiki/Euler_angles" rel="nofollow">Euler angles</a>, you also have to choose which is the succession of the rotation. In robotics in many cases the rotations are successive (intrinsic) rotations. </p>
+
+<p>After choosing hwo do you want to express the orientation you can build up the orientation matrix from your rotations(e.g. X-Y-Z, then you multiply $R_{TCP} = R(\phi_x) * R(\phi_y) * R(\phi_z) $). </p>
+
+<p>The orientation of your TCP expressed in function of your joints is $R_{joints}=R_{joints}(q1, q2, q3)$ or $^3_0R$ in the notation used by SteveO. Both of the matrices express the same orientation but in a different way, so $R_{TCP}=R_{joints}$ the joint angles are known in forward kinematics, so you can calculate the orientation angles. Please note that if you are using Matlab the <code>dcm2angle()</code> function does exactly this.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8628" data-toggle = "popover">
+				<p>user name : 50k4</p>
+				<p> user reputation : 2800</p>
+				<p class = "tagcontent" id = "usertaginfo-8628">{'geometry': 0, 'None': 193, 'kinematics': 0, 'robotic-arm': 0}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8628" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8628" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8628">
+					<img id="start_img-8628" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8628">Comment</button>
+			<br><div id = "ans-8923"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8923" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Try the approach  used in <a href="https://robotics.stackexchange.com/a/8922/11582">here</a></p>
+
+<p>The rotation matrix, using generalized coordinates, it's straightforward! Do the math and check it by trigonometry identities.</p>
+
+<p>Good luck!</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8923" data-toggle = "popover">
+				<p>user name : leCrazyEngineer</p>
+				<p> user reputation : 123</p>
+				<p class = "tagcontent" id = "usertaginfo-8923">{'None': 9}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8923" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8923" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8923">
+					<img id="start_img-8923" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8923">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

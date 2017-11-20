@@ -1,0 +1,155 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Set CANopen Node ID of Ingenia Pluto DC Servo Drive
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2694" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2694" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 91</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Set CANopen Node ID of Ingenia Pluto DC Servo Drive</h2>
+<p>Does anybody know how to configure the node ID of an Ingenia <a href="http://www.ingeniamc.com/En/-Pluto-compact-dc-servo-drive-canopen" rel="nofollow">Pluto</a> DC Servo Drive?</p>
+
+<p>I've got a request out to their support team, but perhaps somebody here is already familiar with these drive boards.</p>
+
+<p>I do have Ingenia MotionLab 2.7.2, but it does not ship with documentation and the MotionLab user manual on the site is out of date (I had previously been looking through the hardware documentation, but it turns out the info was in MotionLab documentation; although the instructions for previous versions no longer seem to apply to 2.7.2).</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2694" data-toggle = "popover">
+				<p>user name : Jason C</p>
+				<p> user reputation : 128</p>
+				<p class = "tagcontent" id = "usertaginfo-2694">{'control': 2, 'motor': 1, 'None': 0, 'can': 2, 'robotic-arm': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2694" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2694" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2694">
+					<img id="start_img-2694" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2694">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-2722"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2722" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>As it turns out, it is a bug in the current MotionLab 2.7.2. In theory, the node ID should be able to be changed on the Drive Parameter screen. However, the field for changing the ID is disabled:</p>
+
+<p><img src="https://i.stack.imgur.com/ANe6h.png" alt="enter image description here"></p>
+
+<p>This was compounded by the fact that only documentation for the old MotionLab is available on their site, and the old procedure (right-click on drive in tree) no longer applies. The documentation for 2.7.2 is a work in progress and is not available yet. So missing documentation combined with this issue was the primary cause of confusion.</p>
+
+<p>At the time of this writing, Ingenia has both confirmed this bug (and will be issuing an update soon) and stated that updated documentation will be available soon as well.</p>
+
+<p>In the mean time, Ingenia has offered the following workaround:</p>
+
+<blockquote>
+  <p>Node ID can be change writing the register 0x2000 , subindex 0x1.</p>
+  
+  <ol>
+  <li><p>Just open with a terminal you communication port and write:</p>
+
+<pre><code>&lt;Current node Id&gt; &lt;Action&gt; &lt;Subindex and index in hexa&gt; &lt;in hexa&gt;
+</code></pre>
+  
+  <p>E.g.:</p>
+
+<pre><code>0x20 w 0x12000 &lt;Node number&gt;
+</code></pre>
+  
+  <p>I suggest you using Realterm for instance.</p></li>
+  <li><p>[Use] the old MotionLab.</p></li>
+  </ol>
+  
+  <p>After changing the Node id, remember to  commit  the parameters (save in non-volatile memory).</p>
+</blockquote>
+
+<p>Theoretically, you could also do this via, e.g., libcanopen on Linux. 0x2000 subindex 0x01 can be used to write the 8-bit node ID (range 1-127), and parameters can be committed to non-volatile memory by writing 0x65766173 to index 0x1010 subindex 0x01 (<a href="http://www.ingeniamc.com/En/-Pluto-DC-Servo-Drive.CREF.pdf" rel="nofollow noreferrer">source</a>).</p>
+
+<p>I'm presuming the updated software and documentation will be available by the time anybody actually finds and reads this post.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2722" data-toggle = "popover">
+				<p>user name : Jason C</p>
+				<p> user reputation : 128</p>
+				<p class = "tagcontent" id = "usertaginfo-2722">{'control': 2, 'motor': 1, 'None': 0, 'can': 2, 'robotic-arm': 3}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2722" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2722" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2722">
+					<img id="start_img-2722" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2722">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

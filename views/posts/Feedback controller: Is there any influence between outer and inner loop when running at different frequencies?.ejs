@@ -1,0 +1,177 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Feedback controller: Is there any influence between outer and inner loop when running at different frequencies?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-5251" class = "post">
+			<h2>Question</h2>
+			<div id="vote-5251" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 823</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Feedback controller: Is there any influence between outer and inner loop when running at different frequencies?</h2>
+<p>I've develop a quadrotor (only simulation on my PC using ROS) and the feedback controller resumes more or less the following structure:</p>
+
+<p><img src="https://i.stack.imgur.com/9FyeR.png" alt="Picture 1"></p>
+
+<p>where you can think that process is the dynamic movement of the quadrotor (motion equations), the inner loop is the <em>attitude controller</em> (it just sets the orientation about all 3 axis) and the outer loop is the <em>position controller</em> that takes care where the quadrotor actually is. Why are they separated? Because in many papers I found out that the attitude controller (pitch, roll, yaw) need to run at higher frequency then any other controller in the system. The <em>position controller</em> instead needs to run at lower frequency.</p>
+
+<p>The following picture is a better explanation of my description. Don't be scared...it is more simpler than one could think:</p>
+
+<p><img src="https://i.stack.imgur.com/Qf7Pd.png" alt="Picture 2"></p>
+
+<p>Now I did it as in the paper. <strong>BUT</strong> I discovered that my quadrotor was really unstable and I spent days and days trying to correct the gains of the controller without getting a stable system. My intuition said to me that maybe they are running at wrong frequency, so I put a different frequency values for the position controller being sure it is not a multiply of the main frequency (something like 1000Hz and 355 Hz for example.)</p>
+
+<p>Lately I removed the timer in my program (C++) and let the <em>position controller</em> run at the same frequency as the <em>attitude controller</em> just because I run out of ideas and suddenly worked everything nice.</p>
+
+<p>So here is my question. What should I consider when my system has an outer/inner controllers? How to be aware of that?</p>
+
+<p>Regards and happy new year!!!</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-5251" data-toggle = "popover">
+				<p>user name : Dave</p>
+				<p> user reputation : 294</p>
+				<p class = "tagcontent" id = "usertaginfo-5251">{'control': 10, 'quadcopter': 11, 'None': 6, 'pid': 13, 'uav': 3, 'matlab': 0, 'mobile-robot': 0, 'ros': 2, 'movement': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-5251" class = 'collapse'>
+			</div>
+				<textarea id = "speech-5251" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-5251">
+					<img id="start_img-5251" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-5251">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-5252"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-5252" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>As short answer, the design of nested controllers proceeds normally from the inner/faster loop to the outer/slower loop. Hence, the outer controller is required to stabilize the "equivalent plant" composed of the actual plant along with the inner controller. In this stabilization design, of course, the frequency of the outer controller plays an important role. Generally speaking, therefore, it's not a matter of equating the two sample frequencies. Multi-rate controllers are quite widespread indeed.</p>
+
+<p>To choose the sampling rate $f_s$ one should observe the following thumb rule:
+$$
+10\cdot f_c&lt;f_s&lt;40\cdot f_c,
+$$
+where $f_c$ is the cross-over frequency of the system to control.</p>
+
+<p>Motivations for this consideration can be found in this <a href="http://ecee.colorado.edu/shalom/Emulations.pdf" rel="nofollow">article</a> (page 6).</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-5252" data-toggle = "popover">
+				<p>user name : Ugo</p>
+				<p> user reputation : 1482</p>
+				<p class = "tagcontent" id = "usertaginfo-5252">{'None': 99}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-5252" class = 'collapse'>
+			</div>
+				<textarea id = "speech-5252" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-5252">
+					<img id="start_img-5252" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-5252">Comment</button>
+			<br><div id = "ans-5254"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-5254" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>In short, there is no particular need for synchronization of inner and outer loops. The inner loop should run "fast enough" to control attitude dynamics and the outer loop should run "fast enough" to control translation dynamics. In my last quad the inner loop ran at 200Hz and the outer loop ran at a variable rate from 50Hz-100hz.</p>
+
+<p>Typically, you shouldn't be trying to "tune" the loop frequencies. Once they are fast enough there is no further benefit to be had. In your case, I would carefully check the code to see what the inner loop controller is doing between outer loop controller updates. In most setups, it will just remember the last command from the outer loop and control to that.</p>
+
+<p>To elaborate on the rationale for separate inner/outer loop controllers ...</p>
+
+<p>As you noticed in papers, for quadrotors it is very common to have a separate inner loop (attitude) and outer loop (translation). One strong motivation for this has been the relative ease of attitude control and state estimation. The attitude subsystem is fully actuation and can be aggressively controlled for tight command tracking. Equally important, state estimation is generally quite accurate using a small 9-axis IMU (gyro + accel + mag).</p>
+
+<p>When implemented correctly, this allows the outer loop to assume that it's attitude commands are tracked very tightly. The system now <strong>looks</strong> like a system where attitude acts like a traditional input. In this case, the translation subsystem also becomes fully actuated. For this to work, the inner loop typically needs to run much faster than translation dynamics. Conversely, this means the translation dynamics are relatively slow so the outer loop controller doesn't need to run very fast.</p>
+
+<p>The biggest limitation for the outer loop is how quickly and accurately you can estimate the translation state. For fully autonomous systems, This is typically slow and not very accurate so you can't act aggressively.</p>
+
+<p>One final note, from a control theory point of view most of the inner+outer loop controllers don't have stability guarantees; I've seen only one paper where they went through the effort for a similar control architecture. There are also several papers where they create advanced algorithms with stability analysis but those typically aren't work the effort to implement.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-5254" data-toggle = "popover">
+				<p>user name : ryan0270</p>
+				<p> user reputation : 1814</p>
+				<p class = "tagcontent" id = "usertaginfo-5254">{'None': 133}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-5254" class = 'collapse'>
+			</div>
+				<textarea id = "speech-5254" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-5254">
+					<img id="start_img-5254" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-5254">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

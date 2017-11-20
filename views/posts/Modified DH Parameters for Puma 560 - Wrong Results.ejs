@@ -1,0 +1,204 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Modified DH Parameters for Puma 560 - Wrong Results
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11887" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11887" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 142</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Modified DH Parameters for Puma 560 - Wrong Results</h2>
+<p>In continuation of my question on modified parameter for Puma 560 posted here <a href="https://robotics.stackexchange.com/questions/11878/modified-dh-parameter-for-puma-560">Modified DH Parameters for Puma 560</a>. Further I used a available dimension for Puma 560 here (FYI: the figure shows dimension in inches, but all following dimensions in DH parameters for length are converted to mm), [<img src="https://i.stack.imgur.com/SjXiJ.png" alt="Dimension for Puma 560]"> and trial version of RoboDK simulator to check my result. I assigned the frame as show in the figure from first link, the last link is placed to the flange in the figure below with z6 pointing downward while keeping x6 in same direction as x5. </p>
+
+<p>So the DH parameter looked liked, 
+    double alpha[6] = { 0, -90, 0, -90, 90, -90 };
+    double a[6] = { 0, 0, 431.80, 0, 0, 0 };
+    double d[6] = { 0, 0, 139.7, 433.07, 0, 55.88 };</p>
+
+<p>I started with joint angles (theta) 
+double theta[6] = { 0, 0, 0, 0, 0, 0 };</p>
+
+<p>My calculations give me same position as Puma 560 simulator except z values are negatives. Correct position for joint angles of zeroes is x = 431.800, y = 139.700, z = 489.580. I get x = 431.800, y = 139.700, z = -489.580.</p>
+
+<p>But if I put double d[6] = { 0, 0, 139.7, -433.07, 0, -55.88 }; then I get the correct value, x = 431.800, y = 139.700, z = 489.580.</p>
+
+<p>I tested with other joint angles, for which I am getting correct values with negative -433.07 and -55.88 in above. So, they must be negatives.</p>
+
+<p>My question is, why I have to take negative values for d to get correct result? Does this is because the value in this case should be assigned as per base frame (all value above base frame is assigned positive and all below should be assigned negative irrespective of convention.)</p>
+
+<p>Base frame is located at same position as frame 1 (refer to the top most link) I used the same procedure as described in "Introduction to Robotics" by J.J. Craig. </p>
+
+<p><strong>EDIT:</strong> below is the codes I am using for the computation. Alpha and theta is converted to radians.</p>
+
+<pre><code>    ////// Craig Matrix - Modified DH Parameters Convention
+    mat[0] = cos(theta);
+    mat[1] = -1 * sin(theta);
+    mat[2] = 0;
+    mat[3] = a;
+
+    mat[4] = sin(theta) * cos(alpha);
+    mat[5] = cos(theta) * cos(alpha);
+    mat[6] = -1 * sin(alpha);
+    mat[7] = -1 * sin(alpha) * d;
+
+    mat[8] = sin(theta) * sin(alpha);
+    mat[9] = cos(theta) * sin(alpha);
+    mat[10] = cos(alpha);
+    mat[11] = cos(alpha) * d;
+
+    mat[12] = 0;
+    mat[13] = 0;
+    mat[14] = 0;
+    mat[15] = 1;
+</code></pre>
+
+<p>Above codes will give a 4 x 4 DH transformation matrix for each frame as per Modified DH conventions (Refer to Modified DH parameters on Wikipedia or J.J. Craig book, the matrix is defined there.)</p>
+
+<p>Now, we multiply all matrices as per, <a href="https://i.stack.imgur.com/vggHY.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/vggHY.png" alt="order of multiplication"></a></p>
+
+<p>starting with matrix for frame 6 on the right hand side and multiplying it with preceding joint from left hand side. Repeating the same sequence as noted above. This should give as the location of origin of frame 6 with respect to the base frame of the robot.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11887" data-toggle = "popover">
+				<p>user name : Nitin Kumar</p>
+				<p> user reputation : 111</p>
+				<p class = "tagcontent" id = "usertaginfo-11887">{'None': 0, 'dh-parameters': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11887">Load Comments</button></br>
+			<div id = "commentsection-11887" class = 'collapse'>
+			<div id = "comment-21141" class = "comment">
+				<p>Can you post the code you're using to calculate the complete transform?</p>
+			</div>
+			<div id = "comment-21142" class = "comment">
+				<p>@Chuck: Added the codes and way I am doing computation.</p>
+			</div>
+			</div>
+				<textarea id = "speech-11887" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11887">
+					<img id="start_img-11887" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11887">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-11904"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11904" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I think the problem is with your simulator. You said,</p>
+
+<blockquote>
+  <p>Base frame is located at same position as frame 1 (refer to the top most link)</p>
+</blockquote>
+
+<p>And, from the <a href="https://robotics.stackexchange.com/q/11878/9720">previous question you asked</a>, there is the following picture where I have highlighted the first frame:</p>
+
+<p><a href="https://i.stack.imgur.com/xOcyM.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/xOcyM.png" alt="Global coordinates"></a></p>
+
+<p>So here you can see how the global frame is oriented. Now, compare the global/world frame to the end effector location:</p>
+
+<p><a href="https://i.stack.imgur.com/g7QcM.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/g7QcM.png" alt="Relative location"></a></p>
+
+<p>You've got the coordinates clearly labeled now on these drawings and you can, at a glance, see what the end effector's <em>position</em> is:</p>
+
+<p>You move along the positive x axis 17 inches, you move along the positive y axis 5.5 inches, and you move along the NEGATIVE z axis (17.05 + 2.2) inches. So, <em>per your drawing</em>, the output you're calculating is correct; it should be +17,+5.5,-19.25 inches, or +431.8,+139.7,-488.95 mm.</p>
+
+<p>My suggestion to you would be to find the discrpancy in your simulator. It looks like there's an offset somewhere on your z-axis measurement. I would say that maybe the base frame there is considered the base of the robot, but that doesn't make sense per the x/y coordinates. Your x/y values are pretty close to equal, which means the end effector should be located close to a (+/-) 45 degree line from the origin. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11904" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-11904">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11904">Load Comments</button></br>
+			<div id = "commentsection-11904" class = 'collapse'>
+			<div id = "comment-21168" class = "comment">
+				<p>Thanks for explanation! I've check the DH parameters for this robot on internet to cross check, and it seems that others are talking d3 and d4 positive. I started with the assumption that one can set DH parameters from any position of robot but this example is forcing me to believe that there is really a zero reference position to determine get DH parameters for each robot. Perhaps RoboDK simulator, that I'm using, has also set DH parameter with arm up and thus taking positive for d3 and d4. We need to find someone who can confirm that we can use any robot position to set DH parameter or not.</p>
+			</div>
+			<div id = "comment-21169" class = "comment">
+				<p>If we have a particular or zero reference position, where we have to set DH parameters then perhaps my approach is wrong.</p>
+			</div>
+			<div id = "comment-21172" class = "comment">
+				<p>@NitinKumar - I would contact the people at RoboDk about this model in particular (and maybe refer them back to your question here) and see if they could verify it's programmed correctly. As I've drawn it in my answer, you can clearly see that the z-value *must* be negative if the first frame is coincident with the world frame. This reinforces/verifies the modified DH parameter selection that was made in your previous question (d3 and d4 are positive) because those values produce the same transform.</p>
+			</div>
+			<div id = "comment-21173" class = "comment">
+				<p>I would be willing to bet that the discrepancy is, as you hint, due to a difference in how the default (zero angle) configuration is assumed to be laid out. If I were you, I would contact RoboDk and Puma both to try to get feedback on how RoboDk has the robot arm configured (default arrangement) and how Puma has manufactured the robot (default joint angles).</p>
+			</div>
+			</div>
+				<textarea id = "speech-11904" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11904">
+					<img id="start_img-11904" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11904">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,211 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Mahalanobis distance between 2 line features
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-3071" class = "post">
+			<h2>Question</h2>
+			<div id="vote-3071" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 224</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Mahalanobis distance between 2 line features</h2>
+<p>I am implementing the <strong>ATLAS SLAM</strong> framework for a ground robot, using EKF Slam for local maps and using line segment features. The line segment features can be abstracted to their respective lines <code>[d, ]</code> where <code>d</code> and <code> </code> represent the distance and angle in the distance-angle representation of lines. </p>
+
+<p>In the given framework, there is a local map matching step where lines of the local maps will be matched, and there is a need for a distance metric between 2 lines. The mahalanobis distance is suggested in the literature, however strictly a mahalanobis distance is between a single measurement and a distribution and not between 2 distributions.</p>
+
+<p>How do I find the mahalanobis distance between line 1 <code>[d1, 1]</code> with covariance matrix <code>S1</code> and line 2 <code>[d2, 2]</code> with covariance matrix <code>S2</code>?</p>
+
+<p>In the <strong>EKF Algorithm</strong> from the book Probabilistic Robotics by Sebastian Thrun, there is a computation during the feature update step, where it looks like the covariances (of a new measurement and an existing measurement) are multiplied to give a resultant covariance matrix, and then the inverse is used in the Mahalanobis distance computation. </p>
+
+<p>That would be similar to </p>
+
+<pre><code>Mahalanobis_Distance = [d2-d1, 2- 1] * Inverse(S1*S2) * [d2-d1, 2- 1]'
+</code></pre>
+
+<p>Is that correct?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-3071" data-toggle = "popover">
+				<p>user name : crystalbass17</p>
+				<p> user reputation : 16</p>
+				<p class = "tagcontent" id = "usertaginfo-3071">{'ekf': 3, 'None': 0, 'mapping': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-3071" class = 'collapse'>
+			</div>
+				<textarea id = "speech-3071" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-3071">
+					<img id="start_img-3071" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-3071">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-3083"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-3083" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The Mahalanobis distance is useful because it is a measure of the "probablistic nearness" of two points. </p>
+
+<p>For example, if I have a gaussian PDF with mean zero and variance 100, it is quite likely to generate a sample around the value 100. ($(100-0)/100 = 1$).  However, a gaussian PDF with mean 100 and variance 1 is <em>more likely</em> to be the PDF which generates samples around 100. ($(100-100)/1=0$). So we consider the point "closer to" the second one.</p>
+
+<p>Thus, we need a <a href="http://en.wikipedia.org/wiki/Metric_space" rel="nofollow">metric</a> to determine which PDF was a "better" choice when determining who generated the sample 100.</p>
+
+<p>So in your case, it depends on which quantities were being generated by random processes.  For example, if you assumed that $d$ and $a$ were being measured, but corrupted by independent random noise, then yes, your definition of the Mahalanobis Distance is correct.</p>
+
+<p>It is very unlikely that the noise on $d$ and $a$ are independent, since they probably aren't being measured independently. However, many algorithms make such an assumption. Make sure yours does.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-3083" data-toggle = "popover">
+				<p>user name : Josh Vander Hook</p>
+				<p> user reputation : 3960</p>
+				<p class = "tagcontent" id = "usertaginfo-3083">{'None': 345}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-3083" class = 'collapse'>
+			</div>
+				<textarea id = "speech-3083" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-3083">
+					<img id="start_img-3083" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-3083">Comment</button>
+			<br><div id = "ans-4293"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4293" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>There are many ways to measure the statistical difference between two distributions. For your case, you might consider the <a href="http://en.wikipedia.org/wiki/Bhattacharyya_distance" rel="nofollow">Bhattacharyya distance</a>. From that page, the Bhattacharyya distance $D_B$ is</p>
+
+<p>$$
+D_B={1\over 8}(\boldsymbol\mu_1-\boldsymbol\mu_2)^T \boldsymbol\Sigma^{-1}(\boldsymbol\mu_1-\boldsymbol\mu_2)+{1\over 2}\ln \,\left({\det \boldsymbol\Sigma \over \sqrt{\det \boldsymbol\Sigma_1 \, \det \boldsymbol\Sigma_2} }\right),
+$$</p>
+
+<p>where $\boldsymbol\mu_i$ and $\boldsymbol\Sigma_i$ are the means and covariances of the distributions, and</p>
+
+<p>$$
+\boldsymbol\Sigma={\boldsymbol\Sigma_1+\boldsymbol\Sigma_2 \over 2}.
+$$</p>
+
+<p>I would also like to issue a warning. When calculating the difference between angles (e.g., $\alpha_1 - \alpha_2$ in your case), you have to take care of wrapping issues. For example, for $\alpha_1 = -179$ deg and $\alpha_2 = 179$ deg, their different is not $(-179) - (179) = -358$ deg, but rather it is $2$ deg. If you are only concerned about the relative values of statistical differences (e.g., "which is the smallest"), then consider using the <em>circular distance</em> ($c$) between the two angles, which is</p>
+
+<p>$$
+c = \frac{1 - \cos(\alpha_1 - \alpha_2)}{2}.
+$$</p>
+
+<p>This always returns a value $c\in[0,1]$, where $c=1$ is the result when the two angles 180 degrees apart. So if you use the Bhattacharyya distance, the angle part of $\boldsymbol{\mu}$ would be a circular distance. However, if you are looking at lines, rotating a line 180 degrees returns it to its original orientation! That's because the directions of lines are examples of <em>axial data</em>, and are invariant to rotations of +/- 180 degrees. In this case, just double the angle of the above circular distance; i.e.,</p>
+
+<p>$$
+c = \frac{1 - \cos[2(\alpha_1 - \alpha_2)]}{2}.
+$$</p>
+
+<p>Now $c=1$ when the lines are 90 degrees apart!</p>
+
+<p>Good luck!</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4293" data-toggle = "popover">
+				<p>user name : kamek</p>
+				<p> user reputation : 775</p>
+				<p class = "tagcontent" id = "usertaginfo-4293">{'None': 48}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-4293" class = 'collapse'>
+			</div>
+				<textarea id = "speech-4293" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4293">
+					<img id="start_img-4293" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4293">Comment</button>
+			<br><div id = "ans-4593"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4593" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>This is might not be an answer but check out this book <a href="http://rads.stackoverflow.com/amzn/click/B00BEZNHGY" rel="nofollow">Robotic Navigation and Mapping with Radar </a> page 126.  They discuss  the Mahalanobis distance better than what stated in Probabilistic Robotics. Also, they mention why this method also known as the Nearest Neighbor (NN) is not a good solution in some situations and they state another solutions. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4593" data-toggle = "popover">
+				<p>user name : CroCo</p>
+				<p> user reputation : 1040</p>
+				<p class = "tagcontent" id = "usertaginfo-4593">{'control': 18, 'pid': 4, 'slam': 16, 'manipulator': 3, 'mobile-robot': 14, 'dynamics': 6, 'errors': 2, 'data-association': 1, 'kinematics': 3, 'matlab': 6, 'kalman-filter': 21, 'motion-planning': 3, 'None': 41, 'noise': 24, 'theory': 1, 'localization': 14, 'microcontroller': 5, 'mapping': 5, 'sensor-error': 1, 'sensors': 7, 'quadcopter': 8, 'ekf': 26, 'simulation': 1, 'motion': 3}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-4593" class = 'collapse'>
+			</div>
+				<textarea id = "speech-4593" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4593">
+					<img id="start_img-4593" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4593">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

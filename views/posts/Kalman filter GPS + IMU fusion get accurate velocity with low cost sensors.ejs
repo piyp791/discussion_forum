@@ -1,0 +1,176 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Kalman filter GPS + IMU fusion get accurate velocity with low cost sensors
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-13924" class = "post">
+			<h2>Question</h2>
+			<div id="vote-13924" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 118</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Kalman filter GPS + IMU fusion get accurate velocity with low cost sensors</h2>
+<p>I'm new to all this robotics stuff. Especially to Kalman filter. </p>
+
+<p><strong>My initial goal is to have velocity as accurate as possible</strong></p>
+
+<p>Here is my case: </p>
+
+<blockquote>
+  <p>I have a phone which is mounted, for example in the car. So it has low cost GPS and IMU sensors. 2D</p>
+</blockquote>
+
+<p><code>GPS gives me:</code></p>
+
+<ul>
+<li>position (longitude, latitude, <s>altitude</s>)</li>
+<li>position accuracy (<strong>error</strong> can't be split into <code>east, north, up</code> directions)</li>
+<li>speed</li>
+<li>speed accuracy (<strong>error</strong> can't be split into <code>east, north, up</code> directions)</li>
+<li>heading angle</li>
+<li>heading angle accuracy</li>
+</ul>
+
+<p><code>IMU: (separated accelerometer, gyroscope and magnetometer). I fuse them myself</code></p>
+
+<p>Actually it's needed to be mentioned that I can't use magnetometer in my case. Since "car" is faraday cage. So I only can fuse accelerometer and gyroscope. Both of them are outputs from <strong>Madgwick AHRS</strong> (can get from here rotation matrix, quaternion if needed) and represented in <code>North</code>, <code>East</code>, <code>Up</code> dimensions. </p>
+
+<p>What I've done so far:</p>
+
+<ul>
+<li>I've implemented linear KF with position &amp; velocity states. But I didn't achieve desired accuracy.
+<a href="https://i.stack.imgur.com/yrotV.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/yrotV.png" alt="enter image description here"></a></li>
+</ul>
+
+<p>Get rid of IMU data from chart above.
+<br></p>
+
+<p><a href="https://i.stack.imgur.com/6PYEl.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/6PYEl.png" alt="enter image description here"></a></p>
+
+<p>It's IMU causes that drift. I have GPS updates every 1 second. And IMU with 13 Hz frequency. We can see here that every 13th iteration we have GPS updates and then IMU goes rogue.</p>
+
+<p><strong>Used approach:</strong><br>
+Since I have GPS 1Hz and IMU upto 100Hz. But I took 13Hz in my case. Since I don't need to have so many updates.</p>
+
+<ol>
+<li>predict when IMU fires event</li>
+<li>When GPS fires event. I take latest IMU data. Do predict and then gps (position, velocity) update.</li>
+</ol>
+
+<p><strong>Since my primary goal is to have accurate velocity</strong>.<br>
+I don't care much about position and heading angle but... Since velocity correlates with them they can be added to Kalman Filter. <strong>Am I right?</strong></p>
+
+<p>So my Kalman states are <code>position</code>, <code>velocity</code> and <code>heading angle</code>.</p>
+
+<p>Can I use something like?</p>
+
+<p>$$
+x = x_i + v_i\Delta t + \frac{a_i\Delta t}{2}
+$$
+$$
+v = v_i + a_i\Delta t
+$$
+$$
+\theta = \theta_i + w_i\Delta t
+$$
+Questions:</p>
+
+<ol>
+<li>Could velocity benefit from adding position and heading angle as states to Kalman Filter. Since there is some correlation between them. (Angular velocity impacts on velocity itself).</li>
+<li>Is it OK to use formulas from Linear motion? Because I have Curvilinear motion in my case.</li>
+<li>Almost all papers describe (position, velocity) model with KF. Can I take advantage in using EKF? I found some papers that mention <strong><em>odometry</em></strong> word. And seems like they have the same model. (pos, velocity, angle)</li>
+<li>What if after all manipulations velocity is still inaccurate? Should I apply additional instruments after KF?</li>
+<li>Can I somehow take advantage of current location and prev. location points? (For example, calculate velocity from two points. Of course it means that my unit moves linear and not by curve). Then somehow correct my predicted KF result with this velocity.</li>
+</ol>
+
+<blockquote>
+  <p>Please help me with modeling Kalman Filter. And give an advice how to achieve best velocity accuracy.</p>
+</blockquote>
+
+<p>Thanks!</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-13924" data-toggle = "popover">
+				<p>user name : InsFi</p>
+				<p> user reputation : 6</p>
+				<p class = "tagcontent" id = "usertaginfo-13924">{'None': 0, 'gps': 1, 'imu': 1, 'kalman-filter': 1, 'localization': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-13924">Load Comments</button></br>
+			<div id = "commentsection-13924" class = 'collapse'>
+			<div id = "comment-22748" class = "comment">
+				<p>@Chuck I fully edited question. Also I read your related [post](https://robotics.stackexchange.com/questions/11178/kalman-filter-gps-imu?rq=1). Also it's needed to be mentioned that all sensors (GPS / IMU) are in the mobile phone. Hope it helps.</p>
+			</div>
+			</div>
+				<textarea id = "speech-13924" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-13924">
+					<img id="start_img-13924" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-13924">Comment</button>
+
+<h1>Answers</h1>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

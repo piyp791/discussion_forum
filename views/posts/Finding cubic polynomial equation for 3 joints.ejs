@@ -1,0 +1,167 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Finding cubic polynomial equation for 3 joints
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8654" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8654" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 109</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Finding cubic polynomial equation for 3 joints</h2>
+<p>My professor gave us an assignment in which we have to find the cubic equation for a 3-DOF manipulator. The end effector is resting at A(1.5,1.5,1) and moves and stops at B(1,1,2) in 10 seconds. How would I go about this? Would I use the Jacobian matrix or would I use path planning and the coefficient matrix to solve my problem. I'm assuming coefficient matrix but I am not given the original position in angle form. I was only taught how to use path planing when the original angles are given.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8654" data-toggle = "popover">
+				<p>user name : Jimenemex</p>
+				<p> user reputation : 103</p>
+				<p class = "tagcontent" id = "usertaginfo-8654">{'motion': 0, 'None': 0, 'motion-planning': 0, 'inverse-kinematics': 0, 'jacobian': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8654">Load Comments</button></br>
+			<div id = "commentsection-8654" class = 'collapse'>
+			<div id = "comment-14114" class = "comment">
+				<p>I would use inverse kinematics to determine the motions of each joint (start and end positions).  Then use path planning to set the desired motion profiles for each axis over those ten seconds.</p>
+			</div>
+			<div id = "comment-14115" class = "comment">
+				<p>Does it have to be in joint space?</p>
+			</div>
+			<div id = "comment-14117" class = "comment">
+				<p>Good comment @50k4.  You could plan the trajectory in Cartesian space, and then use inverse kinematics repeatedly throughout the 10 sec to stay on that path.   The nice thing about that approach is you can keep the end effector on a linear path during the trajectory.  However, it requires repeated inverse kinematics in the motion loop, which the earlier approach does not need.</p>
+			</div>
+			<div id = "comment-14118" class = "comment">
+				<p>Well, it depends on the exercise, I mean if it is a theoretical exercise about trajectory planning, solving the inverse kinematics seems to be an unneeded overhead...Cartesian curves might be enough for the exercise...</p>
+			</div>
+			<div id = "comment-14121" class = "comment">
+				<p>Welcome to *robotics* Jimenemex. On stack exchange, questions asking for homework help must include a summary of the work you've done so far to solve the problem, and a description of the difficulty you are having solving it. Please edit your question to add this information.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8654" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8654">
+					<img id="start_img-8654" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8654">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8656"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8656" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I guess you want to find a cubic polynomial for the end effector. You have 3 coordinates for your points A and B, from your question is not clear if they are $x,y,z$ or $x,y,\theta$. Anyway, I'll show here the procedure for $x$, and you can repeat it for the other two coordinates.</p>
+
+<p>Given the cubic parametric form $x = a_0+a_1 t + a_2 t^2 + a_3 t^3$ ($*$), you want to find the parameters $a_i$. </p>
+
+<p>At $t=0$ you know that $x = 1.5$, so from ($*$) $a_0 = 1.5$.</p>
+
+<p>At $t=10$ you know that $x = 1$, so from ($*$) $a_0+10a_1 + 100a_2 + 1000a_3 = 1$.</p>
+
+<p>Let's differentiate the polynomial: $\dot{x} = a_1 + 2a_2 t + 3a_3 t^2$ ($**$).</p>
+
+<p>At $t=0$ you know that $\dot{x} = 0$ (rest condition), so from ($**$) $a_1 = 0$.</p>
+
+<p>At $t=10$ you know that $\dot{x} = 0$ (stop condition), so from ($**$) $a_1 + 20a_2 + 300a_3 = 0$.</p>
+
+<p>So you have:</p>
+
+<p>$a_0 = 1.5$</p>
+
+<p>$a_1 = 0$</p>
+
+<p>$a_0+10a_1 + 100a_2 + 1000a_3 = 1 \Rightarrow 1.5 + 100a_2 + 1000a_3 = 1$</p>
+
+<p>$a_1 + 20a_2 + 300a_3 = 0 \Rightarrow 20a_2 + 300a_3 = 0$</p>
+
+<p>From the last equation you get $a_2 = -15a_3$, substituting in the second last you get $a_3 = 0.001$, and substituting $a_3$ back you get $a_2 = -0.015$. </p>
+
+<p>So you have all the $a_i$ coefficients to replace in $(*)$ and you can get the solution $x(t) = 1.5 - 0.015t^2 + 0.001t^3$. You can do the same for the other 2 coordinates changing the initial and final conditions.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8656" data-toggle = "popover">
+				<p>user name : charles</p>
+				<p> user reputation : 266</p>
+				<p class = "tagcontent" id = "usertaginfo-8656">{'None': 9, 'ekf': 3, 'frame': 3, 'slam': 3, 'imu': 4, 'kalman-filter': 3, 'mobile-robot': 4, 'gyroscope': 4}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8656">Load Comments</button></br>
+			<div id = "commentsection-8656" class = 'collapse'>
+			<div id = "comment-14125" class = "comment">
+				<p>Can you explain how you got to the final equation for x from using the previous two?</p>
+			</div>
+			<div id = "comment-14155" class = "comment">
+				<p>I edited the question adding more details. Basically, you have a system of four equations and four unknowns.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8656" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8656">
+					<img id="start_img-8656" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8656">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,193 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Localizing two points using self position and angle between this points
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-13949" class = "post">
+			<h2>Question</h2>
+			<div id="vote-13949" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 35</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Localizing two points using self position and angle between this points</h2>
+<p>my question is about localizing points in 2D space. </p>
+
+<p>I know exact position (x,y,alpha) of my robot in some room. In room there are two points of unknow location.</p>
+
+<p>Robot can find angle between he and two points in room. Also robot can move on room, and find more angles between this two points and his.</p>
+
+<p>How to solve this problem, when I want to discover the position of this two points in room? </p>
+
+<p>I can move robot where it's needed, but what should I do to discover this positions?? </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-13949" data-toggle = "popover">
+				<p>user name : GaryOldman</p>
+				<p> user reputation : 11</p>
+				<p class = "tagcontent" id = "usertaginfo-13949">{'mobile-robot': 2, 'None': 0, 'localization': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-13949">Load Comments</button></br>
+			<div id = "commentsection-13949" class = 'collapse'>
+			<div id = "comment-22766" class = "comment">
+				<p>If you don't know the locations of those points, then you need SLAM not localization. The robot will first detect their locations and then estimate its position relative to these points. It is impossible to know the exact position of your robot unless you are doing some sort of simulation.</p>
+			</div>
+			</div>
+				<textarea id = "speech-13949" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-13949">
+					<img id="start_img-13949" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-13949">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-13951"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-13951" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I assume that (x,y,alpha) represents the pose of the robot with (x,y) as the origin of the robot frame with respect to the reference frame in the corner (image shown below). And alpha is the angle of the vector connecting the origin of our reference frame to the origin of robot frame (you could also call it rotation around Z axis pointing out of the screen). </p>
+
+<p>For example in this diagram, the <code>alpha</code> angle is zero:</p>
+
+<p><a href="https://i.stack.imgur.com/0YBoe.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/0YBoe.png" alt=""></a></p>
+
+<p>So if you now look closely to the figure, you find what I think is the solution.</p>
+
+<p>The angle $\alpha$ shown in the figure is the angle between the robot and the unknown point in the reference XY plane. If you go from position 1 to position 2 where the angle $\alpha$ stays constant or ($180+\alpha$) and go to position 3 &amp; 4 where you know a second angle, you can calculate the position of the point.</p>
+
+<p>The point lies on the cross of the two lines connecting 1 to 2 and 3 to 4. But you have to be sure you cross the unknown point.</p>
+
+<p>In the meantime while writing this, I have a second solution:</p>
+
+<ul>
+<li>You move in the +X direction. </li>
+<li>If angle is increasing, once you are at 90 $\deg$, the robot has the same $y$ value as the point.</li>
+<li>If it's constant you have the $y$ already.</li>
+<li><p>If it decreases you are going in the wrong direction and have to go -X direction.</p></li>
+<li><p>Then you repeat the same for the +Y motion.</p></li>
+</ul>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-13951" data-toggle = "popover">
+				<p>user name : Keivan</p>
+				<p> user reputation : 1</p>
+				<p class = "tagcontent" id = "usertaginfo-13951">{'None': 0}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-13951" class = 'collapse'>
+			</div>
+				<textarea id = "speech-13951" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-13951">
+					<img id="start_img-13951" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-13951">Comment</button>
+			<br><div id = "ans-13953"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-13953" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I don't have the time at the moment to post a full answer with every step shown, but consider the following diagram:</p>
+
+<p><a href="https://i.stack.imgur.com/IUOXq.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/IUOXq.png" alt="Triangulation Diagram"></a></p>
+
+<p>Your robot starts at origin 1, $O_1$, and moves some distance $d$ to get to the second origin, $O_2$. Each origin has its own $&lt;x,y&gt;$ coordinate. </p>
+
+<p>You can measure the angle to point 1, $a_1$, at the first origin. When you re-measure a new angle, $a_2$, at the second origin, you can find the second interior angle of the triangle $O_1$ $\mbox{pt}_1$ $O_2$ as $\pi-a_2$. Now, with two angles and a side, you can use the <a href="https://en.wikipedia.org/wiki/Law_of_sines" rel="nofollow noreferrer">law of sines</a> to calculate the distance from $O_1$ to $\mbox{pt}_1$, $r_{a_1}$, and the distance from $O_2$ to $\mbox{pt}_1$, $r_{a_2}$. </p>
+
+<p>You can imagine this as the intersection of two circles now:</p>
+
+<p><a href="https://i.stack.imgur.com/HZxci.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/HZxci.png" alt="Triangulation 2"></a></p>
+
+<p>And, indeed, you can solve the problem with the formula for <a href="http://mathworld.wolfram.com/Circle-CircleIntersection.html" rel="nofollow noreferrer">the intersection of two circles</a>.</p>
+
+<p>There are two intersections shown in the image above, and the circle intersection formula will also give two answers, but <strong>only one</strong> will correspond with the angles you found. </p>
+
+<p>Please give this method a try. If you find you have more questions, please start a new question and link this one in the post.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-13953" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-13953">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-13953">Load Comments</button></br>
+			<div id = "commentsection-13953" class = 'collapse'>
+			<div id = "comment-22771" class = "comment">
+				<p>[P.S.](https://en.wikipedia.org/wiki/Postscript) - The method works exactly the same for point 1, point 2, and/or any number of points.</p>
+			</div>
+			</div>
+				<textarea id = "speech-13953" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-13953">
+					<img id="start_img-13953" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-13953">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,217 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Euler s Method Or ode45 for solving ODE for control systems
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7004" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7004" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 604</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Euler s Method Or ode45 for solving ODE for control systems</h2>
+<p>The dominant approach for solving ODE in control systems books is <code>ode45</code> since the majority of these books use Matlab. I'm not acquainted with how the <code>ode45</code> works but lately I started reading about Euler's method in this book <a href="http://rads.stackoverflow.com/amzn/click/0073401064" rel="nofollow noreferrer">Numerical Methods for Engineers</a>. If the step size is very small, then the results are satisfactory. For simulation, one can actually set the step size to be very small value. I've used <code>ode45</code> in <a href="https://robotics.stackexchange.com/questions/6859/how-to-implement-tracking-problem-with-pid-controller/6867?noredirect=1#comment9843_6867">here</a> for regulation and tracking problems. I faced some difficulties for using <code>ode45</code> for tracking problem since the step size is not fixed. Now for the same experiment, I've used the Euler's method with step size 0.001 sec. The results are amazing and so friendly in comparison with <code>ode45</code>. This is a snapshot from the result </p>
+
+<p><img src="https://i.stack.imgur.com/J5nLD.png" alt="enter image description here">   </p>
+
+<p>And this is the code </p>
+
+<pre><code>clear all;
+clc;
+
+dt = 0.001;
+ t = 0;
+
+% initial values of the system
+ a = 0; % angular displacement
+da = 0; % angular velocity 
+
+% PID tuning
+Kp = 50;
+Kd = 18.0;
+Ki = 0.08;
+
+error  = 0;
+
+%System Parameters:
+m = 0.5;       % mass (Kg)
+d = 0.0023e-6; % viscous friction coefficient
+L = 1;         % arm length (m)
+I = 1/3*m*L^2; % inertia seen at the rotation axis. (Kg.m^2)
+g = 9.81;      % acceleration due to gravity m/s^2
+
+% Generate Desired Trajectory 
+y = 0:dt:(3*pi)/2;
+AngDes = y; % Ang: angle , Des: desired
+AngDesPrev = 0;
+
+for i = 1:numel(y)
+
+   % get the first derviative of the desired angle using Euler method.
+   dAngDes  =  ( AngDes(i) - AngDesPrev )/ dt;
+   AngDesPrev = AngDes(i);
+
+   % torque input
+   u = Kp*( AngDes(i) - a ) + Kd*( dAngDes - da ) + Ki*error;
+   % accumulated error
+   error = error + ( AngDes(i) - a );
+
+   %store the erro
+   E(i) = ( a - AngDes(i) );
+   T(i) = t;
+
+
+   dda = 1/I*(u - d*da - m*g*L*sin(a));
+
+   % get the function and its first dervative
+   da = da + dda*dt;
+    a = a  +  da*dt;
+
+   %store data for furhter investigation 
+   A(i) = a;
+   dA(i) = da;
+
+   t = t + dt; 
+
+end
+
+plot(T, AngDes, 'b', T, A, 'g', 'LineWidth', 1.0)
+h = legend('$\theta_{d}(t)$', '$\theta(t)$');
+set(h, 'Interpreter','LaTex')
+</code></pre>
+
+<p>My question is why <code>ode45</code> is preferred in many control books assuming the step size is very small. </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7004" data-toggle = "popover">
+				<p>user name : CroCo</p>
+				<p> user reputation : 1040</p>
+				<p class = "tagcontent" id = "usertaginfo-7004">{'control': 18, 'pid': 4, 'slam': 16, 'manipulator': 3, 'mobile-robot': 14, 'dynamics': 6, 'errors': 2, 'data-association': 1, 'kinematics': 3, 'matlab': 6, 'kalman-filter': 21, 'motion-planning': 3, 'None': 41, 'noise': 24, 'theory': 1, 'localization': 14, 'microcontroller': 5, 'mapping': 5, 'sensor-error': 1, 'sensors': 7, 'quadcopter': 8, 'ekf': 26, 'simulation': 1, 'motion': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7004">Load Comments</button></br>
+			<div id = "commentsection-7004" class = 'collapse'>
+			<div id = "comment-9971" class = "comment">
+				<p>I suspect mainly because Euler is only second order method. This means it requires significant more simulation steps in order to get the same accuracy as ode45. Also ode45 has a variable stepsize, such that the local error is also roughly constant which also requires less simulation steps. You can test this yourself by looking at the computation time of both.</p>
+			</div>
+			<div id = "comment-9976" class = "comment">
+				<p>@fibonatic:  Euler method is second order accurate ***locally***.  Globally (accumulating errors over multiple time steps), it is much worse: only first order accuracy.</p>
+			</div>
+			<div id = "comment-9977" class = "comment">
+				<p>This question is more appropriate for the SciComp SE site, since it has more to do with numerical methods than robotics.  I recommend posting future questions of this type there.</p>
+			</div>
+			<div id = "comment-9978" class = "comment">
+				<p>@Paul, I've stated it clearly control systems.</p>
+			</div>
+			<div id = "comment-9980" class = "comment">
+				<p>@Paul, I've asked this question because I came across a control book that uses Euler's method.</p>
+			</div>
+			<div id = "comment-9982" class = "comment">
+				<p>In a real control setting, that is with a digital controller and therefore not dealing with any simulation, you must work with constant sample time. In this regard, Tustin integration (bilinear transformation) has a wider application than forward or backward Euler formula.</p>
+			</div>
+			<div id = "comment-9990" class = "comment">
+				<p>@Ugo:  Isn't Tustin integration essentially just an application of the trapezoid rule integration in the frequency domain?</p>
+			</div>
+			<div id = "comment-9991" class = "comment">
+				<p>I think there's more than that behind. For a complete overview refer to [wikipedia](http://en.wikipedia.org/wiki/Bilinear_transform). For a comparison between Euler's and Tustin's formulas, refer to this [page](http://lorien.ncl.ac.uk/ming/digicont/digimath/sampled2.htm).</p>
+			</div>
+			</div>
+				<textarea id = "speech-7004" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7004">
+					<img id="start_img-7004" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7004">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7006"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7006" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Euler method is horrible for general ODE timestepping because it is globally only first order accurate.  This means that to decrease the error by a factor of 1/2, you'll need to decrease the timestep by half.  Effectively, this also means that you'll need twice as many timesteps to improve your accuracy at the same final timestep.  Furthermore, the error tends to increase quite dramatically as you take more and more timesteps.  This is especially true for more complex systems.</p>
+
+<p>The system you posted in your code appears to be very well behaved; no extreme oscillations or sharp changes in the gradient of the solution.  It doesn't surprise me that euler and runge-kutta yield nearly the same solution in this case.  I caution you that this is generally not the case for most systems.  I highly discourage the use of forward euler method for general purpose ode timestepping.</p>
+
+<p>The Runge-Kutta (ode45) method is more popular because it is fourth order accurate globally (and fifth order locally, hence the numbers 45 in the name).  This means that if you decrease your timestep by 1/2, your error decreases by a factor of 1/16.  The extra accuracy you gain from the 4th order accuracy of runge-kutta far outweighs the extra computational cost.  This is especially true if you need adaptive timestepping, as @fibonatic suggests, because you may not need as many refinement steps if you use a higher order accurate method like runge-kutta.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7006" data-toggle = "popover">
+				<p>user name : Paul</p>
+				<p> user reputation : 704</p>
+				<p class = "tagcontent" id = "usertaginfo-7006">{'control': 6, 'occupancygrid': 1, 'pid': 3, 'slam': 14, 'design': 0, 'motor': 5, 'dynamics': 11, 'probability': 1, 'accelerometer': 4, 'mechanism': 3, 'differential-drive': 1, 'kalman-filter': 6, 'actuator': 1, 'reference-request': 8, 'None': 30, 'inverse-kinematics': 3, 'mapping': 1, 'sensors': 10, 'quadcopter': 4, 'motion': 3, 'particle-filter': 4, 'sonar': 4, 'balance': 12, 'automatic': 2}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7006" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7006" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7006">
+					<img id="start_img-7006" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7006">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

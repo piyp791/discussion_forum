@@ -1,0 +1,140 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Joystick Rate Limit Filter For FRC Java Programming
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9043" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9043" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 101</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Joystick Rate Limit Filter For FRC Java Programming</h2>
+<p>I am a programmer for my school's FRC robotics team and have received the request from our hardware/driving department to limit the speed at which the robot's motors can accelerate given a joystick input telling it to increase the speed of the motor. For example, when the robot first starts up and the driver decides to move the joystick from the center to the fully up position (0 to full motor power), we don't want it to literally go from 0 to full motor power in an instant - it obviously creates some rather jerky, unstable behavior. How might I receive the target joystick position from the joystick, save it, and build up to it over time (and if any other inputs are sent in this process   like telling it to turn around   stop the current process and enact the new one)?</p>
+
+<p>I am using Java with WPILib's 2016 robotics library: here's the API <a href="http://first.wpi.edu/FRC/roborio/release/docs/java/" rel="nofollow">http://first.wpi.edu/FRC/roborio/release/docs/java/</a>, and here's the tutorials <a href="http://wpilib.screenstepslive.com/s/4485/m/13809" rel="nofollow">http://wpilib.screenstepslive.com/s/4485/m/13809</a>.</p>
+
+<p>I am using the "IterativeRobot" template class, and teleop is being run in the method teleopPeriodic(), which is continuously called every few milliseconds in the program (it's where i'm receiving joystick input and calling the method RobotDrive.tankDrive() with the inputs).</p>
+
+<p>I realize this is more of a programming question than a robotics question, but I figured it would be better to put it here than in stack overflow, etc. If someone could give me some simple pseudocode or just a conceptual idea of how this might be done (not necessarily as it pertains directly to the library or the language I'm using), that would be great.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9043" data-toggle = "popover">
+				<p>user name : Nick</p>
+				<p> user reputation : 106</p>
+				<p class = "tagcontent" id = "usertaginfo-9043">{'None': 0, 'first-robotics': 1, 'software': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9043">Load Comments</button></br>
+			<div id = "commentsection-9043" class = 'collapse'>
+			<div id = "comment-14912" class = "comment">
+				<p>Welcome to *robotics* Nick, but I'm afraid that it is not clear what you are asking. We prefer *[practical, answerable questions based on actual problems that you face](http://robotics.stackexchange.com/help/dont-ask)*, so it is a good idea to include details of what what you would like to achieve, what you have tried, what you expected to see and what you actually saw. Take a look at [ask] and [about] for more information on how stack exchange works. If you edit your question to make it more clear, flag it for moderator attention and we can reopen it for you.</p>
+			</div>
+			</div>
+				<textarea id = "speech-9043" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9043">
+					<img id="start_img-9043" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9043">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9049"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9049" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Well without knowing any of the libraries you are using I suggest using a low-pass filter on your input signal. <br> Let's assume you fill use a standard filter of first order with a time coefficient of 0.1seconds (meaning in 0.1 seconds 68% or your input change was send to the output and in 0.5 seconds the input is switched to 99.9% to you output)
+and your are reading those the joystick every 10ms, then your filter will look like this: $$G_z=\frac{0.09516}{(z-0.9048)}$$.
+or:
+$$y_k=0.09516 \cdot u_{k} + 0.9048 \cdot y_{k-1}$$ Transformed into code this is something like this:</p>
+
+<pre><code>
+double GetPositionFiltered(double RawValueReadFromHw){
+  static double OutputOld=0;
+  double FilteredPosition = 0.09516*RawValueReadFromHw-0.9048*OutputOld;
+  OutputOld=FilteredPosition;
+  return FilteredPosition;
+} 
+</code></pre>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9049" data-toggle = "popover">
+				<p>user name : TobiasK</p>
+				<p> user reputation : 1572</p>
+				<p class = "tagcontent" id = "usertaginfo-9049">{'control': 1, 'None': 102, 'communication': 0, 'wireless': 0, 'imu': 0, 'sensor-fusion': 0, 'gps': 0}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-9049" class = 'collapse'>
+			</div>
+				<textarea id = "speech-9049" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9049">
+					<img id="start_img-9049" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9049">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

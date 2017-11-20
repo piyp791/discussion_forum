@@ -1,0 +1,234 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Controlling more than 12 Servos with the Arduino Servo library
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-954" class = "post">
+			<h2>Question</h2>
+			<div id="vote-954" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">6</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 2801</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Controlling more than 12 Servos with the Arduino Servo library</h2>
+<p>I'm using Teensy hardware specifically.  I have a Teensy 2.0 and a Teensy 3.0, and from the documentation it seems like there are two 16 bit timers available, and each should be able to control 12 servos.  However, I've attached a logic analyzer and have confirmed that only the first 12 servos attached ever function.</p>
+
+<p>Is there anything special I have to do with my sketch in order to convince the Servo library to allocate the second timer for servos attached beyond number 12?</p>
+
+<p>This works:</p>
+
+<pre><code>#define NUM_SERVOS 12
+
+Servo servos[NUM_SERVOS];
+
+// teensy 2.0 pins
+int pin_assignments[NUM_SERVOS] = {0, 1, 2, 3, 4, 5, 20, 19, 18, 17, 16, 15};
+
+void setup() { 
+  for(int i = 0; i &lt; NUM_SERVOS; i++) {
+    servos[i].attach(pin_assignments[i]) ;
+  }
+}
+</code></pre>
+
+<p>But this, below, only ever shows activity on the first twelve pins attached:</p>
+
+<pre><code>#define NUM_SERVOS 24
+
+Servo servos[NUM_SERVOS];
+
+// teensy 3.0 pins
+int pin_assignments[NUM_SERVOS] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23};
+
+
+void setup() { 
+  for(int i = 0; i &lt; NUM_SERVOS; i++) {
+    servos[i].attach(pin_assignments[i]) ;
+  }
+}
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-954" data-toggle = "popover">
+				<p>user name : Ian McMahon</p>
+				<p> user reputation : 256</p>
+				<p class = "tagcontent" id = "usertaginfo-954">{'walk': 10, 'mobile-robot': 10, 'None': 6, 'rcservo': 6, 'arduino': 6}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-954">Load Comments</button></br>
+			<div id = "commentsection-954" class = 'collapse'>
+			<div id = "comment-2256" class = "comment">
+				<p>In the second code snippet, is the line for `int pin_assignments` meant to be commented out?</p>
+			</div>
+			<div id = "comment-2257" class = "comment">
+				<p>haha no, it's not, but that's certainly not the problem :)</p>
+			</div>
+			</div>
+				<textarea id = "speech-954" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-954">
+					<img id="start_img-954" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-954">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-1052"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1052" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I'm guessing you're using the arduino libraries (haven't used the Teensy), in which case, if you read through the documentation (<a href="http://arduino.cc/en/Reference/Servo" rel="nofollow">http://arduino.cc/en/Reference/Servo</a>), you'll see that the Arduino servo library</p>
+
+<blockquote>
+  <p>Supports up to 12 motors on most Arduino boards and 48 on the Arduino Mega</p>
+</blockquote>
+
+<p>You can manually bitbang the pwm signals for your servo if you don't have too many other time-critical things going on, or make/get a separate serial servo controller, or do any of a number of other things. This is good reading to understand what is going on:
+<a href="http://arduino.cc/en/Tutorial/SecretsOfArduinoPWM" rel="nofollow">http://arduino.cc/en/Tutorial/SecretsOfArduinoPWM</a> (I would click through to the original document for a visual view of the different timer modes).</p>
+
+<p>p.s. what are you doing with 24 servos and one microcontroller? sounds exciting!</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1052" data-toggle = "popover">
+				<p>user name : orangenarwhals</p>
+				<p> user reputation : 31</p>
+				<p class = "tagcontent" id = "usertaginfo-1052">{'None': 3}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-1052" class = 'collapse'>
+			</div>
+				<textarea id = "speech-1052" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1052">
+					<img id="start_img-1052" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1052">Comment</button>
+			<br><div id = "ans-1467"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1467" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The problem lies in the Servo.h file in Arduino\libraries\Servo.  The Teensy 3.0 parameters are not defined in this file and therefore it is assumed to have only one timer.  Changing the default action to copy the second last action was sufficient for my purposes, I changed it the file as follows:</p>
+
+<p>From:</p>
+
+<pre><code>#else  // everything else
+#define _useTimer1
+typedef enum { _timer1, _Nbr_16timers } timer16_Sequence_t ;                  
+#endif
+</code></pre>
+
+<p>To:</p>
+
+<pre><code>#else  // everything else
+#define _useTimer3
+#define _useTimer1
+typedef enum { _timer3, _timer1, _Nbr_16timers } timer16_Sequence_t ;
+#endif
+</code></pre>
+
+<p>This only managed to get me 16 servos though.  I also tried adding other timers with no success in increasing the number of available servos.  Hopefully this proves useful to someone.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1467" data-toggle = "popover">
+				<p>user name : Sokutaban</p>
+				<p> user reputation : 1</p>
+				<p class = "tagcontent" id = "usertaginfo-1467">{'None': 0}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-1467" class = 'collapse'>
+			</div>
+				<textarea id = "speech-1467" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1467">
+					<img id="start_img-1467" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1467">Comment</button>
+			<br><div id = "ans-1469"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1469" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>There is another Servo library that can drive as many servo's as you want :<a href="http://playground.arduino.cc/ComponentLib/servo" rel="nofollow">Link to Arduino Software Servo</a>. Good luck</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1469" data-toggle = "popover">
+				<p>user name : Thom Kouwen</p>
+				<p> user reputation : 116</p>
+				<p class = "tagcontent" id = "usertaginfo-1469">{'None': 7}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-1469" class = 'collapse'>
+			</div>
+				<textarea id = "speech-1469" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1469">
+					<img id="start_img-1469" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1469">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,248 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Implementing an analytic version of an inverse kinematic
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9662" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9662" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 170</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Implementing an analytic version of an inverse kinematic</h2>
+<p>People have recommended me implement an analytic version of inverse Jacobian solver, such that I won't be forced only the least square solution, but would have an local area of solution near to the one I desire. </p>
+
+<p>I can't seem to implement it correctly, I mean how much does it differ from the least square inverse kinematics which I have implemented here?</p>
+
+<pre><code>Eigen::MatrixXd jq(device_.get()-&gt;baseJend(state).e().cols(),device_.get()-&gt;baseJend(state).e().rows());
+      jq = device_.get()-&gt;baseJend(state).e(); //Extract J(q) directly from robot
+
+
+      //Least square solver - [AtA] 1AtB
+
+      Eigen::MatrixXd A (6,6);
+      A = jq.transpose()*(jq*jq.transpose()).inverse();
+
+
+
+      Eigen::VectorXd du(6);
+      du(0) = 0.1 - t_tool_base.P().e()[0];
+      du(1) = 0 - t_tool_base.P().e()[1];
+      du(2) = 0 - t_tool_base.P().e()[2];
+      du(3) = 0;  // Should these be set to something if i don't want the tool position to rotate?
+      du(4) = 0;
+      du(5) = 0;
+
+      ROS_ERROR("What you want!");
+      Eigen::VectorXd q(6);
+      q = A*du;
+
+
+      cout &lt;&lt; q &lt;&lt; endl; // Least square solution - want a vector of solutions. 
+</code></pre>
+
+<p>I want a vector of solution - how do I get that?</p>
+
+<p>the Q is related to this <a href="https://robotics.stackexchange.com/questions/9672/how-do-i-construct-i-a-transformation-matrix-given-only-x-y-z-of-tool-position">https://robotics.stackexchange.com/questions/9672/how-do-i-construct-i-a-transformation-matrix-given-only-x-y-z-of-tool-position</a></p>
+
+<p>The robot being used is a UR5  - <a href="https://smartech.gatech.edu/bitstream/handle/1853/50782/ur_kin_tech_report_1.pdf" rel="nofollow noreferrer">https://smartech.gatech.edu/bitstream/handle/1853/50782/ur_kin_tech_report_1.pdf</a></p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9662" data-toggle = "popover">
+				<p>user name : test</p>
+				<p> user reputation : 36</p>
+				<p class = "tagcontent" id = "usertaginfo-9662">{'None': 0, 'inverse-kinematics': 2, 'c++': 2, 'industrial-robot': 1, 'robotic-arm': 6, 'rotation': 4}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9662">Load Comments</button></br>
+			<div id = "commentsection-9662" class = 'collapse'>
+			<div id = "comment-17169" class = "comment">
+				<p>can you send me or share your robot articulation, because for the analytical inverse kinematic model (also known as the inverse geometric model) one needs to know the articulation of the robot and the starting configuration to develop the forward geometric model then by going backwards try to infer analytical expression for each joint's angle in terms of the desired tool pose and previously obtained angles, as SteveO said. Furthermore the code you have shared actually outputs joints velocities to produce a tool twist (du in your code), and what you are trying to do is to use infinitesima</p>
+			</div>
+			<div id = "comment-17170" class = "comment">
+				<p>The robot i am using us an UR 5</p>
+			</div>
+			<div id = "comment-17171" class = "comment">
+				<p>https://smartech.gatech.edu/bitstream/handle/1853/50782/ur_kin_tech_report_1.pdf</p>
+			</div>
+			<div id = "comment-17172" class = "comment">
+				<p>The last part of [ghanimmukhtar](http://robotics.stackexchange.com/users/13494/ghanimmukhtar)'s comment (which was truncated when converted to a comment) was "what you are trying to do is to use infinitesimal desplacements to mimic the underlying kinematic model (i.e. du = J*dq), where J is the jacobian matrix and dq is the infinitesimal displacement in joint space."</p>
+			</div>
+			<div id = "comment-17173" class = "comment">
+				<p>yes... @Mark Booth  not sure whether that was an answer or question..</p>
+			</div>
+			<div id = "comment-17181" class = "comment">
+				<p>It was provided it as an answer, but I moved it to be a comment, since it wasn't quite an answer yet. If you can edit your question to provide the requested information though, it looks like @ghanimmukhtar may be able to provide a full answer though. Welcome to *Robotics* to the both of you, it's great to see more complex/involved problems here.</p>
+			</div>
+			</div>
+				<textarea id = "speech-9662" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9662">
+					<img id="start_img-9662" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9662">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9663"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9663" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Your Jacobian-based approach is great for velocity control, or when the manipulator is close to the original point.  But remember, the Jacobian only gives a first-order approximation to the manipulator's motion.  With the highly nonlinear kinematics of manipulators, accuracy will vary throughout the workspace, and will decrease as the step size between the current pose and desired pose gets larger.    </p>
+
+<p>Closed-form, or analytic, inverse kinematics do not require the Jacobian for computing the joint angles which will achieve a desired pose.   They are based on the trigonometry of the manipulator.   To compute analytic inverse kinematics, you need to take the forward kinematics and solve for each $q$.   This can be challenging for some manipulator types.  It is easier if the wrist is spherical (all three wrist axes intersect at a point).  The good news is that many robotics books contain inverse kinematic solutions for each of the manipulator types.  </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9663" data-toggle = "popover">
+				<p>user name : SteveO</p>
+				<p> user reputation : 2960</p>
+				<p class = "tagcontent" id = "usertaginfo-9663">{'None': 222}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9663">Load Comments</button></br>
+			<div id = "commentsection-9663" class = 'collapse'>
+			<div id = "comment-17137" class = "comment">
+				<p>The one implemented there doesn't not necessarily output the correct the Q state.. it seem swing toward the base...</p>
+			</div>
+			<div id = "comment-17142" class = "comment">
+				<p>I am not sure I agree with your statement.. dq + current_q = would provide me with the new position right?</p>
+			</div>
+			</div>
+				<textarea id = "speech-9663" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9663">
+					<img id="start_img-9663" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9663">Comment</button>
+			<br><div id = "ans-9706"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9706" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Given a desired pose:</p>
+
+<p>$$T^{desired} = \begin{bmatrix}
+             s_x&amp;n_x&amp;a_x&amp;P_x\\
+             s_y&amp;n_y&amp;a_y&amp;P_y\\
+             s_z&amp;n_z&amp;a_z&amp;P_z\\
+               0&amp;  0&amp;  0&amp;  1
+            \end{bmatrix}$$</p>
+
+<p>we know that this is given as follows:</p>
+
+<p>$$T^{desired} = {}^{0}T_{1}{}^{1}T_{2}{}^{2}T_{3}{}^{3}T_{4}{}^{4}T_{5}{}^{5}T_{6}$$</p>
+
+<p>where each ${}^{j-1}T_{j}$ is the transformation between frame attached to joint j with respect to joint j-1.</p>
+
+<p>Now the idea is to start pre-multiplying the equation with the inverse transformation and try to deduce the joint angles as we go along, as an example let's start by the first joint (i.e. $q_1$):</p>
+
+<p>$${}^{1}T_{0}T^{desired} = {}^{1}T_{2}{}^{2}T_{3}{}^{3}T_{4}{}^{4}T_{5}{}^{5}T_{6}$$</p>
+
+<p>When you do this you find the following:</p>
+
+<p>$$-\cos(q_5) = -a_x \sin(q_1) + a_y \cos(q_1)$$</p>
+
+<p>and</p>
+
+<p>$$-d_4 - d_6\cos(q_5) = -p_x\sin(q_1)+p_y\cos(q1)$$</p>
+
+<p>so by manipulating those two equations you end up with a quadratic equation in $\sin(q_1)$ or $\cos(q_5)$ which gives two solutions, only one  of them satisfy the second equation above which gives the other parameter (i.e. the $\sin(q_1) or \cos(q_1)$) then you get $q_1$ as</p>
+
+<p>$$q_1 = atan2(\sin(q_1),\cos(q_1))$$</p>
+
+<p>then you can get $q_5$ and then proceed in the same manner to get the rest.
+If you want I can share with you some document that explain the procedure in more details, and also some matlab m files that help you to symbolically advance through the procedure. </p>
+
+<p>Small remark: I am not using exactly the  Denavit-Hartenberg parameters but a slightly different ones (i.e. Khalil-Kleinfinger) which is also explained in the document.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9706" data-toggle = "popover">
+				<p>user name : ghanimmukhtar</p>
+				<p> user reputation : 116</p>
+				<p class = "tagcontent" id = "usertaginfo-9706">{'None': 10}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9706">Load Comments</button></br>
+			<div id = "commentsection-9706" class = 'collapse'>
+			<div id = "comment-17242" class = "comment">
+				<p>Thanks for the new answer ghanimmukhtar. Editing a deleted answer doesn't automatically undelete it, sadly. You could have flagged it for moderator attention (asking for it to be undeleted saying information had been added to make it into an answer), but nothing is really lost by creating a new answer.</p>
+			</div>
+			<div id = "comment-17243" class = "comment">
+				<p>I have converted many of you inline formulae to block formulae to improve the readabilty of you answer, but the content of you answer is excellent. I have never seen this explained so well in so few words.</p>
+			</div>
+			<div id = "comment-17245" class = "comment">
+				<p>thanks Mark Booth, I just didn't know how to notify the moderator, i guess i was in a hurry and didn't investigate the "flag" option :) anyway thanks a lot for your editing and guidance, Cheers!</p>
+			</div>
+			</div>
+				<textarea id = "speech-9706" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9706">
+					<img id="start_img-9706" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9706">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

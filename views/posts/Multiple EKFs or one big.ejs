@@ -1,0 +1,150 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Multiple EKFs or one big
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7937" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7937" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 146</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Multiple EKFs or one big</h2>
+<p>Let's say I would like to use an EKF to track the position of a moving robot. The EKF would not only estimate the position itself but also variables affecting the position estimate, for example IMU biases, wheel radius, wheel slip and so on.</p>
+
+<p>My question is, i<strong>s it better to use one big EKF (state vector containing all estimated variables) or multiple smaller EKFs (each one responsible for tracking a subset of all variables to be estimated)?</strong> Or is there no difference?</p>
+
+<p>As for the example above, the EKF could be split into one for tracking position, one for estimating wheel radius and slip and one for estimating IMU biases. The position EKF would of course use the estimations output from the other concurrent EKFs and vice versa.</p>
+
+<p>To me it seems it would be easier to tune and test multiple smaller EKFs rather than just one big. Are there any other advantages/disadvantages (execution time, ease of debugging etc.) assuming the resulting estimates are equal in the two approaches (or close enough at least)?</p>
+
+<p>Thanks,
+Michael</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7937" data-toggle = "popover">
+				<p>user name : Isak T.</p>
+				<p> user reputation : 16</p>
+				<p class = "tagcontent" id = "usertaginfo-7937">{'ekf': 3, 'None': 0, 'kalman-filter': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7937" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7937" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7937">
+					<img id="start_img-7937" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7937">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7938"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7938" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Unless there is some cross-channel noise, like a motor power line causing noise on some sensor signal line, then it won't matter if you do one large filter or a series of small filters because the noise covariance matrix and other matrices should all be <strong>block</strong> diagonal matrices. </p>
+
+<p>As mentioned in <a href="https://dsp.stackexchange.com/a/21843">this post</a> over at the DSP stack exchange:</p>
+
+<blockquote>
+  <p>In general though your Q matrix will be full, not a diagonal, because there is correlation between the state variables. For example, suppose you are tracking position and velocity in x-axis for a car. Process noise (which Q is modelling) might be things like wind, bumps in the road, and so on. If there is a change in velocity due to this noise, there will also be a change in position. They are correlated, and so the off-diagonal elements will be non-zero for those terms.</p>
+</blockquote>
+
+<p>So, while there may be correlation between position and velocity for one motor, there should be <em>no</em> correlation between feedback noise on one motor and feedback noise on the other motor, just like there shouldn't be correlation between motor feedback noise and IMU output, etc.</p>
+
+<p>Given this, the fact that noise should not be correlated across various sensed elements, you are free to break the filter down into sub-sections. There shouldn't be any change in computational speed unless you're working with software highly optimized for matrices (read: Matlab), but even then there shouldn't be a noticeable difference in speed unless you're working with a huge (thousands of elements) matrix. </p>
+
+<p>I would break the filter down into subsections just for clarity - you're going to have a bigger issue if you fat-finger or misinterpret a section and you don't notice because you're working with some ridiculous 15x15 matrix or similar.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7938" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-7938">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7938">Load Comments</button></br>
+			<div id = "commentsection-7938" class = 'collapse'>
+			<div id = "comment-11666" class = "comment">
+				<p>After thinking a bit more about this, is it really enough that the "sensed elements" are uncorrelated? In the "one big EKF" approach, the G matrix (jacobian of prediction) will cause certain off-diagonal elements in the state covariance to be non-zero. As all the state variables being estimated are there to improve the position estimate, will I not lose information by splitting into many smaller EKFs?
+I could see there would be no difference if the states being estimated are independent.</p>
+			</div>
+			<div id = "comment-11672" class = "comment">
+				<p>Yes, you are correct. I think I misunderstood your scenario; I read "IMU" and "EKF to track the position" and thought you were after more than just horizontal position. There are a lot of quadcopter IMU questions asked here so I just assumed you'd be moving in some up/down or roll direction too. Anyways, I would say my advice still stands - evaluate your matrices to see if they are arranged in block diagonals, which would indicate independent sub systems. If so, you can split it and I would recommend you do for clarity. If you cannot split them you're stuck with what you have.</p>
+			</div>
+			<div id = "comment-13341" class = "comment">
+				<p>Thank you for teaching me "fat-finger", gonna start peppering that into technical discussions! XD</p>
+			</div>
+			</div>
+				<textarea id = "speech-7938" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7938">
+					<img id="start_img-7938" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7938">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

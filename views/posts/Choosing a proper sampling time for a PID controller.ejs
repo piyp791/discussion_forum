@@ -1,0 +1,140 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Choosing a proper sampling time for a PID controller
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8601" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8601" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 598</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Choosing a proper sampling time for a PID controller</h2>
+<p>I have a robotic system I'm controlling with Arduino, is there an heuristic way to determine a proper sampling time for my PID controller? Considering I have some other things to compute on my sketch that require time, but of course a good sampling time is crucial.</p>
+
+<p>Basically I have a distance sensor that needs to detect at a constant rate an object that is moving, sometimes slow, sometimes fast. I don't have a good model of my system so I can't actually tell the physical frequency of the system.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8601" data-toggle = "popover">
+				<p>user name : Gian Mauro Musso</p>
+				<p> user reputation : 13</p>
+				<p class = "tagcontent" id = "usertaginfo-8601">{'None': 0, 'pid': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8601">Load Comments</button></br>
+			<div id = "commentsection-8601" class = 'collapse'>
+			<div id = "comment-14028" class = "comment">
+				<p>It really depends on what it is your PID is controlling and how fast that device responds to changes. For instance, controlling a heater you can get away with sampling periods in the order of seconds.</p>
+			</div>
+			<div id = "comment-14029" class = "comment">
+				<p>Look up [Nyquist frequency](https://en.wikipedia.org/wiki/Nyquist_frequency). Essentially you just need to worry about how the frequency of your system relates to the sampling frequency. If you want to control something to respond in 0.1 s and you are sampling at 1 Hz, then you won't get a good response (in fact, it will likely become unstable). As Majenko's comment mentions, figure out what response time you want for your controller, then choose an appropriate sampling frequency that is say 10 times the desired frequency (so if you want 0.1 s response time, then use 100 Hz).</p>
+			</div>
+			</div>
+				<textarea id = "speech-8601" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8601">
+					<img id="start_img-8601" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8601">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8603"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8603" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>In order to properly sample a system you need to be sampling at least as fast as the Nyquist rate, which is twice as fast as the response rate of the system, preferably faster. You can do a lot of math to find out how fast is fast enough (I suggest Ogata), or go with the rule of thumb, 5-10x the system frequency. </p>
+
+<p>Since you are detecting the rate that an object is moving, you need to sample it fast enough to see it move no more than the minimum you care about. </p>
+
+<p>As an example, lets say your maximum rate is 100mm/s, and you want an accuracy of 1mm. </p>
+
+<p>In this case, to see the object move no more than 1mm, you would need to sample at 2 x (max speed / accuracy) = 2 x (100mm/s / 1mm) or 200Hz minimum, and preferably you would be sampling at 500-1000Hz per the rule of thumb.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8603" data-toggle = "popover">
+				<p>user name : carmiac</p>
+				<p> user reputation : 61</p>
+				<p class = "tagcontent" id = "usertaginfo-8603">{'None': 3}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8603">Load Comments</button></br>
+			<div id = "commentsection-8603" class = 'collapse'>
+			<div id = "comment-14033" class = "comment">
+				<p>Welcome to *robotics* carmiac. I presume that you mean [Katsuhiko Ogata](http://www.amazon.com/Katsuhiko-Ogata/e/B000AQ4HX0), but you might want to edit your answer to mention the specific book you are referring to.</p>
+			</div>
+			<div id = "comment-14044" class = "comment">
+				<p>Thank you for your answer! I was familiar with the Nyquist rate, I was looking for a tecnique to sample a phisical system with no mathematical model and you gave me a good explanation.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8603" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8603">
+					<img id="start_img-8603" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8603">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,214 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Encoder based speed control for Rover 5
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2048" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2048" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 1225</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Encoder based speed control for Rover 5</h2>
+<p>I am trying to get precise control over the speed of rover 5 based robot. It has four PWM controlled motors and 4 Optical Quadrature Encoders. I am using <a href="https://www.sparkfun.com/products/11593" rel="nofollow">4-channel motor controller</a> with <a href="https://www.sparkfun.com/products/10336" rel="nofollow">rover 5 chassis</a>. I am using arduino Nano for control. I am able to read encoder INT output and change PWM based on pulse width to control speed. But, as a result, I am getting heavy oscillations in the control output. That makes, the robot to move in steps, as PWM is changing constantly. I need an algorithm which can minimize this ringing and have a smooth moving robot. Here is my arduino code snippet.</p>
+
+<pre><code>void setup() {
+    Serial.begin(9600);
+    init_motors();
+    init_encoders();        
+    req_speed[0] = 20;
+    req_speed[1] = 20;
+    req_speed[2] = 20;
+    req_speed[3] = 20;
+}
+
+void loop() {
+  update_encoders();
+  update_motors();
+}
+
+void update_motors() {
+  int i, err;
+  unsigned long req_width;
+  if(micros() - mtime &gt; 2999) {
+    mtime = micros();
+
+    for(i=0; i&lt;4; i++) {
+      digitalWrite(pins_dir[i], req_speed[i]&gt;0);
+      if(mtime - change_time[i] &gt; 50000ul &amp;&amp; req_speed[i] != 0) {
+        cur_pwm[i] += 5;
+      } 
+      if(req_speed[i] &gt; 0)
+        cur_err[i] = req_speed[i]*10  - cur_speed[i];
+      else
+        cur_err[i] = (-req_speed[i]*10)  - cur_speed[i];
+      if(cur_err[i] &gt; 0 &amp;&amp; cur_pwm[i] &lt; 255) {
+        cur_pwm[i]++;
+      } else if(cur_err[i] &lt; 0 &amp;&amp; cur_pwm[i] &gt; 0) {
+        cur_pwm[i]--;
+      }
+      analogWrite(pins_pwm[i], cur_pwm[i]);
+    }
+  }
+}
+
+void update_encoders() {
+  int i;
+  unsigned long w;
+  enc_new = PINC &amp; B00001111;
+  unsigned long etime = micros();
+  for (i=0; i&lt;4; i++) {
+    if((enc_old &amp; (1 &lt;&lt; i)) &lt; (enc_new &amp; (1 &lt;&lt; i)))
+    {
+      w = (unsigned long)(((etime - change_time[i])));
+      pulse_width[i] = (w + pulse_width_h1[i] + pulse_width_h2[i])/3;
+      pulse_width_h2[i] = pulse_width_h1[i];
+      pulse_width_h1[i] = pulse_width[i];
+      change_time[i]=etime;
+      pulse_count[i]++;
+      cur_speed[i] = (3200000ul / pulse_width[i]);
+    }
+  }
+  enc_old=enc_new;
+}
+</code></pre>
+
+<p>Here req_speed is between -100 to 100, where sign indicates direction. Please consider all undefined variables as globals. I experimentally measured that, when motor is running at full speed, the pulse width is around 3200us.</p>
+
+<p>Encoders' INT outputs (XOR of A and B) are connected to A0 thru A3. Motor PWM is connected to D3, D5, D6, D9. Please let me suggest any improvements to this code and advice me about what am I missing here.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2048" data-toggle = "popover">
+				<p>user name : Punit Soni</p>
+				<p> user reputation : 134</p>
+				<p class = "tagcontent" id = "usertaginfo-2048">{'control': 6, 'None': 0, 'algorithm': -1, 'arduino': 0, 'c': -1, 'kinematics': 5, 'motor': 1, 'mobile-robot': 0, 'pwm': -1, 'movement': 5}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2048" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2048" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2048">
+					<img id="start_img-2048" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2048">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-2071"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2071" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I'll be honest, I don't understand what some of your code is doing. Why is there a 4bit mask for the encoders? Is this the direction? What is pulse_width_h1 vs pulse_width_h2...please comment your code and I will be able to help you. </p>
+
+<p>In addition, your controller is odd. It looks like you're simply adding 1 or -1 depending on the sign of the error. You should look into a PID controller. These are easy to implement and VERY commonly used to implement velocity control. You can start with just a P (proportional) term. The idea is to tune your gain K_p until the system behaves as desired.</p>
+
+<p>To reiterate...please comment your code and I can edit this post to provide a better answer.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2071" data-toggle = "popover">
+				<p>user name : Andrew Capodieci</p>
+				<p> user reputation : 826</p>
+				<p class = "tagcontent" id = "usertaginfo-2071">{'None': 54}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2071">Load Comments</button></br>
+			<div id = "commentsection-2071" class = 'collapse'>
+			<div id = "comment-4148" class = "comment">
+				<p>Thanks, I already looked into PID controller and really improved the behaviour. I was wrong with having a naive algorithm of inc/dec pwm by 1 unit based on sign of the error. In this code, the 4-bit mask is there because, I have  4 encoders connected to PORTC[0..3]. I used some another naive approach in calculating running average for the pulse_width of each encoder, so that is where the pulse_width_h1 and pulse_width_h2 coming from.</p>
+			</div>
+			</div>
+				<textarea id = "speech-2071" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2071">
+					<img id="start_img-2071" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2071">Comment</button>
+			<br><div id = "ans-2072"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2072" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I looked at the PID controller basics and found that its the canonical solution for this kind of speed control problem. I used the arduino PID library and it worked pretty well. I had to spend some time figuring out the PID parameters (Kp, Ki, Kd) manually by trial and error. But,  with this, I am now able to get my motors running at the required speed with pretty much stable behaviour. You can take a look the new PID based code <a href="https://github.com/punitsoni/rv_arduino/blob/master/rv_arduino.ino" rel="nofollow">here</a></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2072" data-toggle = "popover">
+				<p>user name : Punit Soni</p>
+				<p> user reputation : 134</p>
+				<p class = "tagcontent" id = "usertaginfo-2072">{'control': 6, 'None': 0, 'algorithm': -1, 'arduino': 0, 'c': -1, 'kinematics': 5, 'motor': 1, 'mobile-robot': 0, 'pwm': -1, 'movement': 5}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2072" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2072" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2072">
+					<img id="start_img-2072" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2072">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

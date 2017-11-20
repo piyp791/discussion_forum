@@ -1,0 +1,203 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Transforming angular velocity?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8327" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8327" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 82</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Transforming angular velocity?</h2>
+<p>I have the following system here:</p>
+
+<p><a href="https://imgur.com/UTqswOi" rel="nofollow noreferrer">http://imgur.com/UTqswOi</a>
+<a href="https://i.stack.imgur.com/mQPXP.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/mQPXP.png" alt="enter image description here"></a></p>
+
+<p>Basically, I have a range finder which gives me $R_s$ in this 2D model. I also have the model rotate about the Centre of Mass, where I have angular values and velocities Beta ($\beta$) and BetaDot ($\dot{\beta}$).</p>
+
+<p>I can't see, for the life of me, how to figure the formula for the angular velocity in the Range Finder frame. How am I supposed to do this? I have all the values listed in those variables. The object there doesn't move when the vehicle/system pitches. It's stationary.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8327" data-toggle = "popover">
+				<p>user name : raaj</p>
+				<p> user reputation : 134</p>
+				<p class = "tagcontent" id = "usertaginfo-8327">{'None': 0, 'robotic-arm': 1, 'slam': 3, 'sensor-fusion': 1, 'kalman-filter': 1, 'mobile-robot': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8327">Load Comments</button></br>
+			<div id = "commentsection-8327" class = 'collapse'>
+			<div id = "comment-13339" class = "comment">
+				<p>Is your diagram missing an angle reported by the laser? You have $\dot{\beta}$, but should that arrow also point to some angle (say $\alpha$)?</p>
+			</div>
+			</div>
+				<textarea id = "speech-8327" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8327">
+					<img id="start_img-8327" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8327">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8328"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8328" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I think your diagram is missing an angle for the laser angle with respect to the vehicle body -- I'm going to call that angle $\alpha$, see this diagram for clarity:</p>
+
+<p><a href="https://i.stack.imgur.com/hAerL.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/hAerL.png" alt="enter image description here"></a></p>
+
+<p>Since it seems you are tracking an object with your laser, I imagine the point of this is to predict the angular velocity of that object in the vehicle frame. So your laser is scanning in 2D, providing range at a number of angles, and you want to predict what angle the object will be at in the next time step.</p>
+
+<p>In that case, you need to consider to motion of the system to figure out the motion of the target object in the laser frame. Assume the target object has position $\hat{p}$ in the world frame and $\hat{p}_L$ in the laser frame. Although it sounds like this is for a manipulator that is fixed at the base, we will still consider a moving centre of mass with position $p_0$ in the world frame. The position of the target in the world frame is then:</p>
+
+<p>$\hat{p} = p_0 + A_{\beta} \begin{bmatrix} L_z \\ -L_y \\ \end{bmatrix} + A_{\beta} R \begin{bmatrix} \cos \alpha \\ -\sin \alpha \\ \end{bmatrix} $ </p>
+
+<p>Where $A_{\beta} = \begin{bmatrix} \cos \beta &amp; \sin \beta \\ -\sin \beta &amp; \cos \beta \\ \end{bmatrix}$</p>
+
+<p>Then we differentiate that to get the velocity -- which should be zero assuming your object is stationary in the world frame.</p>
+
+<p>$0 = \dot{p}_0 + \dot{\beta} J_{\beta} \begin{bmatrix} L_z \\ -L_y \\ \end{bmatrix} + R \dot{\beta} J_{\beta} \begin{bmatrix} \cos \alpha \\ -\sin \alpha \end{bmatrix} + R \dot{\alpha} A_{\beta} \begin{bmatrix} -\sin \alpha \\ -\cos \alpha \end{bmatrix} + \dot{R} A_{\beta} \begin{bmatrix} \cos \alpha \\ -\sin \alpha \end{bmatrix}$</p>
+
+<p>Where $J_{\beta} = \begin{bmatrix} -\sin \beta &amp; \cos \beta \\ -\cos \beta &amp; -\sin \beta \\ \end{bmatrix}$</p>
+
+<p>This then defines two equations (the z- and y-components of the above equation) in two unknowns ($\dot{R}$ and $\dot{\alpha}$).</p>
+
+<p>However, what you really need is to simply find an expression for the <em>predicted</em> range and laser angle ($\tilde{R}$ and $\tilde{\alpha}$) in terms of your states, the vehicle pose, ($z$,$y$,$\beta$) and target position ($\hat{z}$,$\hat{y}$).</p>
+
+<p>$\tilde{R} = \sqrt{\left( \hat{z} - \left( z + L_z \cos \beta \right) \right)^2 + \left( \hat{y} - \left( y + L_y \sin \beta \right) \right)^2}$</p>
+
+<p>$\tilde{\alpha} = \tan^{-1} \left( \frac{\hat{y} - \left( y + L_y \sin \beta \right)}{\hat{z} - \left( z + L_z \cos \beta \right) } \right) - \beta$</p>
+
+<p>Then you can apply this in an EKF according to the chat discussion. Note I have switched the axes labels and sign conventions to something that I am more used to.</p>
+
+<p><a href="https://i.stack.imgur.com/dZLZq.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/dZLZq.jpg" alt="enter image description here"></a></p>
+
+<p><a href="https://i.stack.imgur.com/rcCKt.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/rcCKt.png" alt="enter image description here"></a></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8328" data-toggle = "popover">
+				<p>user name : Brian Lynch</p>
+				<p> user reputation : 1237</p>
+				<p class = "tagcontent" id = "usertaginfo-8328">{'None': 85}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8328">Load Comments</button></br>
+			<div id = "commentsection-8328" class = 'collapse'>
+			<div id = "comment-13342" class = "comment">
+				<p>Hi, thanks so much for your answer. I'm a little stuck on where you have mentioned R in all your equations. I assume you refer to that has a vector wrt the laser frame? So it's X and Y in the laser frame for the object</p>
+			</div>
+			<div id = "comment-13343" class = "comment">
+				<p>Also, doesn't R change wrt time as well.</p>
+			</div>
+			<div id = "comment-13344" class = "comment">
+				<p>R is the laser range as you have indicated in the original question, it is scalar. You are correct that $\dot{R}$ should be accounted for, I overlooked that! The second method I mention is probably better anyway, I will edit my answer accordingly.</p>
+			</div>
+			<div id = "comment-13345" class = "comment">
+				<p>Hmm okay thank you, also the final equation, not sure what the L refers to there.</p>
+			</div>
+			<div id = "comment-13346" class = "comment">
+				<p>Sorry, that should be $L_z$ and $L_y$, I have edited the equation. Do you get the overall approach here? You need to get an expression for the z-y position of the target object in the laser frame, then apply arctan to that position to get the angle. Once you have the expression, just differentiate to get the angle rate.</p>
+			</div>
+			<div id = "comment-13347" class = "comment">
+				<p>Yes I do, I guess I have to convert the sin/cos functions a bit since im operating in YZ space. What is confusing me however is how you manage to get 0 on the other side of the equation. I am not dealing with world coordinates here, everything is wrt the vehicle. When I tried to work it out, I end up getting an XY/YZ Dot in the vehicle/flat frame I can't get rid of</p>
+			</div>
+			<div id = "comment-13348" class = "comment">
+				<p>The zero on the left-hand side of the equation is because the point you are tracking in the world frame is not moving. You have to deal with the world frame at some point otherwise you won't be able to make this prediction.</p>
+			</div>
+			<div id = "comment-13349" class = "comment">
+				<p>ah ok, but assuming I don't, based on these equations it seems the world frame can be eliminated.</p>
+			</div>
+			<div id = "comment-13350" class = "comment">
+				<p>Yes, in the end, you are still getting $\dot{\alpha}$ that is in the laser frame. It is just that $\alpha$ (and hence $\dot{\alpha}$) are a function of the target object position in the world. I hope that I am interpreting what you want correctly: you are tracking an object in the world frame and want to figure out the angular rate of that object in the laser frame.</p>
+			</div>
+			<div id = "comment-13352" class = "comment">
+				<p>oh yikes..actually, that Beta and Beta Dot is the angular value and velocity wrt the vehicle centre of mass. That doesnt represent the elevation/pitch in the world frame</p>
+			</div>
+			<div id = "comment-13353" class = "comment">
+				<p>Oh ok, so the vehicle _is_ moving then. Can you describe how it is configured physically? Here is what I can deduce: you have a vehicle that has its centre of mass where you show, and the vehicle is oriented with the coordinate frame you show (the one labeled z-y), then this vehicle has some moving arm with angle $\beta$ and lengths $L_z$ and $L_y$, and at the end of that arm you have a laser range finder that sweeps in 2D, providing range ($R$) and angle ($\alpha$).</p>
+			</div>
+			<div id = "comment-13354" class = "comment">
+				<p>Let us [continue this discussion in chat](http://chat.stackexchange.com/rooms/30677/discussion-between-raaj-and-brian-lynch).</p>
+			</div>
+			<div id = "comment-13355" class = "comment">
+				<p>yes this is correct</p>
+			</div>
+			<div id = "comment-13356" class = "comment">
+				<p>here is my interpretation in math:
+http://i.stack.imgur.com/C0Idd.jpg</p>
+			</div>
+			</div>
+				<textarea id = "speech-8328" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8328">
+					<img id="start_img-8328" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8328">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

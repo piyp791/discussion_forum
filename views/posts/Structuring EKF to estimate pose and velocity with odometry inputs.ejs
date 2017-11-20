@@ -1,0 +1,176 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Structuring EKF to estimate pose and velocity with odometry inputs
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7519" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7519" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 387</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Structuring EKF to estimate pose and velocity with odometry inputs</h2>
+<p>I have a differential drive robot for which I'm building an EKF localization system.  I would like to be able to estimate the state of the robot $\left[ x, y, \theta, v, \omega \right]$ where $x, y, \theta$ represent the pose of the robot in global coordinates, and $v, \omega$ are the translational and rotational velocities. Every mobile robot Kalman filter example I've seen uses these velocities as inputs to prediction phase, and does not provide a filtered estimate of them. </p>
+
+<p><strong>Q:</strong> What is the best way to structure a filter so that I can estimate my velocities and use my measured odometry, gyroscope, and possibly accelerometers (adding $\dot{v}$ and $\dot{\omega}$ to my state) as inputs? </p>
+
+<p><em>My intuition tells me to use a prediction step that is pure feedforward (i.e. just integrates the predicted velocities into the positions), and then have separate updates for odometry, gyro, and accelerometer, but I have never seen anyone do this before. Does this seem like a reasonable approach?</em></p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7519" data-toggle = "popover">
+				<p>user name : rcv</p>
+				<p> user reputation : 123</p>
+				<p class = "tagcontent" id = "usertaginfo-7519">{'odometry': 4, 'None': 0, 'gyroscope': 4, 'kalman-filter': 4, 'localization': 4}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7519">Load Comments</button></br>
+			<div id = "commentsection-7519" class = 'collapse'>
+			<div id = "comment-10826" class = "comment">
+				<p>Instead of using the accelerometer data as input to your process model (which is also a reasonable approach) you can say your state-estimation matrix A is timevariant (it will be a nonlinear operation anyway) and feed your sensor data from the accelerometer to the prediction directly. Like it is done in this paper: http://dx.doi.org/10.1109/RAMECH.2008.4690879    If I find time at the weekend I will post an answer</p>
+			</div>
+			</div>
+				<textarea id = "speech-7519" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7519">
+					<img id="start_img-7519" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7519">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7528"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7528" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The OpenPilot EKF implementation as described at the OpenPilot Firmware Development <a href="https://wiki.openpilot.org/display/WIKI/INSGPS+Algorithm" rel="nofollow">INSGPS Algorithm</a> page <em>does</em> have the velocity vector as part of its state. The linked paper <a href="https://wiki.openpilot.org/display/WIKI/INSGPS+Algorithm?preview=/2097177/2195479/INSGPSAlg.pdf" rel="nofollow">GPS-aided INS Solution for OpenPilot by Dale E. Schinstock, Kansas State University</a> describes in quite a bit of detail how they've implemented it.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7528" data-toggle = "popover">
+				<p>user name : sakumar</p>
+				<p> user reputation : 1</p>
+				<p class = "tagcontent" id = "usertaginfo-7528">{'None': 0}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7528" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7528" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7528">
+					<img id="start_img-7528" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7528">Comment</button>
+			<br><div id = "ans-7530"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7530" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Great question!  Your intuition is correct.</p>
+
+<p>I would do this:</p>
+
+<ol>
+<li>Put the state $x$, and expected velocities at the current time $t$, $v $ as the vector to estimate.</li>
+<li>Use estimated velocities to predict next state $$\hat{x}(t+1)=f(x(t),v(t))$$</li>
+<li>Use odometry measurements from $t$ to $t+1$ to form an estimate of the state. The difference between this and $x$ is your innovation, $y_o$. Fuse with the predicted state. $$\hat{x}'(t+1)=UpdateStep(\hat{x}(t+1),y_o(t+1)$$</li>
+<li>Use accellerometers to form a second estimate of state, which is also fused. You now have an estimate of the state at $t+1$ using all available information.
+$$\hat{x}''(t+1)=UpdateStep(\hat{x}'(t+1),y_a(t+1)$$</li>
+<li>Now, the velocities, assuming the filter is running "fast" and you can rely on a <a href="https://robotics.stackexchange.com/a/134">constant curvature path</a> are whatever $v$ and $\omega$ explain the difference in the robot states. Use the difference to provide an estimate of the velocities, which is used to update the velocities in the state of the robot. 
+$$\hat{v}(t+1)=UpdateStep(\hat{v}(t+1),GetVelocityEstimate(\hat{x}(t),\hat{x}(t+1))$$</li>
+</ol>
+
+<p>The design of a filter is very much up to the engineer, and in the end you may want to try several variants to see what works best. </p>
+
+<p>Some other variants</p>
+
+<ul>
+<li>Swap odometry, velocities, and accells to produce the prediction of state. You'll have to see what works better</li>
+<li>Use a single integration of accellerometers to produce a velocity update <em>before</em> doing your forward prediction. In effect, you are "daisy chaining" EKFS, one to estimate your velocity, then using that velocity to predict your state, which is updated by other means. This will likely be <strong>much</strong> simpler and less likely to break.</li>
+</ul>
+
+<p>Good luck!</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7530" data-toggle = "popover">
+				<p>user name : Josh Vander Hook</p>
+				<p> user reputation : 3960</p>
+				<p class = "tagcontent" id = "usertaginfo-7530">{'None': 345}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7530">Load Comments</button></br>
+			<div id = "commentsection-7530" class = 'collapse'>
+			<div id = "comment-21277" class = "comment">
+				<p>The issue I see with step 3 is that if the odometry differences are used in an update step, then the location state covariance will tend towards whatever the odometry sensor covariance is. In reality, if all we have is odometry then the position covariance should grow unbounded.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7530" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7530">
+					<img id="start_img-7530" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7530">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

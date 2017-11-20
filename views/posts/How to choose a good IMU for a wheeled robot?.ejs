@@ -1,0 +1,182 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to choose a good IMU for a wheeled robot?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-155" class = "post">
+			<h2>Question</h2>
+			<div id="vote-155" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">14</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 3793</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to choose a good IMU for a wheeled robot?</h2>
+<p>At our lab, we have a several "Kurt" type robots (about the size of a Pioneer, six wheels, differential drive). The built-in gyroscopes are by now really outdated; the main problem is that the gyroscopes have a large drift that increases as the gyro heats up (the error is up to 3 /s). We mainly use the IMU (inertial measurement unit) to get initial pose estimates that are later corrected by some localization algorithm, but even doing that the large initial pose error caused by the IMU is often annoying.</p>
+
+<p>We've temporarily used an Android phone (Galaxy S2) as a replacement IMU, and the results are so much better compared to the old IMUs. However, I don't like depending on a WiFi connection between IMU and the control computer (a laptop running ROS/Ubuntu), so we're looking to buy a new IMU.</p>
+
+<p>What IMU should we choose? What criteria are important to consider for our application?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-155" data-toggle = "popover">
+				<p>user name : Martin</p>
+				<p> user reputation : 320</p>
+				<p class = "tagcontent" id = "usertaginfo-155">{'odometry': 14, 'None': 13, 'imu': 14, 'ros': 14, 'ugv': 14, 'gyroscope': 14}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-155">Load Comments</button></br>
+			<div id = "commentsection-155" class = 'collapse'>
+			<div id = "comment-333" class = "comment">
+				<p>Since you are talking about not depending on the wifi link, I guess that you want an IMU with an internal filter ?</p>
+			</div>
+			<div id = "comment-21836" class = "comment">
+				<p>On stack exchange, it is better to edit your question to add information requested in comments, rather than adding more comments. Comments are for helping to improve questions and answers, and are distracting, so we try to keep them to a minimum. If all of the information needed to answer the question is contained within it, the comments can be tidied up (deleted).</p>
+			</div>
+			</div>
+				<textarea id = "speech-155" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-155">
+					<img id="start_img-155" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-155">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-157"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-157" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">6</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I have used a <a href="http://www.vectornav.com/products/vn100-rug">VN-100</a> IMU to replace an old one (which could be quite inaccurate).</p>
+
+<p>My experience with the VN-100 is quite good. It includes an internal Kalman filter to estimate pitch, roll and yaw (using magnetic sensors), and you can tune the gains on the Kalman filter yourself. How they should be tuned will depend on your application (eg. vibration, usual rates of rotation and acceleration).</p>
+
+<p>My experience is that it is easily within 1 degree accuracy, and if tuned well, can be almost 0.1 degree accuracy. Having said that, it requires the use of the active tuning parameter (depending on how far acceleration differs from gravity). While I have looked closely at the angular position data, I have not specifically investigated the accuracy of the acceleration or angular rate data (although I have some data, but I used encoders as a ground truth, and differentiation makes the encoder data too noisy to compare).</p>
+
+<hr>
+
+<p>Things you might want to consider:</p>
+
+<ul>
+<li>It is definitely a bonus to be able to tune the Kalman filter gains. If the gains are not well tuned, even good raw data can result in inferior filtered data.</li>
+<li>Other than that, sampling time may be important (if you want samples at a high frequency - the VN-100 has a maximum frequency of 200Hz).</li>
+<li>Consider the communication protocol (the VN-100 supports RS-232, or SPI with the SMD package). With RS-232, you will want to consider the maximum rate available on your DAQ system, eg. 460kHz baud rate is required to get data at 200Hz, otherwise you will not get all the data at such a high frequency</li>
+<li><strong>Size</strong>? Our old IMU was quite large (5cm), but the VN-100 is tiny.</li>
+<li>Magnetic sensors - if you want yaw position data, but be aware that motors in close proximity (depends on the size of motors, but perhaps within 10cm or more) will stop them working.</li>
+<li>Kalman filter - unless you want to process the data yourself</li>
+</ul>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-157" data-toggle = "popover">
+				<p>user name : ronalchn</p>
+				<p> user reputation : 2449</p>
+				<p class = "tagcontent" id = "usertaginfo-157">{'None': 187, 'two-wheeled': 20, 'inverse-kinematics': 15, 'interrupts': 5, 'microcontroller': 13, 'wiring': 7, 'c': 8, 'avr': 5, 'brushless-motor': 2, 'joint': 15, 'kinematics': 15, 'hall-sensor': 2, 'mobile-robot': 20, 'arm': 15}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-157">Load Comments</button></br>
+			<div id = "commentsection-157" class = 'collapse'>
+			<div id = "comment-332" class = "comment">
+				<p>The effect of static magnetic disturbance can be compensated for. On our system, we used Xsens' magnetic field calibration tool and that performed pretty well.</p>
+			</div>
+			<div id = "comment-334" class = "comment">
+				<p>only for static disturbances (ie. due to proximity of iron, and fixed magnets), my answer mentioned **motors**, thus the magnetic disturbance is dynamically changing, and cannot be compensated for.</p>
+			</div>
+			</div>
+				<textarea id = "speech-157" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-157">
+					<img id="start_img-157" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-157">Comment</button>
+			<br><div id = "ans-160"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-160" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">6</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I assume that you are looking for an IMU that provides you with an orientation estimation. The complete package is usually called an Attitude and Heading Reference System (AHRS). What really is the most defining criteria is your budget. Getting above 3 degrees/s should be within reach though. </p>
+
+<ul>
+<li><p>We have been working with the <a href="http://www.xsens.com/en/general/mti" rel="noreferrer">XSens MTi</a> and had good enough results for navigation of ground vehicles. They have a new line out, which has improved on the accuracy quite a bit. </p></li>
+<li><p>Budget options are also available, <a href="https://www.sparkfun.com/products/11028" rel="noreferrer">this one</a> looks quite promising as it is a single chip solution. There is also an <a href="https://www.sparkfun.com/pages/accel_gyro_guide" rel="noreferrer">IMU buyers guide</a> at Sparkfun. </p></li>
+<li><p>Usually pitch and roll are fine with most IMUs for ground vehicles, as the gravity vector can be used to compensate the drift. Not so with the yaw axis, which is often a problem even when compensated with a magnetometer. For that reason we often use a single <a href="http://www.kvh.com/dsp3000comm" rel="noreferrer">fibre optic gyro</a> to minimize the heading drift.</p></li>
+</ul>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-160" data-toggle = "popover">
+				<p>user name : Jakob</p>
+				<p> user reputation : 2519</p>
+				<p class = "tagcontent" id = "usertaginfo-160">{'ransac': 3, 'None': 210, 'computer-vision': 1, 'cameras': 1, 'c++': 3, 'slam': 12, 'rock': 1, 'i2c': 3, 'servos': 3, 'software': 1}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-160" class = 'collapse'>
+			</div>
+				<textarea id = "speech-160" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-160">
+					<img id="start_img-160" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-160">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

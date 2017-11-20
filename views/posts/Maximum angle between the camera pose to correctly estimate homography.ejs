@@ -1,0 +1,142 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Maximum angle between the camera pose to correctly estimate homography
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2374" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2374" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 268</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Maximum angle between the camera pose to correctly estimate homography</h2>
+<p>I want to capture two views of same scene. The scene consists of a set of objects kept on a table. From the two views, I wish to calculate homography for image matching. I want to know what is the maximum angle between the two views  such that the homography can be accurately calculated. Right now, I am capturing the images at around 60 degrees of angle, but unable to construct homography accurately.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2374" data-toggle = "popover">
+				<p>user name : Swagatika</p>
+				<p> user reputation : 73</p>
+				<p class = "tagcontent" id = "usertaginfo-2374">{'stereo-vision': 1, 'None': 0, 'computer-vision': 14, 'algorithm': 7, 'kinect': 14, 'books': 0, 'machine-learning': 5, 'forward-kinematics': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2374" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2374" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2374">
+					<img id="start_img-2374" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2374">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-2401"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2401" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I don't think the degree of distance, which I assume you mean rotation between cameras, is relevant to computing the homography. Could you clarify what you mean by degrees of distance? The only requirement to compute a homography between two cameras is that there are at least 4 point correspondences (aka matching points) between the two images captured by the two cameras. The 4 point requirement has to do with the number of unknowns in the homography matrix, which because it's defined up to scale and is a 3x3 matrix, turns out to be 9 elements in matrix - 1 up to scale variable = 8 unknowns. Since we're dealing with planes, we have 2D points (x,y), so each point has 2 values, and thus 4 points give us 8 values.</p>
+
+<p>Edit - After a lengthy chat discussion and some example images, it turned out the images were in fact rotated too far to obtain satisfactory point correspondences between frames using conventional methods. What ended up working was increasing the sampling rate by taking more pictures at smaller rotations (30 deg instead of 60 deg), which allowed us to track correspondences across multiple frames so the 60 degree frame could be matched with the 0 degree frame by using the 30 deg frame as a link. Let me know if I missed anything!</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2401" data-toggle = "popover">
+				<p>user name : Andrew Capodieci</p>
+				<p> user reputation : 826</p>
+				<p class = "tagcontent" id = "usertaginfo-2401">{'None': 54}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2401">Load Comments</button></br>
+			<div id = "commentsection-2401" class = 'collapse'>
+			<div id = "comment-4710" class = "comment">
+				<p>Corrected it, its angle. If I pick and provide 4 points to the system, we can assure to get a good homography. But the problem is I cannot afford to do that. I have to choose point correspondences automatically. I use SIFT-matching across the 2 views and provide the matching point pairs to RANSAC based homography estimation. If I am taking large angular distance b.w the two camera poses (remember, I have to move the camera around a clutter on table), I am not getting correct homography... And I cannot afford to capture too many views. That's why I wish to know a rough estimate</p>
+			</div>
+			<div id = "comment-4713" class = "comment">
+				<p>Can you provide a step by step list of what you're doing? This is what I believe you're doing based on what you've said so far: 1. Take picture of scene. 2. Manually rotate camera and take a second picture. 3. Compute SIFT features on two images and match (what are you using to compute SIFT features and what type of matcher are you using?). 3. Use point correspondences from matcher to compute homography with RANSAC. It'd be even better if you could provide example images. It seems like you could compute the SIFT features, use a FLANN matcher and compute the homography in OpenCV very easily.</p>
+			</div>
+			<div id = "comment-4714" class = "comment">
+				<p>ok.. (1) I have a couple of boxes on table. (2) I want to capture them from two views by moving the camera around the table. So there will be an angle between the camera poses from two views (3) I find SIFT features and match the feature points using SIFT matching. (4) I use those feature points to estimate homography. Now, the problem is if there is too much angle b/w camera views, I get wrong feature matching, and a wrong homography (which is almost singular). I cant afford to take it too close since that will be costly for my work...</p>
+			</div>
+			<div id = "comment-4715" class = "comment">
+				<p>i believe i edited my comment since you started your new comment 56 seconds ago...just fyi</p>
+			</div>
+			<div id = "comment-4716" class = "comment">
+				<p>If you can provide example images of the two views, the correspondences you match and the homography computed, that would help a lot</p>
+			</div>
+			<div id = "comment-4717" class = "comment">
+				<p>ok..thanks. You got it right. well I am using MATLAB, vl_feat and Peter Kovesi's toolbox for my computations.   (How do I upload photos on stack exchange? sorry, I dont know how to do that..)</p>
+			</div>
+			<div id = "comment-4718" class = "comment">
+				<p>let us [continue this discussion in chat](http://chat.stackexchange.com/rooms/12760/discussion-between-andrew-capodieci-and-swagatika)</p>
+			</div>
+			</div>
+				<textarea id = "speech-2401" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2401">
+					<img id="start_img-2401" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2401">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

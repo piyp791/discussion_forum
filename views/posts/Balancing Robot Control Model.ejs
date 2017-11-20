@@ -1,0 +1,271 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Balancing Robot Control Model
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8213" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8213" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 514</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Balancing Robot Control Model</h2>
+<p>I am trying to find a control model for the system of a balancing robot. The purpose of this project is control $\theta_2$ by the 2 motors in the wheels i.e. through the torque $ $ I started with the dynamic equations and went to find the transfer function. </p>
+
+<p>Then I will find the PID gains that will control the robot and keep it balanced with the most optimum response. For the time being I am only interested in finding the transfer function for the dynamic model only.</p>
+
+<p>Here is an example: <a href="https://www.youtube.com/watch?v=FDSh_N2yJZk" rel="nofollow noreferrer">https://www.youtube.com/watch?v=FDSh_N2yJZk</a></p>
+
+<p>However, I am not sure of my result.Here are the free body diagrams for the wheels and the inverted pendulum (robot body) and calculations below: </p>
+
+<p><a href="https://i.stack.imgur.com/mszPX.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/mszPX.png" alt="Diagram"></a></p>
+
+<p>Dynamic Equations:</p>
+
+<p>$$
+\begin{array}{lcr}
+m_1 \ddot{x}_1 = F_r - F_{12} &amp; \rightarrow &amp; (1)&amp; \\
+m_2 \ddot{x}_2 = F_{12} &amp; \rightarrow &amp;  (2) &amp;\\
+J_1 \ddot{\theta}_1 = F_r r - \tau &amp; \rightarrow &amp; (3) &amp;\\
+J_2 \ddot{\theta}_2 = \tau - mgl\theta &amp; \rightarrow &amp; (4) &amp; \mbox{(linearized pendulum)}\\
+\end{array}
+$$</p>
+
+<p>Kinematics:</p>
+
+<p>$$
+x_1 = r\theta_1 \\
+x_2 = r\theta_1 + l\theta_2 \\
+$$</p>
+
+<p>Equating (1) and (3):
+$$
+m_1 \ddot{x}_1 + F_{12} = F_r \\
+\frac{J_1 \ddot{\theta}_1}{r} + \frac{\tau}{r} = F_r
+$$</p>
+
+<p>Yields:</p>
+
+<p>$$
+\frac{J_1 \ddot{\theta}_1}{r} - m_1 \ddot{x}_1 + \frac{\tau}{r} = F_{12} \rightarrow (5)
+$$</p>
+
+<p>Equating (5) with (2):</p>
+
+<p>$$
+\frac{J_1 \ddot{\theta}_1}{r} - m_1 \ddot{x}_1 + \frac{\tau}{r} - m_2 \ddot{x}_2  = 0 \rightarrow (6) \\
+$$</p>
+
+<p>Using Kinematic equations on (6):</p>
+
+<p>$$
+(J_1 - m_1 r^2 - m_2 r^2) \ddot{\theta}_1 + m_2 l r \ddot{\theta}_2 = -\tau \rightarrow (7) \\
+$$</p>
+
+<p>Equating (7) with (4):</p>
+
+<p>$$
+\begin{array}{ccc}
+\underbrace{(J_1 - m_1 r^2 - m_2 r^2) }\ddot{\theta}_1 &amp;+&amp; \underbrace{(m_2 l r + J_2 ) }\ddot{\theta}_2 &amp;+&amp; \underbrace{m_2 gl}\theta &amp;= 0 \rightarrow (8) \\
+A &amp; &amp;B &amp; &amp; C &amp; \\
+\end{array}
+$$</p>
+
+<p>Using Laplace transform and finding the transfer function:</p>
+
+<p>$$
+\frac{\theta_1}{\theta_2} = -\frac{Bs^2 + C}{As^2} \\
+$$</p>
+
+<p>Substituting transfer function into equation (7):</p>
+
+<p>$$
+(J_1 - m_1 r^2 - m_2 r^2) \frac{\theta_1}{\theta_2}\theta_2 s^2 + m_2 lr\theta_2 s^2 = -\tau \\
+$$</p>
+
+<p>Yields:
+$$
+\frac{ _2}{ } = \frac{-1}{(mlr-B) s^2+C}
+$$</p>
+
+<p>Simplifying:
+$$
+\frac{ _2}{ }=  \frac{1}{J_2 s^2-m_2 gl}
+$$</p>
+
+<p>Comments:</p>
+
+<p>-This only expresses the pendulum without the wheel i.e. dependent only on the pendulums properties.</p>
+
+<p>-Poles are real and does verify instability.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8213" data-toggle = "popover">
+				<p>user name : azizsm</p>
+				<p> user reputation : 1</p>
+				<p class = "tagcontent" id = "usertaginfo-8213">{'control': 0, 'wheeled-robot': 0, 'None': 0, 'pid': 0, 'arduino': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8213">Load Comments</button></br>
+			<div id = "commentsection-8213" class = 'collapse'>
+			<div id = "comment-13131" class = "comment">
+				<p>Welcome to *robotics* azizsm, but we prefer questions to be complete, rather than reference a substantial portion of their content to external sites which could die at any time. Looking at your PDF, it looks like you could reproduce all of your equations in your question using [mathjax](http://meta.robotics.stackexchange.com/a/131/37) and if you post a link to the image in the pdf, I would be happy to embed it in your answer for you.</p>
+			</div>
+			<div id = "comment-13135" class = "comment">
+				<p>Thank you Mark, I am glad to be part of this community. I changed what is required.</p>
+			</div>
+			<div id = "comment-13136" class = "comment">
+				<p>@MarkBooth - I converted the image (hope we weren't both doing it at the same time!) and nominated the question to be reopened.</p>
+			</div>
+			<div id = "comment-13138" class = "comment">
+				<p>@azizsm, what are you trying to control? Are the circle and the link actually connected? I just see circle and link with no physical connection whatsoever.</p>
+			</div>
+			<div id = "comment-13143" class = "comment">
+				<p>Thanks @Chuck, great job on the MathJax conversion, I didn't know you could get it to do some of those things. *8')</p>
+			</div>
+			<div id = "comment-13146" class = "comment">
+				<p>You're welcome @azizsm, something else worth mentioning is that if you want to clarify things asked about in comments, the best way is to edit your question.</p>
+			</div>
+			<div id = "comment-13149" class = "comment">
+				<p>@Croco There is no physical link in this diagram because this is just a free body diagram of both parts if you separate them. They are actually connected where the wheels can freely rotate, I edited the question to provide some clarification and an example video.</p>
+			</div>
+			<div id = "comment-13150" class = "comment">
+				<p>Thank you @Chuck, I really appreciate your help with my post.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8213" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8213">
+					<img id="start_img-8213" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8213">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8214"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8214" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>At a glance, you haven't defined your x/y datums so when you have an equation it's hard to tell what you are referencing. </p>
+
+<p>That said, you give an equation:</p>
+
+<p>$$
+m_2 \ddot{x}_2 = F_{12}
+$$</p>
+
+<p>But later, for kinematics, you state what I believe to be correct:</p>
+
+<p>$$
+x_2 = r \theta_1 +l \theta_2
+$$</p>
+
+<p>Which could also be stated, per your definition, as</p>
+
+<p>$$
+x_2 = x_1 + l \theta_2
+$$</p>
+
+<p>But, if you take two derivatives of the above, you do not get anything close to the first two dynamic equations. </p>
+
+<p>Using the kinematic equation as an example, I would suggest that the acceleration $\ddot{x_2}$ is due to both the acceleration at the base <em>and</em> due to the rotational acceleration of the pendulum, but again you need to pick a datum and see for yourself. I would suggest:</p>
+
+<p>$$
+m_2 \ddot{x}_2 = F_{12} + l \ddot{\theta}_2
+$$</p>
+
+<p>Where again, per your definition, this could be rewritten as:</p>
+
+<p>$$
+m_2 \ddot{x}_2 = F_r - m_1 \ddot{x}_1 + l \ddot{\theta}_2
+$$</p>
+
+<p>See now the similarity between this and your kinematic definition? This also couples rotation to the wheel motion. I didn't read any further than the kinematic definitions, so there may be other issues, but try this first, see what you get, then ask more questions if you have them. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8214" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-8214">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8214">Load Comments</button></br>
+			<div id = "commentsection-8214" class = 'collapse'>
+			<div id = "comment-13130" class = "comment">
+				<p>PS - You also have $\theta_1$ and $\theta_2$, but as far as I saw they were the same, just $\theta$.</p>
+			</div>
+			<div id = "comment-13134" class = "comment">
+				<p>Thank you Chuck for your reply, I am sorry for some parts I may not have clarified properly, the $\theta_1$ and $\theta_2$ exist because the pendulum arm and the wheels are not fixed together, the pendulum rotates freely if the wheel is not rotating. The y datum here is irrelevant, I just edited the diagram to show the x datum.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8214" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8214">
+					<img id="start_img-8214" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8214">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

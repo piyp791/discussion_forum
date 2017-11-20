@@ -1,0 +1,245 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>PID tuning with methods like GA and PSO
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9384" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9384" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 120</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>PID tuning with methods like GA and PSO</h2>
+<p>I have recently started reading about PID tuning methods and algorithms, and I encountered the particle swarm optimization algorithm and genetic algorithm.</p>
+
+<p>The problem is, that I don't understand how each particle/chromosome determines his fitness. On real physical system, each particle/chromosome checks his fitness on the system? Wouldn't it take a really long time? I think that I am missing something here... Can those algorithms be implemented on an actual physical system? If so, then how?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9384" data-toggle = "popover">
+				<p>user name : Alon</p>
+				<p> user reputation : 6</p>
+				<p class = "tagcontent" id = "usertaginfo-9384">{'None': 0, 'pid': 1, 'algorithm': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9384">Load Comments</button></br>
+			<div id = "commentsection-9384" class = 'collapse'>
+			<div id = "comment-16621" class = "comment">
+				<p>possible duplicate http://robotics.stackexchange.com/questions/9186/using-genetic-algorithm-for-tuning-controllers</p>
+			</div>
+			</div>
+				<textarea id = "speech-9384" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9384">
+					<img id="start_img-9384" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9384">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9387"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9387" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">-1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Talking especifically of PSO: </p>
+
+<p>PSO is a good method for PID tuning, as you state. This algo is based particles that help find the absolute minimum. Let's think that you tune to get the no overshot.</p>
+
+<p>If you tune a PID you must have a 3 dimension PSO algo, if you tune a PD just two. And for each dimension you can have any amount of particles as you want. In my case, in Scilab 5.4 I tune PD with PSO with 10 or 15 particles and converge quite fast, in a pair of minutes.</p>
+
+<p>A particle represents a Kp value, for instance. If you have 10 particles for each dimension, you will be able to test your Kp with 10 different values at once. Then, the best particle will reveal, and will tell the other nine particles to adapt their value towards that local best particle, and Kp values will readapt till you find the local minimum Kp value that gets the lowest overshot.</p>
+
+<p>Before tuning a PID, I suggest you to try to find the lowest point in a U letter with PSO. My code with Scilab is next:</p>
+
+<pre><code>   N=10;
+   weight=1; //weight of the PSO algorithm 
+   const_c1=2; //constant of the velocity algorithm. 
+   const_c2=2; //constant of the velocity algorithm. 
+   Number_Iter=300; //number of iterations
+   dim=1; // dimension
+
+  //Initialize the parameter
+  fitness=zeros(N,Number_Iter);
+  R1=rand(dim,N); //Random numbers [0 1]
+  R2=rand(dim,N); //Random numbers [0 1]
+  current_fitness=zeros(N,1); /
+
+  //initializing swarm and velocities and position
+  current_position=2*(rand(dim,N));/
+  velocity=3*rand(dim,N);
+  local_best_position = current_position;
+
+
+ //evaluate initial population
+
+x1=current_position;
+y=x1^2; 
+
+current_fitness=y;
+
+
+ local_best_fitness = current_fitness;
+ global_best_fitness=min(local_best_fitness);
+
+for i=1:N
+g=find(current_fitness==min(current_fitness));
+global_best_position(:,i)=local_best_position(:,g);
+ end
+
+//velocity update
+velocity = weight*velocity + const_c1*(R1.*(local_best_position-current_position)) + const_c2*(R2.*(global_best_position - current_position));
+
+//swarm update
+ current_position = current_position + velocity;
+
+ //evaluate a new swarm
+ iter=0; 
+
+ while(iter &lt; = Number_Iter)
+iter = iter + 1;
+
+    x1=current_position;
+    y= x1^2;
+
+    current_fitness=y;
+    disp(iter); disp(i);
+
+
+ for var = 1 : N
+if current_fitness(var) &lt; local_best_fitness(var) then
+  local_best_fitness(var) = current_fitness(var);
+  local_best_position(var) = current_position(var);  
+end       
+end
+
+current_glob_bestfitness = min(local_best_fitness);
+
+if (current_glob_bestfitness &lt; global_best_fitness)
+      global_best_fitness = current_glob_bestfitness;
+
+  for var2=1:N
+         g=find(current_fitness==min(current_fitness));
+         global_best_position(var2)=local_best_position(g);
+
+ end
+end
+
+velocity = weight * velocity + const_c1*(R1.*(local_best_position - current_position)) + const_c2*(R2.*(global_best_position - current_position));
+
+current_position = current_position + velocity;
+plot(x1,y,'or');
+y1=min(y);  
+end
+</code></pre>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9387" data-toggle = "popover">
+				<p>user name : galtor</p>
+				<p> user reputation : 348</p>
+				<p class = "tagcontent" id = "usertaginfo-9387">{'control': 2, 'quadcopter': 5, 'None': 14, 'reinforcement-learning': 1, 'pid': 4, 'simulation': -3, 'machine-learning': 1, 'untagged': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9387">Load Comments</button></br>
+			<div id = "commentsection-9387" class = 'collapse'>
+			<div id = "comment-16631" class = "comment">
+				<p>I don't understand how can I test 10 different Kp values at once, can you please explain it to me again? thanks for your answer</p>
+			</div>
+			<div id = "comment-16632" class = "comment">
+				<p>Implement the dynamic model of your robot, and then, for choosing Kp values PSO algorithm can be chosen. Each particle represents a different Kp value, and are tested on the dynamic model you have previously implemented, according to the minimum cost function that you choose (overshot, energy consumption, speed, whatever).</p>
+			</div>
+			</div>
+				<textarea id = "speech-9387" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9387">
+					<img id="start_img-9387" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9387">Comment</button>
+			<br><div id = "ans-9618"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9618" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p><strong>GA</strong> and <strong>PSO</strong> methods are generally and more simply executed on a <strong>model of the plant</strong> you want to tune your PID for, not on the physical system. This way, you can of course converge much faster toward the solution and also you don't apply potentially disruptive gains to your PID controller.</p>
+
+<p>The very first step is thus to come up with a good model of your process through identification.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9618" data-toggle = "popover">
+				<p>user name : Ugo</p>
+				<p> user reputation : 1482</p>
+				<p class = "tagcontent" id = "usertaginfo-9618">{'None': 99}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-9618" class = 'collapse'>
+			</div>
+				<textarea id = "speech-9618" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9618">
+					<img id="start_img-9618" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9618">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

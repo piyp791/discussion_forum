@@ -1,0 +1,322 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>KUKA FRI program using JAVA
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8337" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8337" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 620</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>KUKA FRI program using JAVA</h2>
+<p>I am trying to establish the FRI connection for KUKA LBR iiwa. I know how to configure the FRI connection as there are example programs available in the Sunrise.Workbench. </p>
+
+<p>A sample code is given below. My question is 'how to pass' the joint torque values (or joint position or wrench) to the controller using 'torqueOverlay' as mentioned in the code below. Since I could not find any documentation on this, it was quite difficult to figure out. Any sample code with explanation or any clues would be more than helpful.   </p>
+
+<p>JAVA code:</p>
+
+<pre><code>package com.kuka.connectivity.fri.example;
+
+import static com.kuka.roboticsAPI.motionModel.BasicMotions.ptp;
+
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+import com.kuka.connectivity.fri.ClientCommandMode;
+import com.kuka.connectivity.fri.FRIConfiguration;
+import com.kuka.connectivity.fri.FRIJointOverlay;
+import com.kuka.connectivity.fri.FRISession;
+import com.kuka.roboticsAPI.applicationModel.RoboticsAPIApplication;
+import com.kuka.roboticsAPI.controllerModel.Controller;
+import com.kuka.roboticsAPI.deviceModel.LBR;
+import com.kuka.roboticsAPI.motionModel.PositionHold;
+import com.kuka.roboticsAPI.motionModel.controlModeModel.JointImpedanceControlMode;
+
+/**
+ * Moves the LBR in a start position, creates an FRI-Session and executes a
+ * PositionHold motion with FRI overlay. During this motion joint angles and
+ * joint torques can be additionally commanded via FRI.
+ */
+public class LBRTorqueSineOverlay extends RoboticsAPIApplication
+{
+    private Controller _lbrController;
+    private LBR _lbr;
+    private String _clientName;
+
+    @Override
+    public void initialize()
+    {
+        _lbrController = (Controller) getContext().getControllers().toArray()[0];
+        _lbr = (LBR) _lbrController.getDevices().toArray()[0];
+        // **********************************************************************
+        // *** change next line to the FRIClient's IP address                 ***
+        // **********************************************************************
+        _clientName = "127.0.0.1";
+    }
+
+    @Override
+    public void run()
+    {
+        // configure and start FRI session
+        FRIConfiguration friConfiguration = FRIConfiguration.createRemoteConfiguration(_lbr, _clientName);
+        // for torque mode, there has to be a command value at least all 5ms
+        friConfiguration.setSendPeriodMilliSec(5);
+        friConfiguration.setReceiveMultiplier(1);
+
+        getLogger().info("Creating FRI connection to " + friConfiguration.getHostName());
+        getLogger().info("SendPeriod: " + friConfiguration.getSendPeriodMilliSec() + "ms |"
+                + " ReceiveMultiplier: " + friConfiguration.getReceiveMultiplier());
+
+        FRISession friSession = new FRISession(friConfiguration);
+        FRIJointOverlay torqueOverlay = new FRIJointOverlay(friSession, ClientCommandMode.TORQUE);
+
+        // wait until FRI session is ready to switch to command mode
+        try
+        {
+            friSession.await(10, TimeUnit.SECONDS);
+        }
+        catch (final TimeoutException e)
+        {
+            getLogger().error(e.getLocalizedMessage());
+            friSession.close();
+            return;
+        }
+
+        getLogger().info("FRI connection established.");
+
+        // move to start pose
+        _lbr.move(ptp(Math.toRadians(90), Math.toRadians(-60), .0, Math.toRadians(60), .0, Math.toRadians(-60), .0));
+
+        // start PositionHold with overlay
+        JointImpedanceControlMode ctrMode = new JointImpedanceControlMode(200, 200, 200, 200, 200, 200, 200);
+        PositionHold posHold = new PositionHold(ctrMode, 20, TimeUnit.SECONDS);
+
+        _lbr.move(posHold.addMotionOverlay(torqueOverlay));
+
+        // done
+        friSession.close();
+    }
+
+    /**
+     * main.
+     * 
+     * @param args
+     *            args
+     */
+    public static void main(final String[] args)
+    {
+        final LBRTorqueSineOverlay app = new LBRTorqueSineOverlay();
+        app.runApplication();
+    }
+
+}
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8337" data-toggle = "popover">
+				<p>user name : MMD</p>
+				<p> user reputation : 11</p>
+				<p class = "tagcontent" id = "usertaginfo-8337">{'None': 0, 'simulation': 0, 'programming-languages': 1, 'matlab': 1, 'robotic-arm': 1, 'robotc': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8337" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8337" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8337">
+					<img id="start_img-8337" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8337">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9198"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9198" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Currently FRI can only be controlled in C++. </p>
+
+<p>Java is also necessary to initialize the FRI interface. The C++ code if found in a file called <code>FRI-Client-SDK_Cpp.zip</code> which is included in the kuka connectivity suite. You need to go in the menus to the software components and check the box that enables FRI (fast robot interface). Look in the docs for how to enable/disable software components. Enabling the FRI component will dump this zip file into a folder within your sunrise project for you.</p>
+
+<p>You may just want to try using the <a href="https://github.com/ahundt/grl/" rel="nofollow">grl library</a> itself because it provides an easier to use FRI wrapper. It isn't 100% perfect but is has run successfully for the FRI position motion case. Please note that some manual patching of <code>FRI-Client-SDK_Cpp.zip</code> is necessary to build the grl kuka drivers because distribution of the zip file itself isn't yet allowed. Disclaimer: I'm the author of grl.</p>
+
+<p>Here is <a href="https://github.com/ahundt/grl/tree/master/src/java/grl/src/grl/friCommunication" rel="nofollow">grl Java code for starting FRI</a></p>
+
+<p>Source that calls HoldPosition then drives via FRI exclusively:</p>
+
+<pre><code>package grl.friCommunication;
+
+import static com.kuka.roboticsAPI.motionModel.BasicMotions.ptp;
+
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+import com.kuka.connectivity.fri.FRIConfiguration;
+import com.kuka.connectivity.fri.FRIJointOverlay;
+import com.kuka.connectivity.fri.FRISession;
+import com.kuka.roboticsAPI.applicationModel.RoboticsAPIApplication;
+import com.kuka.roboticsAPI.controllerModel.Controller;
+import com.kuka.roboticsAPI.deviceModel.LBR;
+
+/**
+ * Creates a FRI Session.
+ */
+public class FRI_Command extends RoboticsAPIApplication
+{
+    private Controller _lbrController;
+    private LBR _lbr;
+    private String _hostName;
+
+    @Override
+    public void initialize()
+    {
+        _lbrController = (Controller) getContext().getControllers().toArray()[0];
+        _lbr = (LBR) _lbrController.getDevices().toArray()[0];
+        // **********************************************************************
+        // *** change next line to the FRIClient's IP address                 ***
+        // **********************************************************************
+        _hostName =  "192.170.10.100";
+    }
+
+    @Override
+    public void run()
+    {
+        // configure and start FRI session
+        FRIConfiguration friConfiguration = FRIConfiguration.createRemoteConfiguration(_lbr, _hostName);
+        friConfiguration.setSendPeriodMilliSec(10);
+        FRISession friSession = new FRISession(friConfiguration);
+        FRIJointOverlay motionOverlay = new FRIJointOverlay(friSession);
+
+
+        // wait until FRI session is ready to switch to command mode
+        try
+        {
+            friSession.await(10, TimeUnit.SECONDS);
+        }
+        catch (final TimeoutException e)
+        {
+            return;
+        }
+
+        // move to start pose
+        _lbr.move(ptp(Math.toRadians(90), .0, .0, Math.toRadians(90), .0, Math.toRadians(90), .0));
+
+         for(int i = 0; i &lt; 100; i++) {
+             // async move with overlay ...
+             _lbr.moveAsync(ptp(Math.toRadians(90), .0, .0, Math.toRadians(90), .0, Math.toRadians(90), .0)
+                     //.setJointVelocityRel(0.0)
+                     .addMotionOverlay(motionOverlay)
+                     .setBlendingRel(0.0)
+                     );
+
+             // ... blending into sync move with overlay
+             _lbr.moveAsync(ptp(Math.toRadians(90), .0, .0, Math.toRadians(90), .0, Math.toRadians(-90), .0)
+                     //.setJointVelocityRel(0.0)
+                     .addMotionOverlay(motionOverlay)
+                     .setBlendingRel(0.0)
+                     );
+         }
+
+        _lbr.move(ptp(Math.toRadians(90), .0, .0, Math.toRadians(90), .0, Math.toRadians(-90), .0)
+                .addMotionOverlay(motionOverlay)
+                );
+        // done
+        friSession.close();
+    }
+
+    /**
+     * main.
+     * 
+     * @param args
+     *            args
+     */
+    public static void main(final String[] args)
+    {
+        final FRI_Command app = new FRI_Command();
+        app.runApplication();
+    }
+
+}
+</code></pre>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9198" data-toggle = "popover">
+				<p>user name : Andrew Hundt</p>
+				<p> user reputation : 276</p>
+				<p class = "tagcontent" id = "usertaginfo-9198">{'stereo-vision': 2, 'None': 14, 'calibration': 2, 'c++': 2, 'planning': 2, 'robotic-arm': 4, 'motion-planning': 2}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-9198" class = 'collapse'>
+			</div>
+				<textarea id = "speech-9198" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9198">
+					<img id="start_img-9198" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9198">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

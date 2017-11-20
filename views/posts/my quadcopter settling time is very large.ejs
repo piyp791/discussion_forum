@@ -1,0 +1,176 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>my quadcopter settling time is very large
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8231" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8231" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 102</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>my quadcopter settling time is very large</h2>
+<p>my quadcopter's settling time is very large, that is it sets its setpoint in very large amount of time, during which it has covered a large distance. But at settle point, when i gives it a jerk or push its returns to settle in normal duration. doesnt over shoots(little). The problem is with the settling time that is when i move the stick front or back it takes huge amount of time. what could be wrong. i have tried giving more P value and I value to PID but then it overshoots and get unstable. This is my PID program. the PID values are given. I read 6 channels from remote using the command pulsein(). which i guess is taking upto 20ms per command.</p>
+
+<pre><code>kp = 1.32;
+ki= 0.025;
+kd= 0.307;
+void PID() {
+  error = atan2(lx,ly);
+  error *= 1260/22;   
+  error = setpoint1 - error;   
+  now = millis(); 
+  dt = now - ptime;
+  ptime = now;
+  dt /= 1000;  
+  integ = integ + (error * dt);
+  der = (error - prerror) / dt;
+  pidy = (kp * error); 
+  pidy += (ki * integ);
+  pidy += (kd * der); 
+  //Serial.println(error);
+  prerror = error;
+}
+</code></pre>
+
+<p><code>pidy</code> is added and subtracted to esc speeds respectively.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8231" data-toggle = "popover">
+				<p>user name : Bilal Ayub</p>
+				<p> user reputation : 46</p>
+				<p class = "tagcontent" id = "usertaginfo-8231">{'quadcopter': 6, 'None': 0, 'arduino': 4, 'pid': 5, 'stability': 2, 'esc': 3, 'balance': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8231">Load Comments</button></br>
+			<div id = "commentsection-8231" class = 'collapse'>
+			<div id = "comment-13157" class = "comment">
+				<p>It will be beneficial if you provide the graph of the response with the actual values of PID gains.</p>
+			</div>
+			<div id = "comment-13158" class = "comment">
+				<p>I have no reach to take out the graph. but I will say that my quadcopter is imbalanced w.r.t weight on every side.(no extra weight, just usable elements). I tied it to rope. when not started, it is resting(tilting) on one side. when started it takes 15 to 20 seconds to level. now when i push it to tilt, it reaches back to its level in 1 to 1.5 secs.
+kp=1.32,ki= 0.025,kd= 0.307</p>
+			</div>
+			<div id = "comment-13159" class = "comment">
+				<p>Remove the D gain, or implement an observer. Numerical differentiation is bad practice.</p>
+			</div>
+			<div id = "comment-13162" class = "comment">
+				<p>then longer osscilations are produced. But I havent practiced much without D gain. Will PI work?.</p>
+			</div>
+			<div id = "comment-13164" class = "comment">
+				<p>A quadcopter can be stabilized withou any `D` gain. Don't add `D` unless you cannot stabilize your system. Tune firstly for `P`, while  `I` and `D` are zero. You will probably observe some drift without `I`. Set `I` to prevent drift, but don't increase it more than necessary or it could cause instability.</p>
+			</div>
+			<div id = "comment-13166" class = "comment">
+				<p>I am not using any pilot module so the sample time is very large. which results in bad behavior. Show me how to prevent that. I am using arduino uno r3 + mpu6050 only. sample time is larger due to receiver data reading.</p>
+			</div>
+			<div id = "comment-16594" class = "comment">
+				<p>Ptime is not initialized in the code?</p>
+			</div>
+			</div>
+				<textarea id = "speech-8231" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8231">
+					<img id="start_img-8231" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8231">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8232"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8232" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Typically when someone refers to settling time, it's time to achieve the desired target within some limit, and is usually in reference to oscillations about the desired target. </p>
+
+<p>If you have a long time to reach a set position with little or no overshoot, it sounds to me like you have a long <a href="https://en.wikipedia.org/wiki/Rise_time" rel="nofollow">rise time</a> and that maybe your controller is more damped than you would like.  I would try increasing the proportional gain and/or the integral gain until you get a response that is closer to what you want.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8232" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-8232">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8232">Load Comments</button></br>
+			<div id = "commentsection-8232" class = 'collapse'>
+			<div id = "comment-13163" class = "comment">
+				<p>i have tried higher gains for P and I, But then osscilations produce and very large. do I have problem in PID function, or do i need not to use D term, and also the program loop takes much time to complete so sample time increases, can that be a reason?</p>
+			</div>
+			<div id = "comment-13165" class = "comment">
+				<p>ok, I have checked in my simulator. The reason is the sample timing. The problem is that the duration of reading pulses from the receiver is very large, due to which the sample time goes very large, resulting in bad stabilization. What should i do with the sample time.</p>
+			</div>
+			<div id = "comment-13172" class = "comment">
+				<p>@BilalAyub - If you use a hardware interrupt to call your attitude control (PID loops for all axes), then you will probably find that you get much better control with little impact on your communications.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8232" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8232">
+					<img id="start_img-8232" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8232">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

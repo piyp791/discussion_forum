@@ -114,6 +114,26 @@ function publishcomment(){
 	console.log('publish comment called');
 }
 
+function setOnLinksHover(){
+    console.log('set on links hover');
+
+    $(".pagelinks").each( function () {
+        var id = $(this).attr('id');
+        console.log(id)
+        var parentPostid = id.substring(5)
+        console.log(parentPostid);
+
+        $(this).hover(function(e){
+            //alert('hover');
+            $("#"+parentPostid)[0].scrollIntoView({
+                behavior: "smooth", // or "auto" or "instant"
+                block: "start" // or "end"
+            });
+
+        })
+    });
+}
+
 /*populates resources (links extracted from the page into the resources window pane)*/
 function populateResources(content){
 
@@ -141,6 +161,8 @@ function populateResources(content){
 
             //find parent div
             var parent = currentElement.parent().closest('div').attr('class', 'post');
+            console.log('parent div-->' +parent.attr('id'));
+            var parentid = parent.attr('id')
 
             //find vote element and then span count element
             var voteElem = parent.find('div').attr('class', 'upvote')
@@ -154,6 +176,8 @@ function populateResources(content){
                 obj['link'] = elemlink
                 obj['html'] = elemhtml
                 obj['votes'] = parseInt(votecount)
+                obj['id'] = 'link-' +parentid
+                obj['class'] = 'pagelinks'
 
             }
 
@@ -185,37 +209,49 @@ function populateResources(content){
 
         var el = document.createElement('li');
         var linkel = document.createElement('a');
-        el.appendChild(linkel)
+
+        var p = document.createElement('p');
+
+        p.innerHTML = 'Parent <b><a class = \'' +  linkObj['class'] + '\' href = "#" id = \'' + linkObj['id'] +  '\'>Post Link.</a></b>'
+        p.innerHTML +=  '<span style = "border:solid black 1px; margin-left:8px;"><span style = "padding:5px" class="glyphicon glyphicon-thumbs-up"></span>' +  linkObj['votes'] + '</span>'    
+        p.style.textAlign = 'left'
+        el.appendChild(p) 
+
+        el.appendChild(linkel) 
         list.appendChild(el);
         linkel.innerHTML = linkObj['html'];
         linkel.href = linkObj['link']
+        linkel.id = linkObj['id'];
+        linkel.className = linkObj['class']
+
+        linkel.appendChild(document.createElement('br'))
+
+        var like = document.createElement('a');
+        like.href = '#';
+        like.className = 'btn btn-info btn-sm';
+        like.style.marginRight = '8px';
+
+        var likebtn = document.createElement('span');
+        likebtn.className = "glyphicon glyphicon-thumbs-up";
+
+
+        like.appendChild(likebtn)
+        el.appendChild(like)
+
+        var dislike = document.createElement('a');
+        dislike.href = '#';
+        dislike.className = 'btn btn-info btn-sm';
+
+        var dislikebtn = document.createElement('span');
+        dislikebtn.className = "glyphicon glyphicon-thumbs-down";
+
+        dislike.appendChild(dislikebtn)
+        el.appendChild(dislike)
+
         list.append(document.createElement('br')); 
+
+        
     }
-
-    /*while(startindex!=-1){
-
-        startindex = content.indexOf("<a", index);
-        console.log(startindex)
-
-        if(startindex==-1){
-            continue;
-        }
-        endindex = content.indexOf("</a>", startindex);
-        console.log(endindex)
-        var link = content.substring(startindex, endindex);
-        console.log('link-->' +link +  ' length-->' +link.length);
-        
-
-        if(link!="" && link.length>0 && link.includes('href')){
-           var el = document.createElement('li');
-            list.appendChild(el);
-            el.innerHTML = link;
-            list.append(document.createElement('br')); 
-        }
-        
-
-        index = endindex+1;
-    }*/
 }
 
 function getHighlights(){

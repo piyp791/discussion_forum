@@ -1,0 +1,215 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>restricting range of motion with complex constraints
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-358" class = "post">
+			<h2>Question</h2>
+			<div id="vote-358" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 911</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>restricting range of motion with complex constraints</h2>
+<p>I am looking for a way to restrict a robot's range of motion, using complex constraints such as not tearing of a cable attached to the robot.</p>
+
+<p>Take an articulated 6-axis robot arm as shown below, with attached cable (red), fixed at points X (before axis A4) and Y (after axis A6).</p>
+
+<p><img src="https://i.stack.imgur.com/ipApa.png" alt="enter image description here"></p>
+
+<p>The cable will limit the range of movement for the robot. It can stretch and bend only to some extend, but something like a full 360  turn of axis A4, with all other axes remaining as they are in the picture, will tie the cable around the arm and rip it off.<br>
+If joint A5 is at 0 , then A4 and A6 can still move the full 360 , but they cannot diverge too much from each other, as that would twist the cable. If A5 is tilted, the relationship becomes even more complicated.</p>
+
+<p>How can you express such a constraint?  </p>
+
+<p>It is not a simple joint constraint, where you can independently limit the range of the joints, and it is also not a positional constraint, where you can define a region the robot must not enter. Checking a start and a goal posture is not sufficient, since along the path from start to goal posture there may still be a posture that puts too much strain on the cable.</p>
+
+<p>Without limiting the robot to a small set of pre-tested paths, how can you limit the robot to movements that will not rip off the cable?</p>
+
+<p>What are the standard techniques used for this sort of problem?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-358" data-toggle = "popover">
+				<p>user name : HugoRune</p>
+				<p> user reputation : 206</p>
+				<p class = "tagcontent" id = "usertaginfo-358">{'None': 0, 'inverse-kinematics': 9, 'localization': 9, 'calibration': 7, 'joint': 5, 'industrial-robot': 14, 'kinematics': 9, 'motion-planning': 14}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-358">Load Comments</button></br>
+			<div id = "commentsection-358" class = 'collapse'>
+			<div id = "comment-410" class = "comment">
+				<p>Rather than trying to model this, you may be better off routing your cable such that it passes **through** each axis of rotation, that way as long as you have enough slack for each axis individually, you will have enough slack for any combination of axes. Alternatively, check that you can't get higher grade cable which is more flexible, or even replace a monolithic inflexible cable with a set of more flexible (possibly even coiled) cables.</p>
+			</div>
+			</div>
+				<textarea id = "speech-358" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-358">
+					<img id="start_img-358" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-358">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-360"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-360" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The cable has a certain amount of slack, and each joint it goes over takes up some of that slack as a function of the joint angle. The cable will break if the total amount of slack taken up by all joints exceeds the available slack.</p>
+
+<p>Firstly, it would help if you could thread the cable along the robot in such a way that that each joint has a calculable effect on the slack, and each joint affects the cable independently. This will really help the calculations. Let's define the amount of slack taken up by joint 1 at an angle th1 by:</p>
+
+<pre><code>f1(th1)
+</code></pre>
+
+<p>Now, your robot arm can move anywhere such that</p>
+
+<pre><code>f1(th1) + f2(th2) + ... + f6(th6) &lt;= total_slack
+</code></pre>
+
+<p>This assumes that the cable is fixed in such a way that it can slide up and down the robot arm, distributing the slack where it's needed. Generally, this isn't the case in most robots, and isn't easy to do.</p>
+
+<p>A more reliable way to solve this problem is to rigidly fix the cable before and after each joint, and make sure there's enough slack for every joint.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-360" data-toggle = "popover">
+				<p>user name : Rocketmagnet</p>
+				<p> user reputation : 4235</p>
+				<p class = "tagcontent" id = "usertaginfo-360">{'control': 31, 'force': 8, 'multi-agent': 5, 'pid': 29, 'air-muscle': 6, 'uav': 52, 'stepper-driver': 3, 'reliability': 5, 'motor': 12, 'esc': 1, 'mobile-robot': 6, 'ros': 35, 'stepper-motor': 3, 'tuning': 12, 'swarm': 10, 'research': 5, 'platform': 17, 'imu': 4, 'kalman-filter': 49, 'hri': 4, 'None': 266, 'raspberry-pi': 24, 'localization': 7, 'python': 7, 'torque': 3, 'brushless-motor': 28, 'failure': 5, 'force-sensor': 15, 'sensors': 20, 'pwm': 10, 'wireless': 10, 'servos': 7, 'wifi': 24, 'simulation': 6, 'servomotor': 11, 'particle-filter': 0, 'sensor-fusion': 4, 'automatic': 12, 'software': 17}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-360" class = 'collapse'>
+			</div>
+				<textarea id = "speech-360" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-360">
+					<img id="start_img-360" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-360">Comment</button>
+			<br><div id = "ans-366"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-366" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I'm not sure what the "standard techniques" are but here are a few a ideas.</p>
+
+<p>You could combine a standard <a href="http://en.wikipedia.org/wiki/Robot_kinematics" rel="nofollow">jacobian based forward kinematics</a> as your base and then apply a gradient search algorithm where you bias against things such as running out of slack on your wires or other constraints. </p>
+
+<p>Let me go into a bit more detail. Generally you would just give the robotic arm an end point or perhaps a series of way points you expect the end effector to follow. You can then use the forward kinematics to move the end effector between those waypoints. In order to avoid your difficult to describe constraint you can define a value function that increases as the arm moves and reduces the slack on the wire. </p>
+
+<p>If you guess a path most likely your initial guess will result in the wire being snapped. You're value function will give you a score representing this fact. You can then take your in between waypoints and tweak them a bit which may result in the function represetnging your constraint to decrease. You then can tweak it a bit more reducing it further. </p>
+
+<p>This is called <a href="http://en.wikipedia.org/wiki/Mathematical_optimization" rel="nofollow">optimization</a> and it is a huge field but the most basic method is <a href="http://en.wikipedia.org/wiki/Gradient_descent" rel="nofollow">Gradient Descent</a>. In theory if you use an optimization method to adjust your waypoints eventually you will find a set of waypoints that keeps the tension along the wire to a minimum. The main issue with optimization is that you can run into local minimums that don't adequately solve your problem, and methods that get around local minimums can be slow.</p>
+
+<p>If you are looking to get academic about it you  may want to look into the algorithm presented <a href="http://www.ri.cmu.edu/publication_view.html?pub_id=6285" rel="nofollow">here</a>. Keep in mind there might not be a simple answer to your question or a simple algorithm to solve it.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-366" data-toggle = "popover">
+				<p>user name : ApockofFork</p>
+				<p> user reputation : 188</p>
+				<p class = "tagcontent" id = "usertaginfo-366">{'control': 1, 'None': 15, 'motor': 1, 'kalman-filter': 6, 'localization': 6}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-366" class = 'collapse'>
+			</div>
+				<textarea id = "speech-366" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-366">
+					<img id="start_img-366" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-366">Comment</button>
+			<br><div id = "ans-411"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-411" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Don't fix it in software. Fix it in your mechanical cable harness design. If you try to do it in software, your robot will inevitably break itself. Even if it never exceeds its limits, using a cable this way will wear it out quickly.</p>
+
+<p>Trying to share the slack between joints will require sliding movement of the cable, which will damage the cable over time by abrasion and by repeatedly bending the cable around tight radii when you get close to overall limits. Sharing the slack means you'll have to attach the cable loosely, which will make it tend to flop around, encouraging you to leave even less slack.</p>
+
+<p>Instead, fix the cable along each segment of the robot and treat each joint individually. Ensure that the cable bend radius is greater than 10X its diameter (more is better) over the entire range of motion of each joint. If this requires a large loop, then there are chain cable guides (looks a bit like wide plastic bicycle chain) to help keep it from getting in the way of other parts. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-411" data-toggle = "popover">
+				<p>user name : Theran</p>
+				<p> user reputation : 244</p>
+				<p class = "tagcontent" id = "usertaginfo-411">{'None': 12}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-411">Load Comments</button></br>
+			<div id = "commentsection-411" class = 'collapse'>
+			<div id = "comment-470" class = "comment">
+				<p>Sorry Theran, but this answer doesn't actually answer the question, which is why I kept my similar suggestion as a comment.</p>
+			</div>
+			</div>
+				<textarea id = "speech-411" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-411">
+					<img id="start_img-411" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-411">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

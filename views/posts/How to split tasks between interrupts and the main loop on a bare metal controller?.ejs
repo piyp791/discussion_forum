@@ -1,0 +1,193 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to split tasks between interrupts and the main loop on a bare metal controller?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9932" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9932" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 112</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to split tasks between interrupts and the main loop on a bare metal controller?</h2>
+<p>I'm working on a robotics project where I have 3 services running. I have my sensor DAQ, my logic ISR (motor controller at 20kHz) and my EtherCAT slave controller.</p>
+
+<p>DAQ and EtherCAT run in the idle and the logic runs during an interrupt. The logic does some calculations and controls the motor. The EtherCAT service (kinda like CANbus) runs together with my DAQ in the idle loop. I can not run the DAQ in the interrupt because that leaves me with less than 100ns for the EtherCAT service to run.</p>
+
+<p>I'm not sure whether this is the right way to do this especially considering all the scary things i've read regarding data corruption when using interrupts.</p>
+
+<p>Does anyone have some nice ideas on how to handle these services?</p>
+
+<p>I'm running all my code on a Zynq 7020 (on the ARM Cortex) and it's written in C++.</p>
+
+<p>Here is an example of my code:</p>
+
+<pre><code>/**
+ * Get all sensor data
+ */
+void Supervisor::communication(void) {
+    // Get all the sensors data
+    dispatchComm.getData(&amp;motorAngle, &amp;motorVelocity, &amp;jointAngle, &amp;springAngle, &amp;tuningParameter);
+
+}
+
+/**
+ * Run all the logic
+ */
+void Supervisor::logic(void) {
+
+    dispatchLogic.calculate(tuningParameter, motorAngle, motorVelocity, jointAngle, springAngle);
+
+    dispatchLogic.getData(&amp;angle, &amp;magnitude);
+
+    // Dispatch values to the motor drive
+    dispatchComm.setMotorDriveSetpoint(angle, magnitude);
+    dispatchComm.writeToPiggyback((uint32_t) (tuningParameter), motorAngle, motorVelocity);
+}
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9932" data-toggle = "popover">
+				<p>user name : Ortix92</p>
+				<p> user reputation : 123</p>
+				<p class = "tagcontent" id = "usertaginfo-9932">{'control': 1, 'None': 0, 'interrupts': 2, 'c++': 2, 'joint': 1, 'design': 1, 'mechanism': 1, 'ros': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9932">Load Comments</button></br>
+			<div id = "commentsection-9932" class = 'collapse'>
+			<div id = "comment-17662" class = "comment">
+				<p>Embedded programming, especially when it comes to hard real time requirements is a tricky and complicated topic, yet you only mention "an interrupt". Are you working with only one interrupt? I bet that chip has dozens of interrupts and many other features that help to stay within a certain time boundary. "*logic runs during an interrupt*" as far as I remember, the rule of thumb is to keep the interrupt routine as short as possible. It would likely be helpful if you included some of your code.</p>
+			</div>
+			<div id = "comment-17664" class = "comment">
+				<p>You will have the best luck asking this question on a product specific forum or to the application engineers of the supplier you got the board from.</p>
+			</div>
+			<div id = "comment-17668" class = "comment">
+				<p>@BendingUnit22 Yes I only run a single interrupt. In that interrupt I run my controllers (motor controller and joint position controller). Within that interrupt I need the data from the sensors which is acquired during idle state. I have included my code. The reason I do my calculations in the interrupt is because I have been told that the motor controller always has to run at a fixed frequency.</p>
+			</div>
+			<div id = "comment-17669" class = "comment">
+				<p>I agree with @hauptmech,  chances are [electronics.se] will also provide better answers. Because your question is not really related to robotics.</p>
+			</div>
+			</div>
+				<textarea id = "speech-9932" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9932">
+					<img id="start_img-9932" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9932">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9933"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9933" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Some very general advice.</p>
+
+<p>My first impression from your question is that you are struggling with the fact that no hardware provides infinite resources. You can either slow down your control loops or look for better hardware (which may not exist).</p>
+
+<p>If your control has nested loops, then run each one a slow as possible. Are you controlling position at 20kHz? Pull that out and run that at 500Hz (A little faster if your mechanical mechanism is designed for high performance). Is you DAQ measuring current for the controller? Try running your current control at 5kHz but commutating at 20kHz. </p>
+
+<p>All those numbers are assuming a meso scale device using electro-magnetic actuators. </p>
+
+<p>Regarding interrupts, the rule of thumb is to do as little as possible, as quickly as possible, inside the interrupt and everything else outside it. However it feels like you might be using a timer interrupt to substitute for a real-time task scheduler (nothing wrong with that), in which case, you will want to do everything needed for that cycle in the interrupt. Add a time-overrun check at the end so that if your interrupt is taking longer than 50us you know about it and can adjust your strategy or optimize code.</p>
+
+<p>If you are writing interrupts then you need to go learn the details about data corruption issues. They are not scary and they are straightforward to manage on all modern processors. You can protect data in your idle loop by disabling interrupts in critical sections or using higher level synchronization constructs if you really need to. </p>
+
+<p>A final thought; even though you are coding in C++, you should read the processor datasheet and instruction set so that you have an idea of the capabilities and limitations of the hardware if you have not already. </p>
+
+<p>EDIT:</p>
+
+<p>From the limited code you added it looks like high level control for a series elastic actuator. The spring will dominate the mechanical time constant of the actuator system and you probably do not need that loop to run at 20kHz in lockstep with your motor commutation.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9933" data-toggle = "popover">
+				<p>user name : hauptmech</p>
+				<p> user reputation : 2621</p>
+				<p class = "tagcontent" id = "usertaginfo-9933">{'battery': 2, 'None': 220, 'lithium-polymer': 2}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9933">Load Comments</button></br>
+			<div id = "commentsection-9933" class = 'collapse'>
+			<div id = "comment-17665" class = "comment">
+				<p>Very good advice from @Hauptmech.  I would also suggest the use of a code profiler to see what tasks are occupying CPU time for various events, and optomize where needed.   You may need to embed some C or ASM code in the ISRs, but unless you profile the code, you are just guessing.</p>
+			</div>
+			<div id = "comment-17673" class = "comment">
+				<p>I'm having a hard time visualizing how the structure of this code will look.  You are correct to assume that this is regarding a series elastic actuator (for an exoskeleton). From what I can understand now is that I do all non critical tasks at lower frequencies (so I will need multiple interrupts). 
+
+At 20kHz I am supposed to commutate the motor and generate the PWM signal. For that I need the motor encoder values acquired over SPI. Any example which is similar to my system would be greatly beneficial.</p>
+			</div>
+			<div id = "comment-17698" class = "comment">
+				<p>I took a look at your software on github (saw the mechanicals too). I don't have an easy example for you. If your skill is in low level, go for multiple nested interrupts if the hardware supports it, if your skill is in high-level, put a realtime OS on your system. You could probably put your low frequency calculation in the idle loop and check the timer for when to run the calculation and when to run soem() but if your application complexity grows you will have to do one of the above approaches.</p>
+			</div>
+			</div>
+				<textarea id = "speech-9933" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9933">
+					<img id="start_img-9933" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9933">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

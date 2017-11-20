@@ -1,0 +1,143 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Standard Deviation from one axis to another axis
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11577" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11577" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 39</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Standard Deviation from one axis to another axis</h2>
+<p>I have radar mounted on a car.  For each detection, the radar returns these variables.</p>
+
+<ul>
+<li>relative distance between the object/host vehicle in forward direction</li>
+<li>standard deviation of the relative forward distance</li>
+<li>relative distance between the object/host vehicle in left/right direction</li>
+<li>standard deviation of the relative left/right distance</li>
+</ul>
+
+<p>I'm trying to do coordinate transform of the above data, so that I get relative distance/standard deviation in global coordinates (North, South, East, West)
+Distance is easy since it only requires to rotate the axis by the amount of angle between the vehicle body-fixed axis and the global axis.</p>
+
+<p>How about standard deviation?  How do I transform the standard deviation from the vehicle body-fixed axis to global axis?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11577" data-toggle = "popover">
+				<p>user name : Kevin</p>
+				<p> user reputation : 6</p>
+				<p class = "tagcontent" id = "usertaginfo-11577">{'None': 0, 'statistics': 1, 'localization': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11577" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11577" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11577">
+					<img id="start_img-11577" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11577">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-11596"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11596" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Standard deviation is used to represent probability distribution - in your case if you have $\sigma = 1m$ for forward distance it means that there is ~68% chance of true forward distance to the obstacle be less than 1m away from your measurement. You have two variables, so you should project your probability distribution on a 2D surface - you will get something like that:
+<a href="https://i.stack.imgur.com/BRPLl.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/BRPLl.png" alt="enter image description here"></a></p>
+
+<p>Each line represents points of equal probability of being a true position. Center of ellipsis is your measurement and has a highest probability.</p>
+
+<p>Now, when you project these values to global coordinate system you will likely get something like:</p>
+
+<p><a href="https://i.stack.imgur.com/IGXFU.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/IGXFU.png" alt="enter image description here"></a></p>
+
+<p>You cannot represent such a probability distribution using only two variables - you have to use 2x2 <a href="https://en.wikipedia.org/wiki/Covariance_matrix" rel="nofollow noreferrer">covariance</a> matrix.</p>
+
+<p>Good tutorial on graphical interpretations of covariance matrix can be found here: <a href="http://www.visiondummy.com/2014/04/geometric-interpretation-covariance-matrix/" rel="nofollow noreferrer">http://www.visiondummy.com/2014/04/geometric-interpretation-covariance-matrix/</a></p>
+
+<p>In general you can find your covariance matrix for global coordinate system with: $\Sigma = R S S R^{-1}$ where $R$ is rotation matrix from local to global coordinates and $S$ is diagonal matrix with your variances as diagonal elements.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11596" data-toggle = "popover">
+				<p>user name : mactro</p>
+				<p> user reputation : 925</p>
+				<p class = "tagcontent" id = "usertaginfo-11596">{'control': 1, 'None': 59, 'radio-control': 1, 'pid': 1, 'wifi': 1, 'wheeled-robot': 1, 'mechanism': 1, 'automation': 1, 'wireless': 1, 'industrial-robot': 2, 'design': 1, 'cnc': 2, 'actuator': 2, 'mobile-robot': 2}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11596" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11596" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11596">
+					<img id="start_img-11596" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11596">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

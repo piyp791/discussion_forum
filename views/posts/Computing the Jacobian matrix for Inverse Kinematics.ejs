@@ -1,0 +1,246 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Computing the Jacobian matrix for Inverse Kinematics
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-521" class = "post">
+			<h2>Question</h2>
+			<div id="vote-521" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">15</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 13724</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Computing the Jacobian matrix for Inverse Kinematics</h2>
+<p>When computing the Jacobian matrix for solving an Inverse Kinematic analytically,I read from many places that I could use this formula to create each of the columns of a joint in the Jacobian matrix:</p>
+
+<p><img src="https://i.stack.imgur.com/EYHBM.png" alt="enter image description here"></p>
+
+<p>Such that $a'$ is the rotation axis in world space, $r'$ is the pivot point in world space, and $e_{pos}$ is the position of end effector in world space.</p>
+
+<p>However, I don't understand how this can work when the joints have more than one DOFs. Take the following as example:</p>
+
+<p><img src="https://i.stack.imgur.com/7mVwI.png" alt="enter image description here"></p>
+
+<p>The $\theta$ are the rotational DOF, the $e$ is the end effector, the $g$ is the goal of the end effector, the $P_1$, $P_2$ and $P_3$ are the joints.</p>
+
+<p>First, if I were to compute the Jacobian matrix based on the formula above for the diagram, I will get something like this:</p>
+
+<p>$$J=\begin{bmatrix}
+((0,0,1)\times \vec { e } )_{ x } &amp; ((0,0,1)\times (\vec { e } -\vec { P_{ 1 } } ))_{ x } &amp; ((0,0,1)\times (\vec { e } -\vec { P_{ 2 } } ))_{ x } \\ ((0,0,1)\times \vec { e } )_{ y } &amp; ((0,0,1)\times (\vec { e } -\vec { P_{ 1 } } ))_{ y } &amp; ((0,0,1)\times (\vec { e } -\vec { P_{ 2 } } ))_{ y } \\ ((0,0,1)\times \vec { e } )_{ z } &amp; ((0,0,1)\times (\vec { e } -\vec { P_{ 1 } } ))_{ z } &amp; ((0,0,1)\times (\vec { e } -\vec { P_{ 2 } } ))_{ z } \\ 0 &amp; 0 &amp; 0 \\ 0 &amp; 0 &amp; 0 \\ 1 &amp; 1 &amp; 1 
+\end{bmatrix} $$</p>
+
+<p>This is assumed that all the rotation axes are $(0,0,1)$ and all of them only have one rotational DOF. So, I believe each column is for one DOF, in this case, the $\theta_\#$.</p>
+
+<p>Now, here's the problem: What if all the joints have full 6 DOFs? Say now, for every joint, I have rotational DOFs in all axes, $\theta_x$, $\theta_y$ and $\theta_z$, and also translational DOFs in all axes, $t_x$, $t_y$ and $t_z$.</p>
+
+<p>To make my question clearer, suppose if I were to "forcefully" apply the formula above to all the DOFs of all the joints, then I probably will get a Jacobian matrix like this:</p>
+
+<p><a href="https://i.stack.imgur.com/f6Fm7.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/f6Fm7.png" alt="enter image description here"></a></p>
+
+<p>(click for full size)</p>
+
+<p>But this is incredibly weird because all the 6 columns of the DOF for every joint is repeating the same thing.</p>
+
+<p>How can I use the same formula to build the Jacobian matrix with all the DOFs? How would the Jacobian matrix look like in this case?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-521" data-toggle = "popover">
+				<p>user name : xenon</p>
+				<p> user reputation : 178</p>
+				<p class = "tagcontent" id = "usertaginfo-521">{'None': 0, 'kinematics': 15, 'inverse-kinematics': 15}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-521">Load Comments</button></br>
+			<div id = "commentsection-521" class = 'collapse'>
+			<div id = "comment-610" class = "comment">
+				<p>Actually, I am not sure if I should have posted this question here, in Math, in GamesDev, or in Physics. I have a feeling that I have posted this question at the wrong place.</p>
+			</div>
+			<div id = "comment-7607" class = "comment">
+				<p>I think your mistake is that you didn't change the a' for each DOF, that's why they look all the same.</p>
+			</div>
+			</div>
+				<textarea id = "speech-521" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-521">
+					<img id="start_img-521" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-521">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-522"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-522" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">9</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I have to admit that i haven't seen that specific formula very often, but my guess would be that in case of more than one DOF, you would evaluate it for every joint in every column and then (perhaps?) multiply those results in each column.</p>
+
+<p>But let me suggest a simpler apporach to Jacobians in the context of arbitrary many DOFs: Basically, the Jacobian tells you, how far each joint moves, if you move the end effector frame in some arbitrarily chosen direction. Let $f(\theta)$ be the forward kinematics, where $\theta = [\theta_1, ... , \theta_n]$ are the joints, $f_{\text{pos}}$ is the positional part of the forward kinematics and $f_{\text{rot}}$ the rotational part. Then you can obtain the Jacobian by <em>differentiating the forward kinematics</em> with respect to the joint variables:
+$$
+J = \frac{\partial f}{\partial \theta} = 
+\begin{bmatrix}
+  \frac{\partial f_{\text{pos}}}{\partial \theta_1}, &amp; \frac{\partial f_{\text{pos}}}{\partial \theta_2} &amp; ..., \frac{\partial f_{\text{pos}}}{\partial \theta_n} \\
+  \frac{\partial f_{\text{rot}}}{\partial \theta_1}, &amp; \frac{\partial f_{\text{rot}}}{\partial \theta_2} &amp; ..., \frac{\partial f_{\text{rot}}}{\partial \theta_n}
+\end{bmatrix}
+$$ 
+is your manipulator's Jacobian. Inverting it would give you the inverse kinematics with respcet to <em>velocities</em>. It can still be useful though, if you want to know how far each joint has to move if you want to move your end effector by some <em>small</em> amount $\Delta x$ in any direction (because on position level, this would effectively be a linearization):
+$$
+ \Delta \theta = J^{-1}\Delta x
+$$</p>
+
+<p>Hope that this helps.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-522" data-toggle = "popover">
+				<p>user name : Daniel Eberts</p>
+				<p> user reputation : 546</p>
+				<p class = "tagcontent" id = "usertaginfo-522">{'None': 32, 'particle-filter': 17, 'localization': 17}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-522">Load Comments</button></br>
+			<div id = "commentsection-522" class = 'collapse'>
+			<div id = "comment-611" class = "comment">
+				<p>Thanks for replying! But this would mean that I will have to compute the values numerically? Actually, I saw this analytical example from http://graphics.cs.cmu.edu/nsp/course/15-464/Fall09/handouts/IK.pdf from Slide 19 and http://graphics.ucsd.edu/courses/cse169_w05/CSE169_13.ppt on Slide 78. From the slides, it seem that I may not have to go through the numerical methods. In situations when I don't have the actual functions to differentiate, I can use this formula. But the problem is what happens when I have more DOFs for each joint.</p>
+			</div>
+			<div id = "comment-612" class = "comment">
+				<p>If I understand the slides correctly, you would handle the case of arbitrary many (rotational) DOFs by determining the vectors $(e_i - P_i)$ for each of those joints, where $P_i$ is the joint's position. So, if you have, say 46 joints, you would indeed get a Jacobian with 46 columns and 6 rows (or 3, if you neglect the end effector's orientation). Long story short: you can apply that formula for any number of joints and don't have to "combine" it with other joints.</p>
+			</div>
+			<div id = "comment-613" class = "comment">
+				<p>But what happens if a joint has many DOFs like $\theta_x$, $\theta_y$, $\theta_z$, and translational DOFs like $t_x$, $t_y$, $t_z$? Now, each joint has 6 DOFs. From my understanding of how the Jacobian matrix work for IK, the first 6 columns will be the derivatives of the end-effector with respect to the 6 different DOFs, and these first 6 columns are to describe the first joint. The subsequent next 6 columns will describe the second joint with respect to the 6 DOFs and so on. Using the equation $(e_i - P_i)$, does it mean each joint's 6 columns are automatically packed into one column?</p>
+			</div>
+			<div id = "comment-614" class = "comment">
+				<p>Ah, I see. No, in that case, the formula wouldn't work because it was designed for rotational joints with one axis of rotation. If you want to treat e.g. spherical joints, you would either need a different formula which treats that specific joint type or you need a closed form of the robot's forward kinematics. If you have that, you can differentiate it w.r.t. the joints $\theta$ and obtain the Jacobian.</p>
+			</div>
+			<div id = "comment-615" class = "comment">
+				<p>Thanks! :) Just curious though, is Slide 58 in http://graphics.ucsd.edu/courses/cse169_w05/CSE169_13.ppt hinting that it is possible to use the formula for rotational joints with 3 DOFs? Which means if a joint has no translational DOFs and have purely 3 rotational DOFs, it is still possible? Though I am not sure why it is taking $(1,0,0,0)$ to multiply with various rotations to get the different DOFs.</p>
+			</div>
+			<div id = "comment-616" class = "comment">
+				<p>It seems so. The slide tells you how to choose $P_i$ in that case. The vectors $(1,0,0,0)$ or $(0,1,0,0)$ are projection vectors, which map the effect of the multi-axis rotation performed by the product of rotation matrices to the axis of interest. After this projection, you know which terms from the rotation matrix product actually contribute to the whole rotation around the axis specified by e.g. $(1,0,0,0)$ (which would be the x axis).</p>
+			</div>
+			</div>
+				<textarea id = "speech-522" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-522">
+					<img id="start_img-522" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-522">Comment</button>
+			<br><div id = "ans-1820"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1820" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Your formula for a 6 <em>dof</em> joint assumes that all 6 joints have the axis $(0, 0, 1)$ in the world frame and that all joints are revolute. Since the 6 joints are thus identical, their columns in the Jacobian are also identical.</p>
+
+<p>Starting over, suppose a joint has an axis $a$ going through a point $r$. Let $e$ be the position of the end-effector. The coordinates of $a$, $r$, and $e$ are all given in the world frame and are being updated as the robot is being moved. The axis $a$ has length $1$.</p>
+
+<p>If the joint is revolute, the column of the Jacobian for the joint is</p>
+
+<p>$J_{\theta}(a, r) = \left[\begin{matrix}
+ a \times (e - r) \\
+ a
+\end{matrix}\right]$</p>
+
+<p>If the joint is prismatic, the column is</p>
+
+<p>$J_{p}(a) = \left[\begin{matrix}
+ a \\
+ 0
+\end{matrix}\right]$</p>
+
+<p>Suppose we have a 6 <em>dof</em> joint which is not only spherical but can translate in space too. Suppose the axes of the joint are $a_x$, $a_y$, and $a_z$ and that each revolute and prismatic joint shares an axis, so that the Jacobian for the joint becomes</p>
+
+<p>$J = \left[\begin{matrix}
+  J_p(a_x) &amp; J_p(a_y) &amp; J_p(a_z) &amp; J_{\theta}(a_x, r) &amp; J_{\theta}(a_y, r) &amp; J_{\theta}(a_z, r)
+\end{matrix}\right]$</p>
+
+<p>The axes $a_x$, $a_y$, and $a_z$ depend on the forward kinematics of the robot. To illustrate, let the transformation of the $k$th joint in the world frame be given by</p>
+
+<p>$F_k = \prod_{i=1}^{k} L_i T_i$</p>
+
+<p>where the transformations $L_i$ are constants, and the transformations $T_i$ depend on the joint variables. Let $R_c(q)$ and $P_c(q)$ be the transformations that rotate and translate by $q$ about the coordinate axis named $c$ (either $x$, $y$, or $z$).</p>
+
+<p>Let $\Delta q = (\Delta p_x, \Delta p_y, \Delta p_z, \Delta \theta_x, \Delta \theta_y, \Delta \theta_z)$ be a displacement, computed by help of the Jacobian, for the $i$th joint. Let $\Delta T = P_x(\Delta p_x) P_y(\Delta p_y) P_z(\Delta p_z) R_x(\Delta \theta_x) R_y(\Delta \theta_y) R_z(\Delta \theta_z)$ and update the local transformation of the joint by:</p>
+
+<p>$T_i \leftarrow T_i \, \Delta T$</p>
+
+<p>In this formulation of the forward kinematics, the axes $a_x$, $a_y$, and $a_z$ of joint $i$ are exactly the columns of the rotation matrix of $F_i$. Also the position $r$ is the translation vector of $F_i$.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1820" data-toggle = "popover">
+				<p>user name : antonakos</p>
+				<p> user reputation : 161</p>
+				<p class = "tagcontent" id = "usertaginfo-1820">{'None': 6}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-1820" class = 'collapse'>
+			</div>
+				<textarea id = "speech-1820" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1820">
+					<img id="start_img-1820" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1820">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

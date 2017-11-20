@@ -1,0 +1,281 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>The uncertainty is big while the sensor is rather accurate at measuring a landmark in EKF-SLAM
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-6672" class = "post">
+			<h2>Question</h2>
+			<div id="vote-6672" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 76</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>The uncertainty is big while the sensor is rather accurate at measuring a landmark in EKF-SLAM</h2>
+<p>I've a 2D sensor which provides a range $r$ and a bearing $\phi$ to a landmark. In my 2D EKF-SLAM simulation, the sensor has the following specifications 
+$$
+\sigma_{r} = 0.01 \text{m} \ \ ,\sigma_{\phi} = 0.5 \ \text{deg}
+$$ </p>
+
+<p>The location of the landmark in x-axis is 30. EKF imposes the Gaussian noise, therefore the location of the landmark is represented via two quantities namely the mean $\mu_{x}$ and the variance $\sigma_{x}$. In the following graph </p>
+
+<p><img src="https://i.stack.imgur.com/3ChZN.png" alt="Graph"></p>
+
+<p>The green is the mean $\mu_{x}$ which is very close to the true location (i.e. 30). The black is the measurements and red is $\mu_{x} \pm 3 \sigma_{x}$. I don't understand why the uncertainty is big while I'm using rather accurate sensor. The process noise for the robot's pose is $\sigma_{v} = 0.001$ which is small noise. I'm using C++. </p>
+
+<hr>
+
+<p>Edit: for people who ask about the measurements, this is my code </p>
+
+<p>$$
+r = \sqrt{ (m_{j,y} - y)^{2} + (m_{j,x} - x)^{2}} + \mathcal{N}(0, \sigma_{r}^{2}) \\
+\phi = \text{atan2} \left( \frac{m_{j,y} - y}{m_{j,x} - x} \right) + \mathcal{N}(0, \sigma_{\phi}^{2})
+$$</p>
+
+<pre><code>std::vector&lt;double&gt; Robot::observe( const std::vector&lt;Beacon&gt;&amp; map )
+{
+    std::vector&lt;double&gt; Zobs;
+
+    for (unsigned int i(0); i &lt; map.size(); ++i)
+    {
+        double range, bearing;
+
+        range = sqrt( pow(map[i].getX() - x,2) + 
+                      pow(map[i].getY() - y,2)   );
+
+        // add noise to range
+        range += sigma_r*Normalized_Gaussain_Noise_Generator();
+
+        bearing = atan2( map[i].getY() - y, map[i].getX() - x) - a;
+
+        // add noise to bearing
+        bearing += sigma_p*Normalized_Gaussain_Noise_Generator();
+
+        bearing = this-&gt;wrapAngle(bearing);
+
+
+        if ( range &lt; 1000 ){
+          // store measurements (range, angle) for each landmark. 
+          Zobs.push_back(range);
+          Zobs.push_back(bearing);
+          //std::cout &lt;&lt; range &lt;&lt; " " &lt;&lt; bearing &lt;&lt; std::endl;
+        }
+    }
+
+
+    return Zobs;
+}
+</code></pre>
+
+<p>where <code>Normalized_Gaussain_Noise_Generator()</code> is ( i.e. $\mathcal{N}(0, 1) )$</p>
+
+<pre><code>double Robot::Normalized_Gaussain_Noise_Generator()
+{
+    double noise;
+    std::normal_distribution&lt;double&gt; distribution;
+    noise = distribution(generator);
+
+    return noise;
+}
+</code></pre>
+
+<p>For the measurements (i.e. the black color), I'm using the inverse measurement function  given the estimate of the robot's pose and the true measurement in polar coordinates to get the location of a landmark. The actual approach is as follows </p>
+
+<p>$$
+\bar{\mu}_{j,x} = \bar{\mu}_{x} + r \cos(\phi + \bar{\mu}_{\theta}) \\
+\bar{\mu}_{j,y} = \bar{\mu}_{y} + r \sin(\phi + \bar{\mu}_{\theta})
+$$</p>
+
+<p>This is how it is stated in the Probabilistic Robotics book. This means that the measurements in the above graph are indeed the predicted measurements not the true ones. </p>
+
+<p>Now under same conditions, the true measurements can be obtained as follows</p>
+
+<p>$$
+\text{m}_{j,x} = x + r \cos(\phi + \theta) \\
+\text{m}_{j,y} = y + r \sin(\phi + \theta)
+$$</p>
+
+<p>The result is in the graph below, which means there is no correlations between the true measurements and the robot's estimate. This leads me to the same question - why the uncertainty behaves like that? </p>
+
+<p><img src="https://i.stack.imgur.com/tpPD3.png" alt="Graph"></p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6672" data-toggle = "popover">
+				<p>user name : CroCo</p>
+				<p> user reputation : 1040</p>
+				<p class = "tagcontent" id = "usertaginfo-6672">{'control': 18, 'pid': 4, 'slam': 16, 'manipulator': 3, 'mobile-robot': 14, 'dynamics': 6, 'errors': 2, 'data-association': 1, 'kinematics': 3, 'matlab': 6, 'kalman-filter': 21, 'motion-planning': 3, 'None': 41, 'noise': 24, 'theory': 1, 'localization': 14, 'microcontroller': 5, 'mapping': 5, 'sensor-error': 1, 'sensors': 7, 'quadcopter': 8, 'ekf': 26, 'simulation': 1, 'motion': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-6672" class = 'collapse'>
+			</div>
+				<textarea id = "speech-6672" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6672">
+					<img id="start_img-6672" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6672">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-6675"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6675" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You don't describe your setup in detail, and some of the units are missing, but my guess is that the $\sigma_\phi$ is mainly responsible for the initial error you are seeing. </p>
+
+<p>$\sin( 0.5 ) \times 30 \approx 0.261$</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6675" data-toggle = "popover">
+				<p>user name : Jakob</p>
+				<p> user reputation : 2519</p>
+				<p class = "tagcontent" id = "usertaginfo-6675">{'ransac': 3, 'None': 210, 'computer-vision': 1, 'cameras': 1, 'c++': 3, 'slam': 12, 'rock': 1, 'i2c': 3, 'servos': 3, 'software': 1}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-6675">Load Comments</button></br>
+			<div id = "commentsection-6675" class = 'collapse'>
+			<div id = "comment-9590" class = "comment">
+				<p>the unit of the angle is radian in the code.</p>
+			</div>
+			<div id = "comment-9595" class = "comment">
+				<p>it says deg in your question.</p>
+			</div>
+			</div>
+				<textarea id = "speech-6675" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6675">
+					<img id="start_img-6675" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6675">Comment</button>
+			<br><div id = "ans-6677"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6677" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Something is wrong with your code. Measurements with Gaussian noise should be within one standard deviation of truth 68% of the time. Somehow, your measurements seem to be correlated with the accuracy of your estimate. </p>
+
+<p>Go through the code or post some here.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6677" data-toggle = "popover">
+				<p>user name : holmeski</p>
+				<p> user reputation : 1338</p>
+				<p class = "tagcontent" id = "usertaginfo-6677">{'pose': 3, 'None': 101, 'computer-vision': 3, 'kalman-filter': 3}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-6677">Load Comments</button></br>
+			<div id = "commentsection-6677" class = 'collapse'>
+			<div id = "comment-9585" class = "comment">
+				<p>Reverse that: The accuracy of the estimate is correlated with the measurements, and it sounds absolutely correct.</p>
+			</div>
+			<div id = "comment-9587" class = "comment">
+				<p>Whoops! I was just trying to say that measurement error statistics shouldn't change with time.</p>
+			</div>
+			<div id = "comment-9588" class = "comment">
+				<p>I agree. There is clearly something wrong with the measurements being received.</p>
+			</div>
+			<div id = "comment-9591" class = "comment">
+				<p>I have posted the measurement code with the mathematical equations.</p>
+			</div>
+			<div id = "comment-9592" class = "comment">
+				<p>What else you suspect in code that I need to provide.</p>
+			</div>
+			<div id = "comment-9593" class = "comment">
+				<p>@holmeski, by saying "measurement error statistics " do you think there is a problem with the random generator?</p>
+			</div>
+			</div>
+				<textarea id = "speech-6677" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6677">
+					<img id="start_img-6677" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6677">Comment</button>
+			<br><div id = "ans-6682"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6682" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You may have covariance collapse. You may have such small covariance in your target estimate that the measurements are having almost no effect on the target's estimate. Try artificially inflating it. </p>
+
+<p>It would make sense given that it "freezes" when your covariance in your target shrinks. But still, I'm hesitant to say this is <em>the</em> issue, since the red lines imply decent target estimate uncertainty remains.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6682" data-toggle = "popover">
+				<p>user name : Josh Vander Hook</p>
+				<p> user reputation : 3960</p>
+				<p class = "tagcontent" id = "usertaginfo-6682">{'None': 345}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-6682" class = 'collapse'>
+			</div>
+				<textarea id = "speech-6682" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6682">
+					<img id="start_img-6682" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6682">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

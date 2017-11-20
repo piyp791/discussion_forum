@@ -1,0 +1,246 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to convert this arduino code snippet to AVR GCC?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-10964" class = "post">
+			<h2>Question</h2>
+			<div id="vote-10964" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 209</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to convert this arduino code snippet to AVR GCC?</h2>
+<p>I recently engaged with a university robotics project <strong>(based on ROS)</strong> and my main processing controller is Raspberry Pi and the system stability controller is Atmega 32 microcontroller (It is responsible for driving motors and check the communication protocols ex:-i2c,rs232 are working in good manner). So the motor controller of this robot is a i2c type one and and it drives the motors according to the i2c signals that coming from the i2c port of the Atmega 32 microcontroller. The main controller communicate with the Atmega 32 using rs232 protocol. So I found an arduino code as below,</p>
+
+<pre><code>// This function is called once when the program starts.
+void setup() {
+     // Choose a baud rate and configuration. 115200
+     // Default is 8-bit with No parity and 1 stop bit
+     Serial.begin(115200, SERIAL_8N1);
+}
+
+// This function will loop as quickly as possible, forever.
+void loop() {
+    byte charIn;
+    if(Serial.available()){ // A byte has been received
+        charIn = Serial.read(); // Read the character in from the master microcontroller
+        Serial.write(charIn); // Send the character back to the master microcontroller
+    }
+}
+</code></pre>
+
+<p>The communication between processing board and microcontroller as below diagram</p>
+
+<p><a href="https://i.stack.imgur.com/DULm7.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/DULm7.png" alt="communication between processing board and microcontroller"></a></p>
+
+<p>There is an already available arduino library called <strong>rosserial</strong> for <strong>ROS</strong>. But I want this in <strong>AVR GCC</strong>.What I want is convert this code to traditional avr gcc code that work on <strong><em>atmel studio 6</em></strong>  </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10964" data-toggle = "popover">
+				<p>user name : kaviranga</p>
+				<p> user reputation : 18</p>
+				<p class = "tagcontent" id = "usertaginfo-10964">{'None': 1, 'ros': 1, 'arduino': 0, 'avr': 0, 'slam': 1, 'rs232': 0, 'i2c': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-10964" class = 'collapse'>
+			</div>
+				<textarea id = "speech-10964" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10964">
+					<img id="start_img-10964" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10964">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-10965"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10965" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I never worked with Arduino, but there is a lot going on behind the scenes in the Arduino Serial class. The examples below should get you started, its not supposed to be compilable or functional as a whole. The example is for UART0.</p>
+
+<p><code>Serial.begin()</code> performs the low level initialization. If you do this manually it will look something like this:</p>
+
+
+
+<pre><code>void UART0_Init(uint32_t baud) {
+    uint16_t value = (((uint32_t)F_CPU / (baud * 16UL)) - 1);
+
+    /* Set baud rate */
+    UBRR0H = (uint8_t)(value &gt;&gt; 8);
+    UBRR0L = (uint8_t)value;
+
+    /* Enable USART receiver and transmitter */
+    UCSR0B = (1 &lt;&lt; RXEN0) | (1 &lt;&lt; TXEN0);
+
+    /* Set frame format: asynchronous, 8data, no parity, 1stop bit */
+    UCSR0C = (1 &lt;&lt; UCSZ00) | (1 &lt;&lt; UCSZ01);
+
+    // enable UART-Receive-Interrupt
+    UCSR0B |= (1 &lt;&lt; RXCIE0);
+}
+</code></pre>
+
+<p>Then there is the interrupt service routine for the receiver and you would need some state variables to communicate new data to the "main process".</p>
+
+
+
+<pre><code>volatile uint8_t lastByteReceived;
+volatile bool newDataAvailable;
+
+ISR (USART0_RX_vect) {
+    lastByteReceived = UDR0;
+    newDataAvailable = true;
+}
+</code></pre>
+
+<p>The Arduino loop() represents more or less the classic while(true){} function in main().</p>
+
+<pre><code>int main(void) {    
+    while (1) {
+        if (newDataAvailable) {
+            newDataAvailable = false;
+            // ...write lastByteReceived to a buffer or process it otherwise
+        }
+    }
+}
+</code></pre>
+
+<p>PS: Isn't there support for syntax highlighting on SE robotics?</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10965" data-toggle = "popover">
+				<p>user name : Rev1.0</p>
+				<p> user reputation : 126</p>
+				<p class = "tagcontent" id = "usertaginfo-10965">{'None': 1}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10965">Load Comments</button></br>
+			<div id = "commentsection-10965" class = 'collapse'>
+			<div id = "comment-19734" class = "comment">
+				<p>`<!-- language: c-->` this annotation is not working?</p>
+			</div>
+			<div id = "comment-19735" class = "comment">
+				<p>@BenceKaulics: It doesn't seem so.</p>
+			</div>
+			<div id = "comment-19737" class = "comment">
+				<p>@Rev1.0 This code approximately have essentials parts useful for my purpose . I'll try this asap.</p>
+			</div>
+			<div id = "comment-19739" class = "comment">
+				<p>@kaviranga: Remember to use the related #includes. Here is a reference: http://www.nongnu.org/avr-libc/user-manual/modules.html. You probably require at least `<avr/interrupt.h>` and `<avr/io.h>`.</p>
+			</div>
+			<div id = "comment-19740" class = "comment">
+				<p>@Rev1.0 Great . I'll keep it in mind!</p>
+			</div>
+			<div id = "comment-19943" class = "comment">
+				<p>@Rev1.0 Turned out that syntax highlight was not enabled here. [But now it is](http://meta.robotics.stackexchange.com/questions/1334/suggestions-for-changes-to-the-code-language-of-tags/1335#1335).</p>
+			</div>
+			</div>
+				<textarea id = "speech-10965" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10965">
+					<img id="start_img-10965" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10965">Comment</button>
+			<br><div id = "ans-10966"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10966" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Firstly, the Arduino IDE already uses the AVR GCC compiler. Put another way, all of your Arduino (.ino) code gets transformed into a C++ (ie .cpp) file and then gets compiled with AVR GCC.</p>
+
+<p>The easiest way to move to Atmel/Visual Studio is to use <a href="http://www.visualmicro.com/" rel="nofollow noreferrer">Visual Micro</a>. It is a great product, the documentation is good and the transition is almost seamless.</p>
+
+<p>To migrate your code manually you will have to first convert your .ino file into a .cpp file (<a href="https://www.arduino.cc/en/Hacking/BuildProcess" rel="nofollow noreferrer">see</a>). All of the raw libraries can be found in the Arduino instalation folder. My files were located at <code>C:\Program Files (x86)\arduino-x.x.x\hardware\arduino\cores\arduino\</code>. Any other external libraries will also need to be moved into your new project folder from <code>C:\Program Files (x86)\arduino-x.x.x\libraries\</code>.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10966" data-toggle = "popover">
+				<p>user name : sa_leinad</p>
+				<p> user reputation : 127</p>
+				<p class = "tagcontent" id = "usertaginfo-10966">{'None': 2}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10966">Load Comments</button></br>
+			<div id = "commentsection-10966" class = 'collapse'>
+			<div id = "comment-19736" class = "comment">
+				<p>This is great as a quick and easy solution . Will this work for vs 2010  'll try this out .</p>
+			</div>
+			<div id = "comment-19741" class = "comment">
+				<p>If you are referring to Visual Micro, it is best that you see the documentation on their website.</p>
+			</div>
+			<div id = "comment-19767" class = "comment">
+				<p>Ok .Your answer is very informative.I'll use it asap !.</p>
+			</div>
+			</div>
+				<textarea id = "speech-10966" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10966">
+					<img id="start_img-10966" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10966">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

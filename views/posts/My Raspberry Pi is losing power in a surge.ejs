@@ -1,0 +1,243 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>My Raspberry Pi is losing power in a surge
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2068" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2068" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">10</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 712</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>My Raspberry Pi is losing power in a surge</h2>
+<p>I have an <a href="http://en.wikipedia.org/wiki/Radio-controlled_model" rel="nofollow">RC</a> car. The battery provides power to the <a href="https://en.wikipedia.org/wiki/electronic_speed_control" rel="nofollow">ESC</a> and then the ESC provides 6&nbsp;V back out to the receiver. Instead of the receiver I have a Raspberry Pi, which uses the 6&nbsp;V, steps it down to 5&nbsp;V and provides power to the Raspberry Pi.</p>
+
+<h3>The problem</h3>
+
+<p>Every time we go full power*, there is a lack of voltage and the Raspberry Pi seems to hard reset.</p>
+
+<p><em>* By full power we mean direct to 100% and not ranging from 0-100</em></p>
+
+<p>I am not an expert in electrical circuits, but some of the suggestions are to use a capacitor to provide the missing 5&nbsp;V in the interim. How do I prevent the Raspberry Pi from dying in the event of full power?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2068" data-toggle = "popover">
+				<p>user name : HAL9000</p>
+				<p> user reputation : 153</p>
+				<p class = "tagcontent" id = "usertaginfo-2068">{'None': 0, 'esc': 10, 'electronics': 10, 'raspberry-pi': 10}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2068">Load Comments</button></br>
+			<div id = "commentsection-2068" class = 'collapse'>
+			<div id = "comment-4490" class = "comment">
+				<p>Suspect the problem is that "full power" is using too much current, therefore the supply voltage is collapsing, causing a brown out.  You don't say what you are using ti "step down to 5V" either.</p>
+			</div>
+			<div id = "comment-4491" class = "comment">
+				<p>But in either case, this is very borderline (if not over it) for being Off-Topic here...!</p>
+			</div>
+			<div id = "comment-4507" class = "comment">
+				<p>The simplest solution really is use a separate battery for the PI</p>
+			</div>
+			</div>
+				<textarea id = "speech-2068" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2068">
+					<img id="start_img-2068" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2068">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-2069"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2069" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Since you're running directly from a battery I would say it's safe to just add as much decoupling (in other words caps across your input power) as possible, since the only real downside (that I think is relevant to your setup) to adding a lot of capacitance is increased in-rush current (since the capacitor naturally acts as a short-circuit during charge-up).</p>
+
+<p>In certain circumstances however the high current draw associated with excessive decoupling during initial start-up should be avoided. An example is when you use a switching converter to step a voltage up/down. If the converter has built in over current protection (and no slow start feature), the short-circuit caused by the uncharged caps will cause the converter to stagger (starting up, over current and starting up again), and never fully reach its target voltage. However, since you're running directly from a battery this shouldn't be a problem, since a battery can be driven way above it's rated current capacity (for short periods).</p>
+
+<p>Another thing to also remember is that since there exists a large energy store across your power rails (the capacitors), the system might take a while to discharge (after being powered off). In other words, your Pi will probably run for another 30 seconds (depending on how much capacitance you add) or so after you disconnect your main battery.</p>
+
+<p>Finally, always try to add capacitors that's rated at at least twice your operating voltage (for instance, if you have 6V batteries try to get 16V caps). Motors that reverses their direction very quickly may induce sufficiently large voltage spikes back into your system, and cause your caps to explode (hopefully your motor driver has sufficient clamping diodes).</p>
+
+<p>I would say a single 1000 uF electrolytic cap would be more than enough decoupling. If your Pi continues to brown-out, I guess the more appropriate cause would be your batteries not being able to supply the required current. Remember, the reason you Pi is restarting (or browning out) is due to the supply voltage dipping because the batteries are unable to supply the current the motors require. Adding capacitors will help with surges in currents (such as motors accelerating), but obviously won't solve long term high current draw.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2069" data-toggle = "popover">
+				<p>user name : EDDY74</p>
+				<p> user reputation : 395</p>
+				<p class = "tagcontent" id = "usertaginfo-2069">{'None': 25}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2069">Load Comments</button></br>
+			<div id = "commentsection-2069" class = 'collapse'>
+			<div id = "comment-4141" class = "comment">
+				<p>Hey thanks! Would a 1000uF 50V capacitor be good? I know you said get a double but I assume getting double or more is OK, and if so would the charge not stack up till it reaches 50V and wouldnt that then discharge at 50V or would it stick to 6V given the source is only 6V.</p>
+			</div>
+			<div id = "comment-4145" class = "comment">
+				<p>Sure, the larger the voltage rating the better. The voltage rating would have an effect on the physical dimensions of the cap, the larger the voltage rating the larger the cap. The capacitor voltage rating indicates up to what voltage the capacitor can safely be operated, not to what voltage the capacitor will be charged (that is dependent on your input voltage). In other words, if your supply voltage is nominally 6V, the capacitor will not charge up beyond 6V (ie, not to its rated voltage).</p>
+			</div>
+			<div id = "comment-4146" class = "comment">
+				<p>Cool thanks that helps alot</p>
+			</div>
+			<div id = "comment-4466" class = "comment">
+				<p>Using just a capacitor em parallel, it will discharge with the motor load. It will probably get better results putting a diode and the the capacitor. But this will add the voltage drop to the capacitors, so a low forward voltage drop is important.</p>
+			</div>
+			</div>
+				<textarea id = "speech-2069" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2069">
+					<img id="start_img-2069" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2069">Comment</button>
+			<br><div id = "ans-2070"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2070" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>It sounds like you're experiencing a "brown out" caused when the excessive current draw from the battery causes a drop in the supply voltage.  This is due to the fact that batteries have internal resistance (a.k.a <a href="http://en.wikipedia.org/wiki/Output_impedance#Batteries" rel="nofollow noreferrer">output impedance</a>).</p>
+
+<p><img src="https://i.stack.imgur.com/o8c50.png" alt="internal resistance"></p>
+
+<p>In this example, if the load drops to $0.2\Omega$, the internal resistance of the battery will cause the output voltage to be divided equally with the external resistance -- the load will only see 5V.  It's possible that your 6V supply is dropping to 3V (or less) under load, in much the same way.  </p>
+
+<p>A capacitor will delay this effect, but what you really need is a voltage regulator -- many are available in an integrated circuit (IC) package.  Some voltage regulators will step up voltage when insufficient, but most simply lower a supply voltage to the voltage needed by a component like your RPi (in which case, your battery voltage would have to be increased so that it never dipped below 5V under full motor load).</p>
+
+<p>Alternatively, you could use a separate battery pack for the RPi.  This is a common solution for mobile robots, because it ensures that when the robot is immobilized due to lack of power, radio communication with the onboard PC will not be lost.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2070" data-toggle = "popover">
+				<p>user name : Ian</p>
+				<p> user reputation : 9640</p>
+				<p class = "tagcontent" id = "usertaginfo-2070">{'planning': 10, 'None': 809, 'power': 1, 'algorithm': 10, 'battery': 1, 'slam': 7, 'coverage': 10, 'mobile-robot': 9, 'sensors': 9}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2070">Load Comments</button></br>
+			<div id = "commentsection-2070" class = 'collapse'>
+			<div id = "comment-4147" class = "comment">
+				<p>IC From? sorry not good with abbreviations and google spurts out alot of stuff for "IC"</p>
+			</div>
+			<div id = "comment-4149" class = "comment">
+				<p>Integrated circuit, or chip etc. [Texas Instruments' TPS](http://www.ti.com/product/tps54335) family is an example of a popular switching converter available on the market.</p>
+			</div>
+			<div id = "comment-4150" class = "comment">
+				<p>We already have a Voltage Step down (http://goo.gl/8YviO4), which converts the  input of 6V to 5V. So the V going into the Pi is more than enough it is still sucking more than it needs, Maybe replacing the ESC to better handle full power surges might be a good idea. Or would a high V battery help?</p>
+			</div>
+			<div id = "comment-4151" class = "comment">
+				<p>I've updated the question with a bit on "internal resistance", which should help answer your questions.  A higher voltage battery may help prevent the problems you see, if the problem is based on heavy load.  Note that you get maximum power when the internal and external impedances are equal, so you should never have a reason to cause your battery voltage to drop to less than half of its nominal voltage.  Some batteries are rated for even less load than that.</p>
+			</div>
+			</div>
+				<textarea id = "speech-2070" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2070">
+					<img id="start_img-2070" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2070">Comment</button>
+			<br><div id = "ans-2079"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2079" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I must agree with the other two answers, however the main issue is that you do not have enough voltage into your regulator (I see from your comment to Ian that you are using a Pololu D15V35F5S3 Regulator). If you refer to the <a href="http://www.pololu.com/product/2110" rel="nofollow noreferrer">Pololu D15V35F5S3 Product Description</a>, down at the bottom you will find the following graph:</p>
+
+<p><img src="https://i.stack.imgur.com/ugMfs.jpg" alt="enter image description here"></p>
+
+<p>Looking at the red line for 5V output: Note for all currents greater than zero, the dropout voltage is greater than 1V. (The minimum input voltage necessary to achieve 5V output is 5V + dropout voltage.) The more current used by your 5V loads (Pi), the greater the dropout. The problem is compounded by any voltage drop in your 6V source due to current surges (see Ian's answer).</p>
+
+<p>You either need a higher input voltage, a lower dropout regulator (this may be difficult and insufficient), a different regulator (buck-boost), or a different power source for the Pi.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2079" data-toggle = "popover">
+				<p>user name : Tut</p>
+				<p> user reputation : 221</p>
+				<p class = "tagcontent" id = "usertaginfo-2079">{'None': 9}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2079">Load Comments</button></br>
+			<div id = "commentsection-2079" class = 'collapse'>
+			<div id = "comment-4160" class = "comment">
+				<p>Ah, very true, didn't see the reference to the Pololu converter (I originally thought he was referring to the on-board LDO). Although, it does seem strange that the Pi is even starting up, since the board [supposedly consumes 500 mA at 5V with no external peripherals](http://elinux.org/RPi_Hardware#Power) (and according to the graph 500 mA requires about a 1.5V drop, but I guess the converter is right at its limit).</p>
+			</div>
+			<div id = "comment-4161" class = "comment">
+				<p>Then again, I'm guessing the 500 mA refers to peak current requirements, which is probably rare enough.</p>
+			</div>
+			<div id = "comment-4162" class = "comment">
+				<p>@EDDY74 I think the main thing to notice here is there is no headroom. Any dip in input voltage or fluctuation in output current will likely result in a voltage change. Without an increase in input voltage, it's not really working as a voltage regulator.</p>
+			</div>
+			<div id = "comment-4163" class = "comment">
+				<p>Hey thanks, This helps alot, I can try increasing V that should be the easiest solution currently</p>
+			</div>
+			</div>
+				<textarea id = "speech-2079" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2079">
+					<img id="start_img-2079" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2079">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,179 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>The relationship between point cloud maps and graph maps
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-764" class = "post">
+			<h2>Question</h2>
+			<div id="vote-764" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">7</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 676</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>The relationship between point cloud maps and graph maps</h2>
+<p>I am most familiar with SLAM maps that are point clouds, usually in the form of a vector like $&lt;x,y,\theta,f_{1x},f_{1y},...,f_{nx},f_{ny}&gt;$.  I also understand how to create a map like this using an EKF.</p>
+
+<p>Today I came across a <a href="http://www.mrpt.org/Graph-SLAM_maps">.graph file format</a>, which as you would expect consists of vertices and edges in the format:</p>
+
+<p><code>VERTEX2 id x y orientation</code></p>
+
+<p><code>EDGE2 observed_vertex_id observing_vertex_id forward sideward rotate inf_ff inf_fs inf_ss inf_rr inf_fr inf_sr</code></p>
+
+<p>I know that there's a connection between matrices and graphs (an adjacency matrix for example).  But it's not clear to me how this graph format of a map is equivalent to a point cloud map that I'm familiar with.  </p>
+
+<p>What is the relationship?  Are the vertices both poses and landmarks? Are they in a global reference frame? How is this created from say velocity information and a range/bearing sensor?  Is there a transformation between a graph map and a point cloud?  </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-764" data-toggle = "popover">
+				<p>user name : munk</p>
+				<p> user reputation : 406</p>
+				<p class = "tagcontent" id = "usertaginfo-764">{'None': 2, 'noise': 7, 'theory': 7, 'ekf': 14, 'mapping': 13, 'slam': 41, 'kalman-filter': 26}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-764" class = 'collapse'>
+			</div>
+				<textarea id = "speech-764" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-764">
+					<img id="start_img-764" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-764">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-782"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-782" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>There's a <a href="http://www.mrpt.org/node/1704" rel="nofollow">forum post</a> with some more clarifying information on the format. It looks like the graph node values are initial estimates of self-poses, and edges encode pose constraints as represented by the <a href="http://en.wikipedia.org/wiki/Kalman_filter#Information_filter" rel="nofollow">information filter</a>, the dual of the Kalman filter.</p>
+
+<p>From what I can tell, this map format includes only self-pose information and not landmarks, so there would not be a direct conversion from a point cloud map.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-782" data-toggle = "popover">
+				<p>user name : surtur</p>
+				<p> user reputation : 11</p>
+				<p class = "tagcontent" id = "usertaginfo-782">{'None': 1}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-782">Load Comments</button></br>
+			<div id = "commentsection-782" class = 'collapse'>
+			<div id = "comment-1018" class = "comment">
+				<p>Please clarify on the difference between pose information and landmarks. In general, landmarks are estimated by their pose.</p>
+			</div>
+			<div id = "comment-2027" class = "comment">
+				<p>During a simultaneous localization and mapping process, one will usually maintain estimates of one's own position and orientation as one moves through the environment as well as those of several identifiable points in the environment that are generally assumed to be stationary, often referred to as landmarks. Accurate pose estimates for the landmarks help reduce uncertainty in one's own pose, and vice versa. What I was referring to as pose information was constraints on the self-pose, though they could conceivably be actually derived from computations involving landmarks.</p>
+			</div>
+			</div>
+				<textarea id = "speech-782" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-782">
+					<img id="start_img-782" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-782">Comment</button>
+			<br><div id = "ans-799"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-799" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>As it says in the description of the file format, it is for graph based SLAM approaches. These work on minimizing the error of a pose constraint network. You can think of it this way: There are a number of reference frames (your vertices) and then you have knowledge on the transformation between these frames. These transformations are associated with an uncertainty. <a href="http://ais.informatik.uni-freiburg.de/publications/papers/kuemmerle11icra.pdf" rel="nofollow">Pose graph optimization frameworks</a> like e.g. <a href="http://openslam.org/toro.html" rel="nofollow">TORO</a>, <a href="http://openslam.org/hog-man.html" rel="nofollow">HogMan</a>, <a href="http://openslam.org/g2o.html" rel="nofollow">G2O</a> and so on will then give you the maximum likelihood of your vertex positions, given the constraints.</p>
+
+<p>In practical robot terms, this usually means:</p>
+
+<ul>
+<li>Each robot pose $p_k$ at time $k$ has its own reference frame and hence vertex</li>
+<li>Depending on you approach, you can also add landmarks as vertices. You don't have to however. </li>
+<li>Whenever you get new information on the relation between two poses, you add that to the constraint graph. E.g. your odometry will give you a transform between $p_k$ and $p_{k+1}$. </li>
+<li>If your approach works landmark based, you add transformations to your landmarks. If you only know the position to your landmark, you set a high uncertainty on the rotation information of your transformation. </li>
+<li>If your approach does not know about landmarks, e.g. you have large pointclouds that you match with ICP, you can add the ICP results to your constraint graph.</li>
+</ul>
+
+<p>The pose constraints are usuall stored as sparse matrices of size $n \times n$ where $n$ is the number of vertices (again robot poses and landmarks) in your graph. </p>
+
+<p>The file format itself provides initial guesses for the position of the vertices with the <code>VERTEX2</code> (for 2D models) and <code>VERTEX3</code> (for 3D models). You can't mix the two. 
+Constraints are added so that you specify the transform between the reference frames (vertices) given by <code>from_id</code> and <code>to_id</code>. The transform is given by either <code>EDGE2</code> and <code>EDGE3</code> as translation and rotation in euler angles, as well as the information matrix of the uncertainty. In this case the information matrix is the inverse of the covariance matrix for the transform vector $[x\, y \, z\, \text{roll}\, \text{pitch}\, \text{yaw}]$. </p>
+
+<p>Depending on your framework, usually one of the vertices is grounded in a global reference frame. </p>
+
+<p>Graph based pose graph optimizers are considered SLAM backends. How you generate the constraints e.g. from you range data is a front-end problem. There is a nice overview in these <a href="http://ais.informatik.uni-freiburg.de/teaching/ws11/robotics2/pdfs/rob2-13-frontends.pdf" rel="nofollow">lecture notes</a>.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-799" data-toggle = "popover">
+				<p>user name : Jakob</p>
+				<p> user reputation : 2519</p>
+				<p class = "tagcontent" id = "usertaginfo-799">{'ransac': 3, 'None': 210, 'computer-vision': 1, 'cameras': 1, 'c++': 3, 'slam': 12, 'rock': 1, 'i2c': 3, 'servos': 3, 'software': 1}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-799" class = 'collapse'>
+			</div>
+				<textarea id = "speech-799" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-799">
+					<img id="start_img-799" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-799">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

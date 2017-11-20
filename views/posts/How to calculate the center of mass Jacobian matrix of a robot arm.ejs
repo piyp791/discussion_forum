@@ -1,0 +1,156 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to calculate the center of mass Jacobian matrix of a robot arm
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-6842" class = "post">
+			<h2>Question</h2>
+			<div id="vote-6842" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 1944</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to calculate the center of mass Jacobian matrix of a robot arm</h2>
+<p>I have a 4-DOF robot arm system with 4 revolute joints arranged in an open-chain fashion like below:</p>
+
+<p><img src="https://i.stack.imgur.com/wU0VL.png" alt="4-DOF robotic arm"> </p>
+
+<p>Assume that each link s mass is a point mass located at p_i and each link s center of mass is at p_i.</p>
+
+<p>What I am trying to do is calculate the center of mass Jacobian matrix of the arm.
+I found some related materials online <a href="http://www.elysium-labs.com/robotics-corner/learn-robotics/biped-basics/com-jacobian/" rel="nofollow noreferrer">Center of Mass Jacobian</a>.But I am still not very sure about how to calculate it. Could anybody give me some hint? Thanks!</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6842" data-toggle = "popover">
+				<p>user name : Zengrui</p>
+				<p> user reputation : 8</p>
+				<p class = "tagcontent" id = "usertaginfo-6842">{'control': 0, 'None': 0, 'dynamics': 0, 'robotic-arm': 1, 'jacobian': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-6842" class = 'collapse'>
+			</div>
+				<textarea id = "speech-6842" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6842">
+					<img id="start_img-6842" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6842">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-6879"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6879" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The method you mention from <a href="http://www.elysium-labs.com/robotics-corner/learn-robotics/biped-basics/com-jacobian/" rel="nofollow noreferrer">elysium-labs</a> is perfectly functional. I try to clarify it a little bit and I give you some C++ like code. </p>
+
+<p>Let me start by recapping on jacobian matrix itself: Jacobian matrix relates the joint rates to the linear and angular velocity of the end-effector (EE). In other words, jacobian expresses the contribution of each joint velocity to EE velocity. There are basically two ways of calculating jacobian: Analytically and Geometric. Analytical jacobian is partial derivatives while geometric jacobian is based on geometric interpretation of motion.</p>
+
+<p>In theory, you can calculate CoM jacobian by doing partial derivative but this a very tedious task and impossible in practice. So geometric jacobian is the way to go. Lets see the formula for geometric jacobian (no CoM yet!):</p>
+
+<p><img src="https://i.stack.imgur.com/hAhbH.png" alt="enter image description here"></p>
+
+<p>The upper row shows the contribution of each joint to the end-effector velocity and bottom row for the angular velocity. $P_i$ and $z_i$ are position and orientation of the joint, extracted from Denavit Hartenberg parameters. '$\times$' is cross product operator.</p>
+
+<pre><code>Jacobian.block&lt;3,1&gt;(0,0)   = z0.cross(pEE_L-p0);
+Jacobian.block&lt;3,1&gt;(0,1)   = z1.cross(pEE_L-p1);
+
+Jacobian.block&lt;3,1&gt;(3,0)   = z0;
+Jacobian.block&lt;3,1&gt;(3,1)   = z1;
+</code></pre>
+
+<p><code>.block&lt;3,1&gt;(0,1)</code> means matrix block of size 3x1 starting from element 0,1.</p>
+
+<p>When calculating the CoM jacobian, we do not consider the end-effector. In other words, you must calculate the contribution of each joint movement to the velocity of the center of mass. </p>
+
+<p>First, you need to calculate the partial CoM, i.e., the CoM of each kinematic chain w.r.t the base. For example, partial CoM if you consider only $l_1$, then only $l_1, l_2$, then $l_1, l_2, l_3$ and so on. The rational is that $\theta_1$ has a bigger contribution to CoM velocity comparing to $\theta_4$. Now that we have all the necessary information, we calculate the geometric CoM jacobian, similarly to the kinematic jacobian:</p>
+
+<pre><code>Jacobian_CoM.block&lt;3,1&gt;(0,0)  = (partial_coms(3,0)/total_mass) * (z0.cross (R0*(partial_coms.block&lt;3,1&gt;(0,0)-PB)-p0));
+Jacobian_CoM.block&lt;3,1&gt;(0,1)  = (partial_coms(3,1)/total_mass) * (z1.cross (R0*(partial_coms.block&lt;3,1&gt;(0,1)-PB)-p1));
+</code></pre>
+
+<p>In the above code, "Note that we had to rotate the partial COM to get it into the base links coordinate frame", hence $R_0$. Furthermore, "the resultant linear velocity should be scaled by the mass of the partial COM because the COM is the average of the multi-mass system and high velocities on smaller masses play a lesser role on the total velocity of the COM."</p>
+
+<p>In my code, I was interested in linear velocity only and that's why CoM jacobian is $3\times n$. </p>
+
+<p>A good source for understanding the concept of jacobian, its geometric interpretation, and the notation that I've used in this answer, is <a href="http://www.dis.uniroma1.it/~deluca/rob1_en/11_DifferentialKinematics.pdf" rel="nofollow noreferrer">this</a> set of slides.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6879" data-toggle = "popover">
+				<p>user name : Pouya</p>
+				<p> user reputation : 206</p>
+				<p class = "tagcontent" id = "usertaginfo-6879">{'None': 9}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-6879" class = 'collapse'>
+			</div>
+				<textarea id = "speech-6879" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6879">
+					<img id="start_img-6879" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6879">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,165 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>One of the best ways to numerically integrate the velocity?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-3155" class = "post">
+			<h2>Question</h2>
+			<div id="vote-3155" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 75</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>One of the best ways to numerically integrate the velocity?</h2>
+<p>I need to get position $x$ from integrating velocity $v$. One could use 1st order Euler integration as</p>
+
+<p>$x_{t+1} = x_t + \delta * v_t.$</p>
+
+<p>However, doing so leads to errors proportional to sampling time $\delta$. Do you know any more accurate solution please?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-3155" data-toggle = "popover">
+				<p>user name : Courier</p>
+				<p> user reputation : 151</p>
+				<p class = "tagcontent" id = "usertaginfo-3155">{'None': 1, 'kinematics': 5}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-3155">Load Comments</button></br>
+			<div id = "commentsection-3155" class = 'collapse'>
+			<div id = "comment-6680" class = "comment">
+				<p>If all the knowledge you have is the discrete v samples there's not much you can do.  Interpolating (e.g. linearly) the velocity before integrating it could be a little better (it reflects an assumption that v can't change instantaneously).  More generally if the velocity signal is bandwidth-limited and you sample it fast enough you should be able to accurately get position x from it.</p>
+			</div>
+			</div>
+				<textarea id = "speech-3155" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-3155">
+					<img id="start_img-3155" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-3155">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-3156"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-3156" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>One of the most common techniques for integrating ODEs is to using <a href="http://en.wikipedia.org/wiki/Runge%E2%80%93Kutta_methods" rel="nofollow">Runge-Kutta methods</a> (of which Euler integration is just a special case). However, these only improve errors due to discretization of time. If you are concerned about errors caused by noise in $\delta$ then I'm not aware of any better methods. </p>
+
+<p><strong>Add Example</strong></p>
+
+<p>For RK4 and using the dynamics $\dot{x}(t) = v(t)$, where the velocity is not dependent on the  state, you have
+$$
+\begin{align}
+k_1 &amp;= v(t)
+\\
+k_2 &amp;= v \left ( t+\frac{\delta}{2} \right )
+\\
+k_3 &amp;= v \left ( t+\frac{\delta}{2} \right )
+\\
+k_4 &amp;= v \left ( t+\delta \right )
+\\
+x(t+\delta) &amp;= x(t) + \frac{h}{6} (k_1 + 2 k_2 + 2 k_3 + k_4)
+\end{align}
+$$</p>
+
+<p>If you have access to $v(t+\frac{\delta}{2})$ this will provide an improvement over Euler integration. If not, you can probably still get some improvement by assuming $v(t+\frac{\delta}{2}) = \frac{v(t) + v(t+\delta)}{2}$.</p>
+
+<p><strong>Other Option - Kalman Filter</strong></p>
+
+<p>For such a simple system, another option would be to use a <a href="http://en.wikipedia.org/wiki/Kalman_filter" rel="nofollow">Kalman filter</a>. In the case where you only have access to $v(t)$ and $v(t+\delta)$ (no intermediate information) this might work better.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-3156" data-toggle = "popover">
+				<p>user name : ryan0270</p>
+				<p> user reputation : 1814</p>
+				<p class = "tagcontent" id = "usertaginfo-3156">{'None': 133}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-3156">Load Comments</button></br>
+			<div id = "commentsection-3156" class = 'collapse'>
+			<div id = "comment-6672" class = "comment">
+				<p>But Runge-Kutta requires an explicit knowledge of the function to intefrate like \dot{x} = f(x), which is it not met in my scenario. We have only measures of velocity: v0, v1... vt, etc</p>
+			</div>
+			<div id = "comment-6673" class = "comment">
+				<p>It is the same as with Euler integration. In both cases your function is $\dot{x}(t) = v(t)$</p>
+			</div>
+			<div id = "comment-6674" class = "comment">
+				<p>Then, how could you compute $k_2 = f(y_n + \frac{h}{2} k_1)$ for RK?</p>
+			</div>
+			<div id = "comment-6675" class = "comment">
+				<p>I edited the answer. Also, I just remember that a Kalman filter might be an option in your case.</p>
+			</div>
+			<div id = "comment-6676" class = "comment">
+				<p>Thanks ryan0270. So I need to approximate RK since I do not have access to $f(t+ \frac{\delta}{j})$.</p>
+			</div>
+			</div>
+				<textarea id = "speech-3156" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-3156">
+					<img id="start_img-3156" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-3156">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

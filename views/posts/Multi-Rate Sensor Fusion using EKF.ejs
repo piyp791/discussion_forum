@@ -1,0 +1,199 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Multi-Rate Sensor Fusion using EKF
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9159" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9159" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 201</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Multi-Rate Sensor Fusion using EKF</h2>
+<p>Context: I have an IMU(a/g/m) + Wheel Odometry measurement data that I'm trying to fuse in order to localize a 2D (ackermann drive) robot.</p>
+
+<p>The state vector <code>X = [x y yaw]</code>.
+I'm using the odometry data to propagate the state through time (no control input).
+The update step includes the measurement vector <code>Z = [x_odo y_odo yaw_imu]</code>.</p>
+
+<p>I have two questions:</p>
+
+<p>1.Does it make sense to use the odometry data(v_linear, omega) in both the prediction as well as update steps?</p>
+
+<p>2.How do I account for the frequency difference between the odometry data(10Hz) and the imu data(40Hz)? Do I run the filter at the lower frequency, do I dynamically change the matrix sizes or is there any other way?</p>
+
+<p>Thanks!</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9159" data-toggle = "popover">
+				<p>user name : AKag</p>
+				<p> user reputation : 61</p>
+				<p class = "tagcontent" id = "usertaginfo-9159">{'odometry': 8, 'None': 0, 'localization': 8, 'ekf': 12, 'pose': 4, 'wheeled-robot': 12, 'differential-drive': 5, 'imu': 3, 'kalman-filter': 4}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-9159" class = 'collapse'>
+			</div>
+				<textarea id = "speech-9159" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9159">
+					<img id="start_img-9159" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9159">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9160"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9160" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Part 1.  Use one or the other. Often odometery is used instead of kinematics or dynamics for prediction, at least in my work.</p>
+
+<p>Part 2.
+This is handled by the construction of the measurement equation jacobian. </p>
+
+<p>Every time a measurement comes in, construct a Jacobian for the whole state. You'll notice that some of the state elements are independent of the current measurement (vel sensor cannot measure position, e.g.). So, no need to resize the matrix, just run the ekf with some zeros in the jacobian.</p>
+
+<p>Specifically, for <em>every incoming measurement</em></p>
+
+<ol>
+<li>Predict state from last update to the current </li>
+<li>Construct jacobian for current measurement type / equation </li>
+<li>Update state</li>
+</ol>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9160" data-toggle = "popover">
+				<p>user name : Josh Vander Hook</p>
+				<p> user reputation : 3960</p>
+				<p class = "tagcontent" id = "usertaginfo-9160">{'None': 345}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9160">Load Comments</button></br>
+			<div id = "commentsection-9160" class = 'collapse'>
+			<div id = "comment-15191" class = "comment">
+				<p>Thanks for the answer! In this case, the H matrix (state->meas space) will change according to the data available at the current time. But, won't this lead to yaw_imu being corrected more often than x_odo and y_odo, leading to an 'imbalance' in accuracy of the two? Will that be a problem?</p>
+			</div>
+			<div id = "comment-15192" class = "comment">
+				<p>Not imbalance per se. If yaw is updated by two sources, it will just be a bit more accurate. That makes intuitive sense, I hope.</p>
+			</div>
+			</div>
+				<textarea id = "speech-9160" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9160">
+					<img id="start_img-9160" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9160">Comment</button>
+			<br><div id = "ans-9162"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9162" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I've performed 2D localization with just odometry and a gyroscope before, and to be honest, depending on (i) how good your encoders are; (ii) what type of environment you're in (is there a chance your wheels will slip a lot); (iii) how good your IMU is, there's a good chance that you don't lose much by just using odometry for translation, and only calculating heading using the gyroscope. In other words, just update the position when you get an odometry measurement, and just update the heading when you get a gyroscope measurement (i.e., two prediction steps, no correction step). Practically speaking, you won't get much better results using a correction step when you aren't measuring the environment.</p>
+
+<p>That being said, I noticed that you didn't mention anything about using the magnetometer of your IMU to estimate the heading of the robot. If you are in a somewhat magnetically clean environment (i.e., you can somewhat reliably measure the Earth's magnetic field), then this measurement would be <em>extremely</em> useful. 
+The reason why is because it is an <em>exteroceptive sensor</em> (i.e., it's measuring the environment) and your other sensors (wheel encoders, gyroscope) are <em>interoceptive sensors</em> (i.e., they measure the robot internally). With only interoceptive sensors measuring your heading, it is subject to dead reckoning and its uncertainty will increase without bounds. And as you know, if your heading becomes increasingly uncertain, so does your position. With an exteroceptive sensor measurement of your heading, its uncertainty becomes bounded.</p>
+
+<p>Here's one way to set up your filter:</p>
+
+<ul>
+<li><p>Each time you receive an odometry measurement (10 Hz), perform the prediction step to propagate your state forward.</p></li>
+<li><p>Each time you receive an IMU measurement (40 Hz), perform a (different) prediction step to propagate your heading estimate forward by integrating the gyroscope, then perform a correction step to correct your heading using the magnetometer.</p></li>
+</ul>
+
+<p>To use the magnetometer in this way, you need to know the direction of the Earth's magnetic field in your local area (you can look this up online). Let's call this $m\in[-\pi,\pi)$. Now you get a measurement of the magnetic field $z_k\in[-\pi,\pi)$ from your magnetometer.</p>
+
+<p>Your measurement model is:</p>
+
+<p>$$
+\hat{z}_k = m - \hat{\theta}_k
+$$</p>
+
+<p>where $\hat{\theta}_k$ is your current heading estimate. <strong>Note:</strong> you need to account for wrapping of the angles here! One way to do this is:</p>
+
+<p>$$
+\hat{z}_k = \text{atan2}(\sin(m - \hat{\theta}_k),\cos(m - \hat{\theta}_k))
+$$</p>
+
+<p>but there are other ways as well. Then just proceed with the normal KF correction step.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9162" data-toggle = "popover">
+				<p>user name : kamek</p>
+				<p> user reputation : 775</p>
+				<p class = "tagcontent" id = "usertaginfo-9162">{'None': 48}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-9162" class = 'collapse'>
+			</div>
+				<textarea id = "speech-9162" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9162">
+					<img id="start_img-9162" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9162">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

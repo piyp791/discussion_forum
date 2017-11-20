@@ -1,0 +1,227 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to obtain dense point clouds from stereo cameras?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-445" class = "post">
+			<h2>Question</h2>
+			<div id="vote-445" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">9</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 2405</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to obtain dense point clouds from stereo cameras?</h2>
+<p>I am trying to use a stereo camera for scene reconstruction, but I can usually only obtain sparse point clouds (i.e. over half the image does not have any proper depth information). </p>
+
+<p>I realize that stereo processing algorithms rely on the presence of texture in the images and have a few parameters that can be tweaked to obtain better results, such as the disparity range or correlation window size. As much as I tune these parameters, though, I am never able to get results that are even remotely close to what can be obtained using an active sensor such as the Kinect.</p>
+
+<p>The reason why I want that is because very often point clouds corresponding to adjacent regions don't have enough overlap for me to obtain a match, so reconstruction is severely impaired.</p>
+
+<p>My question to the Computer Vision experts out there is the following: <strong>what can I do to obtain denser point clouds in general</strong> (without arbitrarily modifying my office environment)?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-445" data-toggle = "popover">
+				<p>user name : georgebrindeiro</p>
+				<p> user reputation : 1266</p>
+				<p class = "tagcontent" id = "usertaginfo-445">{'computer-vision': 9, 'None': 98, 'slam': 9}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-445">Load Comments</button></br>
+			<div id = "commentsection-445" class = 'collapse'>
+			<div id = "comment-505" class = "comment">
+				<p>This is a good question, but I think more details are necessary. What algorithms have you tried to compute matchings? Could you clarify what you mean by "adjacent regions" and "overlap?".</p>
+			</div>
+			<div id = "comment-510" class = "comment">
+				<p>When I say "adjacent regions", I mean portions of physical space that are not equivalent but have a non-empty intersection, which I called "overlap". That is, the kind of regions that would generate point clouds that could be matched and stitched in an ICP algorithm.</p>
+			</div>
+			<div id = "comment-511" class = "comment">
+				<p>About the algorithm, I am still using the simplest possible solution I could find: the [stereo_image_proc](http://www.ros.org/wiki/stereo_image_proc) ROS node, which applies the global block matching algorithm available in OpenCV. 
+
+I would be very interested in hearing about parameter settings that might not be directly accessible to me through the ROS node or other algorithms that are known to provide better results.</p>
+			</div>
+			</div>
+				<textarea id = "speech-445" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-445">
+					<img id="start_img-445" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-445">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-447"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-447" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You can try to skip the salient point detection, and just densely sample over the image (as grid or so) and compute a feature descriptor at every sample point. You can probably even go as far as computing a descriptor for every pixel.</p>
+
+<p>You might lose scale-invariance, but I think this won't hurt too much for stereo vision as objects will be at approximately the same scale in both images.</p>
+
+<p>Another approach might be to combine multiple salient point detection algorithms: corners, edges, blobs and so on. Then you have to use the same feature descriptor algorithm for all detected points, however this latter part could be somewhat tricky to implement.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-447" data-toggle = "popover">
+				<p>user name : muksie</p>
+				<p> user reputation : 141</p>
+				<p class = "tagcontent" id = "usertaginfo-447">{'None': 4}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-447" class = 'collapse'>
+			</div>
+				<textarea id = "speech-447" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-447">
+					<img id="start_img-447" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-447">Comment</button>
+			<br><div id = "ans-454"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-454" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>When you say, "over half the image does not have any proper depth information", which half ?</p>
+
+<p>One issue we ran into is that if distance-to-object is of the same order of magnitude than your baseline (usually associated with very wide angle cameras), then the "standard" dense stereo algorithms don't work so well. We've been using the libelas library, and its developers told us that this is called "large baseline stereo" and is yet another problem.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-454" data-toggle = "popover">
+				<p>user name : sylvain.joyeux</p>
+				<p> user reputation : 363</p>
+				<p class = "tagcontent" id = "usertaginfo-454">{'None': 20, 'kalman-filter': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-454">Load Comments</button></br>
+			<div id = "commentsection-454" class = 'collapse'>
+			<div id = "comment-512" class = "comment">
+				<p>When I said half the image did not have any proper depth information, I meant that out of all pixels, only about half had computed disparities (not necessarily forming one contiguous region). I am not having the same issue you mentioned with the distance-to-object/baseline ratio, but it was very interesting to hear about that library and that this can be a problem. Thanks!</p>
+			</div>
+			<div id = "comment-513" class = "comment">
+				<p>Either way, I will try [libelas](http://www.cvlibs.net/software/libelas.html) out since I found a [ROS wrapper](http://www.ros.org/wiki/elas_ros) for it!</p>
+			</div>
+			</div>
+				<textarea id = "speech-454" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-454">
+					<img id="start_img-454" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-454">Comment</button>
+			<br><div id = "ans-491"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-491" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>So the stereo image processing algorithms I have used in the past were implemented pixel by pixel. We just used the pinhole camera model and did some old fashioned measurements with measuring tape until our depth estimations matched the real thing.</p>
+
+<p>The equations for a pair of parallel cameras are:</p>
+
+<ul>
+<li>$d = $half the distance between the cameras</li>
+<li>$f = $the focal length of the cameras (assumed to be the same)</li>
+<li>Coordinate Frames: 
+<ul>
+<li>$x, y, z = $ coordinate frame between the cameras (i.e. the camera base frame)</li>
+<li>$u_R, v_R$ camera coordinates in the right camera from the perspective of the robot (u is horizontal, v is vertical)</li>
+<li>$u_L, v_L$ camera coordinates in the left camera </li>
+<li>Note: the camera coordinates have their origins at the coordinate frame between the cameras (i.e. the u axes face opposite directions)</li>
+</ul></li>
+</ul>
+
+<p>$u_L = \frac{f(x-d)}{z}$, $u_R = \frac{f(x+d)}{z}$</p>
+
+<p>$zu_R = f(x+d)$, $zu_L = f(x-d)$</p>
+
+<p>$z(u_R - u_L) = 2df$</p>
+
+<p>$z = \frac{2df}{u_R - u_L}$</p>
+
+<p>$y = \frac{v_L*z + df}{f}$</p>
+
+<p>$x = \frac{u_L*z + df}{f}$</p>
+
+<p>Using these equations you can compute a dense stereo cloud.  One for each pixel on your cameras.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-491" data-toggle = "popover">
+				<p>user name : thealmightygrant</p>
+				<p> user reputation : 141</p>
+				<p class = "tagcontent" id = "usertaginfo-491">{'None': 4}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-491">Load Comments</button></br>
+			<div id = "commentsection-491" class = 'collapse'>
+			<div id = "comment-564" class = "comment">
+				<p>Thanks for the effort, but I am familiar with stereo modeling. The problem is usually exactly that of correspondence between the (u,v) coordinates in the left and right cameras. muksie gave some ideas on how to deal with that and sylvain.joyeux pointed out a great stereo library that leads to improved results, though...</p>
+			</div>
+			</div>
+				<textarea id = "speech-491" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-491">
+					<img id="start_img-491" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-491">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

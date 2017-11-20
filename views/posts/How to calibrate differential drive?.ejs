@@ -1,0 +1,166 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to calibrate differential drive?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2873" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2873" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 233</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to calibrate differential drive?</h2>
+<p>I'm building a robot with differential drive. I've reached the point when I can drive it around on remote control and I'm trying to get the localization working. Now I would like to exactly measure parameters of the robot.</p>
+
+<p>Model of the robot I'm using has two wheels spaced $b$ meters, each wheel has a distance per encoder tick $s_L$ and $s_R$ and variance standard deviation of the driven distance $\sigma_L$ and $\sigma_R$.
+When moving, distances are random variables from the following distributions: $d_L \sim t_{L}s_{L}N(1, \sigma_L^2)$ and $d_R \sim t_{R}s_{R}N(1, \sigma_R^2)$. Later this model might expand a little bit.</p>
+
+<p>What is a good way to measure the parameters?</p>
+
+<p>I found a way to measure $b$, $d_L$ and $d_R$ (added that as an answer), but I have no idea how to measure the standard deviations.</p>
+
+<p>The model will be used as a prediction input in MCL, so I don't need covariance matrix for localization.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2873" data-toggle = "popover">
+				<p>user name : cube</p>
+				<p> user reputation : 567</p>
+				<p class = "tagcontent" id = "usertaginfo-2873">{'control': 2, 'None': 31, 'wifi': 2, 'kalman-filter': 3, 'calibration': 3, 'geometry': 0, 'localization': 2, 'c': 1, 'avr': 1, 'robotic-arm': 0, 'brushless-motor': 2, 'differential-drive': 2, 'esc': 1, 'motor': 2, 'mobile-robot': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2873" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2873" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2873">
+					<img id="start_img-2873" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2873">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-2874"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2874" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>To estimate the first three parameters (distance between wheels and distance per encoder tick of both left and right wheels) I made a calibration pattern on the ground as shown in the image:</p>
+
+<p><img src="https://i.stack.imgur.com/B4ReW.png" alt="Calibration pattern"></p>
+
+<p>(this shape was chosen because it's easy to make using tape measure and a string)</p>
+
+<p>Then I will manually drive the robot along the path in a ABCDBCA pattern as precisely as possible while recording encoder ticks. Then the calibration code will attempt to find the model parameters that minimize distance between output of the model (with variances set to 0) and the pattern.</p>
+
+<p>My intuition is that since the path is quite long, maximal error between real robot and the pattern is bounded by a few centimeters and there are turns both left and right, the parameters found by this should be fairly close to the real values.</p>
+
+<p>The only problem is that this won't give me the variances...</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2874" data-toggle = "popover">
+				<p>user name : cube</p>
+				<p> user reputation : 567</p>
+				<p class = "tagcontent" id = "usertaginfo-2874">{'control': 2, 'None': 31, 'wifi': 2, 'kalman-filter': 3, 'calibration': 3, 'geometry': 0, 'localization': 2, 'c': 1, 'avr': 1, 'robotic-arm': 0, 'brushless-motor': 2, 'differential-drive': 2, 'esc': 1, 'motor': 2, 'mobile-robot': 2}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2874" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2874" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2874">
+					<img id="start_img-2874" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2874">Comment</button>
+			<br><div id = "ans-2880"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2880" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Someone please check my math here, but the wheel encoder value $\theta$ is not a continuous random variable -- it can't have a variance.</p>
+
+<p>You might get a more reasonable continuous random variable in the form of the estimated total linear distance.  In that case, the main source of variance in your encoder measurement is going to be the difference between your $r \theta$ calculation of distance travelled and the actual distance travelled -- if your radius measurement wasn't quite right, or the rubber on the tires compresses, or the wheels slip, etc.  </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2880" data-toggle = "popover">
+				<p>user name : Ian</p>
+				<p> user reputation : 9640</p>
+				<p class = "tagcontent" id = "usertaginfo-2880">{'planning': 10, 'None': 809, 'power': 1, 'algorithm': 10, 'battery': 1, 'slam': 7, 'coverage': 10, 'mobile-robot': 9, 'sensors': 9}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2880">Load Comments</button></br>
+			<div id = "commentsection-2880" class = 'collapse'>
+			<div id = "comment-5292" class = "comment">
+				<p>I probably described the model badly. I plan to interpret the real distance travelled as a random variable conditioned by the number of encoder ticks. I will clarify this in the question.</p>
+			</div>
+			</div>
+				<textarea id = "speech-2880" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2880">
+					<img id="start_img-2880" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2880">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

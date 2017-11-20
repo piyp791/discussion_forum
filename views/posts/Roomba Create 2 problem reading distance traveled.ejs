@@ -1,0 +1,195 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Roomba Create 2 problem reading distance traveled
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-6869" class = "post">
+			<h2>Question</h2>
+			<div id="vote-6869" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 575</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Roomba Create 2 problem reading distance traveled</h2>
+<p>I am trying to work with the create2. In using the "get distance traveled" command (id 142) I am getting back incorrect data. My simple test case logic is</p>
+
+<p>I am working with the Create2_TetheredDrive.py example
+and adding this</p>
+
+<pre><code>    elif k == 'PLUS' or k == 'MINUS': # Move 200mm forward or backward
+        # reset distance measurement by sending request
+        sendCommandASCII('142 19') 
+        # ignore/discard the data returned
+        recv_basic(connection)
+        # set velocity mm/s
+        v = 200;
+        if k=='MINUS':
+            v=-v
+        # start moving
+        cmd = struct.pack("&gt;Bhh", 145, v, v)
+        sendCommandRaw(cmd)
+        # pause 1 second
+        time.sleep(1);
+        # stop moving
+        cmd = struct.pack("&gt;Bhh", 145, 0, 0)
+        sendCommandRaw(cmd)
+        # get distance traveled
+        sendCommandASCII('142 19') 
+        data = recv_basic(connection)
+        dist = struct.unpack('&gt;h',data)
+        print(dist)
+</code></pre>
+
+<p>I consistently numbers near -25 for moving forward, and +25 for moving backward.
+If I wait for 2 seconds, I get -50 for moving forward, and +50 for moving backward. The documentation says it should return the distance traveled in mm, so these numbers seem to be off by a factor of -8.</p>
+
+<p>Anyone have any suggestions? Thanks.</p>
+
+<p>p.s. I had to add this function to the example as well</p>
+
+<pre><code>def recv_basic(the_socket):
+    the_socket.settimeout(0.1)
+    total_data=[]
+    while True:
+        try:
+            data = the_socket.recv(8192)
+            total_data.append(data)
+        except:
+            break
+    return ''.join(total_data)
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6869" data-toggle = "popover">
+				<p>user name : Will Schleter</p>
+				<p> user reputation : 36</p>
+				<p class = "tagcontent" id = "usertaginfo-6869">{'None': 2, 'irobot-create': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-6869" class = 'collapse'>
+			</div>
+				<textarea id = "speech-6869" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6869">
+					<img id="start_img-6869" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6869">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-6877"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6877" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>There are two problems at work here.</p>
+
+<p><strong>First,</strong> you wrote a function to get data from the robot using sockets, but the robot is being connected to via a pySerial serial object. I wrote a function for you to use instead of recv_basic. I'll be sure to add this helper function and others like it to Create2_TetheredDrive.py when I can. Using this function, running your code gives me a result of around 185-190, which is about what I'd expect (given that the robot has to accelerate and decelerate during that one second; it doesn't immediately get up to speed).</p>
+
+<pre><code># get16Signed returns a 16-bit signed value.
+# Whether it blocks is based on how the connection was set up.
+def get16Signed():
+    global connection
+
+    try:
+        return struct.unpack("&gt;h", connection.read(2))[0]
+    except serial.SerialException:
+        print "Lost connection"
+        tkMessageBox.showinfo('Uh-oh', "Lost connection to the robot!")
+        connection = None
+    except struct.error:
+        print "Got unexpected data from serial port."
+        return None
+</code></pre>
+
+<p>Just add this function and replace your calls to <code>recv_basic(connection)</code> with <code>get16Signed()</code> (and also get rid of that call to <code>struct.unpack</code> as <code>get16Signed</code> will return an integer) and you should be all set!</p>
+
+<p><strong>Second</strong>, we found a bug with sensor packets which return values in units of millimeters in robot firmware versions prior to 3.3.0. The affected packets are '19' and '40.' Please see the relevant sections of the <a href="http://www.irobot.com/~/media/MainSite/PDFs/About/STEM/Create/create_2_Open_Interface_Spec.pdf?la=en" rel="nofollow">Open Interface Spec</a> for more details.</p>
+
+<p>Happy hacking!</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6877" data-toggle = "popover">
+				<p>user name : Steve</p>
+				<p> user reputation : 716</p>
+				<p class = "tagcontent" id = "usertaginfo-6877">{'None': 50}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-6877">Load Comments</button></br>
+			<div id = "commentsection-6877" class = 'collapse'>
+			<div id = "comment-9888" class = "comment">
+				<p>OK - I went back to a serial connection and used your function to read the distance traveled - mine still comes back and gives a -48 when I expect a number around +200. I'm getting to run a set of tests with different speeds and times, but it looks like the numbers are consistently off by a factor of around -4.</p>
+			</div>
+			<div id = "comment-9910" class = "comment">
+				<p>Just a quick update - this has been determined to be a bug in the Create2 firmware - the iRobot folks were very helpful in tracking this down. They have suggested using either packet ID 43 or 44 (or both) to get the number of encoder counts per wheel, and then using the number of counts per rev (508.8) and diameter of the wheel (72 mm) as a temporary workaround to compute distance traveled.</p>
+			</div>
+			</div>
+				<textarea id = "speech-6877" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6877">
+					<img id="start_img-6877" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6877">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

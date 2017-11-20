@@ -1,0 +1,135 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Comparing maps to groundtruth
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-734" class = "post">
+			<h2>Question</h2>
+			<div id="vote-734" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">6</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 211</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Comparing maps to groundtruth</h2>
+<p>When you've created a map with a SLAM implementation and you have some groundtruth data, what is the best way to determine the accuracy of that map?  </p>
+
+<p>My first thought is to use the Euclidean distance between the map and groundtruth. Is there some other measure that would be better?  I'm wondering if it's also possible to take into account the covariance of the map estimate in this comparison. </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-734" data-toggle = "popover">
+				<p>user name : munk</p>
+				<p> user reputation : 406</p>
+				<p class = "tagcontent" id = "usertaginfo-734">{'None': 2, 'noise': 7, 'theory': 7, 'ekf': 14, 'mapping': 13, 'slam': 41, 'kalman-filter': 26}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-734">Load Comments</button></br>
+			<div id = "commentsection-734" class = 'collapse'>
+			<div id = "comment-936" class = "comment">
+				<p>This is an interesting problem.  Be aware that you might fall into a fractal problem where having more points gives you (falsely) a larger error.  In other words, [your increased precision works against you](http://en.wikipedia.org/wiki/How_Long_Is_the_Coast_of_Britain%3F_Statistical_Self-Similarity_and_Fractional_Dimension).</p>
+			</div>
+			</div>
+				<textarea id = "speech-734" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-734">
+					<img id="start_img-734" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-734">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-735"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-735" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Assuming the map is a point cloud and that you know the alignment between the ground truth data and the map then calculating the <a href="http://en.wikipedia.org/wiki/Mean_squared_error">mean squared error</a> (MSE) would give you a relative understanding of the accuracy. A lower MSE would indicate they are very similar, 0 of course mean identical, and a high MSE would idicate they are very different.</p>
+
+<p>If you do not know the alignment between the ground truth and the map then you could use <a href="http://en.wikipedia.org/wiki/Expectation%E2%80%93maximization_algorithm">expectation maximization</a> over the alignments to find the best fit and then use MSE.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-735" data-toggle = "popover">
+				<p>user name : DaemonMaker</p>
+				<p> user reputation : 3321</p>
+				<p class = "tagcontent" id = "usertaginfo-735">{'control': 4, 'stereo-vision': 15, 'None': 271, 'computer-vision': 15, 'battery': 7, 'cameras': 15, 'research': 4, 'troubleshooting': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-735">Load Comments</button></br>
+			<div id = "commentsection-735" class = 'collapse'>
+			<div id = "comment-935" class = "comment">
+				<p>My map is a vector of points in 2D, but I assume it's the same in the 3d case: <f1x, f1y, (f1z),...fnx, fny, (fnz)>.  Is this the same as a point cloud? The wikipedia article suggests it is, but this is the first time I've come across the term. Also, by alignment, do you mean the correspondence between map features and groundtruth landmarks or something else?</p>
+			</div>
+			<div id = "comment-937" class = "comment">
+				<p>Yes you effectively have a point cloud where all the z components equal 0.
+
+By alignment I mean the relative placement and orientation of the two. In effect this tells you the correspondence between map features and ground truth landmarks. However, you can work backwards. I.e. if you know the correspondence between the map features and the ground truth features then you can extract the alignment. The problem in doing so is the possible error in your data. Expectation maximization (EM) would let you find the alignment that minimizes the difference between the two.</p>
+			</div>
+			</div>
+				<textarea id = "speech-735" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-735">
+					<img id="start_img-735" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-735">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

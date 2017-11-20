@@ -1,0 +1,232 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Instantaneous Center of Rotation for a differential Drive Robot
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-1369" class = "post">
+			<h2>Question</h2>
+			<div id="vote-1369" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 769</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Instantaneous Center of Rotation for a differential Drive Robot</h2>
+<p>I want to find the instantaneous center of rotation of a differential drive robot.</p>
+
+<p>Assuming I know that the robot will travel with a particular linear and angular velocity $(v,w)$ I can use the equations (given at <a href="http://rossum.sourceforge.net/papers/CalculationsForRobotics/CirclePath.htm" rel="nofollow noreferrer">A Path Following a Circular Arc To a Point at a Specified Range and Bearing</a>) which come out to be:</p>
+
+<p>$$x_c = x_0 - |\frac{v}{w}| \cdot sin(\theta_0)$$
+$$y_c = y_0 - |\frac{v}{w}| \cdot cos(\theta_0) $$</p>
+
+<p>I'm using the webots simulator and I dumped gps points for the robot moving in a circle (constant v,w (1,1)) and instead of a single $x_c$ and $y_c$ I get a center point for every point. If I plot it out in matlab it does not look nice:</p>
+
+<p><a href="https://docs.google.com/file/d/0BzLnU1-OKHh7dmxvbGU1bDFKcFU/edit?usp=sharing" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/J1r3m.jpg" alt="circles.jpg"></a></p>
+
+<p>The red points in the image are the perceived centers, they just seem to trace the curve itself. </p>
+
+<p>Is there some detail I am missing? I'm really really confused as to what's happening. </p>
+
+<p>I'm trying to figure out the center so I can check whether an obstacle is on this circle or not and whether collision will occur. </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1369" data-toggle = "popover">
+				<p>user name : canatan</p>
+				<p> user reputation : 46</p>
+				<p class = "tagcontent" id = "usertaginfo-1369">{'motion': 5, 'mobile-robot': 5, 'None': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-1369" class = 'collapse'>
+			</div>
+				<textarea id = "speech-1369" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1369">
+					<img id="start_img-1369" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1369">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-1374"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1374" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>It looks like there is some noise in the sensor readings. Make sure your simulator is reporting ground truth, or you have some tolerance to noise.</p>
+
+<p>See here: <a href="http://www.cyberbotics.com/dvd/common/doc/webots/guide/section9.2.html" rel="nofollow">http://www.cyberbotics.com/dvd/common/doc/webots/guide/section9.2.html</a></p>
+
+<p>In particular</p>
+
+<blockquote>
+  <p>In Supervisor code:</p>
+  
+  <p>To get the 3D position of any Transform (or derived) node in the
+  Supervisor code: you can use the wb_supervisor_node_get_position()
+  function. Please check this function's description in the Reference
+  Manual.</p>
+  
+  <p>To get the 3D position of any Transform (or derived) node placed at
+  the root of the Scene Tree (the nodes visible when the Scene Tree is
+  completely collapsed), you can use the
+  wb_supervisor_field_get_sf_vec3f() function. Here is an example.</p>
+  
+  <p>A simulation example that shows both the GPS and the Supervisor
+  techniques is included in the Webots installation, you just need to
+  open this world: $WEBOTS_HOME/projects/samples/devices/worlds/gps.wbt.</p>
+</blockquote>
+
+<hr>
+
+<p>IF in fact noise in the state estimate is the problem (bit IF), then 
+the way to compensate for such errors is to use an estimate of your state and error models. It's beyond the scope of the question, unfortunately. If you want to do obstacle avoidance AND you are certain that sensor error is the issue, I suggest you:</p>
+
+<ol>
+<li><p>Check for obstacles in a wide band (a fat circle) which could represent your trajectory with a bit of error</p></li>
+<li><p>Run a filter to get an estimate of robot position, then find the "likely" collisions</p></li>
+<li><p>Only look for obstacles over a small window into the future.  In the short term, your state estimate should be fine.</p></li>
+</ol>
+
+<p><em>However, these are heavy handed fixes for what is likely a small problem.</em></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1374" data-toggle = "popover">
+				<p>user name : Josh Vander Hook</p>
+				<p> user reputation : 3960</p>
+				<p class = "tagcontent" id = "usertaginfo-1374">{'None': 345}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1374">Load Comments</button></br>
+			<div id = "commentsection-1374" class = 'collapse'>
+			<div id = "comment-2979" class = "comment">
+				<p>Thanks @Josh. The webots part is not what I'm supposed to really touch but I'll definitely look into it. There is a ROS interface I'm using for this robot and the webots simulator. 
+
+Even if there is some sensor noise my estimates should be close to each other right ? In some cases I trace a complete circle with say v and w as 1 and 1 but the center was so off. Is it just the sensor noise or is there something wrong with the math I'm using ? 
+
+Does the instantaneous center of rotation keep changing even if the velocities don't change? 
+if its just noise is there some way I can account for it?</p>
+			</div>
+			<div id = "comment-2980" class = "comment">
+				<p>No the ICR doesn't change if V, W, and the robot position at time i+1 = exactly the position at time i + the correct update from V, W.  If you nudge the new position a bit, the ICR will change. A small angular error could result in a big change in ICR for large circles.</p>
+			</div>
+			<div id = "comment-2981" class = "comment">
+				<p>Thank you @Josh. is there any way I can compensate for such errors ? I'm trying to implement the collision detection as in the dynamic window approach and using the distance between the obstacle and the ICC to figure out whether a point is on that circle or not.</p>
+			</div>
+			<div id = "comment-2982" class = "comment">
+				<p>I've edited the question a bit.</p>
+			</div>
+			<div id = "comment-2988" class = "comment">
+				<p>Thanks Josh. 
+I was trying to use the ICC to determine whether or not  the obstacle lies on that curve by calculating the distance between the ICC and the obstacle and comparing it with the radius (v/w). 
+
+Does that seem like a valid option in such a case ?</p>
+			</div>
+			</div>
+				<textarea id = "speech-1374" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1374">
+					<img id="start_img-1374" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1374">Comment</button>
+			<br><div id = "ans-1376"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1376" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>It's hard to see what's going on exactly, especially without seeing the code or knowing more about the sensor model. That's said, your trajectory is mostly straight and $w$ is thus mostly close to zero. This means that: </p>
+
+<ul>
+<li>your center of rotation is far away during most of your experiment -- likely beyond the bounds of your graph;</li>
+<li>you may have numerical stability issues due to a division by a very small number.</li>
+</ul>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1376" data-toggle = "popover">
+				<p>user name : abey</p>
+				<p> user reputation : 270</p>
+				<p class = "tagcontent" id = "usertaginfo-1376">{'None': 12}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1376">Load Comments</button></br>
+			<div id = "commentsection-1376" class = 'collapse'>
+			<div id = "comment-2987" class = "comment">
+				<p>I adjusted for the size of the robot assuming that the location/coordinates of the robot point to the center and since its a differential drive robot the radius must be half the wheel distance ... 
+So now I get something like this 
+https://docs.google.com/file/d/0BzLnU1-OKHh7eDZKd3hlUGRwekE/edit?usp=sharing 
+
+The points come out to be close enough but the center s are just so off. I didn't plot the centers as individual points though. 
+
+Do you think its because w is too small ? if w is 1 it isnt much too small right? 
+
+So should I should focus on the coordinate sensor model ?</p>
+			</div>
+			</div>
+				<textarea id = "speech-1376" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1376">
+					<img id="start_img-1376" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1376">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,192 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How do SLAM algorithms handle a changing environment?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-1729" class = "post">
+			<h2>Question</h2>
+			<div id="vote-1729" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">11</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 348</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How do SLAM algorithms handle a changing environment?</h2>
+<p>I'm doing some groundwork for a project, and I have a question about the current state of SLAM techniques.</p>
+
+<p>When a SLAM-equipped device detects an object, that object's position is stored. If you look at the point cloud the device is generating, you'll see points for this object, and models generated from it will include geometry here.</p>
+
+<p>If an object is placed in a previously-empty space, it is detected, and points are added. Subsequent models will feature geometry describing this new object.</p>
+
+<p>How does the device react if that object is removed? As far as I've seen, SLAM systems will tend to leave the points in place, resulting in "ghost" geometry. There are algorithms that will disregard lone points caused by transient contacts, but objects that remained long enough to build up a solid model will remain in the device's memory. Are there any systems that are capable of detecting that previously-occupied space is now empty?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1729" data-toggle = "popover">
+				<p>user name : anaximander</p>
+				<p> user reputation : 181</p>
+				<p class = "tagcontent" id = "usertaginfo-1729">{'control': 5, 'None': 0, 'raspberry-pi': 5, 'arduino': 5, 'radio-control': 5, 'uav': 5, 'slam': 11}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1729">Load Comments</button></br>
+			<div id = "commentsection-1729" class = 'collapse'>
+			<div id = "comment-3630" class = "comment">
+				<p>This question doesn't have much to do with machine learning.</p>
+			</div>
+			<div id = "comment-3632" class = "comment">
+				<p>Perhaps not; I wasn't 100% sure which tags would fit. The application I have in mind seemed to fit, but perhaps without that context it's less applicable...</p>
+			</div>
+			</div>
+				<textarea id = "speech-1729" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1729">
+					<img id="start_img-1729" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1729">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-1735"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1735" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>That very much depends. Since SLAM is a problem (or at least a technique), not a solution, there is no definitive SLAM algorithm.  Semantically, you have to decide what goes on a "map" of the environment, and that determines how your algorithm should handle transient (aka moving) signals. But that's a digression.</p>
+
+<h3>Permanent maps:</h3>
+
+<p>Permanent maps should contain enough information to localize yourself with respect to known geometry. Typically used in buildings. Typically human-readable. See Willow-Garage's work. or anything by Thrun in his quite famous textbook. If you lose this map, you have to build it up over time again. </p>
+
+<ol>
+<li><p>Removing objects. Yes, the object will appear in a static map for a time. If no measures are taken to remove previously-detected objects, then it will persist. A typical 2D grid-based representation will use each grid cell to represent the probability of an object, so after time the object will "fade".</p></li>
+<li><p>Adding objects. Same as above.</p></li>
+</ol>
+
+<h3>Local maps:</h3>
+
+<p>In reality, SLAM is usually used to localize a robot as it moves, and the map is not kept permanently (or, it is kept permanently, but only the closest Y features are used). Local maps are whatever the robot needs to know to determine how it moved in the last X minutes, where X depends on the application. If you lose the map, you can still fly just fine by using whatever features are in sight right now. </p>
+
+<ol>
+<li><p>Batch methods such as Bundle Adjustment using visual features is a very common technique in this direction. Features may be kept over time, and even revisited, but a moving feature is just an unreliable feature, and it will be ignored when trying to figure out where the robot is.</p></li>
+<li><p>Visual SLAM is exactly this. It is a delta-P (change in pose) estimator, not a map-based localization algorithm. </p></li>
+<li><p>In short, as long as most things are <em>not currently</em> moving, it doesn't matter if you remove an object when the robot isn't "looking" at it.</p></li>
+</ol>
+
+<h3>Example</h3>
+
+<p>So do this. When you read a SLAM paper, decide the following:</p>
+
+<ol>
+<li><p>Are they really building a map?</p></li>
+<li><p>Are they just keeping a list of features and locations?</p></li>
+<li><p>If so, what "features" go in the map? Lines, points, visual features?</p></li>
+<li><p>Are these features likely to move? </p></li>
+<li><p>If so, how can they handle that?</p></li>
+<li><p>Finally, sensor noise often "looks" like moving features. How do they handle sensor noise? Because this will often determine what happens to moving features.</p></li>
+</ol>
+
+<p>You'll get a different answer for each paper / author / book / application. In short, they are typically omitted since they don't help the robot localize much, and can be avoided by simply having a few low-level path planner that only uses local information. </p>
+
+<h3>Good luck, slam is a huge topic.</h3>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1735" data-toggle = "popover">
+				<p>user name : Josh Vander Hook</p>
+				<p> user reputation : 3960</p>
+				<p class = "tagcontent" id = "usertaginfo-1735">{'None': 345}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1735">Load Comments</button></br>
+			<div id = "commentsection-1735" class = 'collapse'>
+			<div id = "comment-3631" class = "comment">
+				<p>Thanks! Do you know of any techniques that track where objects were "acquired" and "lost"? I'm looking at applications of a subset of SLAM-type algorithms and one area of interest is the identification of "transition" areas like doors and occluded corners where objects might appear from. This application turns the usual fading probability metric on its head - instead of having objects "fade" when out of sight, unobserved areas slowly increment their value to denote that we don't know what's here because we haven't looked recently, so we should be cautious when moving into this space.</p>
+			</div>
+			<div id = "comment-3633" class = "comment">
+				<p>Way harder. The only way to do this correctly is to uniquely identify objects. Like, put a barcode on them. Otherwise object A may have moved to location B, or maybe A and B swapped, etc. Read up on semantic mapping. You need an algorithm which can "recognize" that moving things are actually "doors" which should be attached to "walls" but only when I'm "inside" but what does "inside" mean to a robot anyway?  I think you should read more and report back.</p>
+			</div>
+			<div id = "comment-3635" class = "comment">
+				<p>Yeah, the idea here is to sidestep the problem of semantics by simply highlighting "this is an area where I keep seeing things that weren't there before, or ceasing to see things that were there". Chances are, this area is some kind of transition - door, box, window, occluded corner. Which of those we're dealing with is less important; this is purely for collision avoidance, so we want to avoid all of these areas. Likewise, we don't particularly need to know which object is which; only that there's a significant change in the overall amount of space being occupied by Stuff.</p>
+			</div>
+			<div id = "comment-3636" class = "comment">
+				<p>Review. Literature.  Such a problem arises from A) Stuff moving. B) robot moving. C) Robot getting lost. D) incorrect maps. Each of those 4 things has 4 different correct solutions. If you don't handle all 4, you will build completely incorrect maps. This is why SLAM is not solved, and still hard.  Read Up and come back with specific questions related to what you have learned.</p>
+			</div>
+			<div id = "comment-3637" class = "comment">
+				<p>That's what I'm doing; the more I read, the longer my list of things to read gets! This was the first of the many questions my reading has raised. Apologies for extending the question somewhat in the comments; I've not been getting much response, and SLAM is such a huge topic... you seemed to know what you're talking about so I was hoping I could get a few pointers. I have semantic mapping papers on my list, but there's a few others I need to read as a foundation for that... Anyways, I guess it's back to the reading for now.</p>
+			</div>
+			<div id = "comment-3638" class = "comment">
+				<p>SM is one way to handle this problem. As I said, good luck. SLAM is enormous. When reading lit, it's sometimes better to start with an application in mind, rather than trying to tackle the whole thing (and all tradeoffs) at once. I.e., I want to build a robot that does this, which, oh, btw, requires precise localization without GPS / semantic markers.</p>
+			</div>
+			<div id = "comment-3639" class = "comment">
+				<p>Yeah, I have an application in mind, but a lot of the stuff I'm reading only covers it tangentially because it's not strictly a core SLAM concern. Thanks for the help, anyway. I'm sure I'll be back with more questions as I dig through the reading list!</p>
+			</div>
+			<div id = "comment-3640" class = "comment">
+				<p>let us [continue this discussion in chat](http://chat.stackexchange.com/rooms/10091/discussion-between-josh-and-anaximander)</p>
+			</div>
+			</div>
+				<textarea id = "speech-1735" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1735">
+					<img id="start_img-1735" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1735">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

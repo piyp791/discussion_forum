@@ -1,0 +1,166 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Kalman filter Issue - GPS Odometry Fusion
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-4287" class = "post">
+			<h2>Question</h2>
+			<div id="vote-4287" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 500</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Kalman filter Issue - GPS Odometry Fusion</h2>
+<p>I am working on estimating a robots pose using Odometry and GPS.</p>
+
+<p>My first problem is that all kinematic model i have seen for a differential drive robot proposes using the displacement of the left and right wheels to evaluate the robots next pose. However, in my situation the robot i have only spits out current X and Y pose relative to the starting point of the movement. can i use this as my state estimate
+P = [x,y]T</p>
+
+<p>P = [x0,y0] + [dx,dy] where dx and dy are change in respective coordinates gotten from the robots odometry.</p>
+
+<p>if the above is posible how do i calculate the state covariance Q of the filter.</p>
+
+<p>For GPS, how do i evaluate the covariance R; i have tried to collect multiple reading of latitude and longitude from a fixed point but i dont know if this is righ and i just dont get evaluate the covariance from these data (feeling dumb).</p>
+
+<p>Thank you in anticipation.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4287" data-toggle = "popover">
+				<p>user name : Lex</p>
+				<p> user reputation : 18</p>
+				<p class = "tagcontent" id = "usertaginfo-4287">{'mobile-robot': 3, 'None': 0, 'odometry': 3, 'kalman-filter': 3, 'gps': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-4287" class = 'collapse'>
+			</div>
+				<textarea id = "speech-4287" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4287">
+					<img id="start_img-4287" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4287">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-4292"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4292" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>In regards to your question about differential drive, it sounds as though your robot is using the kinematic model to estimate the position, but this is being done "internally" (i.e., in the embedded on-board software). Whether or not this is okay depends on whether the wheel radii and track width (distance between left and right wheels) it uses are correct. If they aren't (e.g., you changed the wheels), the values it is spitting out will be very inaccurate. Assuming these are approximately correct, instead of the displacement of the left and right wheels, first calculate the translation and rotation since the last measurement, i.e.,</p>
+
+<pre><code>translation = sqrt( (dx - dx_prev)^2 + (dy - dy_prev)^2 )
+rotation = dtheta - dtheta_prev
+</code></pre>
+
+<p>where <code>dx</code>, <code>dy</code>, and <code>dtheta</code> are your current measurements, and <code>dx_prev</code>, <code>dy_prev</code>, <code>dtheta_prev</code> are the previous measurements. Note that I assumed your robot is reporting the heading (theta) as well. If it doesn't, that means if the robot is turning on the spot, you won't be able to tell because no change in position is occurring.</p>
+
+<p>Your new input <code>u</code> is now</p>
+
+<pre><code>u = [translation; rotation]
+</code></pre>
+
+<p>Use an appropriate kinematic model where this is your input (e.g., change in <code>x</code> is <code>translation * cos(theta)</code>, etc.). Setting an appropriate covariance matrix for <code>u</code> is tricky. I would recommend determining it empirically (i.e., do a series of experiments and decide how much uncertainty you should add to <code>u</code> based on the results). Start with a guess such as</p>
+
+<pre><code>Q = [0.005^2, 0; 0, 0.005^2]
+</code></pre>
+
+<p>and check if the 3-sigma ellipse covers the actual position after the experiment. You can also get fancy and set Q at each time stamp, scaled according to the motion, i.e.,</p>
+
+<pre><code>Q = [(a*translation)^2 + (b*rotation)^2, 0; 0, (c*translation)^2 + (d*rotation)^2]
+</code></pre>
+
+<p>where you tune for values of <code>a</code>, <code>b</code>, <code>c</code>, and <code>d</code>. This allows you (for example), to add more uncertainty if the robot is turning (larger values of <code>c</code> and <code>d</code>).</p>
+
+<p>For your question about determining the <code>R</code> matrix, without getting into the details of how GPS works, your best bet is probably once again to do tests. One simple test would be to measure out some places on the ground (so you know their positions). Start by converting your initial latitude to (<code>x</code>, <code>y</code>) (see <a href="https://stackoverflow.com/questions/16266809/convert-from-latitude-longitude-to-x-y">here</a>). This will be your origin. Next drive to each of your known positions and calculate the (<code>x</code>, <code>y</code>) according to the GPS, and subtract off your initial position. Drive from known position to known position and so on (including revisiting positions) and record your (<code>x</code>, <code>y</code>) according to GPS. After this experiment you'll have a list of estimated positions and their corresponding true positions. From this you can use statistics to calculate the average uncertainty, and can set <code>R</code> appropriately.</p>
+
+<p>Good luck!</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4292" data-toggle = "popover">
+				<p>user name : kamek</p>
+				<p> user reputation : 775</p>
+				<p class = "tagcontent" id = "usertaginfo-4292">{'None': 48}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-4292">Load Comments</button></br>
+			<div id = "commentsection-4292" class = 'collapse'>
+			<div id = "comment-6838" class = "comment">
+				<p>Thanks alot for your detailed response. Please could you share more information about what you mean by "determining the state covariance matrix empirically". What comes to mind is for translation moving the robot say for example 1m and record the translation several times, then evaluate the variance of this. For rotation, issue a fixed turn command and record the values of rotation several times then calculating the variance as well. Is a way of doing this.</p>
+			</div>
+			<div id = "comment-6839" class = "comment">
+				<p>While the way you described is perfectly reasonable, another way is to set up a kinematic model (i.e., how to transform `u` into a pose `(x,y,theta)`), and use it to estimate your pose and its 3x3 covariance matrix (`P`) after driving around (both translations and rotations). Propagate the covariance at each time step via `P_(k+1) = FPF^T + GQG^T`, where `F` is the Jacobian of the kinematic model with respect to your state, and `G` is the Jacobian with respect to `u`. You can then convert `P` to an error ellipse to check if the true position falls within 3-standard deviations of your estimate.</p>
+			</div>
+			<div id = "comment-6840" class = "comment">
+				<p>See one of my [other answers](http://robotics.stackexchange.com/questions/2708/multiple-position-estimates-fusion/2872#2872) for a similar kinematic model and its Jacobians.</p>
+			</div>
+			</div>
+				<textarea id = "speech-4292" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4292">
+					<img id="start_img-4292" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4292">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

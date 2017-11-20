@@ -1,0 +1,135 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Bayesian filter for 2-D grid localizaton
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9625" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9625" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 109</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Bayesian filter for 2-D grid localizaton</h2>
+<p>I have some data obtained from an experiment in terms of movements and observations with odometry and sensor data. My task is to find the probability mass on each of the grid cells after each set of motion and observation. I'm a bit lost in figuring out how to compute probability mass for each of the grid cell.
+My odometry information is in terms of rotation, translation and rotation and my sensor information is in terms of range and bearing angle. 
+How do I calculate the probability of robot present in each of the grid cell?</p>
+
+<p>I have the formula for belief after motion as summation(P(x|u, x')xBel(x'))
+How do I compute the motion model with noise?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9625" data-toggle = "popover">
+				<p>user name : Fayaz Ahmed</p>
+				<p> user reputation : 6</p>
+				<p class = "tagcontent" id = "usertaginfo-9625">{'filter': 1, 'None': 0, 'localization': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-9625" class = 'collapse'>
+			</div>
+				<textarea id = "speech-9625" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9625">
+					<img id="start_img-9625" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9625">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9643"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9643" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I can give you some leads and you can probably take it from there. Since you mention calculating "the probability of the robot present in each of the grid cell", what you want to do is essentially a histogram filter, i.e a discrete bayes filter applied to a continuous state space.
+If you have the <a href="http://www.probabilistic-robotics.org/" rel="nofollow noreferrer">Probabilistic Robotics book by Thrun</a>, you will find the algorithm you are looking for in chapter 8 as "Grid Localization":</p>
+
+<p><a href="https://i.stack.imgur.com/Gaaag.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/Gaaag.png" alt="enter image description here"></a></p>
+
+<p>which is a variant of Markov localization:
+<a href="https://i.stack.imgur.com/MAlYk.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/MAlYk.png" alt="enter image description here"></a>
+The Grid Localization algorithm precisely calculates at each time step the probability of each cell to correspond to the actual robot's state. If you only care about estimating the position (x,y), your grid is in 2D. If you also want to estimate the orientation (x,y,theta), your grid is in 3D, and each plane of the grid corresponds to an orientation:</p>
+
+<p>As for the motion/measurement models, you can find them in chapter 5 and 6 of the same book. 
+If you don't have the book, you can find some excerpts <a href="http://ais.informatik.uni-freiburg.de/teaching/ss11/robotics/slides/06-motion-models.pdf" rel="nofollow noreferrer">here for motion models</a> and <a href="http://ais.informatik.uni-freiburg.de/teaching/ss11/robotics/slides/07-sensor-models.pdf" rel="nofollow noreferrer">here for sensor models</a></p>
+
+<p>As for your second question, P(x|u,x') in your example should be your motion model, so any model of odometry noise should be included inside, but the exact form will depend on the motion model that you choose, cf the links above.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9643" data-toggle = "popover">
+				<p>user name : al-dev</p>
+				<p> user reputation : 106</p>
+				<p class = "tagcontent" id = "usertaginfo-9643">{'None': 9}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-9643" class = 'collapse'>
+			</div>
+				<textarea id = "speech-9643" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9643">
+					<img id="start_img-9643" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9643">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

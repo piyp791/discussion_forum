@@ -1,0 +1,218 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Robots with less than 6 degrees of freedom
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-12510" class = "post">
+			<h2>Question</h2>
+			<div id="vote-12510" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 61</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Robots with less than 6 degrees of freedom</h2>
+<p>Is there any possibility to have a robot with <strong>less than six degrees of freedom</strong> &amp; still be able to achieve <strong>any position &amp; orientation around end effector</strong>?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12510" data-toggle = "popover">
+				<p>user name : Akhil Kathi</p>
+				<p> user reputation : 13</p>
+				<p class = "tagcontent" id = "usertaginfo-12510">{'sensors': 0, 'None': 0, 'ros': 0, 'inverse-kinematics': 1, 'first-robotics': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-12510" class = 'collapse'>
+			</div>
+				<textarea id = "speech-12510" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12510">
+					<img id="start_img-12510" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12510">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-12511"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-12511" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Short answer: No.</p>
+
+<p>Long answer: In how many dimensions you are defining 'any'?</p>
+
+<p>The best way to understand it is actually through math.</p>
+
+<p>Let's say you have a desired position $$p=\left[\begin{matrix}x\\y\\z\end{matrix}\right]$$ and an orientation $$\omega=\left[\begin{matrix}\chi\\\psi\\\zeta\end{matrix}\right]$$ in three dimensions. 
+Now let's say we have a robot with six degrees of freedom $$Q=\left[\begin{matrix}q1\\q2\\q3\\q4\\q5\\q6\end{matrix}\right]$$.</p>
+
+<p>Assuming you know your position and orientation you are trying to find your joint angles. This can be written in matrix form.</p>
+
+<p>$$\left[\begin{matrix}q1\\q2\\q3\\q4\\q5\\q6\end{matrix}\right]= F\left[\begin{matrix}x\\y\\z\\\chi\\\psi\\\zeta\end{matrix}\right]$$.</p>
+
+<p>Where F a 6x6 matrix with your inverse kinematics functions. </p>
+
+<p>Notice how you have 6 knowns (your position and orientation) and six unknown (your joint angles). </p>
+
+<p>Basically you have a 6-by-6 system to solve. If you have fewer degrees of freedom then you have fewer unknowns which means that you can't solve independently. Meaning your position and orientation are linearly dependent.</p>
+
+<p>For example changing your position $x$, will change your $\chi$ or your $\psi$ or even your $y$. Imagine trying to move a glass of water in a straight line and suddenly the glass turns over and then back again. </p>
+
+<p>So think a robot with less than six degrees of freedom as a robot that you can't control its behavior at any time rather than a robot that can't reach a certain position at any time.</p>
+
+<p>Now if you have a task that does not require to move along and rotate around an axis (e.g. $z$ &amp; $\zeta$) then you can ignore them and now you have a 4-by-4 system to worry about. Therefore, for this 2D task, a robot with four degrees of freedom can achieve 'any' position and orientation. Similarly, if you put a constraint on the force along the $x$ direction, you now have an $F_x$ variable that entered your system making it a 7-by-7 system that requires seven degrees of freedom to achieve 'any' position and orientation.</p>
+
+<p>Generally, 6 degrees of freedom is the standard robot because it can control its end effector along each dimension independently. Any fewer degrees of freedom can still be useful in some more limited tasks. Higher degrees of freedom can tackle more complicated tasks, though in those case there is a selection whether all parameters will be satisfied independently or no. </p>
+
+<p>The bottom line is, for general cases in a 3D environment you need 6 degrees of freedom. </p>
+
+<p>I tried to keep my answer short without using too much math but let me know if you are still unsure about the effect the number of degrees of freedom have on the position and orientation of the end effector.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12511" data-toggle = "popover">
+				<p>user name : Dimis</p>
+				<p> user reputation : 98</p>
+				<p class = "tagcontent" id = "usertaginfo-12511">{'None': 5, 'jacobian': 3}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-12511">Load Comments</button></br>
+			<div id = "commentsection-12511" class = 'collapse'>
+			<div id = "comment-21977" class = "comment">
+				<p>Inverse kinematics functions are generally not linear.</p>
+			</div>
+			<div id = "comment-22013" class = "comment">
+				<p>**3 D** space is what I meant by **any**</p>
+			</div>
+			<div id = "comment-22014" class = "comment">
+				<p>TY! @Dimis
+it was very helpful</p>
+			</div>
+			</div>
+				<textarea id = "speech-12511" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12511">
+					<img id="start_img-12511" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12511">Comment</button>
+			<br><div id = "ans-12515"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-12515" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>In abstract theory, yes. You can have a body constrained to a path (1 Dof, forward and back along the path) and the path can loop through all possible orientations. Likewise you can constrain the body to a higher order manifold (a surface allows 2 or 3Dof depending on the physical mechanism of constraint).</p>
+
+<p>Mechanisms that we can build have other requirements (like supporting loads and forces) that limit what we can do.</p>
+
+<p>Here's a simple example of a practical mechanism. Say you have a 2 DoF mechanism that controls orientation and distance along a line. The accuracy of the distance, and orientation, is limited to the precision of your encoders. You can replace that 2Dof mechanism with a 1DoF screw who's pitch is equal to the linear encoder resolution. As the output spins on the screw, it can reproduce every position and orientation that the 2Dof mechanism could. The cost is that you have to spin around a full revolution to move one step in the linear direction.</p>
+
+<p>Another good example is a car. A 2DoF mechanism on a 3DoF plane. You can achieve any position and orientation with a car, but you may need to do some loops or back-and-forth driving to get there.</p>
+
+<p>So, keeping in mind that a 6DoF robot has limited positions and orientations that it can reach, and limited resolution, Yes, there is the possibility that a 5 or fewer Dof machine could achieve the same range of position and orientations.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12515" data-toggle = "popover">
+				<p>user name : hauptmech</p>
+				<p> user reputation : 2621</p>
+				<p class = "tagcontent" id = "usertaginfo-12515">{'battery': 2, 'None': 220, 'lithium-polymer': 2}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-12515" class = 'collapse'>
+			</div>
+				<textarea id = "speech-12515" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12515">
+					<img id="start_img-12515" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12515">Comment</button>
+			<br><div id = "ans-12519"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-12519" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Physically Speaking <strong>No</strong>.</p>
+
+<p>Even most 6-axis (6DoF) industrial robots are unable to achieve full range of motion within their work envelope (or the work envelope is artificially restricted as more commonly seen). 7-axis (7DoF) robotic arms (commonly know as collaborative robots) have a much greater flexibility; They are generally only restricted by physical interference with their own casting (body).</p>
+
+<p>In the below link, the author discusses the relative restrictions on modeling an Nth degree robotic arm. Specifically, as to how difficult it is to model how the casting restricts End-of-arm-Tooling in both position and orientation, as the mathematics can produce a valid result that results in an unattainable position (robot physically intersecting itself).</p>
+
+<p>Sources: <a href="http://ieeexplore.ieee.org/abstract/document/1086995/" rel="nofollow noreferrer">A complete generalized solution to the inverse kinematics of robots</a></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12519" data-toggle = "popover">
+				<p>user name : GOATNine</p>
+				<p> user reputation : 111</p>
+				<p class = "tagcontent" id = "usertaginfo-12519">{'None': 1}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-12519" class = 'collapse'>
+			</div>
+				<textarea id = "speech-12519" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12519">
+					<img id="start_img-12519" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12519">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

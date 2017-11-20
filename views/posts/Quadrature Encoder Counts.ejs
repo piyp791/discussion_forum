@@ -1,0 +1,490 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Quadrature Encoder Counts
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-4579" class = "post">
+			<h2>Question</h2>
+			<div id="vote-4579" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 176</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Quadrature Encoder Counts</h2>
+<p>Actually , I have been since two weeks looking for convinced and final solution for my problem , actually I am completely lost , I am working on mobile robot (Rover 5) with 2 motors , 2 encoders . the controller that designed to the robot needs to know the odometery of mobile robot (X ,Y, Heading Angle ) , actually I am trying to function the encoders for this purpose , getting X ,Y, Heading Angle by measuring the traveled distance by each wheel , so to get the X ,Y, Heading Angle values , I should compute a accurate readings without missing any counts or ticks as could as possible .</p>
+
+<p>The problem now is :</p>
+
+<p>In the code in the attachment , while I am testing the encoders counts , I noticed that there is a difference between counts of encoders even when they spin in the same constant speed (PMW) , the difference increases as the two motors continue . so I thought that is the main cause of inaccurate odometery results .</p>
+
+<p>In the output of the code (in the attachment also) the first two columns are right and left motors speed , the third &amp; forth columns are right and left encoder counts , the fifth column is the difference between two encoders count , as you could see ,that even when the speed of two motors are approximately the same (each motor feed up with 100 PWM) there is a difference in the encoder counts and as you could see that the difference become big and big as the motors continuing spin .</p>
+
+<p>One thing I thought that sending the same PWM value to two different motors will almost never produce the exact same speed , so I think that I should detect the absolute motion of the motors and adjust the power to get the speed/distance , but when I test the speed of motors after feed them with 100 PWM at same time , the two speeds were almost identical , but I noticed that there is a difference between counts of two encoders even when the motors spin in the same constant speed .</p>
+
+<p>Actually , I don't know where is the problem , Is it in the code ? Is it in the hardware ? or what ? I am completely lost , I need for patient someone to help.</p>
+
+<pre><code>/* Encoder-ino.ino
+*/
+#define encoder0PinA 2
+#define encoder0PinB 4
+#define encoder1PinA 3
+#define encoder1PinB 5
+
+volatile int encoder0Pos = 0;
+volatile int encoder1Pos = 0;
+int WR=100;  // angular velocity of right wheel  
+int WL=100;  // angular velocity of right wheel                       
+
+
+
+long newposition;
+long oldposition = 0;
+unsigned long newtime;
+unsigned long oldtime = 0;
+long vel;
+
+
+long newposition1;
+long oldposition1 = 0;
+unsigned long newtime1;
+unsigned long oldtime1 = 0;
+long vel1;
+
+
+
+int ENA=8;    // SpeedPinA connected to Arduino's port 8  
+int ENB=9;    // SpeedPinB connected to Arduino's port 9 
+
+int IN1=48;    // RightMotorWire1 connected to Arduino's port 48
+int IN2=49;    // RightMotorWire2 connected to Arduino's port 49
+
+int IN3=50;    // RightMotorWire1 connected to Arduino's port 48
+int IN4=51;    // RightMotorWire2 connected to Arduino's port 49
+
+
+void setup() {
+ pinMode(ENA,OUTPUT);
+ pinMode(ENB,OUTPUT);
+ pinMode(IN1,OUTPUT);
+ pinMode(IN2,OUTPUT);
+ pinMode(IN3,OUTPUT);
+ pinMode(IN4,OUTPUT);
+
+ digitalWrite(ENA,HIGH);    //enable motorA
+ digitalWrite(ENB,HIGH);    //enable motorB
+  pinMode(encoder0PinA, INPUT); 
+  pinMode(encoder0PinB, INPUT);
+  pinMode(encoder1PinA, INPUT); 
+  pinMode(encoder1PinB, INPUT);  
+// encoder pin on interrupt 0 (pin 2)
+attachInterrupt(0, doEncoderA, CHANGE);  
+
+// encoder pin on interrupt 1 (pin 3)
+
+attachInterrupt(1, doEncoderB, CHANGE);  
+  Serial.begin (9600);
+}
+
+void loop(){ 
+
+    int rightPWM;
+  if (WR &gt; 0) {
+    //forward
+  digitalWrite(IN1,LOW);
+  digitalWrite(IN2,HIGH);
+
+  }  else if (WR &lt; 0){
+    //reverse
+  digitalWrite(IN1,HIGH);
+  digitalWrite(IN2,LOW);
+  }
+
+  if (WR == 0) {
+   rightPWM = 0;
+   analogWrite(ENA, rightPWM);
+  } else {
+    rightPWM = map(abs(WR), 1, 100, 1, 255);
+    analogWrite(ENA, rightPWM);
+  }
+
+ int leftPWM;
+
+  if (WL &gt; 0) {
+     //forward
+  digitalWrite(IN3,LOW);
+  digitalWrite(IN4,HIGH);
+  }  else if (WL &lt; 0) {
+     //reverse
+  digitalWrite(IN3,HIGH);
+  digitalWrite(IN4,LOW);}
+
+  if (WL == 0) {
+    leftPWM = 0;
+    analogWrite(ENB, leftPWM);
+  } else {
+    leftPWM = map(abs(WL), 1, 100, 1, 255);
+    analogWrite(ENB, leftPWM);
+  }
+
+
+// to determine the speed of motors by encoders 
+
+ newposition = encoder0Pos;
+ newtime = millis();
+ vel = (newposition-oldposition) * 1000 /(long)(newtime-oldtime);
+ oldposition = newposition;
+ oldtime = newtime;
+
+ newposition1 = encoder1Pos;
+ newtime1 = millis();
+ vel1 = (newposition1-oldposition1) * 1000 /(long)(newtime1-oldtime1);
+ oldposition1 = newposition1;
+ oldtime1 = newtime1;
+
+Serial.print (vel);
+Serial.print ("\t");
+Serial.print (vel1);
+Serial.print ("\t");
+Serial.print (encoder0Pos*-1); 
+Serial.print("\t"); 
+Serial.print (encoder1Pos*-1); 
+Serial.print("\t"); 
+Serial.println ((encoder0Pos*-1) -( encoder1Pos*-1)); 
+}
+
+
+
+// 1 encoder counts
+
+void doEncoderA(){
+  // look for a low-to-high on channel A
+  if (digitalRead(encoder0PinA) == HIGH) { 
+    // check channel B to see which way encoder is turning
+    if (digitalRead(encoder0PinB) == LOW) {  
+      encoder0Pos = encoder0Pos + 1;         // CW
+    } 
+    else {
+      encoder0Pos = encoder0Pos - 1;         // CCW
+    }
+  }
+  else   // must be a high-to-low edge on channel A                                       
+  { 
+    // check channel B to see which way encoder is turning  
+    if (digitalRead(encoder0PinB) == HIGH) {   
+      encoder0Pos = encoder0Pos + 1;          // CW
+    } 
+    else {
+      encoder0Pos = encoder0Pos - 1;          // CCW
+    }
+  }
+}
+
+
+
+// 2 encoder counts
+
+void doEncoderB(){
+  // look for a low-to-high on channel B
+  if (digitalRead(encoder1PinB) == HIGH) {   
+   // check channel A to see which way encoder is turning
+    if (digitalRead(encoder1PinA) == HIGH) {  
+      encoder1Pos = encoder1Pos + 1;         // CW
+    } 
+    else {
+      encoder1Pos = encoder1Pos - 1;         // CCW
+    }
+  }
+  // Look for a high-to-low on channel B
+  else { 
+    // check channel B to see which way encoder is turning  
+    if (digitalRead(encoder1PinA) == LOW) {   
+      encoder1Pos = encoder1Pos + 1;          // CW
+    } 
+    else {
+      encoder1Pos = encoder1Pos - 1;          // CCW
+    }
+  }
+}
+</code></pre>
+
+<p>the result:</p>
+
+<pre><code>0   0   0   0   0
+0   0   0   0   0
+0   0   0   0   0
+0   0   0   0   0
+0   0   0   0   0
+0   0   0   0   0
+0   0   0   0   0
+0   0   0   0   2
+-181    -90 3   2   1
+-111    -55 5   4   1
+-187    -187    9   8   2
+-176    -235    12  12  1
+-200    -200    16  16  1
+-250    -250    21  21  1
+-250    -250    26  26  1
+-210    -210    31  31  1
+-238    -285    36  36  1
+-315    -263    41  41  1
+-300    -200    47  46  2
+...
+-227    -272    184 182 3
+-285    -285    190 187 4
+-260    -217    195 193 3
+-238    -285    201 199 3
+...
+-250    -250    1474    1473    2
+-250    -250    1480    1479    0
+-208    -291    1485    1485    1
+-304    -260    1491    1492    1
+-240    -240    1498    1498    1
+-260    -260    1504    1505    0
+-250    -291    1510    1511    1
+-280    -240    1516    1517    1
+-260    -260    1523    1523    1
+...
+-250    -250    2953    2948    5
+-250    -291    2959    2955    6
+-250    -250    2965    2961    6
+-291    -250    2971    2967    5
+-250    -291    2978    2973    5
+-304    -250    2985    2980    8
+-320    -250    2992    2986    8
+...
+-320    -240    3085    3075    10
+-291    -291    3092    3082    12
+-269    -230    3099    3089    11
+-250    -291    3105    3095    11
+-280    -280    3112    3102    11
+-269    -230    3118    3108    12
+-250    -291    3125    3115    11
+...
+-291    -250    3607    3587    19
+-115    -269    3610    3594    17
+-240    -240    3617    3601    18
+-375    -291    3625    3607    19
+-269    -269    3632    3614    20
+-291    -250    3638    3620    20
+-240    -280    3645    3627    20
+-280    -240    3652    3633    18
+-200    -280    3657    3640    19
+-269    -230    3664    3647    19
+-333    -291    3674    3653    23
+-400    -280    3682    3659    23
+-280    -240    3688    3666    24
+-240    -280    3695    3673    24
+...
+-230    -269    4677    4644    32
+-208    -291    4681    4651    32
+-280    -240    4690    4657    35
+-320    -280    4696    4664    34
+-240    -240    4703    4670    34
+-291    -291    4710    4677    34
+-269    -230    4716    4683    34
+-240    -280    4723    4690    34
+-280    -240    4727    4697    32
+-160    -280    4736    4703    35
+-416    -291    4745    4709    38
+-346    -230    4753    4716    39
+...
+-360    -240    6240    6190    51
+-375    -291    6247    6197    51
+-269    -269    6253    6203    52
+-291    -250    6261    6210    53
+...
+-192    -269    6428    6374    56
+-240    -280    6436    6380    57
+-291    -250    6443    6387    57
+-269    -269    6449    6394    57
+...
+-269    -269    7763    7687    78
+-240    -280    7770    7694    78
+-291    -250    7776    7700    76
+-192    -269    7781    7707    76
+...
+-269    -230    8263    8179    84
+-250    -291    8269    8186    85
+-240    -240    8276    8192    88
+-384    -269    8286    8199    88
+-250    -291    8292    8206    88
+-269    -230    8299    8212    87
+-291    -291    8305    8219    88
+-240    -240    8310    8225    85
+...
+-160    -120    8359    8276    83
+-125    -166    8362    8280    82
+-115    -115    8365    8283    83
+-80 -120    8367    8285    82
+-125    -83 8370    8288    82
+-83 -125    8371    8290    82
+-43 -43 8373    8291    81
+-83 -83 8374    8293    82
+-45 -90 8375    8294    81
+-43 -43 8376    8296    81
+-43 -43 8377    8296    81
+-43 -43 8378    8297    81
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4579" data-toggle = "popover">
+				<p>user name : Maria88</p>
+				<p> user reputation : 43</p>
+				<p class = "tagcontent" id = "usertaginfo-4579">{'mobile-robot': 8, 'None': 0, 'wheeled-robot': 4, 'quadrature-encoder': 6}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-4579">Load Comments</button></br>
+			<div id = "commentsection-4579" class = 'collapse'>
+			<div id = "comment-17382" class = "comment">
+				<p>What encoders are you using?</p>
+			</div>
+			</div>
+				<textarea id = "speech-4579" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4579">
+					<img id="start_img-4579" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4579">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-4590"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4590" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Good job writing a test program that shows lots of data -- that's an excellent first step in figuring out what's going on.</p>
+
+<p>With two physical motors, there is always going to be at least a little internal difference between them -- slightly different internal winding resistance, slightly different internal bearing friction -- which is often negligible compared to differences in the external loads applied to them.</p>
+
+<p>So when driving two DC motors with exactly the same PWM, the actual physical rotation speed is always going to be slightly different.</p>
+
+<p>That's why many robot setup manuals have a "Calibration for Straight Line Travel" procedure.</p>
+
+<p>Sometimes people walk in circles, perhaps for similar reasons. <a href="http://news.nationalgeographic.com/news/2009/08/090820-walk-in-circles-video-ap.html" rel="nofollow">(a)</a> <a href="http://scienceblogs.com/notrocketscience/2009/08/20/do-lost-people-really-go-round-in-circles/" rel="nofollow">(b)</a></p>
+
+<blockquote>
+  <p>"robots that have a separate motor for each wheel is that driving in a
+  perfectly straight line  can be difficult. If the motors run at just
+  slightly different speeds, your robot will tend to drive in a large
+  circle  when you want it to go straight. The NXT is able to overcome
+  this problem by using motors with rotation  sensors built in, allowing
+  you to synchronise them."
+  -- Ross Crawford. <a href="http://bricxcc.sourceforge.net/nbc/doc/NBC_tutorial.pdf" rel="nofollow">"Programming Lego Robots"</a>. p. 30</p>
+</blockquote>
+
+<p>After working with robots for a while, you'll figure out ways of debugging a problem.</p>
+
+<h2>Y cable test</h2>
+
+<p>If I were you I would run a Y cable test:</p>
+
+<ul>
+<li>make a test Y cable so the A output of a single quadrature encoder is connected to <em>both</em> your Arduino encoder0PinA pin and encoder1pinA pin (2 and 3), and likewise for the B pins.</li>
+</ul>
+
+<p>With that Y cable, you know that what the Arduino sees as encoder0 and what the Arduino sees as encoder1 are spinning at exactly the same physical speed, since it's the same physical encoder.</p>
+
+<p>That test helps me narrow down the problem:
+If a Y cable test with your test program still shows encoder0Pos and encoder1Pos are diverging,
+then there's a software problem.</p>
+
+<p>On the other hand,
+if a Y cable test with your test program shows encoder0Pos and encoder1Pos are always identical to each other,
+then the divergence you saw in the 2-motor test may be normal.
+We expect from normal physical variations from one motor to another to lead to slightly different speeds when driven by exactly the same PWM.
+The data you gave shows the difference in speed to be less than 1%.
+That is excellent matching.</p>
+
+<h2>Swap testing</h2>
+
+<p>Often when one system acts differently from another allegedly "identical" system, people swap one small part of the system back and forth to see if the problem "follows" the thing that was swapped or if it stays behind.
+Currently the "slow" one is the one plugged into encoder1.</p>
+
+<p>If I were you, I might do a series of tests something like</p>
+
+<ul>
+<li>"If ... your robot is not going straight, try swapping the wheels and see if it deviates into the other direction. That would indicate a small difference in wheel size. Adjust wheel size accordingly." -- <a href="http://www.lejos.org/nxt/nxj/api/lejos/robotics/navigation/DifferentialPilot.html" rel="nofollow">Lejos: DifferentialPilot</a></li>
+<li>Unplug everything connected to motor0 and motor1, swap them, and plug them back in. Then test: Is motor1 still the slow one, or is motor0 now the slow one?</li>
+<li>Unplug everything connected to the motor0 driver circuit, swap it with the motor1 driver circuit, and then plug them back in. Then test: is the motor1 driver circuit still associated with the slow one, or is the motor0 driver circuit now the slow one?</li>
+<li>etc.</li>
+</ul>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4590" data-toggle = "popover">
+				<p>user name : David Cary</p>
+				<p> user reputation : 3365</p>
+				<p class = "tagcontent" id = "usertaginfo-4590">{'quadcopter': 38, 'stepper-driver': 9, 'None': 256, 'multi-rotor': 2, 'force-sensor': 9, 'stability': 36, 'industrial-robot': 1, 'design': 18, 'motor': 2, 'stepper-motor': 9}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-4590" class = 'collapse'>
+			</div>
+				<textarea id = "speech-4590" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4590">
+					<img id="start_img-4590" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4590">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,227 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to perform this reference system transformation?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-1089" class = "post">
+			<h2>Question</h2>
+			<div id="vote-1089" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 176</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to perform this reference system transformation?</h2>
+<p>I have two quaternions that indicate the initial orientation of a four wheel robot, each one in relative to one reference systems. </p>
+
+<p>The robot's orientation given by a quaternion q is not the same in the two reference systems: For one reference system the quaternion q1 might refer to the robot looking at positive x while the same quaternion components q1 in the second reference system might refer to the robot looking at the negative x.</p>
+
+<p>I have two matrices which indicate the position of the robot in time in its correspondent reference system.</p>
+
+<p>I want to find the correspondent points of the first matrix in to the second reference system. Each matrix is built with a different sensor, so the results will be similar but not exactly the same.</p>
+
+<p>I think I should find the transformation from the first reference system to the second and then apply it for each point of the first matrix. How can I find this transformation? The translation part I think is clear, but the rotation not at all.</p>
+
+<p><strong>Edit:</strong></p>
+
+<p>@WildCrustacean</p>
+
+<p>The solution proposed does not solve the problem, I think that the reason is because each system represents the robot in a different way. </p>
+
+<p>In the initial one (A) the robot moving forward with no rotation would increase in the X axis. In the goal referential system (B) the robot moving forward with no rotation would increase in the Z axis. (See figure for more details) </p>
+
+<pre><code>First system (A)
+ ______
+|\  T  \
+| \_____\     z
+|B |    | : y ^
+ \ | R  |    \|
+  \|____|     +--&gt; x
+
+
+Second system (B)
+ ______
+|\  T  \
+| \_____\     x
+|B |    | :   ^
+ \ | R  |     |
+  \|____|     +--&gt; z
+               \
+                y
+
+R: Right side
+B: Back side
+T: Top
+</code></pre>
+
+<p>I think I have to apply an extra rotation to change the initial quaternion that belongs to the first system to be in accordance with the second system before applying the transformation of your post.</p>
+
+<p>One rotation of 180 degrees around x followed by one of 90 around y. Would rotate from A to B </p>
+
+<p>This is how I tried to solve it:</p>
+
+<pre><code># Quaternion to adjust reference system
+first_quat = make_quaternion(unitary_x, pi) # Generates the quaternion that rotates pi around X 
+second_quat = make_quaternion(unitary_y, pi/2.0) # Generates the quaternion that rotates pi/2 around Y 
+composed_fs_q = first_quat*second_quat 
+
+# Quaternion to rotate from one reference system to the other
+quaternion_ini_A = quaternion_ini_A*composed_fs_q
+A2B_quaternion = quaternion_ini_B*(quaternion_ini_A.inverse())
+</code></pre>
+
+<p>A2B_quaternion is the quaternion that I use for the rotation but still doesn't perform the right rotation. Any idea?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1089" data-toggle = "popover">
+				<p>user name : rauldg</p>
+				<p> user reputation : 11</p>
+				<p class = "tagcontent" id = "usertaginfo-1089">{'mobile-robot': 2, 'None': 0, 'odometry': 2, 'localization': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1089">Load Comments</button></br>
+			<div id = "commentsection-1089" class = 'collapse'>
+			<div id = "comment-2560" class = "comment">
+				<p>It looks like your two systems (A and B) have different "handedness"; that is, you can't get from one system to the other by simply using rotations. A is a left-handed system and B is right-handed.</p>
+			</div>
+			</div>
+				<textarea id = "speech-1089" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1089">
+					<img id="start_img-1089" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1089">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-1090"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1090" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>So you need to find the rotation that gets you from the first coordinate system to the second, and then combine that with the translation to get the final transformation matrix. </p>
+
+<p>Since you have quaternions q1 and q2, you can write this rotation as:</p>
+
+<p>$q = q_2 * q_1^{-1}$</p>
+
+<p>You can then convert from the quaternion form to a rotation matrix to make the final transformation matrix, there are <a href="http://en.wikipedia.org/wiki/Rotation_formalisms_in_three_dimensions#Rotation_matrix_.E2.86.94_quaternion" rel="nofollow">equations for this</a>. </p>
+
+<p>The final transformation would be of the form:</p>
+
+<p>$\begin{bmatrix}\boldsymbol{R} &amp; \boldsymbol{t}\\\boldsymbol{0} &amp; 1\end{bmatrix}$</p>
+
+<p>Where $\boldsymbol{R}$ is the 3x3 rotation matrix and $\boldsymbol{t}$ is the 3x1 translation vector.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1090" data-toggle = "popover">
+				<p>user name : WildCrustacean</p>
+				<p> user reputation : 658</p>
+				<p class = "tagcontent" id = "usertaginfo-1090">{'None': 45, 'uncanny-valley': 10, 'inverse-kinematics': 5, 'research': 10, 'hri': 10, 'machine-learning': 5}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-1090" class = 'collapse'>
+			</div>
+				<textarea id = "speech-1090" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1090">
+					<img id="start_img-1090" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1090">Comment</button>
+			<br><div id = "ans-1119"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1119" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>In your particular case, isn't it easiest to just transpose the axes:</p>
+
+<pre><code>Bx =  Az
+By = -Ay
+Bz =  Ax
+</code></pre>
+
+<p>Or if you want to write that as a matrix transform:</p>
+
+<pre><code>B = A * [ [  0,  0,  1  ],
+          [  0, -1,  0  ],
+          [  1,  0,  0  ] ]
+</code></pre>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1119" data-toggle = "popover">
+				<p>user name : Octopus</p>
+				<p> user reputation : 886</p>
+				<p class = "tagcontent" id = "usertaginfo-1119">{'control': 3, 'None': 60, 'gyroscope': 3, 'motor': 7, 'automation': 0}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-1119" class = 'collapse'>
+			</div>
+				<textarea id = "speech-1119" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1119">
+					<img id="start_img-1119" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1119">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

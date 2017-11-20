@@ -1,0 +1,370 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Quad copter attitude control
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2931" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2931" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 698</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Quad copter attitude control</h2>
+<p>I have built a quad copter completely from scratch (electronics, mechanics and software). 
+I am now at the point where all my sensor data looks correct and when I tilt the quad copter the correct motors increase and decrease.</p>
+
+<p>I have been trying to tune the PIDs for a couple of days now, in rate mode it stays level and rotates at roughly the correct degrees per second when I give it a command.</p>
+
+<p>In stability mode a lot of the time it just spins around the axis and when I did get it stable it kept rotating from upright to upside down and then maintaining an upside down flat position. I have come to the conclusion that I am either doing something completely wrong or I have some + - signs mixed around somewhere.</p>
+
+<p>Would anyone who is knowledgeable about quad copter control code be able to take a look at what I have done and how it works as I'm really struggling to work out what needs to change and what I should try next.</p>
+
+<p>My flight control code is posted below, the other relevant classes are hardware.h and main.cpp</p>
+
+<pre><code>#include "mbed.h"
+#include "rtos.h"
+#include "hardware.h"
+
+
+//Declarations
+float Constrain(const float in, const float min, const float max);
+float map(float x, float in_min, float in_max, float out_min, float out_max);
+void GetAttitude();
+void Task500Hz(void const *n);
+void Task10Hz();
+
+
+//Variables
+float _gyroRate[3] ={}; // Yaw, Pitch, Roll
+float _ypr[3] = {0,0,0}; // Yaw, pitch, roll
+float _yawTarget = 0;
+int _notFlying = 0; 
+float _altitude = 0;
+int _10HzIterator = 0;
+float _ratePIDControllerOutputs[3] = {0,0,0}; //Yaw, pitch, roll
+float _stabPIDControllerOutputs[3] = {0,0,0}; //Yaw, pitch, roll
+float _motorPower [4] = {0,0,0,0};
+
+
+
+
+//Timers
+RtosTimer *_updateTimer;
+
+
+// A thread to monitor the serial ports
+void FlightControllerThread(void const *args) 
+{  
+    //Update Timer
+    _updateTimer = new RtosTimer(Task500Hz, osTimerPeriodic, (void *)0);
+    int updateTime = (1.0 / UPDATE_FREQUENCY) * 1000;
+    _updateTimer-&gt;start(updateTime);
+
+    // Wait here forever
+    Thread::wait(osWaitForever);
+}
+
+
+//Constrains value to between min and max
+float Constrain(const float in, const float min, const float max)
+{
+    float out = in;
+    out = out &gt; max ? max : out;
+    out = out &lt; min ? min : out;
+    return out;
+}
+
+
+//Maps input to output
+float map(float x, float in_min, float in_max, float out_min, float out_max)
+{
+    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+
+
+//Zeros values
+void GetAttitude()
+{
+    //Take off zero values to account for any angle inbetween the PCB level and ground
+    _ypr[1] = _ypr[1] - _zeroValues[1];
+    _ypr[2] = _ypr[2] - _zeroValues[2];
+
+    //Swap pitch and roll because IMU is mounted at a right angle to the board
+            //Gyro data does need swapping - done within freeIMU class
+    float pitch = _ypr[2];
+    float roll = _ypr[1];
+    _ypr[1] = pitch;
+    _ypr[2] = roll;
+}
+
+
+void Task500Hz(void const *n)
+{
+    _10HzIterator++;
+    if(_10HzIterator % 50 == 0)
+    {
+        Task10Hz();
+    }
+
+
+    //Get IMU data
+    _freeIMU.getYawPitchRoll(_ypr);
+    _freeIMU.getRate(_gyroRate);
+    GetAttitude();
+
+    //Rate mode
+    if(_rate == true &amp;&amp; _stab == false)
+    {
+        //Update rate PID process value with gyro rate
+        _yawRatePIDController-&gt;setProcessValue(_gyroRate[0]);
+        _pitchRatePIDController-&gt;setProcessValue(_gyroRate[1]);
+        _rollRatePIDController-&gt;setProcessValue(_gyroRate[2]);
+
+        //Update rate PID set point with desired rate from RC
+        _yawRatePIDController-&gt;setSetPoint(_rcMappedCommands[0]);
+        _pitchRatePIDController-&gt;setSetPoint(_rcMappedCommands[1]);
+        _rollRatePIDController-&gt;setSetPoint(_rcMappedCommands[2]);
+
+        //Compute rate PID outputs
+        _ratePIDControllerOutputs[0] = _yawRatePIDController-&gt;compute();
+        _ratePIDControllerOutputs[1] = _pitchRatePIDController-&gt;compute();
+        _ratePIDControllerOutputs[2] = _rollRatePIDController-&gt;compute();
+    }
+    //Stability mode
+    else
+    {
+        //Update stab PID process value with ypr
+        _yawStabPIDController-&gt;setProcessValue(_ypr[0]);
+        _pitchStabPIDController-&gt;setProcessValue(_ypr[1]);
+        _rollStabPIDController-&gt;setProcessValue(_ypr[2]);
+
+        //Update stab PID set point with desired angle from RC
+        _yawStabPIDController-&gt;setSetPoint(_yawTarget);
+        _pitchStabPIDController-&gt;setSetPoint(_rcMappedCommands[1]);
+        _rollStabPIDController-&gt;setSetPoint(_rcMappedCommands[2]);
+
+        //Compute stab PID outputs
+        _stabPIDControllerOutputs[0] = _yawStabPIDController-&gt;compute();
+        _stabPIDControllerOutputs[1] = _pitchStabPIDController-&gt;compute();
+        _stabPIDControllerOutputs[2] = _rollStabPIDController-&gt;compute();
+
+        //If pilot commanding yaw
+        if(abs(_rcMappedCommands[0]) &gt; 0)
+        {  
+            _stabPIDControllerOutputs[0] = _rcMappedCommands[0];  //Feed to rate PID (overwriting stab PID output)
+            _yawTarget = _ypr[0];
+        }
+
+        //Update rate PID process value with gyro rate
+        _yawRatePIDController-&gt;setProcessValue(_gyroRate[0]);
+        _pitchRatePIDController-&gt;setProcessValue(_gyroRate[1]);
+        _rollRatePIDController-&gt;setProcessValue(_gyroRate[2]);
+
+        //Update rate PID set point with desired rate from stab PID
+        _yawRatePIDController-&gt;setSetPoint(_stabPIDControllerOutputs[0]);
+        _pitchRatePIDController-&gt;setSetPoint(_stabPIDControllerOutputs[1]);
+        _rollRatePIDController-&gt;setSetPoint(_stabPIDControllerOutputs[2]);
+
+        //Compute rate PID outputs
+        _ratePIDControllerOutputs[0] = _yawRatePIDController-&gt;compute();
+        _ratePIDControllerOutputs[1] = _pitchRatePIDController-&gt;compute();
+        _ratePIDControllerOutputs[2] = _rollRatePIDController-&gt;compute();
+    }
+
+    //Testing
+    _ratePIDControllerOutputs[0] = 0; // yaw
+    //_ratePIDControllerOutputs[1] = 0; // pitch
+    _ratePIDControllerOutputs[2] = 0; // roll
+
+
+    //Calculate motor power if flying
+    if(_rcMappedCommands[3] &gt; 0.1 &amp;&amp; _armed == true)
+    {
+        //Constrain motor power to 1, this means at max throttle there is no overhead for stabilising
+        _motorPower[0] = Constrain((_rcMappedCommands[3] + _ratePIDControllerOutputs[1] - _ratePIDControllerOutputs[2] + _ratePIDControllerOutputs[0]), 0.0, 1.0);
+        _motorPower[1] = Constrain((_rcMappedCommands[3] + _ratePIDControllerOutputs[1] + _ratePIDControllerOutputs[2] - _ratePIDControllerOutputs[0]), 0.0, 1.0);
+        _motorPower[2] = Constrain((_rcMappedCommands[3] - _ratePIDControllerOutputs[1] + _ratePIDControllerOutputs[2] + _ratePIDControllerOutputs[0]), 0.0, 1.0);
+        _motorPower[3] = Constrain((_rcMappedCommands[3] - _ratePIDControllerOutputs[1] - _ratePIDControllerOutputs[2] - _ratePIDControllerOutputs[0]), 0.0, 1.0);
+
+
+        //Map 0-1 value to actual pwm pulsewidth 1060 - 1860
+        _motorPower[0] = map(_motorPower[0], 0.0, 1.0, MOTORS_MIN, 1500); //Reduced to 1500 to limit power for testing
+        _motorPower[1] = map(_motorPower[1], 0.0, 1.0, MOTORS_MIN, 1500);
+        _motorPower[2] = map(_motorPower[2], 0.0, 1.0, MOTORS_MIN, 1500);
+        _motorPower[3] = map(_motorPower[3], 0.0, 1.0, MOTORS_MIN, 1500);
+    }
+
+
+    //Not flying
+    else if(_armed == true)
+    {
+        _yawTarget = _ypr[0];
+
+        //Set motors to armed state
+        _motorPower[0] = MOTORS_ARMED;
+        _motorPower[1] = MOTORS_ARMED;
+        _motorPower[2] = MOTORS_ARMED;
+        _motorPower[3] = MOTORS_ARMED;
+
+        _notFlying ++;
+        if(_notFlying &gt; 500) //Not flying for 1 second
+        {
+            //Reset iteratior
+            _notFlying = 0;
+
+            //Reset I
+            _yawRatePIDController-&gt;reset();
+            _pitchRatePIDController-&gt;reset();
+            _rollRatePIDController-&gt;reset();
+            _yawStabPIDController-&gt;reset();
+            _pitchStabPIDController-&gt;reset();
+            _rollStabPIDController-&gt;reset();
+        }
+    } 
+    else
+    {
+        //Disable Motors
+        _motorPower[0] = MOTORS_OFF;
+        _motorPower[1] = MOTORS_OFF;
+        _motorPower[2] = MOTORS_OFF;
+        _motorPower[3] = MOTORS_OFF;
+    }
+
+    //Set motor power
+    _motor1.pulsewidth_us(_motorPower[0]);
+    _motor2.pulsewidth_us(_motorPower[1]);
+    _motor3.pulsewidth_us(_motorPower[2]);
+    _motor4.pulsewidth_us(_motorPower[3]);
+}
+
+
+//Print data
+void Task10Hz()
+{
+    int batt = 0;
+    _wirelessSerial.printf("&lt;%1.6f:%1.6f:%1.6f:%1.6f:%1.6f:%1.6f:%1.6f:%d:%1.6f:%1.6f:%1.6f:%1.6f:%1.6f:%1.6f:%d:%d:%d:%d:%1.6f:%1.6f:%1.6f:%1.2f:%1.2f:%1.2f:%1.2f:%1.8f:%1.8f:%1.8f:%1.8f:%1.8f:%1.8f:%1.8f:%1.8f:%1.8f:%1.8f:%1.8f:%1.8f:%1.8f:%1.8f:%1.8f:%1.8f:%1.8f:%1.8f&gt;",
+    _motorPower[0], _motorPower[1], _motorPower[2], _motorPower[3], _ypr[0], _ypr[1], _ypr[2], batt, _ratePIDControllerOutputs[0], _ratePIDControllerOutputs[1], _ratePIDControllerOutputs[2], _stabPIDControllerOutputs[0], _stabPIDControllerOutputs[1], _stabPIDControllerOutputs[2], _armed, _initialised, _rate, _stab, _gyroRate[0], _gyroRate[1], _gyroRate[2], _rcMappedCommands[0], _rcMappedCommands[1], _rcMappedCommands[2], _rcMappedCommands[3], _yawRatePIDControllerP, _yawRatePIDControllerI, _yawRatePIDControllerD, _pitchRatePIDControllerP, _pitchRatePIDControllerI, _pitchRatePIDControllerD, _rollRatePIDControllerP, _rollRatePIDControllerI, _rollRatePIDControllerD, _yawStabPIDControllerP, _yawStabPIDControllerI, _yawStabPIDControllerD, _pitchStabPIDControllerP, _pitchStabPIDControllerI, _pitchStabPIDControllerD, _rollStabPIDControllerP, _rollStabPIDControllerI, _rollStabPIDControllerD);    
+}
+</code></pre>
+
+<p>The whole program can be seen on my mBed page at <a href="http://mbed.org/users/joe4465/code/QuadMK6/" rel="nofollow">http://mbed.org/users/joe4465/code/QuadMK6/</a></p>
+
+<p>If you need any more info or something explaining let me know.</p>
+
+<p>If anyone can point me in the right direction or has any idea of what I should try next it would be very much appreciated.</p>
+
+<p>Thanks
+Joe</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2931" data-toggle = "popover">
+				<p>user name : Joseph Roberts</p>
+				<p> user reputation : 167</p>
+				<p class = "tagcontent" id = "usertaginfo-2931">{'quadcopter': 6, 'magnetometer': 1, 'None': 2, 'accelerometer': 2, 'calibration': 1, 'pid': 5, 'lidar': 2, 'esc': 5, 'motor': 5, 'imu': 1, 'sensors': 2, 'pwm': 5}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2931">Load Comments</button></br>
+			<div id = "commentsection-2931" class = 'collapse'>
+			<div id = "comment-5364" class = "comment">
+				<p>It's nice weekend of you to include your code, but it's too long for anyone to be expected to read it... And the question is too general, so don't know where to start... Be more specific and you might have better chances of getting an answer</p>
+			</div>
+			</div>
+				<textarea id = "speech-2931" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2931">
+					<img id="start_img-2931" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2931">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-2941"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2941" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>If you've built this from scratch, the best person to troubleshoot your code is yourself.</p>
+
+<p>Look at the basic pieces of the code: the sensor, the PIDs, and the motor control.  Write some functions to help you test each of those pieces individually, so that you can determine whether the error you're seeing is in just one component, or a system-level error based on some incorrect code in all 3 components.</p>
+
+<p>Once you know the extent of the error, you'll be able to either recognize the problem and fix it, or to ask a more focused question here.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2941" data-toggle = "popover">
+				<p>user name : Ian</p>
+				<p> user reputation : 9640</p>
+				<p class = "tagcontent" id = "usertaginfo-2941">{'planning': 10, 'None': 809, 'power': 1, 'algorithm': 10, 'battery': 1, 'slam': 7, 'coverage': 10, 'mobile-robot': 9, 'sensors': 9}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2941" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2941" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2941">
+					<img id="start_img-2941" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2941">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

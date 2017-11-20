@@ -1,0 +1,146 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Torque ~ Current control for BLDC motors
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8450" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8450" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 139</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Torque ~ Current control for BLDC motors</h2>
+<p>I am working on a robotic application, and I want to control the torque (or current) of brushless DC motors. There are many BLDC speed controllers but I could not find anything related to torque or current. </p>
+
+<p>Instead of continuously spinning, the motor is actuating a robotic joint, which means I need to control the torque at steady-state, or low-speed, finite rotation. </p>
+
+<p>I am looking for a low-cost, low weight solution, similar to what <a href="http://www.mouser.com/new/Texas-Instruments/ti-drv8833c-driver/" rel="nofollow">Texas Instruments DRV8833C Dual 
+H-Bridge Motor Drivers</a> does for brushed DC motors.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8450" data-toggle = "popover">
+				<p>user name : rob</p>
+				<p> user reputation : 1</p>
+				<p class = "tagcontent" id = "usertaginfo-8450">{'brushless-motor': 0, 'None': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8450">Load Comments</button></br>
+			<div id = "commentsection-8450" class = 'collapse'>
+			<div id = "comment-13682" class = "comment">
+				<p>Can't you just do this by measuring the voltage across a resistor in series and use that as feedback for closed-loop current control?</p>
+			</div>
+			<div id = "comment-13686" class = "comment">
+				<p>+1 for @BrianLynch 's answer, but I think it may be a little more complicated than that as the current controller will need to interface with a BLDC motor controller, which could be made difficult with a desire to operate at low speed. I don't have much experience with BLDC motors, but if you're planning on operating at very low speed you will probably need encoder feedback on the motor.</p>
+			</div>
+			<div id = "comment-13689" class = "comment">
+				<p>That might also be exactly what you want to find some COTS part to do instead of whipping it up yourself.</p>
+			</div>
+			<div id = "comment-13955" class = "comment">
+				<p>I agree with @BrianLynch, a couple hundred on ebay will get you what you need and save the massive amount of time needed to build one up from parts. The ELMO whistle is a favorite of mine for it's small size and high power. Try the TI DRV8301 if you want to do it yourself and you like the DRV8833.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8450" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8450">
+					<img id="start_img-8450" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8450">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8569"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8569" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You did not exactly specify the application you are working on, however, the fact that you have limited angular displacement range, and not continuous rotations, does not necessarily mean that you need torque control. If you are interested in positions instead of velocity, you will need position control, and you do not necessarily need also torque control. (e.g. if you want to do gravity compensation though a torque feed forward method, you will need a torque controller, but you would not need something like that for hobby applications)</p>
+
+<p>If your application is simple and does not require high speed precise trajectories, because of simplicity, I would recommend trying position control without a torque control. For this, you could use the velocity controllers well known for BLDCs (as the ones you mentioned, might also come with overload protection) and add an external position loop around it. Your COTS velocity controller will get an input from the outer position controller, implemented on a microcontroller (or similar device, depending on what you use). </p>
+
+<p>The position controller will have to get position feedback of some kind.There are more ways to get angular position feedback, depending on budget and application. Encoders are commonly used, but if high precision is not needed, you might be able to get away with using a potentiometer.</p>
+
+<p>The control rule can be a simple proportional controller at first (PID later), generating the input for the velocity controller. If the difference between the desired position and the actual position (measured by the angular displacement sensor of your choice) is large the velocity controller will get a large input (the said difference multiplied by a constant, which you have to play around with). If there is no difference between the actual and the desired angle then zero velocity is required. Your position controller will generate an output, compatible with your velocity controller (e.g. PWM signals to the velocity controller), that tells the velocity controller how fast and in which direction should the motor move to reach the desired position.  Depending on your application this simple approach could be enough.</p>
+
+<p>If you want to start from scratch, you can build your own position/velocity/torque controller, <a href="http://www.atmel.com/images/doc7827.pdf" rel="nofollow">here</a> is an example of how it can be implemented on Atmel micro controllers, <a href="http://ww1.microchip.com/downloads/en/appnotes/00857a.pdf" rel="nofollow">here</a> for Microchip. Both documentations recommend motor driver ICs, I think all IC can be considered light weight.</p>
+
+<p>If this is a hobby like project, you might be interested in R/C servos e.g. <a href="http://www.robotis.com/xe/dynamixel_en" rel="nofollow">Dynamixel</a> which have all the functionality you require, position control, built in. The ones I linked are quire capable (incl. torque control, modifiable PID gains), but be aware of their stall torque limitations.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8569" data-toggle = "popover">
+				<p>user name : 50k4</p>
+				<p> user reputation : 2800</p>
+				<p class = "tagcontent" id = "usertaginfo-8569">{'geometry': 0, 'None': 193, 'kinematics': 0, 'robotic-arm': 0}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8569" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8569" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8569">
+					<img id="start_img-8569" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8569">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

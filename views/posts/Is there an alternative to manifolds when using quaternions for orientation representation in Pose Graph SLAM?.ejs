@@ -1,0 +1,142 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Is there an alternative to manifolds when using quaternions for orientation representation in Pose Graph SLAM?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9096" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9096" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 168</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Is there an alternative to manifolds when using quaternions for orientation representation in Pose Graph SLAM?</h2>
+<p>I want to implement my own pose graph SLAM following [1]. Since my vehicle is moving in 3D-space i represent my pose using a 3D-translation vector and a quaternion for orientation. [1] tells me that it's necessary to adapt their algorithm 1 by using manifolds to project the poses into euclidean space.
+I also studied the approach of [2]. In section "IV.B. Nonlinear Systems" they write that their approach remains valid for nonlinear systems. I conclude that for their case it's not obligatory to make use of a manifold. But I don't understand how they avoid it. So my questions are:</p>
+
+<ol>
+<li>Is it correct that there is an alternative to manifolds?</li>
+<li>If yes, how does this alternative look like?</li>
+</ol>
+
+<hr>
+
+<p>[1] Grisetti, G., Kummerle, R., Stachniss, C., &amp; Burgard, W. (2010). A tutorial on graph-based SLAM. Intelligent Transportation Systems Magazine, IEEE, 2(4), 31-43.</p>
+
+<p>[2] Kaess, M., Ranganathan, A., &amp; Dellaert, F. (2008). iSAM: Incremental smoothing and mapping. Robotics, IEEE Transactions on, 24(6), 1365-1378.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9096" data-toggle = "popover">
+				<p>user name : morph</p>
+				<p> user reputation : 37</p>
+				<p class = "tagcontent" id = "usertaginfo-9096">{'None': 0, 'errors': 0, 'ekf': 3, 'pose': 3, 'data-association': 0, 'slam': 6, 'imu': 0, 'jacobian': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-9096" class = 'collapse'>
+			</div>
+				<textarea id = "speech-9096" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9096">
+					<img id="start_img-9096" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9096">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9475"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9475" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You might want to have a look at [1] where the author uses iSAM for estimating - among other quantities - the position and attitude of a rigid body spinning in microgravity. </p>
+
+<p>In section 4.5 p111 he mentions using a combination of {attitude error vector + reference quaternion} within the nodes of the pose graph :</p>
+
+<blockquote>
+  <p>*It is clear that any representations of attitude include nonlinear transformations and kinematics. This causes a problem for modelling and propagating probability distribution functions with Gaussian random variables, such as those typically used in Extended Kalman Filters or the iSAM system. It is well understood that the covariance matrix of a quaternion is rank deficient due to its normalization constraint. While there is active research in a number of estimation systems that do not use Gaussian random variables [83, 109, 127, 118, 119], a typical approach for dealing with this is to use three vector error parameterization and reset the quaternion (see [26, 70, 82, 134]), which is what will be used here since it fits well with the iSAM system for Gaussian random variables and has a history of good performance. </p>
+  
+  <p>This error vector and reference quaternion approach can be applied to pose graph optimization methods such as iSAM. For each of the nodes that specify the vehicle s 6DOF trajectory, the reference quaternion approach is mirrored. This means that at the vehicle s state nodes for each timestep, both a four parameter reference quaternion and a three parameter attitude error is stored. Each time the optimization problem is re-linearized, a reset step is performed. This reset step transfers all of the attitude error into the reference quaternion."</p>
+</blockquote>
+
+<p>In his particular case he uses Modified Rodriguez Parameters (MRP) but you could probably choose an alternative representation if you keep the idea of combining an error vector with a quaternion within the nodes.</p>
+
+<p><a href="http://ssl.mit.edu/files/website/theses/PhD-2013-TweddleBrent.pdf" rel="nofollow">[1] Tweddle, B. E., Computer Vision-Based Localization and Mapping of an Unknown, Uncooperative and Spinning Target for Spacecraft Proximity Operations, Ph.D. thesis, Massachusetts Institute of Technology, Department of Aeronautics and Astronautics, Cambridge, MA, 2013.</a></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9475" data-toggle = "popover">
+				<p>user name : al-dev</p>
+				<p> user reputation : 106</p>
+				<p class = "tagcontent" id = "usertaginfo-9475">{'None': 9}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-9475" class = 'collapse'>
+			</div>
+				<textarea id = "speech-9475" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9475">
+					<img id="start_img-9475" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9475">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,185 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Approach to using PID to get a differential robot driving straight
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-1711" class = "post">
+			<h2>Question</h2>
+			<div id="vote-1711" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">8</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 5490</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Approach to using PID to get a differential robot driving straight</h2>
+<p>Consider a differential drive robot that has two motorized wheels with an encoder attached to each for feedback. Supposed there is a function for each DC motor that takes a float from -1 to 1 and sets the PWM signals to provide a proportional amount of power to that motor. Unfortunately, not all motors are created equal, so sending each motor the same PWM signal makes the robot veer left or right. I'm trying to think about how to drive the robot straight using the encoders attached to each motor as input to a PID loop.</p>
+
+<p>Here's how I would do it: I would take the difference between the left and right encoders, bound the error between some range, normalize it to be from [-1, 1], and then map it to the motor powers 0 to 1. So if I and D were zero, and we get an error of 1 (so the left motor has turned much more than the right motor), then left motor would be set to 0, and the right motor set to 1 (causing a hard left). </p>
+
+<p>Are there any issues with this? What is a better approach?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1711" data-toggle = "popover">
+				<p>user name : Robz</p>
+				<p> user reputation : 954</p>
+				<p class = "tagcontent" id = "usertaginfo-1711">{'pid': 8, 'embedded-systems': 0, 'slam': 20, 'sensor-error': 8, 'accelerometer': 5, 'kinematics': 7, 'mechanism': 1, 'differential-drive': 8, 'imu': 12, 'kalman-filter': 28, 'actuator': 21, 'gyroscope': 5, 'gps': 20, 'magnetometer': 5, 'None': 25, 'noise': 5, 'power': 0, 'localization': 20, 'microcontroller': 0, 'brushless-motor': 13, 'sensors': 41, 'quadcopter': 13, 'navigation': 7, 'sensor-fusion': 21, 'sonar': 8, 'servos': 7}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-1711" class = 'collapse'>
+			</div>
+				<textarea id = "speech-1711" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1711">
+					<img id="start_img-1711" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1711">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-1714"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1714" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><blockquote>
+  <p>Are there any issues with this?</p>
+</blockquote>
+
+<p>The main issue with this is that while your proposed solution will instantaneously correct for a mismatch between the performance of the motors, it will not correct for accumulated error, let alone more complex errors in position such as <a href="http://en.wikipedia.org/wiki/Abbe_error" rel="nofollow noreferrer">Abbe error</a> (see later).</p>
+
+<blockquote>
+  <p>What is a better approach?</p>
+</blockquote>
+
+<p>There are several things you can do, depending on what your tolerance for errors are and how much effort you want to put into correcting them.</p>
+
+<p>The first step would be to set up a pair of PID loops, one for each wheel, giving them both the same demand position. As I suggested in <a href="https://robotics.stackexchange.com/a/1234/37">my answer to a similar question</a>, if you keep both wheels within a very tight error bound of where you ask them to be, then it will take some time to accumulate enough of an error to cause noticeable veer.</p>
+
+<p>It will also be much easier to tune two nominally independent Motor level PID loops than to tune a single complex, interdependent combined system. To stand any change of the higher level control working you really need each motor to behave as similarly as possible to the other motor for as much of the time as possible, and that really requires separate servo loops.</p>
+
+<p>There are a number of further complications however, and it depends what accuracy you need and how much effort you are prepared to go to to correct for them as to which solution you go for. It may be that <a href="http://en.wikipedia.org/wiki/Dead_reckoning" rel="nofollow noreferrer">Dead Reckoning</a> is sufficient, or you may need to add Relative or Absolute position determination to your robot.</p>
+
+<p>One problem is that even if your left and right wheels both move 1000 encoder counts, you <em>may</em> still end up in a different position on two different runs.</p>
+
+<p>For example, say you have a maximum following error of 10 encoder counts, and your motors are running at a speed of say 10 encoder counts per PID loop iteration. Your left motor might move 5,10,10,10...10,5 while your right motor might have a profile of 4,11,10,10...10,5 and even that slight difference in acceleration at the start of the move could cause the robot to set off in slightly the wrong direction. Not only that but the further you move in that direction, the greater the error will become in absolute terms. This is what we are talking about when we talk of <a href="http://en.wikipedia.org/wiki/Abbe_error" rel="nofollow noreferrer">Abbe error</a>, and without a complex kinematic model or some sort of external reference, you are never going to be able to correct for it.</p>
+
+<p>For more information, see <a href="https://robotics.stackexchange.com/a/1234/37">my answer</a> to a similar but not quite duplicate question: <a href="https://robotics.stackexchange.com/q/1232/37">How can I use the Arduino PID library to drive a robot in a straight line?</a> 
+and <a href="https://robotics.stackexchange.com/a/1527/37">my answer</a> to the also related <a href="https://robotics.stackexchange.com/q/1524/37">Line Follower optimization</a></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1714" data-toggle = "popover">
+				<p>user name : Mark Booth</p>
+				<p> user reputation : 3037</p>
+				<p class = "tagcontent" id = "usertaginfo-1714">{'control': 7, 'quadcopter': 2, 'None': 258, 'tuning': 7, 'uav': 2, 'design': 2, 'stepper-motor': 7}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-1714" class = 'collapse'>
+			</div>
+				<textarea id = "speech-1714" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1714">
+					<img id="start_img-1714" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1714">Comment</button>
+			<br><div id = "ans-1751"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1751" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I have a bot with 2 independently driven wheels. </p>
+
+<p>I chose to use a gyro to keep it heading in the desired direction, bumps slippage and even picking it up and turning it around are of little consequence to it as it will just correct it's heading.</p>
+
+<p>I use a single PID, which adds/subtracts a correction to the desired current speed for each of the 2 motors in accordance with the error in the current heading (direction) as determined by the gyro.</p>
+
+<p>For example I set the speed to 50% and the heading to 20degrees. this would normally drive both motors at 50% power. but as the heading wanders off, the PID will make adjustments adding some power to one motor and removing some power from the other, so you might end up with a 45%/55% power split between the motors as the pid corrects the heading.</p>
+
+<p>Gyros have their problems though, even with some time spent calibrating I'm still finding my gryo has about 1 degree per minute drift. It might be because the earth rotates 15 degrees per hour, this should also be considered in the long run.</p>
+
+<p>As previously stated encoders on the wheels are a great idea for actually knowing how far you have traveled.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1751" data-toggle = "popover">
+				<p>user name : Robert Sutton</p>
+				<p> user reputation : 71</p>
+				<p class = "tagcontent" id = "usertaginfo-1751">{'None': 6, 'roomba': 2, 'irobot-create': 2}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1751">Load Comments</button></br>
+			<div id = "commentsection-1751" class = 'collapse'>
+			<div id = "comment-22841" class = "comment">
+				<p>I would love to see your code for this. I am starting down the same path with a gyro/accelerometer/magnetometer but I'm still at the very early stage of just trying to make sense out of the readings from these sensors.</p>
+			</div>
+			<div id = "comment-22846" class = "comment">
+				<p>Here is a link to my code, I'm afraid it may not be easy to understand. https://github.com/rlsutton1/piBot/blob/master/src/main/java/au/com/rsutton/robot/rover/SpeedHeadingController.java</p>
+			</div>
+			</div>
+				<textarea id = "speech-1751" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1751">
+					<img id="start_img-1751" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1751">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

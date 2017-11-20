@@ -1,0 +1,249 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>IRobot Create 2: Powering Up after Sleep
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7895" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7895" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 851</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>IRobot Create 2: Powering Up after Sleep</h2>
+<p>I've notice the IRobot Create 2 does not respond to the app's commands when it has been sleeping.  If I press the <em>Clean</em> button and re-run the app then the robot is responsive to the commands.</p>
+
+<p>My initialization sequence (Android/Java) using <a href="https://github.com/mik3y/usb-serial-for-android" rel="nofollow">usb-serial-for-android</a>:</p>
+
+<pre><code>port.open(connection);
+port.setParameters(115200, 8, UsbSerialPort.STOPBITS_1,UsbSerialPort.PARITY_NONE);
+command(Opcode.START);
+command(Opcode.SAFE);
+</code></pre>
+
+<p>The physical architecture is IRobot Create 2 connected by IRobot Serial Cable to Google Project Tango Tablet.</p>
+
+<p>How can my app wake up the Roomba from it's sleep?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7895" data-toggle = "popover">
+				<p>user name : Aaron Roller</p>
+				<p> user reputation : 133</p>
+				<p class = "tagcontent" id = "usertaginfo-7895">{'None': 0, 'irobot-create': 6}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7895">Load Comments</button></br>
+			<div id = "commentsection-7895" class = 'collapse'>
+			<div id = "comment-11526" class = "comment">
+				<p>removed from the question for clarity...
+Per the OI [Specs Document][2], it appears that changing the mode to *Off* would wake up the robot:
+
+> Roomba has four operating modes: Off, Passive, Safe, and Full. Roomba **powers on in the Off mode**. The
+following commands change Roomba s OI mode. 
+
+I'm thinking that is an error in the documentation and they meant to say **Roomba powers off**? If the docs are correct then perhaps I should change my initialization sequence to the unintuitive:
+
+     command(Opcode.STOP);
+     command(Opcode.START);
+     command(Opcode.SAFE);</p>
+			</div>
+			</div>
+				<textarea id = "speech-7895" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7895">
+					<img id="start_img-7895" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7895">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7900"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7900" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Roomba goes to sleep to save power after five minutes of inactivity, as detailed in the OI spec (Aug. 10, 2015) on page 6, under "Passive Mode." The documentation is not in error where you have quoted it, as Roomba powers on with the OI off (and not in passive, safe, or full). If you want your robot to never fall asleep, put it into FULL. If you want the robot to wake up, instead, simply pulse the BRC pin before communicating, as detailed in the same passage as mentioned above. If you are using a USB to Create cable, one easy way to do this would be to open your serial port with hardware flow control, as the Roomba's BRC is attached to RTS on the computer side, and so when characters are Ready To Send, the BRC will be pulsed. It appears that at least some of the official Create to USB cables do not properly implement this functionality, but making the cable following <a href="http://www.irobotweb.com/~/media/MainSite/PDFs/About/STEM/Create/Create_2_Serial_to_USB_Cable_Creation.pdf?la=en" rel="nofollow">the directions on the site</a> does work.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7900" data-toggle = "popover">
+				<p>user name : Steve</p>
+				<p> user reputation : 716</p>
+				<p class = "tagcontent" id = "usertaginfo-7900">{'None': 50}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7900">Load Comments</button></br>
+			<div id = "commentsection-7900" class = 'collapse'>
+			<div id = "comment-11519" class = "comment">
+				<p>Steve, thanks. Trying to WAKE UP the robot using the BRC pulse as you describe, I added port.setRTS(true); before and after opening the connection, but neither attempts woke up the robot.   Upon further inspection the setRTS method is a blank.  https://goo.gl/w1b8yk  Any clarity you can provide about how to use the library to "open your serial port with hardware flow control" is appreciated.</p>
+			</div>
+			<div id = "comment-11520" class = "comment">
+				<p>A couple thoughts. First, I don't code much in Java, and this isn't my library, so the first thing to do would be to put in an issue against the library for the maintainer to fill out the setRTS method. Hopefully, they'll just add it in, and then you'll be golden. It looks like there is a setDTR() method; it might be worth trying that, as well (though the DTR output is not hooked up in the cable, who knows what the Java library is doing). Second, the line needs to be pulsed, but it looks like that method just sets the pin high, so I'd suggest trying setting true, then false, then true.</p>
+			</div>
+			<div id = "comment-11521" class = "comment">
+				<p>It looks like there are already issues against the library relevant to your trouble -- they are numbers 13 (https://github.com/mik3y/usb-serial-for-android/issues/13), 41 (https://github.com/mik3y/usb-serial-for-android/issues/41), and 58 (https://github.com/mik3y/usb-serial-for-android/issues/58). I'd just register your desire for the maintainer in one of those.</p>
+			</div>
+			<div id = "comment-11522" class = "comment">
+				<p>The setDTR method is also a blank. I will do as you suggest and reference this discussion with the library maintainers.  I'm leaving the issue open until I have the power up working.  Thanks again.</p>
+			</div>
+			<div id = "comment-11523" class = "comment">
+				<p>No problem; I'm sorry I couldn't be more helpful. I agree that you should leave this open until it's working the way you expect!</p>
+			</div>
+			</div>
+				<textarea id = "speech-7900" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7900">
+					<img id="start_img-7900" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7900">Comment</button>
+			<br><div id = "ans-7980"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7980" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I have been testing <a href="https://robotics.stackexchange.com/a/7900/37">Steve s answer</a> using the Create cable and Python and have ran into some difficulties.</p>
+
+<p>Enabling hardware flow control when opening the serial port results in nothing happening when sending/receiving data from the Create 2.  Page 4 of the guide says  Flow control: None .  While I have never used hardware flow control, I suspect the Create 2 is not properly handling the handshake so data is not flowing properly.</p>
+
+<p>When enabling hardware flow control did not work at the time of opening the connection, I attempted to make use of the setRTS method.  (Research into this method and setDTR indicate both are implemented in PySerial.)</p>
+
+<p>I tried the following to see if it would wake the Create 2</p>
+
+<pre><code>serial_port.setRTS(True)
+time.sleep(1)
+serial_port.setRTS(False)
+time.sleep(1)
+serial_port.setRTS(True)
+</code></pre>
+
+<p>where the sleep argument of 1 is in seconds.  I also tried the above with the following changes
+toggling False, True, then False
+setting the sleep period to .5</p>
+
+<p>In addition, I tried all the above with setDTR().  None of the above worked to wake the Create 2.</p>
+
+<p>Next I tried to something simpler   trying to keep the Create 2 from falling asleep.  Based on page 6</p>
+
+<p> To disable sleep, pulse the BRC pin low periodically before these five minutes expire. Each pulse resets this five minute counter. (One example that would not cause the baud rate to inadvertently change is to pulse the pin low for one second, every minute, but there are other periods and duty cycles that would work, as well.) </p>
+
+<p>With the Create 2 in Passive mode I tried the following </p>
+
+<pre><code>while True:
+    time.sleep(60)
+    serial_port.setRTS(True)
+    time.sleep(1)
+    serial_port.setRTS(False)
+    time.sleep(1)
+    serial_port.setRTS(True)
+</code></pre>
+
+<p>This had no effect.  I then tried all the permutations as above when trying to wake the Create 2, but none of these had any effect.  I did find a pdf guide detailing how to make your own Create cable that indicates the BRC line should be connected to the RTS on the computer side, but it does not <em>seem</em> to work.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7980" data-toggle = "popover">
+				<p>user name : lemoneer</p>
+				<p> user reputation : 36</p>
+				<p class = "tagcontent" id = "usertaginfo-7980">{'None': 3, 'irobot-create': 1}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7980">Load Comments</button></br>
+			<div id = "commentsection-7980" class = 'collapse'>
+			<div id = "comment-11743" class = "comment">
+				<p>I've been working with a cable I made using the directions here (http://www.irobotweb.com/~/media/MainSite/PDFs/About/STEM/Create/Create_2_Serial_to_USB_Cable_Creation.pdf?la=en). With this cable, using RTS as I described wakes the robot. After I saw your response, I tried the official Create cable, and found that it does not work the same. Confused, I carefully opened up the cable and I think the orange and green wires are swapped on the PCBA, so it seems there was an assembly error in at least some of these cables. I d suggest you e-mail create@irobot.com to see if they can help you further.</p>
+			</div>
+			<div id = "comment-11744" class = "comment">
+				<p>Also, I added text in my previous answer to reflect this finding.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7980" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7980">
+					<img id="start_img-7980" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7980">Comment</button>
+			<br><div id = "ans-8052"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8052" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Steve is right: orange and green wires are swapped in the official Create cable. If you swap the two wires the robot will wake up as soon as BRC is brought to zero. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8052" data-toggle = "popover">
+				<p>user name : Kirk</p>
+				<p> user reputation : 21</p>
+				<p class = "tagcontent" id = "usertaginfo-8052">{'None': 2}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8052" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8052" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8052">
+					<img id="start_img-8052" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8052">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,156 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Orientation parameter for quadcopter with madgwick fusion algorithm
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7578" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7578" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 741</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Orientation parameter for quadcopter with madgwick fusion algorithm</h2>
+<p>I recently decided to build a quadricopter from scratch using Arduino and now I'm faced with an orientation estimation problem.</p>
+
+<p>I bought a cheap 10DOF sensor with 3 axis magnetometer, 3 axis accelerometer, 3 axis gyro and a barometer and the complementary filter that I use to get orientation returns usable but noisy values.</p>
+
+<p>I tried the Madgwick fusion filter too, but it returns unstable values that diverges from the ones I get with complementary filter. Given that the Madgwick filter implementation is correct, I pass acceleration values measured in Gs, gyro values measured in rps (radians per second) and Magnetometer values measured in uT, while sampling time is the same of my loop cycle. Is there anything I have missed?</p>
+
+<p>Is there any advantage using Kalman filter?</p>
+
+<p><strong>EDIT1:</strong></p>
+
+<p>My problem was due to an wrong choice of sampling time and now seems to work, but convergence is very very slow (i.e. it takes about 3 seconds to reach the right value after a quick flip of the IMU). Rising value of Kp adds to much noise. I also tried to repeat filter update step more than once per cycle but it requires too much time exceeding the sampling time.</p>
+
+<p>Here some graphs, from top to bottom Complementary filter, Madgwick filter and Madgwick filter with high Kp:</p>
+
+<p><img src="https://i.stack.imgur.com/Rfyh4.png" alt="Complementary filter: fast but a bit noisy"></p>
+
+<p><img src="https://i.stack.imgur.com/85NdG.png" alt="Madgwick filter"></p>
+
+<p><img src="https://i.stack.imgur.com/MPTdg.png" alt="Madgwick filter with high kp value"></p>
+
+<p><strong>EDIT2:</strong></p>
+
+<p>Different values probably are caused by cable plug and unplug. Anyway raw data example from my sensor can be downloaded <a href="https://drive.google.com/file/d/0B59xb_cEOCa7NUl2OS1UME16SUU/view?usp=sharing" rel="nofollow noreferrer">here</a></p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7578" data-toggle = "popover">
+				<p>user name : MrDeepPurple</p>
+				<p> user reputation : 11</p>
+				<p class = "tagcontent" id = "usertaginfo-7578">{'quadcopter': 0, 'None': 1, 'imu': 0, 'kalman-filter': 0, 'arduino': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7578">Load Comments</button></br>
+			<div id = "commentsection-7578" class = 'collapse'>
+			<div id = "comment-10928" class = "comment">
+				<p>Can you post some figures/plots/picture of the Madgwick implementaion-results. I do not know the paper/implementation but the inputs to the system look quite fine, internally the implementation normalizes them anyway (the Matlab code does, haven't looked at the C version). Do you have tuned the filter? There should be two gains to tune for the MARG-implementation</p>
+			</div>
+			<div id = "comment-10931" class = "comment">
+				<p>Hello, I will prepare some plots with complementary data and madgwick data in the afternoon. Anyway i tried changing Ki and Kp with lower values (it should give slower convergence I think) but it remains unstable.</p>
+			</div>
+			<div id = "comment-10933" class = "comment">
+				<p>If you are able to provide raw data, this would be very appreciated</p>
+			</div>
+			<div id = "comment-10942" class = "comment">
+				<p>Well, I found the main error gathering raw data from matlab: the sampling time was badly redefined in a function and, after rewriting that function, it starts to work with a very slow convergence speed. So now I'm trying to tune PID. Thank you for help!</p>
+			</div>
+			<div id = "comment-10947" class = "comment">
+				<p>Added graphs and data, I can't get reasonable speed with madgwick filter</p>
+			</div>
+			<div id = "comment-10948" class = "comment">
+				<p>Can you provide the raw data? One thing that is a bit strange is that the "steady state answers" are different; 0.38-0.39 for the bandpass filter and 0.33 for the Magdwick. I would like to check it with my implementations.</p>
+			</div>
+			<div id = "comment-10950" class = "comment">
+				<p>I took a look at the [Magdwick filter site](http://wiki.ros.org/imu_filter_madgwick) and it advertises only one gain - "gain". There was no mention of kp ki or. kd, and I wouldn't expect there to be either because the sensor fusion is probably being done with a Kalman filter. Can you provide or link the filter code you're using?</p>
+			</div>
+			<div id = "comment-10956" class = "comment">
+				<p>I get base c++ code from [here](http://www.x-io.co.uk/open-source-imu-and-ahrs-algorithms/). Moreover I tried another implementation that uses an integral gain Ki, but I can't find that link anymore. Anyway now I'm using the first one. Raw data added in main topic</p>
+			</div>
+			<div id = "comment-10962" class = "comment">
+				<p>@Chuck you can find the paper belonging to this implementation here: http://www.x-io.co.uk/res/doc/madgwick_internal_report.pdf 
+I haven't read it yet, but it is definetly not a Kalman filter</p>
+			</div>
+			<div id = "comment-10967" class = "comment">
+				<p>@TobiasK - Glanced at the gains section of that paper. *There are no kp ki or kd gains.* There are two gains,  $\xi$ and $\beta$, and there's a formula to use to *calculate* those gains, equations 50 and 51. Again, I have no idea what OP is using but it doesn't seem to be the algorithm he references. On my phone this weekend, can't/won't read up on anything until Monday.</p>
+			</div>
+			<div id = "comment-10979" class = "comment">
+				<p>I did not use the algorithm on the paper but I used the implementation in the download page in the same site instead. It has only one parameter that is called beta on the code (I called it Kp in previous comments only because the first implementation I found named it Kp).
+I will try the one printed on the paper instead.</p>
+			</div>
+			<div id = "comment-10999" class = "comment">
+				<p>I tried the implementation on the paper with the same results: It converges very slowly and it is not suitable for my purposes. Anyway it is less affected by the vibration of the frame. Maybe I could use it on a faster hardware than Arduino</p>
+			</div>
+			</div>
+				<textarea id = "speech-7578" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7578">
+					<img id="start_img-7578" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7578">Comment</button>
+
+<h1>Answers</h1>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -5,13 +5,13 @@ import re
 folder = "../views/posts/";
 
 def extractTagsFromObj(tags):
-	print 'original tags-->', tags
+	#print 'original tags-->', tags
 	tagsArr = []
 	tagsArr = tags.split('>')
 	newTagsArr = [tag.replace('<', '') for tag in tagsArr]
 	
 	newTagsArr = newTagsArr[:-1]
-	print 'formatted tags array-->', newTagsArr
+	#print 'formatted tags array-->', newTagsArr
 	return newTagsArr;
 
 
@@ -229,7 +229,7 @@ def createContent(title, id, body, userInfoHTML, score, views, comments, answerS
         	  "\n\t\t\t\t</ul>" +\
         	  "\n\t\t\t\t\t<div class=\"tab-content\">" +\
               "\n\t\t\t\t\t\t<div id=\"resources\" class=\"tab-pane fade in active\">"+\
-              "\n\t\t\t\t\t\t\t<h3>Resources</h3>" +\
+              "\n\t\t\t\t\t\t\t<h3>Links from the Page</h3>" +\
               "\n\t\t\t\t\t\t\t<div id = \"resourcescontent\"></div>" +\
           	  "\n\t\t\t\t\t\t</div>" +\
               "\n\t\t\t\t\t\t<div id=\"summary\" class=\"tab-pane fade\">" +\
@@ -249,6 +249,7 @@ def createContent(title, id, body, userInfoHTML, score, views, comments, answerS
 			  "\n\t\tvar content = $('.content').html();" +\
 			  "\n\t\tpopulateResources(content)" +\
 			  "\n\t\tgetHighlights()" +\
+			  "\n\t\tsetOnLinksHover()" +\
 			  "\n\t</script>" +\
 			  "\n\t<script src=\"/media.js\"></script>" +\
 			  "\n\t<script src=\"/vote.js\"></script>" +\
@@ -261,9 +262,9 @@ def createContent(title, id, body, userInfoHTML, score, views, comments, answerS
 
 def main():
 
-	tree = ET.parse('../data/apple.meta.stackexchange.com/Posts.xml');
-	commentTree = ET.parse('../data/apple.meta.stackexchange.com/Comments.xml');
-	userTree = ET.parse('../data/apple.meta.stackexchange.com/Users.xml');
+	tree = ET.parse('../data/robotics.stackexchange.com/Posts.xml');
+	commentTree = ET.parse('../data/robotics.stackexchange.com/Comments.xml');
+	userTree = ET.parse('../data/robotics.stackexchange.com/Users.xml');
 	userRoot = userTree.getroot();
 	commentRoot = commentTree.getroot();
 	root = tree.getroot();
@@ -301,7 +302,7 @@ def main():
 			content = createContent(title, quesId, body, userInfoHTML, score, views, commentStr, answerStr);
 
 			#print content
-
+			print 'processed ', quesId
 			f.write(content);
 			f.close();
 

@@ -1,0 +1,186 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to program a continuous servo motor? (Arduino)
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-12144" class = "post">
+			<h2>Question</h2>
+			<div id="vote-12144" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 409</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to program a continuous servo motor? (Arduino)</h2>
+<p>I need to use continuously rotating servo for a camera stabilization system. My professor bought servos that have already been modified for continuous motion--there's no stop in the gears, and the potentiometer allows it to spin 360+ degrees.</p>
+
+<p>I am currently using PWM with an Arduino Uno. The servo does spin continuously, but not in a stable way. I've also taken out the potentiometer in another one of the servo, and on a third servo I used a voltage divider in place of the potentiometer. </p>
+
+<p>I've tried static values and a "sweep" from 0% duty cycle to 100% to get a feeling for how they work, but I just cannot figure it out. I greatly would appreciate any tips on this.</p>
+
+<p>Here is my code:</p>
+
+<pre><code> //PWM test for continious motion Servo
+
+ int servoPin = 9; // connect servo to pin 10
+ int pwmVal = 0; // declare pulse width modulation value
+
+void setup(void) {
+  pinMode(servoPin, OUTPUT); //set up the servoPin as an output pin
+  Serial.begin(9600); // begin serial monitor
+}
+
+void loop(void) {
+
+  //for loop that sweeps values from 0 to 255
+  for (pwmVal = 0; pwmVal &lt;= 253; pwmVal += 1) {
+    analogWrite(servoPin, pwmVal);
+    Serial.println(pwmVal);
+    delay(100);
+  }
+  for (pwmVal = 253; pwmVal &gt;= 0; pwmVal -= 1) {
+    analogWrite(servoPin, pwmVal);
+    Serial.println(pwmVal);
+    delay(100);
+  }
+
+
+  //assign a static pwm value
+  pwmVal = 0;
+  analogWrite(servoPin, pwmVal);
+}
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12144" data-toggle = "popover">
+				<p>user name : user153129</p>
+				<p> user reputation : 6</p>
+				<p class = "tagcontent" id = "usertaginfo-12144">{'servomotor': 1, 'None': 0, 'arduino': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-12144" class = 'collapse'>
+			</div>
+				<textarea id = "speech-12144" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12144">
+					<img id="start_img-12144" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12144">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-12167"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-12167" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Doing a sweep across a range of PWM value will not results in a continous motion, since the delay times between the different vales are not correlated with the time required for the servo to arrive to the given position. </p>
+
+<p>Depending on how the motor functions:</p>
+
+<p>I suggest you only give 2 commands, the minimum PWM value and the maximum PWM value. This should do a complete rotations continously, if the duty cylcle of your PWM is proportional to the position of the motor. </p>
+
+<p>If your motor has been modified and the pwm duty cycle is not proportional to the position of the motor, but to its velocity, then a constant PWM duty cylce should rotate the motor with a constant velocity. </p>
+
+<p>Also please increase delay times to a few seconds in both cases to make sure that the motor has enough time to execute the commands.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12167" data-toggle = "popover">
+				<p>user name : 50k4</p>
+				<p> user reputation : 2800</p>
+				<p class = "tagcontent" id = "usertaginfo-12167">{'geometry': 0, 'None': 193, 'kinematics': 0, 'robotic-arm': 0}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-12167" class = 'collapse'>
+			</div>
+				<textarea id = "speech-12167" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12167">
+					<img id="start_img-12167" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12167">Comment</button>
+			<br><div id = "ans-12186"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-12186" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I have a gut-feeling that the question cannot be answered without the details of the motors. I see that <code>analogWrite()</code> is being used along with a delay of 0.1s . In Arduino, <code>analogWrite()</code> is a <a href="https://www.arduino.cc/en/Reference/analogWrite" rel="nofollow noreferrer">PWM itself running at about 490Hz/980Hz</a> and additional delays may not be necessary. Servos generally use 1 milli-second to 2 milli-second 50 Hz PWM as mentioned in this description <a href="https://learn.sparkfun.com/tutorials/pulse-width-modulation" rel="nofollow noreferrer">https://learn.sparkfun.com/tutorials/pulse-width-modulation</a> . Servo motors use feedback and internal softwares most of the times - <a href="http://www.electronicshub.org/servo-motors/" rel="nofollow noreferrer">http://www.electronicshub.org/servo-motors/</a> . So, it is better to use <a href="https://www.arduino.cc/en/reference/servo" rel="nofollow noreferrer">Arduino Servo Library</a> and program using 'servo angles' like this: <a href="https://learn.adafruit.com/adafruit-arduino-lesson-14-servo-motors/arduino-code-for-sweep" rel="nofollow noreferrer">https://learn.adafruit.com/adafruit-arduino-lesson-14-servo-motors/arduino-code-for-sweep</a> .</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12186" data-toggle = "popover">
+				<p>user name : Prasad Raghavendra</p>
+				<p> user reputation : 146</p>
+				<p class = "tagcontent" id = "usertaginfo-12186">{'quadcopter': 3, 'None': 10, 'simulation': 3, 'ros': 3, 'gazebo': 3, 'software': 3}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-12186" class = 'collapse'>
+			</div>
+				<textarea id = "speech-12186" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12186">
+					<img id="start_img-12186" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12186">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

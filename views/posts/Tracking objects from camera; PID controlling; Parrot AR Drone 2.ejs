@@ -1,0 +1,196 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Tracking objects from camera; PID controlling; Parrot AR Drone 2
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8849" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8849" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 786</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Tracking objects from camera; PID controlling; Parrot AR Drone 2</h2>
+<p>I am working on a project where I should perform object tracking using the camera of Parrot AR Drone 2.0. So the main idea is, a drone should be able to identify a specified colour and then follow it by keeping some distance.</p>
+
+<p>I am using the <a href="https://github.com/puku0x/cvdrone" rel="nofollow noreferrer">cvdrone</a> API to establish communication with the drone. This API provides function:</p>
+
+<pre><code>ARDrone::move3D(double vx, double vy, double vz, double vr)
+</code></pre>
+
+<p>which moves the AR.Drone in 3D space and where </p>
+
+<ul>
+<li>vx: X velocity [m/s]</li>
+<li>vy: Y velocity [m/s]</li>
+<li>vz: Z velocity [m/s]</li>
+<li>vr: Rotational speed [rad/s]</li>
+</ul>
+
+<p>I have written an application which does simple image processing on the images obtained from the camera of the drone using OpenCV and finds needed contours of the object to be tracked. See the example below:
+<a href="https://i.stack.imgur.com/NVDgg.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/NVDgg.jpg" alt="enter image description here"></a></p>
+
+<p>Now <strong><em>the part I am struggling</em></strong> is finding the technique using which I should find the <strong><em>velocities</em></strong> to be sent to the <strong><em>move3D</em></strong> function. I have read that common way of doing controlling is by using <strong><em>PID</em></strong> controlling. However, I have read about that and could not get how it could be related to this problem.</p>
+
+<p>To summarise, my question is how to move a robot towards an object detected in its camera? How to find coordinates of certain objects from the camera? </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8849" data-toggle = "popover">
+				<p>user name : fiz</p>
+				<p> user reputation : 35</p>
+				<p class = "tagcontent" id = "usertaginfo-8849">{'control': 3, 'quadcopter': 6, 'None': 0, 'tuning': 3, 'cameras': 3, 'pid': 3, 'opencv': 6}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8849">Load Comments</button></br>
+			<div id = "commentsection-8849" class = 'collapse'>
+			<div id = "comment-14526" class = "comment">
+				<p>I would say that your bigger problem right now is your last question. How will you extract the object location information using a monocular camera? You would at least need to know how big the object you are tracking is, so that you can correlate that to the object size in the camera frame and make an estimate on the object distance. Are you allowed to do this assumption?</p>
+			</div>
+			<div id = "comment-14528" class = "comment">
+				<p>I totally agree with @GeorgeZP. The heavy part is the image processing. A single camera doesn't provide a depth clue.</p>
+			</div>
+			<div id = "comment-14530" class = "comment">
+				<p>@GeorgeZP Then let's say that I will know the size of object in advance. How do I proceed then?</p>
+			</div>
+			</div>
+				<textarea id = "speech-8849" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8849">
+					<img id="start_img-8849" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8849">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8856"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8856" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>On the condition that you don't care about the position of the quadrotor regarding your target, but instead only of the absolute distance, I would say that for starters, you can extract the distance information from your OpenCV algorithm.</p>
+
+<p>Have a target with a clear contour (eg a coloured ball) and find its relative position from the center of the camera frame, as well as the size of the contour. You don't need features to extract your relative orientation to the object, just know where you should turn to and how far it is.
+The size of the contour will need to be calibrated so that you can extract distance information from it (the farthest you are, the smaller the object).
+The position of the target from the center of the camera frame will tell you where you need to point your quadrotor.</p>
+
+<p>After that, it's a matter of finding a control law for your quadrotor, which will minimize the offset of the target from the camera center, as well as keep it in the required size in the camera frame. This won't necessarily be easy, since there will be conflicting requirements. For example, you will want to bring the quadrotor closer to your target by pitching it down, but at the same time this will increase the targeting error.
+An MPC controller might be suitable for balancing those weights.</p>
+
+<p>In all, I would say that, as it is presented, this is a full-fledged thesis project.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8856" data-toggle = "popover">
+				<p>user name : George ZP</p>
+				<p> user reputation : 461</p>
+				<p class = "tagcontent" id = "usertaginfo-8856">{'None': 27}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8856">Load Comments</button></br>
+			<div id = "commentsection-8856" class = 'collapse'>
+			<div id = "comment-14802" class = "comment">
+				<p>Thanks for your answer. Sorry, for the late accept. It is just I was struggling to understand it. I asked same question on general Stackoverflow as well and [this] (http://stackoverflow.com/questions/34713594/tracking-objects-from-camera-pid-controlling-parrot-ar-drone-2/34958479#34958479) answer gave a very in-depth explanation.</p>
+			</div>
+			<div id = "comment-14803" class = "comment">
+				<p>No problem. Cheers!</p>
+			</div>
+			</div>
+				<textarea id = "speech-8856" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8856">
+					<img id="start_img-8856" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8856">Comment</button>
+			<br><div id = "ans-8865"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8865" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>A standard approach (using opencv solvePnP) is using at least 4 points in the image that define landmarks of a known geometry.
+You can then get the pose of the camera relative to the object.</p>
+
+<p>For example if you had a blue rectangle of which you could detect the corners in the image, and you knew the dimensions of this rectangle, you could work out the relative pose.
+You must have some way to identify which corner is which (say you had them each painted different colours just in the corners).</p>
+
+<p>The relative position between your robot would be a (rotated) error, which you could feed into a PID.</p>
+
+<p>See also: <a href="https://stackoverflow.com/questions/16265714/camera-pose-estimation-opencv-pnp">https://stackoverflow.com/questions/16265714/camera-pose-estimation-opencv-pnp</a></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8865" data-toggle = "popover">
+				<p>user name : Gouda</p>
+				<p> user reputation : 632</p>
+				<p class = "tagcontent" id = "usertaginfo-8865">{'control': 0, 'None': 39, 'computer-vision': 1, 'calibration': 1, 'cameras': 1, 'kalman-filter': 0, 'jacobian': 0}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8865" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8865" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8865">
+					<img id="start_img-8865" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8865">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

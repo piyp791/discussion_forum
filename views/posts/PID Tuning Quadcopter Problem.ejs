@@ -1,0 +1,216 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>PID Tuning Quadcopter Problem
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-4526" class = "post">
+			<h2>Question</h2>
+			<div id="vote-4526" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 371</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>PID Tuning Quadcopter Problem</h2>
+<p>I am tuning PID for quadcopter, the problem i have is that with different base Throttle, i seems that i have to adjust different PID gains in order for the quadcopter to balance! </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4526" data-toggle = "popover">
+				<p>user name : Tuyen Vo Quang</p>
+				<p> user reputation : 72</p>
+				<p class = "tagcontent" id = "usertaginfo-4526">{'quadcopter': 5, 'None': 2, 'i2c': 0, 'pid': 4}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-4526">Load Comments</button></br>
+			<div id = "commentsection-4526" class = 'collapse'>
+			<div id = "comment-7131" class = "comment">
+				<p>I guess you use a Quadro with 4 motors.
+Are all the motors the same type?</p>
+			</div>
+			<div id = "comment-7132" class = "comment">
+				<p>I use the same type of course!</p>
+			</div>
+			</div>
+				<textarea id = "speech-4526" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4526">
+					<img id="start_img-4526" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4526">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-4534"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4534" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Well, the optimal PID parameters are an estimation that should do best at all situations. It's possible that you just need to find better PID parameters. </p>
+
+<p>But it could also be a hardware problem:
+It helps to let the quad hover a bit and figure out if it's drifting in a specific direction - That should point you to the culprit, or at least to the culprit 'leg'.</p>
+
+<p>The issues to check, in my opinion, will be:</p>
+
+<ol>
+<li>ESC calibration isn't the same on all motors - The ESCs do not
+react the same to the same throttle level. Recalibrating the ESCs
+(preferably at the same time) should fix that. </li>
+<li>The props could be unbalanced - Check that the props are in a good condition and         don't have any deformations.</li>
+<li>Maybe one of the ESCs is acting up? Try
+    measuring the current usage of each ESC changing the throttle from
+    low to high. It should be about the same on every motor.</li>
+<li>Check for loose stuff on the quad - Things tend to
+    resonate in different throttle levels causing the quad to change its
+    behaviour.</li>
+<li>Try switching between parts. I'd go with switching ESC between sides and checking if it makes a difference in the drift direction.</li>
+</ol>
+
+<p>Lastly, it could be (not likely however) a problem in the PID implementation. Which flight controller are you using?</p>
+
+<p><strong>ESC calibration</strong></p>
+
+<p>ESCs translate the signal coming from your receiver (PWM signal usually) to 3-phase voltage given to the motor. PWM signal is basically a square wave with changing duty cycle.
+<img src="https://i.stack.imgur.com/nibGx.png" alt="enter image description here"></p>
+
+<p>The duty cycle (D.C.) is really just the value the receiver receives from the RC Transmitter (the remote). Since each receiver &amp; transmitter are different, the received value isn't always going from 0% to 100%. It can sometimes go from 20% to 90%, or in worse cases 40% to 60%, etc. Usually low D.C. means low channel value (low throttle in our case), but Futaba tend to reverse that (high D.C. = low channel value). </p>
+
+<p>So what you need to do is to calibrate your ESCs to know the dynamic range of your throttle (how much D.C is low and how much is high). Check the ESC manual - it should explain how to do that. Usually it's something like:</p>
+
+<ol>
+<li>Put throttle all the way up</li>
+<li>Connect power to ESC</li>
+<li>Wait for 3 beeps (or something)</li>
+<li>Lower throttle until lowest value</li>
+<li>Wait for 3 beeps</li>
+</ol>
+
+<p>But it differs from ESC to ESC</p>
+
+<p>Edit: Ran into a another explanation:
+<a href="https://robotics.stackexchange.com/questions/4531/purpose-of-programming-an-esc">Purpose of programming an ESC</a></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4534" data-toggle = "popover">
+				<p>user name : Nitay</p>
+				<p> user reputation : 151</p>
+				<p class = "tagcontent" id = "usertaginfo-4534">{'None': 3, 'ardupilot': 1, 'mavlink': 1}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-4534">Load Comments</button></br>
+			<div id = "commentsection-4534" class = 'collapse'>
+			<div id = "comment-7139" class = "comment">
+				<p>We use Tiva C from TI, and we write own code for the quadcopter, which employs the DCM filter to compute the angles. The sensor is MPU 9150.
+I am a newbie and also english is not my native language! So please help me!
+what does ESC Calibration mean? Why do we need that?</p>
+			</div>
+			<div id = "comment-7140" class = "comment">
+				<p>Edited my answer a bit. Hope it helps!</p>
+			</div>
+			<div id = "comment-7142" class = "comment">
+				<p>Thanks so much. Iam trying to fix that, i'll let you know soon the result.</p>
+			</div>
+			<div id = "comment-7148" class = "comment">
+				<p>Now i meet a problem that in my PID, i use (set_point - current_angle ), which i believe that it will help the quadcopter to balance. However, i have to change it to (current_angle - set_point), but in this case the quadcopter tends to go to one direction if i push that way and similarly for the other side. Anyone can help me?</p>
+			</div>
+			<div id = "comment-7152" class = "comment">
+				<p>well - changing the sign of the error will cause the control loop to behave differently. I think you might want to take a look on some other implementations for quadcopter PIDs and get some ideas</p>
+			</div>
+			<div id = "comment-7166" class = "comment">
+				<p>I look at the Ardruino, i see that my implementation is quite similar. If currently i test PID  and see that the quad oscillate then i REVERSE the signal to the ESC, then the quadcopter rotate to one direction</p>
+			</div>
+			</div>
+				<textarea id = "speech-4534" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4534">
+					<img id="start_img-4534" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4534">Comment</button>
+			<br><div id = "ans-4740"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4740" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I found the reason, in my original code, i just use one stage PID.
+The right one should comprise of 2 cascaded PIDs: rate PID and stablized PID</p>
+
+<p><img src="https://i.stack.imgur.com/wBGwx.jpg" alt="enter image description here"></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4740" data-toggle = "popover">
+				<p>user name : Tuyen Vo Quang</p>
+				<p> user reputation : 72</p>
+				<p class = "tagcontent" id = "usertaginfo-4740">{'quadcopter': 5, 'None': 2, 'i2c': 0, 'pid': 4}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-4740" class = 'collapse'>
+			</div>
+				<textarea id = "speech-4740" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4740">
+					<img id="start_img-4740" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4740">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

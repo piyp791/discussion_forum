@@ -1,0 +1,478 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Help with setting up Inverse Kinematics
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11823" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11823" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 132</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Help with setting up Inverse Kinematics</h2>
+<p>I'm working through the Inverse Kinematic example for the Unimation PUMA 560  from Introduction to Robotics by Craig. In it he specifies the IK equations like so:</p>
+
+<p><a href="https://i.stack.imgur.com/cAvD2.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/cAvD2.png" alt="enter image description here"></a></p>
+
+<p>In my software program I have three sliders on the screen that will give me the rotation of the end point in x, y, z like so (this is in Unity):</p>
+
+<p><a href="https://i.stack.imgur.com/8zxIT.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/8zxIT.png" alt="enter image description here"></a></p>
+
+<p>Each one of these sliders will control a float variable in the code (C#) and I can read these into my script (Using Unity 5). I am trying to replicate the inverse kinematic solution for this PUMA robot inside Unity, so that for a given position and rotation of the end effector the link rotations will update accordingly. I have already written out the IK equations that Craig specified in the example to calculate theta(i), but how do I "read" the slider values and "input" them to these equations? If I am not making any sense I apologize, I have been chipping away at this for some time and hit a mental blank wall. Any advice appreciated.</p>
+
+<p>Edit: So in my near-delirious state I have not posited my question properly. So far, these are the equations I have written so far in code:</p>
+
+<p>public class PUMA_IK : MonoBehaviour {</p>
+
+<pre><code>GameObject J1, J2, J3, J4, J5, J6;
+
+public Vector3 J2J3_diff, J3J4_diff;
+
+public Slider px_Slider;    
+public Slider py_Slider;    
+public Slider pz_Slider;    
+public Slider rx_Slider;    
+public Slider ry_Slider;    
+public Slider rz_Slider;    
+
+public float Posx, Posy, Posz, Rotx, Roty, Rotz;
+
+float a1, a2, a3, a4, a5, a6;   //Joint twist
+float r1, r2, r3, r4, r5, r6;   //Mutual perpendicular length
+float d1, d2, d3, d4, d5, d6;   //Link offset
+public float t1, t2, t23, t3, t4, t5, t6;   //Joint angle of rotation
+
+public float J1Rot, J2Rot, J3Rot, J4Rot, J5Rot, J6Rot;
+
+float r11, r21, r31, r12, r22, r32, r13, r23, r33, c23, s23, Px, Py, Pz, phi, rho, K;
+
+int pose;   //1 - left hand, 2 = right hand
+
+// Use this for initialization
+void Start ()
+{
+    pose = 1;
+
+    J1 = GameObject.FindGameObjectWithTag("J1");
+    J2 = GameObject.FindGameObjectWithTag("J2");
+    J3 = GameObject.FindGameObjectWithTag("J3");
+    J4 = GameObject.FindGameObjectWithTag("J4");
+    J5 = GameObject.FindGameObjectWithTag("J5");
+    J6 = GameObject.FindGameObjectWithTag("J6");
+
+    J2J3_diff = J3.transform.position - J2.transform.position;
+    J3J4_diff = J4.transform.position - J3.transform.position;
+
+
+
+    //Init modified DH parameters
+
+    //Joint twist
+
+    a1 = 0;
+    a2 = -90;
+    a3 = 0;
+    a4 = -90;
+    a5 = 90;
+    a6 = -90;
+
+    //Link length
+
+    r1 = 0;
+    r2 = Mathf.Abs(J2J3_diff.x);
+    r3 = Mathf.Abs(J3J4_diff.x);
+    r4 = 0;
+    r5 = 0;
+    r6 = 0;
+
+    //Link offset
+
+    d1 = 0;
+    d2 = 0;
+    d3 = Mathf.Abs(J2J3_diff.z);
+    d4 = Vector3.Distance(J4.transform.position, J3.transform.position);
+    d5 = 0;
+    d6 = 0;
+
+}
+
+void Update ()
+{
+    Posx = px_Slider.value;
+    Posy = py_Slider.value;
+    Posz = pz_Slider.value;
+
+    Rotx = rx_Slider.value;
+    Roty = ry_Slider.value;
+    Rotz = rz_Slider.value;
+
+    Px = Posx;
+    Py = Posy;
+    Pz = Posz;
+
+    c23 = ((cos(t2)*cos(t3)) - (sin(t2)*sin(t3)));
+    s23 = ((cos(t2)*sin(t3)) + (sin(t2)*cos(t3)));
+
+    rho = Mathf.Sqrt(Mathf.Pow(Px, 2) + Mathf.Pow(Py, 2));
+    phi = Mathf.Atan2(Py, Px);
+
+    if (pose == 1)
+    {
+        t1 = Mathf.Atan2(Py, Px) - Mathf.Atan2(d3, Mathf.Sqrt(Mathf.Pow(Px, 2) + Mathf.Pow(Py, 2) - Mathf.Pow(d3, 2)));
+    }
+
+    if (pose == 2)
+    {
+        t1 = Mathf.Atan2(Py, Px) - Mathf.Atan2(d3, -Mathf.Sqrt(Mathf.Pow(Px, 2) + Mathf.Pow(Py, 2) - Mathf.Pow(d3, 2)));
+    }
+
+    K = (Mathf.Pow(Px, 2)+ Mathf.Pow(Py, 2) + Mathf.Pow(Px, 2) - Mathf.Pow(a2, 2) - Mathf.Pow(a3, 2) - Mathf.Pow(d3, 2) - Mathf.Pow(d4, 2)) / (2 * a2);
+
+    if (pose == 1)
+    {
+        t3 = Mathf.Atan2(a3, d4) - Mathf.Atan2(K, Mathf.Sqrt(Mathf.Pow(a2, 2) + Mathf.Pow(d4, 2) - Mathf.Pow(K, 2)));
+    }
+
+    if (pose == 2)
+    {
+        t3 = Mathf.Atan2(a3, d4) - Mathf.Atan2(K, -Mathf.Sqrt(Mathf.Pow(a2, 2) + Mathf.Pow(d4, 2) - Mathf.Pow(K, 2)));
+    }
+
+    t23 = Mathf.Atan2(((-a3 - (a2 * cos(t3))) * Pz) - ((cos(t1) * Px) + (sin(t1) * Py)) * (d4 - (a2 * sin(t3))), ((((a2 * sin(t3)) - a4) * Pz) - ((a3 + (a2 * cos(t3))) * ((cos(t1) * Px) + (sin(t1) * Py)))));
+
+    t2 = t23 - t3;
+
+    if (sin(t5) != 0)   //Joint 5 is at zero i.e. pointing straight out
+    {
+        t4 = Mathf.Atan2((-r13 * sin(t1)) + (r23 * cos(t1)), (-r13 * cos(t1) * c23) + (r33 * s23));
+    }
+
+    float t4_detection_window = 0.00001f;
+
+    if ((((-a3 - (a2 * cos(t3))) * Pz) - ((cos(t1) * Px) + (sin(t1) * Py)) &lt; t4_detection_window) &amp;&amp; (((-r13 * cos(t1) * c23) + (r33 * s23)) &lt; t4_detection_window))
+    {
+        t4 = J4Rot;
+    }
+
+    float t5_s5, t5_c5; //Eqn 4.79
+
+    t5_s5 = -((r13 * ((cos(t1) * c23 * cos(t4)) + (sin(t1) * sin(t4)))) + (r23 * ((sin(t1) * c23 * cos(t4)) - (cos(t1) * sin(t4)))) - (r33 * (s23 * cos(t4))));
+
+    t5_c5 = (r13 * (-cos(t1) * s23)) + (r23 * (-sin(t1) * s23)) + (r33 * -c23);
+
+    t5 = Mathf.Atan2(t5_s5, t5_c5);
+
+    float t5_s6, t5_c6; //Eqn 4.82
+
+    t5_s6 = ((-r11 * ((cos(t1) * c23 * sin(t4)) - (sin(t1) * cos(t4)))) - (r21 * ((sin(t1) * c23 * sin(t4)) + (cos(t1) * cos(t4)))) + (r31 * (s23 * sin(t4))));
+
+    t5_c6 = (r11 * ((((cos(t1) * c23 * cos(t4)) + (sin(t1) * sin(t4))) * cos(t5)) - (cos(t1) * s23 * sin(t5)))) + (r21 * ((((sin(t1) * c23 * cos(t4)) + (cos(t1) * sin(t4))) * cos(t5)) - (sin(t1) * s23 * sin(t5)))) - (r31 * ((s23 * cos(t4) * cos(t5)) + (c23 * sin(t5))));
+
+    t6 = Mathf.Atan2(t5_s6, t5_c6);
+
+    //Update current joint angle for display
+
+    J1Rot = J1.transform.localRotation.eulerAngles.z;
+    J2Rot = J2.transform.localRotation.eulerAngles.y;
+    J3Rot = J3.transform.localRotation.eulerAngles.y;
+    J4Rot = J4.transform.localRotation.eulerAngles.z;
+    J5Rot = J5.transform.localRotation.eulerAngles.y;
+    J6Rot = J6.transform.localRotation.eulerAngles.z;
+
+}
+
+void p(object o)
+{
+    Debug.Log(o);
+}
+
+float sin(float angle)
+{
+    return Mathf.Rad2Deg * Mathf.Sin(angle);
+}
+float cos(float angle)
+{
+    return Mathf.Rad2Deg * Mathf.Cos(angle);
+}
+</code></pre>
+
+<p>}</p>
+
+<p>The issue is not with the mathematics of what is going on per se, I am just confused at how I interface the three values of the X, Y, and Z rotation for the sliders (which represent the desired orientation) with these equations. For the translation component it is easy, the slider values are simply equal to Px, Py and Pz in the IK equation set. But in his equations he references r11, r23, etc, which are the orientation components. I am unsure how to replace these values (r11, r12, etc) with the slider values.</p>
+
+<p>Any ideas?</p>
+
+<p>Edit 2: I should also say that these sliders would be for positioning the tool center point. The XYZ sliders will give the translation and the others would give the orientation, relative to the base frame. I hope this all makes sense. The goal is to be able to use these sliders in a similar fashion to how one would jog a real robot in world mode (as opposed to joint mode). I then pass these calculated angle values to the transform.rotation component of each joint in Unity.</p>
+
+<p>So what I am really asking is given the three numbers that the rotation sliders produce (XRot, YRot and ZRot), how do I plug those three numbers into the IK equations?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11823" data-toggle = "popover">
+				<p>user name : Richard S</p>
+				<p> user reputation : 123</p>
+				<p class = "tagcontent" id = "usertaginfo-11823">{'None': 0, 'singularity': 0, 'inverse-kinematics': 4}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11823">Load Comments</button></br>
+			<div id = "commentsection-11823" class = 'collapse'>
+			<div id = "comment-21043" class = "comment">
+				<p>Welcome to *Robotics*, RichardS! I'm not sure I understand exactly what you're asking. Are you trying to figure out how you get a value from your slider (a Unity/programming question) or are you trying to figure out how the value from the slider is used in the inverse kinematics equation? Is it a question of *getting* the value or of *using* the value?</p>
+			</div>
+			<div id = "comment-21044" class = "comment">
+				<p>Apologies, it is a question of using the value. I can already read the slider value into my code as a float, but I am confused on how to set this single float value for each axis up to be used in the transformation matrix. I hope that makes sense?</p>
+			</div>
+			<div id = "comment-21046" class = "comment">
+				<p>You said, "I have already written out the IK equations that Craig specified," but in your post you show a portion of text that states, "... we will solve the *kinematic* equations..." - the matrices you show are for the *forward* kinematics. Can you post the inverse kinematic equations you have? Forward kinematics take the individual joint/actuator positions and get to an end effector pose (position + orientation); *inverse* kinematics take an end effector pose and return the individual joint/actuator positions.</p>
+			</div>
+			<div id = "comment-21047" class = "comment">
+				<p>It looks to me like maybe you're trying to take the end effector pose and plug those values into a set of forward kinematic equations, which doesn't work. Note that the transform matrix from base to end effector, $_6^0T$, **is** (a version of) the end effector pose. The 3x3 rotation matrix (1:3, 1:3) gives the x/y/z rotations and the displacement vector (1:3,4) is the x/y/z position. The text you gave shows the total transform matrix is comprised of successive individual (link/joint) transforms; you're need to look for *inverse* kinematics (which is *not*  just the inverse of the transform).</p>
+			</div>
+			<div id = "comment-21049" class = "comment">
+				<p>I updated the question to remove the image of the forward IK matrix, this was confusing. I have posted the entire IK equation set he uses and shown my code thus far. Brain has stopped work on how to specify the desired orientation to the IK equations using those sliders.</p>
+			</div>
+			<div id = "comment-21057" class = "comment">
+				<p>OK thanks everyone for your invaluable input thus far. I am currently working on implementing these ideas and will report back if/when I make any progress. There's alot of debugging to do!</p>
+			</div>
+			</div>
+				<textarea id = "speech-11823" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11823">
+					<img id="start_img-11823" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11823">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-11826"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11826" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>If I have correctly understood your question, you have those values (the angles that you want for the pose of the end-effector of the robot) but you don't actually know how to use them, since in the rotation matrix there are 9 parameters r i,j that look uncorrelated from the three angles.</p>
+
+<p>So, the first thing that probably you have seen in Craig's book is that a rotation matrix, even though it has 9 parameters, has actually only 3 dof in space. You can represent a rotation in space with only 3 angles: these are called Euler angles, or RPY angles, depending on your choice. Euler angles are three rotations around X,Y,Z angles (there are actually 12 combinations possible, like Y,Z,X, X,Y,X and so on), but they are made around <strong>moving axes</strong>: after you do your first rotation, your reference frame will rotate accordingly, and you execute the second rotation around your new axis (be it X,Y, or Z depending on your formalization). You can have a more accurate explanation on the textbook if you wish.
+Roll Pitch Yaw angles are similar, but they are around <strong>fixed angles</strong>, i.e. you do three rotations around X, Y and Z around the fixed axis from which you start. 
+You can search for visual examples on the web that will make you understand these concepts very clearly.
+So, all this introduction is to say that you first have to model your problem: do you want these three sliders to set angles around moving or fixed angles? After you have modeled your representation, you can <strong>compute the rotation matrix</strong> from these three simple rotations around a single axis. You will end up with three simple rotation matrices around one axis, and you just multiply those three. You will end up with a new 3x3 matrix, that is your <strong>complete rotation matrix</strong>, the same that you see in that example: from that, you can extract each value of r i,j and evaluate the inverse kinematic according to your algorithm.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11826" data-toggle = "popover">
+				<p>user name : dante</p>
+				<p> user reputation : 41</p>
+				<p class = "tagcontent" id = "usertaginfo-11826">{'None': 4}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11826" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11826" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11826">
+					<img id="start_img-11826" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11826">Comment</button>
+			<br><div id = "ans-11827"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11827" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>There is a very good <em>Handbook of Robotics</em> from Ken Waldron and Jim Schmiedeler that provides the equations you're looking for.  The book can be purchased at <a href="http://link.springer.com/referencework/10.1007%2F978-3-540-30301-5" rel="nofollow noreferrer">this Springer site</a>, and you may be able to search to find other copies. As @dante mentions, the mapping of the 3x3 rotation matrix to wrist orientation depends on the type of angles you are using to describe the wrist orientation.</p>
+
+<p>In Table 1.2 of the referenced book they show how Euler angles can be obtained from the rotation matrix:</p>
+
+<p>Z-Y-X Euler Angles $[\alpha, \beta, \gamma]$ are obtainable as:
+$$ \beta = {\mathbb {Atan2}}(-r_{31}, \sqrt{r^2_{11} + r^2_{21}}) $$
+$$ \alpha = {\mathbb {Atan2}}(r_{21} / {\cos \beta}, r_{11} / {\cos \beta})$$
+$$ \gamma = {\mathbb {Atan2}}(r_{32} / {\cos \beta}, r_{33} / {\cos \beta})$$</p>
+
+<p>Similarly, the X-Y-Z Fixed Angles mapping is also given in the paper's Table 1.2:</p>
+
+<p>X-Y-Z Fixed Angles $[\psi, \theta, \phi]$:</p>
+
+<p>$$ \theta = {\mathbb {Atan2}}(-r_{31}, \sqrt{r^2_{11} + r^2_{21}})$$
+$$ \psi = {\mathbb {Atan2}}(r_{21} / \cos \theta, r_{11} / \cos \theta)$$
+$$ \phi = {\mathbb {Atan2}}(r_{32} / \cos \theta, r_{33} / \cos \theta)$$</p>
+
+<p>The authors also show conversions from a couple of additional wrist rotation coordinate systems.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11827" data-toggle = "popover">
+				<p>user name : SteveO</p>
+				<p> user reputation : 2960</p>
+				<p class = "tagcontent" id = "usertaginfo-11827">{'None': 222}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11827" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11827" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11827">
+					<img id="start_img-11827" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11827">Comment</button>
+			<br><div id = "ans-11829"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11829" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You need to turn each rotation angle (XRot, YRot, ZRot) into their own 3x3 rotation matrix. Once you have three 3x3 rotation matrices, you multiply them all together to get a singular "final" 3x3 rotation matrix that describes how the ending orientation is related to the starting orientation.</p>
+
+<p>How you define these rotation matrices (global frame or body frame) and how you apply them (x/y/z, z/y/x, y/z/x, etc.) determines the result you'll get. For me, I found that body-centric coordinates made the most intuitive sense. </p>
+
+<p>Imagine a ship whose y-axis points forward, z-axis points up, and x-axis points right (starboard). If you define roll as about the y-axis, pitch about the x-axis, and yaw about the z-axis, then (to me at least) those terms make the most sense when you say that first you yaw, then you pitch, then you roll. </p>
+
+<p>So, first you yaw, using $R_z(\theta_z)$:</p>
+
+<p>$$
+R_z(\theta_z) = \left[
+\begin{array}{ccc}
+\cos{\theta_z} &amp; -\sin{\theta_z} &amp; 0 \\
+\sin{\theta_z} &amp; \cos{\theta_z} &amp; 0 \\
+0 &amp; 0 &amp; 1
+\end{array} \right]
+$$</p>
+
+<p>Then you pitch, using $R_x(\theta_x)$</p>
+
+<p>$$
+R_x(\theta_x) = \left[
+\begin{array}{ccc}
+1 &amp; 0 &amp; 0 \\
+0 &amp; \cos{\theta_x} &amp; -\sin{\theta_x} \\
+0 &amp; \sin{\theta_x} &amp; \cos{\theta_x} \\
+\end{array} \right]
+$$</p>
+
+<p>Then you roll, using $R_y(\theta_y)$
+$$
+R_y(\theta_y) = \left[
+\begin{array}{ccc}
+\cos{\theta_y} &amp; 0 &amp; \sin{\theta_y} \\
+0 &amp; 1 &amp; 0 \\
+-\sin{\theta_y} &amp; 0 &amp; \cos{\theta_y} \\
+\end{array} \right]
+$$</p>
+
+<p>So, when you multiply them all together, you do matrix multiplication from right to left, you get</p>
+
+<p>$$
+R = R_y R_x R_z
+$$</p>
+
+<p>I used the y-axis as the "long" or longitudinal axis here because, at my company, that's how we set up our jobs: y-axis is generally the longer axis. I've seen online that typically the x-axis is the long axis, but it's all in how you define your axes. The $R_x$, $R_y$, and $R_z$ matrices I've given are the correct form to use for those axes, so if you redefine the axes for yourself to be something different just be sure to use the correct axis. </p>
+
+<p>So, once you get your overall $R$ matrix, that's where you get your $r_11$, $r_21$, etc. values.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11829" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-11829">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11829" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11829" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11829">
+					<img id="start_img-11829" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11829">Comment</button>
+			<br><div id = "ans-11834"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11834" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>All other answers describe well how your problem can be answered generally, and include very useful information, but again for very generalized cases. </p>
+
+<p>The point that I feel is missing, is that you are working in Unity, which has builtin solutions for most of your problems. You can reimplement euler angle calculations rotarion matrix calculations, but it will be hard to mainaint, even harder to document well. </p>
+
+<p>4x4 Transformation matrices are well known and used in the paper posted by you. <a href="https://docs.unity3d.com/ScriptReference/Matrix4x4.TRS.html" rel="nofollow noreferrer">Here</a> is a Unity exampe on how to uses 4x4 transformation matrices (scaling is not important for you, just use 0, 0, 0 for scaling).</p>
+
+<p><a href="https://docs.unity3d.com/ScriptReference/Transform-eulerAngles.html" rel="nofollow noreferrer">Here</a> is how Unity uses Euler angles. <a href="https://docs.unity3d.com/ScriptReference/Quaternion.html" rel="nofollow noreferrer">Here</a> is how can quaterions be used and converted. You can also find <a href="http://answers.unity3d.com/questions/875348/generate-a-3x3-rotation-matrix-from-a-matrix4x4.html" rel="nofollow noreferrer">examples</a> on how to convert transformation matrices to rotation matrices. </p>
+
+<p>Furthermore, <a href="https://forum.unity3d.com/threads/understanding-rotations-in-local-and-world-space-quaternions.153330/" rel="nofollow noreferrer">here</a> is an example on how to compute rotations in world coordinate systems and local coordinate systems. </p>
+
+<p>The main point is, that if you have a transformation matrix in Unity you can used the builtin Unity functions the get the rotation in many possible variant, and vice-versa, if you have angles, you can get other representations (transformation matrix, quaterions) using builtin Untiy functions without the need for implementing code which is hard to test, maintain and document.  </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11834" data-toggle = "popover">
+				<p>user name : 50k4</p>
+				<p> user reputation : 2800</p>
+				<p class = "tagcontent" id = "usertaginfo-11834">{'geometry': 0, 'None': 193, 'kinematics': 0, 'robotic-arm': 0}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11834" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11834" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11834">
+					<img id="start_img-11834" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11834">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

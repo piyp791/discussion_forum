@@ -1,0 +1,196 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Matlab for moving a robot towards the detected block
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-4340" class = "post">
+			<h2>Question</h2>
+			<div id="vote-4340" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 694</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Matlab for moving a robot towards the detected block</h2>
+<p>the matlab code is used to detect red colored object, but i want to control a bot to move towards the detected object. just need a simple algorithm or idea, controlling the servo i will be able to do it.    </p>
+
+<p><img src="https://i.stack.imgur.com/x0Jvm.png" alt="Detailed Diagram"></p>
+
+<pre><code>%get snapshot
+data = imread('image.jpg');
+% Now to track red objects in real time
+% we have to subtract the red component 
+% from the grayscale image to extract the red components in the image.
+diff_im = imsubtract(data(:,:,1), rgb2gray(data));
+%Use a median filter to filter out noise
+diff_im = medfilt2(diff_im, [3 3]);
+% Convert the resulting grayscale image into a binary image.
+diff_im = im2bw(diff_im,0.18);
+
+% Remove all those pixels less than 300px
+diff_im = bwareaopen(diff_im,300);
+
+% Label all the connected components in the image.
+bw = bwlabel(diff_im, 8);
+
+% Here we do the image blob analysis.
+% We get a set of properties for each labeled region.
+stats = regionprops(bw, 'BoundingBox', 'Centroid');
+
+% Display the image
+imshow(data)
+
+hold on
+
+%This is a loop to bound the red objects in a rectangular box.
+for object = 1:length(stats)
+    bb = stats(object).BoundingBox;
+    bc = stats(object).Centroid;
+    rectangle('Position',bb,'EdgeColor','r','LineWidth',2)
+    plot(bc(1),bc(2), '-m+')
+    a=text(bc(1)+15,bc(2), strcat('X: ', num2str(round(bc(1))), '    Y: ', num2str(round(bc(2)))));
+    set(a, 'FontName', 'Arial', 'FontWeight', 'bold', 'FontSize', 12, 'Color', 'yellow');
+end
+
+
+
+hold off
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4340" data-toggle = "popover">
+				<p>user name : Nabajyoti Das</p>
+				<p> user reputation : 8</p>
+				<p class = "tagcontent" id = "usertaginfo-4340">{'None': 0, 'computer-vision': 0, 'microcontroller': 0, 'wheeled-robot': 0, 'c': 0, 'avr': 0, 'h-bridge': 0, 'matlab': 0, 'mobile-robot': 0, 'motion-planning': 0, 'navigation': 0, 'robotc': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-4340">Load Comments</button></br>
+			<div id = "commentsection-4340" class = 'collapse'>
+			<div id = "comment-6936" class = "comment">
+				<p>would you please be more specific about the problem? Is it a computer vision problem or a mere geometric one?</p>
+			</div>
+			<div id = "comment-6937" class = "comment">
+				<p>computer vision problem, i mean so far i am able to detect the objects and find the distances between the robot and the objects but i'm unable to move the robot to the target object(red block) as shown in the diagram.</p>
+			</div>
+			<div id = "comment-6938" class = "comment">
+				<p>actually i want to design an autonomous bot that uses image processing to locate the block of different colours and to put the block in respective color zone. I will be placing the camera above the center of the arena, such that the camera gets the top view of the arena, and then detects the different colored blocks and the bot.</p>
+			</div>
+			</div>
+				<textarea id = "speech-4340" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4340">
+					<img id="start_img-4340" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4340">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-4341"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4341" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">-1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Image X and Y will reflect x and Y coordinates on the floor. Lens has distortion. Use calibration (if opencv), if high accuracy needed (may not need in this case).</p>
+
+<p>Original answer was mis-understood:</p>
+
+<p>Height and Width is distance (far, smaller image) then PID to control speed, slow down when near</p>
+
+<p>Left, Central, Right of the block is angle of block as reference to vehicle coordinate frame and calculate the motion angle</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4341" data-toggle = "popover">
+				<p>user name : EEd</p>
+				<p> user reputation : 359</p>
+				<p class = "tagcontent" id = "usertaginfo-4341">{'None': 16, 'laser': 3, 'pid': 1, 'motor': 1, 'untagged': 0, 'pwm': 1}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-4341">Load Comments</button></br>
+			<div id = "commentsection-4341" class = 'collapse'>
+			<div id = "comment-6902" class = "comment">
+				<p>sorry i didn't get you, actually i want to move the robot to the detected object without using any sensor. Like giving a specific color to the robot and then moving the bot until robot color centroid and object color centroid comes together.</p>
+			</div>
+			<div id = "comment-6903" class = "comment">
+				<p>Sorry I mis-understood that camera is on robot (looking eye). see http://www.youtube.com/watch?v=bSeFrPrqZ2A  Use distinct color for block and robot so that they can be 'far different' under HSV color space. Read image, convert to HSV space. Locate two color blocks. Calculate centroid of two color bloc as x0,y0 and x1,y1. use 2D trig to calculate distance and to-go direction. The example is opencv, believe there are similar functions in matlab</p>
+			</div>
+			<div id = "comment-6904" class = "comment">
+				<p>Each robot has color patch on top. Ceiling Camera look down and see the robot patches  http://www.cs.cmu.edu/~robosoccer/small/#media</p>
+			</div>
+			<div id = "comment-6906" class = "comment">
+				<p>one more help needed, i am able to find out the distance between two centroids, but how to find the angles? Please help</p>
+			</div>
+			<div id = "comment-6907" class = "comment">
+				<p>If camera is 0 to 99 on xy dimension (replace with real resolution like 640 X 480). Says x0y0 is 0,0 (bottom left corner of camera)  x1y1 is 99,99 (top right corner). the angle is 45 degrees. For very accurate result (may not needed) opencv has camera calibration to map out lens distortion error (straight line seen as slightly curved by camera)</p>
+			</div>
+			<div id = "comment-6909" class = "comment">
+				<p>how can i plot a line segment joining centroids of two blocks in realtime by avoiding obstacles in between. Please help, i want to do it in matlab. Is there any special function or something i can use.</p>
+			</div>
+			</div>
+				<textarea id = "speech-4341" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4341">
+					<img id="start_img-4341" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4341">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

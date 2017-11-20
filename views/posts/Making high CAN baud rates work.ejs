@@ -1,0 +1,244 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Making high CAN baud rates work
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2036" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2036" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 305</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Making high CAN baud rates work</h2>
+<p>I'm dealing with a board that no matter what I do I can't seem to make CAN work over 125&nbsp;kbit/s. I'll give some detail about the board on the bottom, but I'm going to keep this question generic.</p>
+
+<p>First of all, regarding hardware. From what I've gathered, there isn't any need for a <a href="https://en.wikipedia.org/wiki/Pull-up_resistor" rel="nofollow">pull-up resistor</a> on the TX of CAN. Is that correct? It may perhaps be chip-specific, but wherever I see, it seems that the TX/RX lines are directly connected to the transceiver.</p>
+
+<p>Second, regarding bit-timing: Using different calculators, for example, <a href="http://www.kvaser.com/en/support/bit-timing-calculator.html" rel="nofollow">Kvaser</a> or <a href="http://www.intrepidcs.com/support/mbtime.htm" rel="nofollow">the one from Microchip</a>, I can see the following configuration (for 64&nbsp;kHz input clock):</p>
+
+<pre><code>             SYNC     PROP     PHASE1      PHASE2       BRP (prescaler)
+
+125  kbit/s   1        1        3           3            32
+250  kbit/s   1        1        3           3            16
+500  kbit/s   1        1        3           3             8
+1000 kbit/s   1        1        3           3             4
+</code></pre>
+
+<p>I've seen this from more than one source. Furthermore, the numbers fit to the formula in the datasheet of the microcontroller.</p>
+
+<p>However, only the configuration for 125&nbsp;kbit/s works for me. I'm using <a href="http://www.esd-electronics-usa.com/esd-electronics-usa/canreal.htm" rel="nofollow">CANreal</a> to monitor the messages.</p>
+
+<p>I've tried different configurations for the CAN, for example with 16 time quanta instead of 8 as well as changing my microcontroller's clock to 16&nbsp;MHz and using again different values. Regardless of all that, speeds higher than 125&nbsp;kbit/s result in only errors and warnings in CANreal (which are taken from the CAN driver). Note that the same CAN board, driver and software works with 1&nbsp;Mbit/s with some other hardware I have.</p>
+
+<p>This all is made harder since, as soon as I put a probe from my oscillator on the TX line, it becomes a continuous 0-1 alteration like the following:</p>
+
+<pre><code>      __------     __------     __------     __------     __------
+     /       |    /       |    /       |    /       |    /       |
+   /         |  /         |  /         |  /         |  /         |
+  /          | /          | /          | /          | /          |
+  |          | |          | |          | |          | |          |
+  |          |_|          |_|          |_|          |_|          |
+</code></pre>
+
+<p>Which is not something I would be outputting by software. In fact, as soon as I remove the probe, the messages start arriving (again, only at 125&nbsp;Mbit/s). So basically, I don't seem to be able to have any oscillator debugging available.</p>
+
+<p>Back to my "first of all, regarding hardware", the shape of the signal suggests a pull-up resistor may be necessary, but I haven't seen the need for that in any datasheet I found. Furthermore, my microcontroller configures the pin when used as CAN, so I don't have control over making it push-pull (since it looks like it's <a href="http://en.wikipedia.org/wiki/Open_collector#MOSFET" rel="nofollow">open-drain</a>). Not to mention the microcontroller doesn't even have a configuration to make the pin push-pull.</p>
+
+<p>Is there any hidden parameter somewhere that should also be set? Is a pull-up resistor necessary after all? Why would the oscillator probe cause such a behavior?</p>
+
+<hr>
+
+<p>Details from the board:</p>
+
+<ul>
+<li><a href="http://en.wikipedia.org/wiki/Microcontroller" rel="nofollow">MCU</a>: P18F45K80. CAN is connected to its default RB2 and RB3.</li>
+<li>CAN transceiver: ISO1050  </li>
+<li>Compiler: <a href="https://en.wikipedia.org/wiki/Mikroelektronika#Products" rel="nofollow">mikroC</a></li>
+</ul>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2036" data-toggle = "popover">
+				<p>user name : Shahbaz</p>
+				<p> user reputation : 2615</p>
+				<p class = "tagcontent" id = "usertaginfo-2036">{'None': 193, 'usb': 12, 'distributed-systems': 7, 'microcontroller': 1, 'embedded-systems': 7, 'servomotor': 1, 'platform': 18, 'can': 1, 'machine-learning': 12, 'real-time': 18, 'mobile-robot': 1, 'rs232': 12, 'software': 20}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2036">Load Comments</button></br>
+			<div id = "commentsection-2036" class = 'collapse'>
+			<div id = "comment-4095" class = "comment">
+				<p>Any chance you could post a schematic? I've got a guess as to what's wrong but a schematic would really help. Even just from one transceiver to another. I did a lot of work with 1 Mbit/sec CAN at my last job and it was pretty picky about how the physical layer was configured.</p>
+			</div>
+			<div id = "comment-4106" class = "comment">
+				<p>Perhaps this question on the Electronics Stackexchange might be the answer? [What does this CAN bus waveform mean?](http://electronics.stackexchange.com/questions/19362/what-does-this-can-bus-waveform-mean/19387)</p>
+			</div>
+			<div id = "comment-4107" class = "comment">
+				<p>@Rocketmagnet, thanks for the link. So probably adding the oscilloscope caused the bus to change and made the termination resistor invisible, or something like that! (Excuse my ignorance, my knowledge of electronics is quite limited)</p>
+			</div>
+			<div id = "comment-4108" class = "comment">
+				<p>@Shahbaz - No, that's unlikely. When you say TX and RX lines, do you mean the TX and TX pins of the transceiver? That's the best place to put the probe.</p>
+			</div>
+			<div id = "comment-4109" class = "comment">
+				<p>@Shahbaz - This answer might also be useful: [Is a CAN enabled microcontroller sufficient to drive a CAN bus?](http://electronics.stackexchange.com/a/30596/1024)</p>
+			</div>
+			<div id = "comment-4110" class = "comment">
+				<p>I put the probe between the micro and the transceiver, since I figured probably the error is before the data even reaches the transceiver. And again, thanks for the link. Very informative.</p>
+			</div>
+			<div id = "comment-4152" class = "comment">
+				<p>How are you using terminating resistors? What is the end-to-end length of the cables?</p>
+			</div>
+			<div id = "comment-4157" class = "comment">
+				<p>@PeterMortensen, the board was designed by my client, so I don't know the details. Anyway, the problem was that the pin wasn't being driven strongly on the microcontroller part.</p>
+			</div>
+			<div id = "comment-4457" class = "comment">
+				<p>@Shahbaz Would this question be better suited to electronics.SE? Especially since the problem is solved, it might be easier for people with the same problem to find it there.</p>
+			</div>
+			<div id = "comment-4458" class = "comment">
+				<p>@ThomasH, probably yes</p>
+			</div>
+			<div id = "comment-4460" class = "comment">
+				<p>@Shahbaz Just learned that you can't migrate a question after 60 days, so I'm four days late and we'll leave it be, since it would be a cosmetic change anyway</p>
+			</div>
+			</div>
+				<textarea id = "speech-2036" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2036">
+					<img id="start_img-2036" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2036">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-2040"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2040" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><h2>scope probe</h2>
+
+<p>I can sympathize with how frustrating it is when attaching an oscilloscope probe to debug a problem makes the system act differently.</p>
+
+<p>A standard 1X probe (1:1 probe) will load a circuit with a capacitance of about 110 pF.
+Many people use a 10X probe or a 100X probe, giving 1/10 or 1/100 the loading on the circuit -- hopefully small enough to be insignificant.</p>
+
+<h2>ISO1050</h2>
+
+<blockquote>
+  <p>a pull-up resistor on the TX of CAN.
+  ...
+  the shape of the signal suggests a pull-up resistor may be necessary, but
+  I haven't seen the need for that in any datasheet I found.</p>
+</blockquote>
+
+<p>I think this is it.
+Page 4 of the <a href="http://www.ti.com/lit/ds/slls983h/slls983h.pdf" rel="nofollow">datasheet for the ISO1050</a> specifically says</p>
+
+<blockquote>
+  <p>NOTE</p>
+  
+  <p>TXD is very weakly internally pulled up to VCC1. An external pull
+  up resistor should be used ... 
+  An adequate external pullup resistor must be used to
+  ensure that the TXD output of the microprocessor maintains adequate
+  bit timing input to the input on the transceiver.</p>
+</blockquote>
+
+<h2>PIC18F45K80</h2>
+
+<p>I'm assuming you're using the Microchip PIC18F45K80.
+The <a href="http://ww1.microchip.com/downloads/en/DeviceDoc/39977f.pdf" rel="nofollow">PIC18F66K80 family datasheet</a> has a lot of useful information about the Microchip PIC18F45K80.
+In particular, I think you might find section 27.0 ECAN MODULE useful.
+Subsection 27.2.5 mentions ENDRHI: Enable Drive High bit, where</p>
+
+<ul>
+<li>ENDRHI = 1: CANTX pin will drive VDD when recessive </li>
+<li>ENDRHI = 0: CANTX pin will be tri-state when recessive</li>
+</ul>
+
+<p>Subsection 27.3.1 CONFIGURATION MODE implies that ENDRHI (and all other configuration bits) must be set in configuration mode, and cannot be changed while the CAN module is active.</p>
+
+<p>I suspect that <em>either</em> the pull-up resistor <em>or</em> setting ENDRHI to 1 would be adequate.
+However, if I were you, I would run some tests with <em>both</em> a 10 KOhm pull-up resistor <em>and</em> ENDRHI set to 1.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2040" data-toggle = "popover">
+				<p>user name : David Cary</p>
+				<p> user reputation : 3365</p>
+				<p class = "tagcontent" id = "usertaginfo-2040">{'quadcopter': 38, 'stepper-driver': 9, 'None': 256, 'multi-rotor': 2, 'force-sensor': 9, 'stability': 36, 'industrial-robot': 1, 'design': 18, 'motor': 2, 'stepper-motor': 9}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2040">Load Comments</button></br>
+			<div id = "commentsection-2040" class = 'collapse'>
+			<div id = "comment-4098" class = "comment">
+				<p>That must be it! I'd have to wait till Monday to test this, but ENDRHI must be it. Probably the reason I didn't see pull-up resistor used in other schematics was because they have been strongly driving the pin. Searching for push-pull in the datasheet hadn't given me any results which was strange. Can't believe I missed ENDRHI!</p>
+			</div>
+			</div>
+				<textarea id = "speech-2040" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2040">
+					<img id="start_img-2040" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2040">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

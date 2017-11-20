@@ -1,0 +1,211 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>When to use multiple batteries vs a UBEC
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8162" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8162" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 113</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>When to use multiple batteries vs a UBEC</h2>
+<p>When should you use multiple separate batteries vs a single battery with multiple UBECs?</p>
+
+<p>I'm trying to design the power system for a small 2-wheeled robot. Aside from the 2 main drive motors, it also has to power an Arduino, a Raspberry Pi and a couple small servos to actuate sensors.</p>
+
+<ul>
+<li>the motors are each rated for 6V with a peak stall current of 2.2A</li>
+<li>the Arduino uses about 5V@100mA</li>
+<li>the Raspberry Pi uses about 5V@700mA</li>
+<li>the servos each use 6V and have a peak stall current of 1.2A.</li>
+</ul>
+
+<p>So the theoretical max current draw would be <code>2.2*2+.1+.7+1.2*2</code> = 7.6A.</p>
+
+<p>Originally I was planning to use three separate Lipo batteries:</p>
+
+<ul>
+<li>one 12V using a step-down converter to power the main drive motors for 6V@4.4A peak</li>
+<li>two 3.7V lipos each with step-up converter (rated for 5v@3A) to handle the servos and logic separately</li>
+</ul>
+
+<p>Then I discovered <a href="https://en.wikipedia.org/wiki/Battery_eliminator_circuit" rel="nofollow">UBECs</a>, which sound too good to be true, and they seem to be both cheap (<code>&lt;$10</code>) and efficient (<code>&gt;90%</code>) and able to handle my exact volt/current requirements.</p>
+
+<p>Should I instead use a single high-current 12V lipo with three UBECs to independently power my drive motors, sensor motors and logic? Or will this still suffer from brown-out and power irregularities if a motor draws too much current?</p>
+
+<p>What am I missing?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8162" data-toggle = "popover">
+				<p>user name : Cerin</p>
+				<p> user reputation : 152</p>
+				<p class = "tagcontent" id = "usertaginfo-8162">{'magnetometer': 0, 'None': 0, 'force': 1, 'motor': 1, 'simulator': 2, 'battery': 1, 'bec': 0, 'cameras': 2, 'torque': 1, 'design': 1, 'mechanism': 0, 'slam': 3, 'rangefinder': 2, 'beagle-bone': 1, 'compass': 0, 'mobile-robot': 1, 'sensors': 3, 'ros': 3, 'navigation': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8162" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8162" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8162">
+					<img id="start_img-8162" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8162">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8163"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8163" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Any quality power device should list its load regulation capability, which is typically in a datasheet as a voltage range coupled with a maximum output current. You can expect normal voltage fluctuations to occur within this band. </p>
+
+<p>However, when you include a motor in the scenario, you need to be aware that voltage can spike up/down if you suddenly remove/apply current to the motor because the motor windings act like (are) an inductor. Typically a <a href="https://en.wikipedia.org/wiki/Flyback_diode" rel="nofollow">flyback diode</a> is used to prevent/limit the spikes caused by motor operation; see <a href="http://forum.arduino.cc/index.php?topic=50931.0" rel="nofollow">this thread</a> for a schematic of an H-bridge driving a DC motor with flyback diodes. </p>
+
+<p>Another thing I would like to point out is that you are adding currents, which could be a troublesome thing to do - while 5V and 6V seem very close, 6V is actually <em>20 percent</em> more than 5V. I would suggest that you convert your "current"@"voltage" to the <em>power</em> required by each circuit, then use that power rating to find a suitable supply. </p>
+
+<p>You said:</p>
+
+<blockquote>
+  <p>the motors are each rated for 6V with a peak stall current of 2.2A</p>
+  
+  <p>the Arduino uses about 5V@100mA</p>
+  
+  <p>the Raspberry Pi uses about 5V@700mA</p>
+  
+  <p>the servos each use 6V and have a peak stall current of 1.2A.</p>
+</blockquote>
+
+<p>But I would suggest:</p>
+
+<ul>
+<li>Motors are 6V@2.2A = 13.2W</li>
+<li>Arduino is 5V@0.1A = 0.5W</li>
+<li>Raspberry Pi is 5V@0.7A = 3.5W</li>
+<li>Servos are 6V@1.2A = 7.2W</li>
+</ul>
+
+<p>Assuming 2 motors and 2 (a couple) servos, your total power requirements are:</p>
+
+<p>$$
+\begin{array}{ccc}
+P_{\mbox{req}} &amp; = &amp; (2*13.2) + 0.5 + 3.5 + (2*7.2) \\
+P_{\mbox{req}} &amp; = &amp; 44.8W\\
+\end{array}
+$$</p>
+
+<p>Now you can take your power requirement and use that for any power converter/battery eliminator. Divide your power requirement by the nominal pack voltage to get your current requirement for a specific battery pack. Divide the current by the battery capacity (in Ah, or remember to convert current requirement to mA) to get the estimated run time on a particular battery pack.</p>
+
+<p>All of this is guidance to help you select a proper BEC, because yes, as long as your battery provides enough current and you can tolerate the voltage swing, it should work fine. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8163" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-8163">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8163" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8163" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8163">
+					<img id="start_img-8163" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8163">Comment</button>
+			<br><div id = "ans-8179"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8179" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>There are a few things you should consider when designing your system.</p>
+
+<ul>
+<li><p>Motors are usually rated for the stall current, but sometimes generate out-of-spec currents. Higher current draw may happen when the motor turns backwards and back-currents occur when switching the motor off.</p></li>
+<li><p>When using LiPos with high discharge rate, those currents are usually absorbed by the battery with low voltage fluctuations, due to its low output impedance.</p></li>
+<li><p>BECs usually but not always have a low-pass filter. Sometimes those filters are enough to handle spikes, sometimes not. Sometimes those filters also help filtering spikes backward.</p></li>
+</ul>
+
+<p>With those in mind, it is usually enough to have separate BECs for logic/application processors and motors. Use a high-current rated battery (usually most LiPos are at least 15C, so a standard 2200mAh is usually enough). Do not chain them and try to avoid connections and wiring before the BECs.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8179" data-toggle = "popover">
+				<p>user name : Ronan Paix o</p>
+				<p> user reputation : 121</p>
+				<p class = "tagcontent" id = "usertaginfo-8179">{'None': 2}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8179" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8179" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8179">
+					<img id="start_img-8179" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8179">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

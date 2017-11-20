@@ -1,0 +1,302 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Help to dimension the right controller for the following Tranfer Function
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-6945" class = "post">
+			<h2>Question</h2>
+			<div id="vote-6945" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 90</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Help to dimension the right controller for the following Tranfer Function</h2>
+<p>I have a generic problem to create a controller for the following system:
+$$\ddot{x}(t) = a y(t)$$ 
+where $a$ is a constant real value.
+The system could be seen as an equivalent of a mass-spring-damper system, where damper and spring are removed. Also $x(t)$ is the $x$ dimension and $y$ is simply the force moving the mass. <strong>BUT</strong> in this case I need to drive the force using $x(t)$ and not the contrary.</p>
+
+<p>Transforming according Laplace I get:
+$$ y(t) = \frac{1}{a}\ddot{x}(t)$$
+$$ Y(s) = \frac{1}{a}s^{2}X(s)$$
+$$ G(s) = \frac{Y(s)}{X(s)} = \frac{s^{2}}{a}$$</p>
+
+<p>Considering that $a = 1$ I implemented a possible example in Simulink. </p>
+
+<p><img src="https://i.stack.imgur.com/wuzjG.png" alt="enter image description here"></p>
+
+<p><em>Please not that I put the output given by the scope for showing up the resulting answer of the system.</em></p>
+
+<p>So I have 2 questions:</p>
+
+<ol>
+<li>Is it possible to develop such a system? As far as I know the degree of the numerator should be $=&lt;$ the degree of the denominator. So is the above system possible?</li>
+<li>Is it possible to create a PID or PD controller to stabilize the output of the system?</li>
+</ol>
+
+<p>Regards</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6945" data-toggle = "popover">
+				<p>user name : Dave</p>
+				<p> user reputation : 294</p>
+				<p class = "tagcontent" id = "usertaginfo-6945">{'control': 10, 'quadcopter': 11, 'None': 6, 'pid': 13, 'uav': 3, 'matlab': 0, 'mobile-robot': 0, 'ros': 2, 'movement': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-6945" class = 'collapse'>
+			</div>
+				<textarea id = "speech-6945" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6945">
+					<img id="start_img-6945" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6945">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-6954"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6954" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><ol>
+<li><p>Nope, the system is not feasible since the causality principle states that the degree of the denominator of the transfer function must be greater or equal to the degree of the numerator, as you have correctly pointed out. The system analysis, indeed, does always proceed in terms of integral blocks (i.e. $1/s$) and not derivatives. In this respect, what is the system you have in mind? Are you 100% sure that you caught all its implications?</p></li>
+<li><p>Even assuming the double derivatives as a purely ideal system to stabilize - only in simulation -, a PID is unable to cope with the task. Imagine we are at equilibrium, then the system output $y$ is equal to the input $r \neq 0$ and the error $e=r-y$ before the PID is thus zero. However, a constant output means that upstream to the double derivatives we must have a signal $u$ varying as $t^2$. The signal $u$ is also the PID output, while the PID input is $e=0$, as said. You must have then a double integrator in the PID. But this is only a theoretical speculation.</p></li>
+</ol>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6954" data-toggle = "popover">
+				<p>user name : Ugo</p>
+				<p> user reputation : 1482</p>
+				<p class = "tagcontent" id = "usertaginfo-6954">{'None': 99}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-6954" class = 'collapse'>
+			</div>
+				<textarea id = "speech-6954" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6954">
+					<img id="start_img-6954" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6954">Comment</button>
+			<br><div id = "ans-6960"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6960" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>As far as I can see, what you have there is just a system where you're inputting a scaled acceleration. </p>
+
+<p>$$
+\begin{bmatrix}
+\dot{x}(t)\\
+\ddot{x}(t)
+\end{bmatrix} = \begin{bmatrix}0 &amp; 1\\ 0 &amp; 0\end{bmatrix}\begin{bmatrix}x(t)\\\dot{x}(t)\end{bmatrix} + \begin{bmatrix}0\\a\end{bmatrix}y(t)
+$$
+$$
+\dot{x} = Ax + By
+$$
+In classical state space representation. The controllability matrix has full rank, so the system is controllable. That is we need to design some matrix K such that:</p>
+
+<p>$$
+\dot{x} = (A-BK)x
+$$</p>
+
+<p>is stable. For a continuous time system, this means that $(A-BK)$ must have negative real parts on its eigenvalues. Now if:</p>
+
+<p>$$
+K = \begin{bmatrix}k_1 &amp; k_2 \end{bmatrix}
+$$</p>
+
+<p>then</p>
+
+<p>$$
+(A-BK) = \begin{bmatrix}0 &amp; 1\\ -ak_1 &amp; -ak_2\end{bmatrix}
+$$</p>
+
+<p>with eigenvalues</p>
+
+<p>$$
+\lambda_1 = \frac{-ak_2 - \sqrt{a^2k_2^2 - 4ak_1}}{2}
+$$
+$$
+\lambda_2 = \frac{-ak_2 + \sqrt{a^2k_2^2 - 4ak_1}}{2}
+$$</p>
+
+<p>Here $k_1$ is the P value and $k_2$ is the D value in a PD controller that uses $x(t)$ as the "driving force". For any given nonzero $a$, they can be be chosen to stabilize the system w.r.t $x$. Note also that: 1) if $k_2=0$ we can't stabilize the system and 2) at any point in time $y(t) = -ak_1x(t) -ak_2\dot{x}(t)$. As $y(t)$ depends on $x(t)$ and $\dot{x}(t)$, both of which go to zero, $y(t)$ goes to zero. Did I understand your question correctly?</p>
+
+<p><img src="https://i.stack.imgur.com/DmXeq.png" alt="stablesystem"></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6960" data-toggle = "popover">
+				<p>user name : user51164</p>
+				<p> user reputation : 11</p>
+				<p class = "tagcontent" id = "usertaginfo-6960">{'None': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-6960">Load Comments</button></br>
+			<div id = "commentsection-6960" class = 'collapse'>
+			<div id = "comment-9926" class = "comment">
+				<p>You're solving the classical scheme using $y\left(t\right)$ as the input, whereas he wants it as output.</p>
+			</div>
+			<div id = "comment-9941" class = "comment">
+				<p>@Ugo, the OP is confusing the readers by not clearly state the input and the output. " y is simply the force moving the mass" which means the input of the system but the OP said later "BUT in this case I need to drive the force using $x(t)$ and not the contrary" which makes no sense, therefore the upvote this answer to at least handle the opposite case.</p>
+			</div>
+			<div id = "comment-9943" class = "comment">
+				<p>Well, nope: even though it's impossible, the problem remains clearly stated. Read it better. Also, I did not down vote this answer :-)</p>
+			</div>
+			<div id = "comment-9944" class = "comment">
+				<p>I thought he meant a case where he needs to construct a reference model. So that he has some system that is driven by $\ddot{x}$, and needs to reconstruct that from some reference $x(t)$.</p>
+			</div>
+			</div>
+				<textarea id = "speech-6960" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6960">
+					<img id="start_img-6960" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6960">Comment</button>
+			<br><div id = "ans-6975"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6975" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><blockquote>
+  <p>The system could be seen as an equivalent of a mass-spring-damper
+  system, where damper and spring are removed</p>
+</blockquote>
+
+<p>This is correct if you assume $x(t)$ to be the output but you are not. </p>
+
+<blockquote>
+  <p>y is simply the force moving the mass. </p>
+</blockquote>
+
+<p>If $y$ is the force, this means it is the input of the system?!</p>
+
+<blockquote>
+  <p>BUT in this case I need to
+  drive the force using x(t) and not the contrary</p>
+</blockquote>
+
+<p>This is impossible. What  you are saying makes no sense. </p>
+
+<p>This is not a dynamic system and your simulink diagram is not correct. Your actual system is an amplifier of the second derivative of a given signal. You have the output as a function of time (i.e. $y(t)$), therefore there is no point of applying transfer function tool. The input of this system is the second derivative of a given signal, thus if the input is the step function which means $x(t) = 1, t \geq 0 $, its second derivative is zero. If you set the input as $x(t) = sin(t)$ and $a=0.5$, the output is </p>
+
+<p><img src="https://i.stack.imgur.com/MynfO.png" alt="enter image description here"></p>
+
+<p>and this is the matlab script for the above picture. </p>
+
+<pre><code>clear all; clc;
+
+dt = 0.0001;
+t = -pi:0.01:2*pi;
+
+x = sin(t); % the input 
+% plot(t, x, 'b')
+
+dx = diff(x)./diff(t); % the first derivative of the input 
+% hold on 
+% plot(t(2:end), dx, 'r')
+
+ddx = diff(dx)./diff(t(2:end)); % the second derivative of the input
+% hold on 
+plot(t(3:end), ddx, 'b')
+
+a = 0.5;
+
+% output
+y = 1/a * ddx;
+hold on 
+plot(t(3:end), y, 'r')
+
+
+l= legend(['$\ddot{x}(t)$'], 'y(t)');
+set(l,'Interpreter','Latex');
+</code></pre>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6975" data-toggle = "popover">
+				<p>user name : CroCo</p>
+				<p> user reputation : 1040</p>
+				<p class = "tagcontent" id = "usertaginfo-6975">{'control': 18, 'pid': 4, 'slam': 16, 'manipulator': 3, 'mobile-robot': 14, 'dynamics': 6, 'errors': 2, 'data-association': 1, 'kinematics': 3, 'matlab': 6, 'kalman-filter': 21, 'motion-planning': 3, 'None': 41, 'noise': 24, 'theory': 1, 'localization': 14, 'microcontroller': 5, 'mapping': 5, 'sensor-error': 1, 'sensors': 7, 'quadcopter': 8, 'ekf': 26, 'simulation': 1, 'motion': 3}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-6975">Load Comments</button></br>
+			<div id = "commentsection-6975" class = 'collapse'>
+			<div id = "comment-9945" class = "comment">
+				<p>Isn't the second derivative of $sin\left(t\right)$ equal to $-sin\left(t\right)$? This is the principle underlying the harmonic motion. There must be something strange in the graph then. Also the legend should be like `legend('x(t)','y(t)=1/a * $\ddot{x}(t)$')`.</p>
+			</div>
+			<div id = "comment-9951" class = "comment">
+				<p>@Ugo, no there is nothing wrong with the graph. What I'm showing is the input of the system (i.e. not the signal input) which is the second derivative of a given signal, therefore the `legend` is correct in my case.</p>
+			</div>
+			</div>
+				<textarea id = "speech-6975" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6975">
+					<img id="start_img-6975" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6975">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

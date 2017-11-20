@@ -1,0 +1,174 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>What are some ways to estimate torque~load on a robotic arm joint
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-10650" class = "post">
+			<h2>Question</h2>
+			<div id="vote-10650" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 121</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>What are some ways to estimate torque~load on a robotic arm joint</h2>
+<p>My main problem is measuring joint torque/load economically. There are ways to detect the electric current drawn which is proportional to the torque. Since my motor is a BLDC motor, there will be a driver which drives the 3 phases and hence  the current drawn will also include losses, which would be variable. Is there a proper way to estimate the load by sensing current?</p>
+
+<p>Is there any way to reliably get the torque/load on a motor joint, what are the common ways to do so without spending a ton of money on torque sensors?</p>
+
+<p>Do to link me to any papers/research on this subject, if you'd want to.</p>
+
+<p>I need to judge the load on the joints of a 6 dof robotic arm programmatically and detect unexpected impacts.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10650" data-toggle = "popover">
+				<p>user name : Tarang Shah</p>
+				<p> user reputation : 16</p>
+				<p class = "tagcontent" id = "usertaginfo-10650">{'current': 2, 'None': 0, 'manipulator': 1, 'motor': 2, 'torque': 3, 'simulation': 1, 'brushless-motor': 2, 'robotic-arm': 3, 'dynamics': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-10650" class = 'collapse'>
+			</div>
+				<textarea id = "speech-10650" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10650">
+					<img id="start_img-10650" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10650">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-10661"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10661" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p><strong>Model Based</strong>:
+Low cost solution is always software:</p>
+
+<ul>
+<li>Develop a dynamic model which computes the load on the motors based on the motions (e.g. with Recursive Newton Euler Algorithm or Lagrange-Euler Method)</li>
+<li>Make as simple model to handle losses in driver/motor</li>
+<li>Make the difference between real torque and computed torque</li>
+</ul>
+
+<p>It will be not accurate. At least 10% off based on how accurately you can build up your model. Example <a href="http://www6.in.tum.de/Main/Publications/Pereira2015.pdf" rel="nofollow">here</a>.</p>
+
+<p><strong>Strain Gauges</strong>:
+If you have a section on each linkage which is geometrical known (it helps if it has a regular shape like a cylinder) you can use strain gauges to measure the strain of the linkage and if the material is know and you measure it in the required directions you can calculate the load on the linkage. 
+The signal has to be heavily amplified so this can lead to complications when routing the signal cables next to motor cables on the robot. Tutorial <a href="http://www.ni.com/white-paper/3642/en/#" rel="nofollow">here</a>.</p>
+
+<p><strong>Optical force sensors</strong>:
+They might be cheaper then classical force sensors, but the maximum load they can measure is limited. Example <a href="http://optoforce.com/sixaxis/" rel="nofollow">here</a>.</p>
+
+<p><strong>Force-Torque sensors</strong>:
+As you mentions, these are expensive. Mostly similar principle then with the strain gauges, but it is packages, so you do not have to deal with amplification, thermal drifts, interfaces, etc. Example <a href="http://www.ati-ia.com/products/ft/sensors.aspx" rel="nofollow">here</a>.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10661" data-toggle = "popover">
+				<p>user name : 50k4</p>
+				<p> user reputation : 2800</p>
+				<p class = "tagcontent" id = "usertaginfo-10661">{'geometry': 0, 'None': 193, 'kinematics': 0, 'robotic-arm': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10661">Load Comments</button></br>
+			<div id = "commentsection-10661" class = 'collapse'>
+			<div id = "comment-19224" class = "comment">
+				<p>Thanks @50k4,
+Assuming I develop a model and calculate the expected torques on my joints(motors), I need to compare the expected and actual torque values to detect any unexpected impact, for which I would need to measure the _actual_ torque values. What method of measuring/estimating _actual torque_ would you recommend?</p>
+			</div>
+			<div id = "comment-19230" class = "comment">
+				<p>Calculate it from the drawn current. Identify the losses form data sheets of drivers and motors end gearbox (if present) or from experiments. It will not be perfect, this means that you will not be able to detect small impacts.</p>
+			</div>
+			</div>
+				<textarea id = "speech-10661" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10661">
+					<img id="start_img-10661" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10661">Comment</button>
+			<br><div id = "ans-10678"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10678" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>50k4 did a good job of enumerating the different ways to measure torque in the joints.  So I won't go into that.  But if you want to detect unexpected impacts, another option is to use accelerometers.  Example <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.706.4001&amp;rep=rep1&amp;type=pdf" rel="nofollow">here</a></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10678" data-toggle = "popover">
+				<p>user name : Ben</p>
+				<p> user reputation : 3608</p>
+				<p class = "tagcontent" id = "usertaginfo-10678">{'None': 277, 'inverse-kinematics': 3, 'accelerometer': 5, 'calibration': 10, 'kinematics': 14, 'robotic-arm': 8, 'jacobian': 6, 'dh-parameters': 8, 'imu': 5, 'sensors': 5}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-10678" class = 'collapse'>
+			</div>
+				<textarea id = "speech-10678" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10678">
+					<img id="start_img-10678" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10678">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

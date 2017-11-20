@@ -1,0 +1,191 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>BeagleBone - PRU questions
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-6541" class = "post">
+			<h2>Question</h2>
+			<div id="vote-6541" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 1133</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>BeagleBone - PRU questions</h2>
+<p>I will be using at least one programmable real-time unit (PRU) to send pulses to a stepper motor driver but before I begin, I am trying to lay out the structure of my programs.</p>
+
+<p>I am using this library <a href="http://processors.wiki.ti.com/index.php/PRU_Linux_Application_Loader_API_Guide#prussdrv_map_prumem" rel="nofollow">PRU Linux API</a> 
+for loading assembly code into the PRU instruction memory but there doesn't seem to be much documentation other then whats at that wiki and the source:
+<a href="https://github.com/beagleboard/am335x_pru_package/tree/master/pru_sw" rel="nofollow">github-pru-package</a>h</p>
+
+<p>My c program will be calculating the position of the sun using an algorithm and executing the assembly/writing a pulse count to the PRU(s) data memory so they can just switch on/off a gpio at my desired frequency and for the number of pulses required to turn a stepper the appropriate number of steps. I am not even sure if this is an acceptable method but I am pretty new at this and it seems like a simple way to accomplish my task</p>
+
+<p>My Questions regarding the library functions are:</p>
+
+<ol>
+<li>Is there a significant performance difference between using <code>prussdrv_map_prumem</code> or <code>prussdrv_pru_write_memory</code> to give the PRU(s) access to the pulse count?</li>
+<li>Would it be better halt the PRU assembly program after has completed the tasks for each pulse count then re-execute it with new values, or keep the PRU program running and poll for a new pulse count to be written in?</li>
+</ol>
+
+<p>I plan to send a pulse count every 10 seconds or so.</p>
+
+<p>Any suggestions on revisiting the whole structure and logic are welcome as well.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6541" data-toggle = "popover">
+				<p>user name : SoLost</p>
+				<p> user reputation : 38</p>
+				<p class = "tagcontent" id = "usertaginfo-6541">{'servomotor': 2, 'None': 0, 'beagle-bone': 5, 'c': 5, 'brushless-motor': 2, 'motor': 2, 'stepper-motor': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-6541">Load Comments</button></br>
+			<div id = "commentsection-6541" class = 'collapse'>
+			<div id = "comment-18640" class = "comment">
+				<p>Tangential:  I have embedded NREL's Solar Position Algorithm (SPA) before and it works quite well.   https://www.nrel.gov/midc/spa/</p>
+			</div>
+			</div>
+				<textarea id = "speech-6541" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6541">
+					<img id="start_img-6541" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6541">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-6734"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6734" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I am not familiar with PRU or the PRU Linux API, however, I can give you some general advice.</p>
+
+<blockquote>
+  <ol>
+  <li>Is there a significant performance difference between using prussdrv_map_prumem or prussdrv_pru_write_memory to give the PRU(s) access to the pulse count?</li>
+  </ol>
+</blockquote>
+
+<p>Most likely yes. If I understood correctly, <code>prussdrv_map_prumem</code> gives you direct access to the PRU memory while <code>prussdrv_pru_write_memory</code> not only does that through a function call, but also has to decode the function arguments at least to know which memory in particular you are writing to.</p>
+
+<p>To know the performance difference, you can put your write operations in an infinite loop, and then for example each 1000 times toggle a GPIO pin. Measure the difference in toggle times with an oscilloscope to see how long 1000 writes took (note that this includes the constant for loop, counter increment, <code>if</code> and gpio write as well). This should give you some measure of which method is faster and by how much.</p>
+
+<p>But you should note two things. First, if you are controlling once every 10 seconds, performance is very likely not an issue for you. Second, you should be aware of any peculiarities with writing to the PRU memory. It is possible (again, I don't know PRU and I'm talking in general) that certain actions need to be taken in a certain order for the write to happen correctly. If you call the library-provided write function, you can be sure they took care of those peculiarities. If you plan on direct memory access, read the datasheet to know if there are any peculiarities and what they are. You can also look at the source code of the <code>prussdrv_pru_write_memory</code> function if available.</p>
+
+<blockquote>
+  <ol start="2">
+  <li>Would it be better halt the PRU assembly program after has completed the tasks for each pulse count then re-execute it with new values, or keep the PRU program running and poll for a new pulse count to be written in?</li>
+  </ol>
+</blockquote>
+
+<p>If you are planning on doing something useful every 10 seconds, then it's very very energy inefficient to poll instead of halt. Whenever you can halt and be sure somebody will wake you up, by all means do so.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6734" data-toggle = "popover">
+				<p>user name : Shahbaz</p>
+				<p> user reputation : 2615</p>
+				<p class = "tagcontent" id = "usertaginfo-6734">{'None': 193, 'usb': 12, 'distributed-systems': 7, 'microcontroller': 1, 'embedded-systems': 7, 'servomotor': 1, 'platform': 18, 'can': 1, 'machine-learning': 12, 'real-time': 18, 'mobile-robot': 1, 'rs232': 12, 'software': 20}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-6734" class = 'collapse'>
+			</div>
+				<textarea id = "speech-6734" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6734">
+					<img id="start_img-6734" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6734">Comment</button>
+			<br><div id = "ans-6746"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6746" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I liked your choice for using BBB for your stepper motor driving project. BBB is the best open source hardware currently available to accelerate your stepper motor speed to upto 200Mhz precision which is like 15 Times faster than what we can get from Arduino or 12MHz Microcontroller. I used PyPruss python Library for my PRU based project where I coded my PRU program in ARM Assembly Language and generated the binary .bin file using PyPruss python Library. Here is an article which best suits for your project <a href="http://hipstercircuits.com/accelerated-stepper-motors-on-beaglebone/" rel="nofollow">Accelerate Stepper Motor on BBB using Pypruss</a>. </p>
+
+<p>You can use the same thing using C++ PRU library, here are some example Assembly code which I wrote for my project: </p>
+
+<ol>
+<li><p><a href="https://github.com/antodoms/beagle-copter/blob/master/PruProxy.cpp" rel="nofollow">C++ code to send PWM values to the shared memory (Memory shared by processor and PRU's)</a>.</p></li>
+<li><p><a href="https://github.com/antodoms/beagle-copter/blob/master/test/PWMout_PRU/Pwmout.p" rel="nofollow">Assembly code to read values from shared memory and generate realtime PWM values using PRU</a> </p></li>
+</ol>
+
+<p>Feel free to explore the repository.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6746" data-toggle = "popover">
+				<p>user name : Anto Dominic</p>
+				<p> user reputation : 126</p>
+				<p class = "tagcontent" id = "usertaginfo-6746">{'None': 11}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-6746" class = 'collapse'>
+			</div>
+				<textarea id = "speech-6746" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6746">
+					<img id="start_img-6746" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6746">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

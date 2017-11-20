@@ -1,0 +1,203 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>iRobot Create 2: Angle Measurement
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7121" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7121" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 849</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>iRobot Create 2: Angle Measurement</h2>
+<p>I have been working on trying to get the angle of the Create 2. I am trying to use this angle as a heading, which I will eventually use to control the robot. I will explain my procedure to highlight my problem.</p>
+
+<p>I have the Create tethered to my computer. </p>
+
+<p><ol>
+<li>I reset the Create by sending Op code [7] using RealTerm.
+The output is:</p>
+
+<blockquote>
+  <p>bl-start<br>
+  STR730<br>
+  bootloader id: #x47175347 4C636FFF<br>
+  bootloader info rev: #xF000<br>
+  bootloader rev: #x0001<br>
+  2007-05-14-1715-L<br>
+  Roomba by iRobot!<br>
+  str730<br>
+  2012-03-22-1549-L<br>
+  battery-current-zero 252</li>
+  </ol>
+  (The firmware version is somewhere in here, but I have no clue what to look for--let me know if you see it!) </p>
+</blockquote>
+
+<ol start="2">
+<li>I mark the robot so that I will know what the true angle change has been.</li>
+<li>I then send the following codes [128 131 145 0x00 0x0B 0xFF 0xF5 142 6]. This code starts the robot spinning slowly in a circle and request the sensor data from the sensors in the group with Packet ID 2. The output from the Create seen in RealTerm is 0x000000000000, which makes sense.</li>
+<li>I wait until the robot has rotated a known 360 degrees, then I send [142 2] to request the angle difference. The output is now 0x00000000005B.</li>
+</ol>
+
+<p>The OI specs say that the angle measurement is in degrees turned since the last time the angle was sent; converting 0x5B to decimal is 91, which is certainly not 360 as expected. </p>
+
+<p><strong>What am I doing wrong here?</strong> Is the iRobot Create 2 angle measurement that atrocious, or is there some scaling factor that I am unaware of? are there any better ways to get an angle measurement?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7121" data-toggle = "popover">
+				<p>user name : NBCKLY</p>
+				<p> user reputation : 741</p>
+				<p class = "tagcontent" id = "usertaginfo-7121">{'None': 44, 'roomba': 4, 'irobot-create': 4, 'arduino': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7121">Load Comments</button></br>
+			<div id = "commentsection-7121" class = 'collapse'>
+			<div id = "comment-10102" class = "comment">
+				<p>Is 6 in "packet 6" a typo? "Create Open Interface_v2.pdf" shows Group Packet ID 6 returning 52 bytes instead of half a dozen.  Also, why not use ID 20?  Also see the question  [create2 angle (packet ID 20)](http://robotics.stackexchange.com/q/7062),</p>
+			</div>
+			<div id = "comment-10104" class = "comment">
+				<p>Great catch; I have updated the post. Using [142 20] works, but the problem is the same.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7121" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7121">
+					<img id="start_img-7121" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7121">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7122"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7122" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>There is a known bug in the <code>angle</code> command.  We are still working on a workaround.  In the meantime, please extract the angle yourself by using the left and right encoder counts.  See <a href="https://robotics.stackexchange.com/questions/7062/create2-angle-packet-id-20">this question</a> for detailed equations.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7122" data-toggle = "popover">
+				<p>user name : Ben</p>
+				<p> user reputation : 3608</p>
+				<p class = "tagcontent" id = "usertaginfo-7122">{'None': 277, 'inverse-kinematics': 3, 'accelerometer': 5, 'calibration': 10, 'kinematics': 14, 'robotic-arm': 8, 'jacobian': 6, 'dh-parameters': 8, 'imu': 5, 'sensors': 5}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7122">Load Comments</button></br>
+			<div id = "commentsection-7122" class = 'collapse'>
+			<div id = "comment-10103" class = "comment">
+				<p>I have been trying to work with the encoders. I use the same procedures and experimental setup detailed above. I call [128 131 145 0x00 0x0b 0xFF 0xF5 149 2 43 44]; it reads 0x00010001. Then, after moving 360 degrees, it reads 0xF97C0693, which when plugged into the equation listed in the other post yields -117.639 (that lots of radians!). **Do you have any advice on what I need to change to get a usable measurement?** I searched the document linked in the other post and could not find a direct derivation of the angle equation. **Will the measurement be invalid if the robot spins in place?**</p>
+			</div>
+			<div id = "comment-10107" class = "comment">
+				<p>I get the correct result.  The left wheel is 0xF97C ticks which is twos complement for -1668, the right wheel is 0x0693 which is 1683.  $\frac{(1683 \pi 72 / 508.8) - (-1668 \pi 72 / 508.8)}{235}$ = 6.34 radians = 363.2 degrees</p>
+			</div>
+			<div id = "comment-10108" class = "comment">
+				<p>Isn't the encoder count an unsigned integer? Is it possible to just treat the encoder count as signed despite what the OI spec says?</p>
+			</div>
+			<div id = "comment-10116" class = "comment">
+				<p>Thank you for pointing this out.  The encoder counts are indeed signed.  The document will be updated fixed shortly.</p>
+			</div>
+			<div id = "comment-10121" class = "comment">
+				<p>The summary table in "Create Open Interface_v2.pdf" also shows angle units as being in mm (rather than degrees or something) so while fixing the docs you could adjust that too.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7122" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7122">
+					<img id="start_img-7122" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7122">Comment</button>
+			<br><div id = "ans-9556"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9556" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>To get the firmware version:</p>
+
+<p>To get what software the robot has, connect it to a serial application (such as PuTTy) and turn the robot off then on. It should print it out then</p>
+
+<p>New says:
+r3_robot/tags/release-3.4.1:</p>
+
+<p>old says:
+r3_robot/tags/release-3.2.6:</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9556" data-toggle = "popover">
+				<p>user name : Kirk Lennard</p>
+				<p> user reputation : 43</p>
+				<p class = "tagcontent" id = "usertaginfo-9556">{'None': 1, 'roomba': 1, 'irobot-create': 6}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-9556" class = 'collapse'>
+			</div>
+				<textarea id = "speech-9556" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9556">
+					<img id="start_img-9556" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9556">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

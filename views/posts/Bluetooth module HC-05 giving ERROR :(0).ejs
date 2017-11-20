@@ -1,0 +1,540 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Bluetooth module HC-05 giving ERROR :(0)
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2056" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2056" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 13255</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Bluetooth module HC-05 giving ERROR :(0)</h2>
+<p>I am working right now with Arduino UNO and HC-05 bluetooth module.I followed the instruction given on <a href="http://www.instructables.com/id/Modify-The-HC-05-Bluetooth-Module-Defaults-Using-A/?ALLSTEPS" rel="nofollow">this link for wiring</a>. So there are 2 mode of working with this HC-05 module</p>
+
+<ol>
+<li>Simple serial communication</li>
+<li>Working in AT command mode so as to change the parameters of HC-05 module</li>
+</ol>
+
+<p>As long as I work in simple serial communication mode, everything works fine but when I tried to change the parameters of module, it didn't work out. For working in At command mode, PIN NO 34 of HC-05 module needs to be high which I had taken care of. Lately I found that in mu module they had knowingly not connected the Berg strip to PIN 34, so I connected the PIN directly, even though I am not able to change the parameters of module and when I write any command on COM port of arduino IDE, I get this response</p>
+
+<pre><code>Enter AT commands:
+ERROR:(0)
+ ^
+ERROR:(0)
+ ^
+ERROR:(0)
+ ^
+ERROR:(0)
+ ^
+ERROR:(0)
+ ^
+ERROR:(0)
+ ^
+</code></pre>
+
+<p>I think that garbage is due to my code</p>
+
+<p>Here is my code:</p>
+
+<pre><code>#include &lt;SoftwareSerial.h&gt;
+
+SoftwareSerial BTSerial(10, 11); // RX | TX
+
+void setup()
+{
+  pinMode(9, OUTPUT);  
+  digitalWrite(9, HIGH);
+  Serial.begin(9600);
+  Serial.println("Enter AT commands:");
+  BTSerial.begin(38400);  
+}
+
+void loop()
+{
+  uint8_t x;
+  char CommandFromSerial[50]=" ";
+  char ResponseFromBluetooth[50]= " ";
+
+  if ((Serial.available())){
+    if(Serial.available()&gt;0){
+      for(x=0;x&lt;50;x++)
+        CommandFromSerial[x]=Serial.read();
+      BTSerial.println(CommandFromSerial);
+    }
+  }
+
+  if ((BTSerial.available())){
+    if(BTSerial.available()&gt;0)
+      for(x=0;x&lt;50;x++)
+        ResponseFromBluetooth[x]=BTSerial.read();
+    Serial.println(ResponseFromBluetooth);
+  }
+}
+</code></pre>
+
+<p>I am not able to figure out what I am doing wrong. I used this command on COM port 
+<code>AT\r\n</code> and many other commands but every time I get the same response.</p>
+
+<p>Did I mess up with my bluetooth module unknowingly?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2056" data-toggle = "popover">
+				<p>user name : shailendra</p>
+				<p> user reputation : 82</p>
+				<p class = "tagcontent" id = "usertaginfo-2056">{'None': 2, 'computer-vision': 2, 'cameras': 2, 'arduino': 11, 'communication': 6, 'microcontroller': 5, 'c': 8, 'serial': 6}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2056">Load Comments</button></br>
+			<div id = "commentsection-2056" class = 'collapse'>
+			<div id = "comment-4121" class = "comment">
+				<p>I properly indented your code based on the braces. Since the original indentation was quite backwards, please take a look to see if things are correct and the way you intended.</p>
+			</div>
+			<div id = "comment-5569" class = "comment">
+				<p>I'm suspicious of the SoftwareSerial header. Are you able to COM port directly to the BT device, and what kind of responses do you get then?</p>
+			</div>
+			<div id = "comment-7094" class = "comment">
+				<p>I used the code and the connection diagram by imjosh on Arduino Uno, and I communicate with the module, but still cannot change Baudrate (error (0)). Something is out of controll still; please share if you find something. I paste the seral output for clarity: at
+OK
+at+version
++VERSION:2.0-20100601
+OK
+at+baud
+ERROR:(0)
+AT+BAUD8
+ERROR:(0)</p>
+			</div>
+			<div id = "comment-17098" class = "comment">
+				<p>error(0) is usually associated with wrong commands</p>
+			</div>
+			</div>
+				<textarea id = "speech-2056" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2056">
+					<img id="start_img-2056" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2056">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-2058"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2058" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Wouldn't have thought you have messed up your bluetooth module or it's a problem with your code; it could be the firmware loaded on the module.<BR><BR>
+I too have encountered problems getting those HC-05 "linvor" modules to respond to AT command set. If the only AT commands that module responds to is AT  and setting the name; then you have a slave module. These have been loaded with limited firmware which doesn't respond to other AT commands given. <BR>
+You need the ones which are master's as they will respond to the other AT commands and have better firmware installed on them.
+<br><br>
+Found this out by trial and error as I have 2 modules which I was trying to configure so they paired up without user intervention and failing. I bought my modules on eBay from a seller with a ID for emailforyou which gave good information within the description; which informed me that in order to get each module to pair up you need a master &amp; slave. I bought 2 surface mount masters but also opted to get a 6 pin (assembled) HC-06 Master/Slave module as well from the above seller. <br>
+<strong>Updated</strong> <br></p>
+
+<pre><code>#include &lt;SoftwareSerial.h&gt;
+
+SoftwareSerial BTSerial(16, 17); // RX | TX
+
+void setup()
+{
+  pinMode(11, OUTPUT);  // this pin will pull the HC-05 pin 34 (key pin) HIGH to switch module to AT mode
+  digitalWrite(11, HIGH);
+  Serial.begin(9600);
+  Serial.println("Enter AT commands:");
+  BTSerial.begin(9600);  // HC-05 default speed in AT command more
+                         // was 38400 but changed it to 9600
+}
+
+void loop()
+{
+
+  // Keep reading from HC-05 and send to Arduino Serial Monitor
+  if (BTSerial.available())
+    Serial.write(BTSerial.read());
+
+  // Keep reading from Arduino Serial Monitor and send to HC-05
+  if (Serial.available())
+    BTSerial.write(Serial.read());
+}
+</code></pre>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2058" data-toggle = "popover">
+				<p>user name : OricTosh</p>
+				<p> user reputation : 86</p>
+				<p class = "tagcontent" id = "usertaginfo-2058">{'None': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2058">Load Comments</button></br>
+			<div id = "commentsection-2058" class = 'collapse'>
+			<div id = "comment-4127" class = "comment">
+				<p>That's good information.SO that means in order to change some of the parameters of Module i need to have a module which is master and then only i can change the name and pairing password of the module.Well is HC- also come with master firmware?Also i found out one thing that RX/TX pin of HC-05 moudle i have accpet 3.3 volt and RX/Tx pins of Arduino have some what 5 volts.So i think i need to give a shot to using a voltage divider also and let see if anything happens.Wil upadte further</p>
+			</div>
+			<div id = "comment-4128" class = "comment">
+				<p>That's correct about being 3.3v as the assembled complete modules have a 3.3v voltage regulator so only respond to a 5V input. There is HC-05 master module which looks the same as a slave. The seller mentioned above uses a white mark to tell which is which.</p>
+			</div>
+			<div id = "comment-4129" class = "comment">
+				<p>Yes but if the complete assembled module has on-board 3.3 V regulator then.As i see on the back of module, it's clearly written on RX/TX pins 3.3 V , so i will try to use a voltage regulator and see if that work out because as of now, i am able to get in At command mode but i am getting response as ERROR : (0)  which is wrong AT command error response code.So there may be possibility that 5V of RX/TX of Arduino is playing game and messing up with the command being send from Arduino</p>
+			</div>
+			<div id = "comment-4130" class = "comment">
+				<p>Looking at your code and the code which worked for me, the garbage could be due incorrect baud rate; The statement BTSerial.begin(38400) should be 9600. Not sure why as it goes against what I have read but gave me a readable response.</p>
+			</div>
+			<div id = "comment-4131" class = "comment">
+				<p>Tosh: The baud rate 38400 is default baud rate while working in AT command mode.And i am curious to know that did code worked for you and were you were able to change the parameters of module using serial port of Arduino IDE?I will be glad if you can share some information with me either with screenshots or  text output.</p>
+			</div>
+			<div id = "comment-4132" class = "comment">
+				<p>I tried certain times with the same after changing the baud rate to 9600 instead of 38400 but thing don't work out and even i was not getting any error response.I will try with implementing voltage divider and see what happens.</p>
+			</div>
+			<div id = "comment-4133" class = "comment">
+				<p>I have posted the my code; not sure why it worked will sort out a screen shot at a later time as don't have the hardware to hand at this time.</p>
+			</div>
+			<div id = "comment-4134" class = "comment">
+				<p>I don't know but the above code doesn't work at all for me.I tried that earlier.</p>
+			</div>
+			<div id = "comment-4135" class = "comment">
+				<p>let us [continue this discussion in chat](http://chat.stackexchange.com/rooms/11476/discussion-between-orictosh-and-shailendra)</p>
+			</div>
+			</div>
+				<textarea id = "speech-2058" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2058">
+					<img id="start_img-2058" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2058">Comment</button>
+			<br><div id = "ans-2349"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2349" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I had the same problem, so please try this code but with IDE 1.0.0 and baud rate 38400 in serial monitor:</p>
+
+<pre><code>void setup() {
+  Serial1.begin(38400);
+  Serial.begin(38400);
+}
+
+void loop() {
+  if(Serial1.available())
+  {
+    byte a=Serial1.read();
+    Serial.write(a);
+  }
+  if(Serial.available())
+  {
+    byte a=Serial.read();
+    Serial1.write(a);
+  }
+}
+</code></pre>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2349" data-toggle = "popover">
+				<p>user name : mattes</p>
+				<p> user reputation : 11</p>
+				<p class = "tagcontent" id = "usertaginfo-2349">{'None': 1}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2349" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2349" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2349">
+					<img id="start_img-2349" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2349">Comment</button>
+			<br><div id = "ans-2383"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2383" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p><strike>You're getting garbage in because the module is running at 9600 baud. In order for the module to operate at 38400 baud, pin 34 must be set high before the module is powered on. It looks like you are trying to set the pin high in <code>Setup()</code>, but it's already too late by then.</strike>  </p>
+
+<p>Edit: I see now that he hardwired pin 34 high and he is getting valid data read back from the module.  The following fixes still apply if you need a way to ensure the baud rate of the module.</p>
+
+<p>You can fix this in a few ways: </p>
+
+<ol>
+<li>use 9600 baud in your code </li>
+<li>wire vcc directly to pin 34 so it's always in 38400 baud mode </li>
+<li>change the default uart speed using the AT command that does this (can't remember) </li>
+<li>tie the hc-05 reset pin to an Arduino output pin so you can set pin 34 high and then toggle the reset which will ensure the module goes into 38400 mode.</li>
+</ol>
+
+<p>Edit:  Assuming you have everything connected properly and the baud rates set correctly, the following code is known to work on the Arduino Uno.</p>
+
+<pre><code>/* Serial Loop */
+
+#include &lt;SoftwareSerial.h&gt;
+
+#define rxPin 8
+#define txPin 9
+
+SoftwareSerial mySerial(rxPin, txPin); // RX, TX
+char myChar;
+
+void setup() {
+  Serial.begin(9600);   
+  Serial.println("AT");
+
+  mySerial.begin(38400);
+  mySerial.println("AT");
+}
+
+void loop() {
+  while (mySerial.available()) {
+    myChar = mySerial.read();
+    Serial.print(myChar);
+  }
+
+  while (Serial.available()) {
+    myChar = Serial.read();
+    Serial.print(myChar); //echo
+    mySerial.print(myChar);
+  }
+}
+</code></pre>
+
+<p>Here is the circuit that goes with the code. The pin labled "Key" is pin 34. <img src="https://i.stack.imgur.com/7NfeU.png" alt="Bluetooth command loop schematic">  </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2383" data-toggle = "popover">
+				<p>user name : imjosh</p>
+				<p> user reputation : 111</p>
+				<p class = "tagcontent" id = "usertaginfo-2383">{'None': 1}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2383">Load Comments</button></br>
+			<div id = "commentsection-2383" class = 'collapse'>
+			<div id = "comment-5568" class = "comment">
+				<p>Take another look at his code - the 9600 baud hardware serial port is only being used to communicate with (probably) his computer, not the BT device. The Bluetooth is being run via software serial on non-hardware-serial pins at 38400. As long as Serial(9600) commands are brought in completely before writing out to BT at 38400, this shouldn't be a problem.</p>
+			</div>
+			<div id = "comment-6572" class = "comment">
+				<p>Assuming the BT device is running at 38400, you are right. I was thinking it wasn't, but now I see that he was at least reading in properly as evidence by the "ERROR(0)" printing out and that he did hardwire pin 34 high.  Something is either wrong with the TX signal, or the code.</p>
+			</div>
+			<div id = "comment-6573" class = "comment">
+				<p>I think that the HC-05 connects on 38400 by default, but it is quite possible that he could have changed the config. I too am suspicious of the SoftwareSerial.h comms.</p>
+			</div>
+			<div id = "comment-6579" class = "comment">
+				<p>The baud rate is guaranteed to be 38400 if pin 34 is high at power up. If pin 34 is low at power up, it will go to 9600 by default, or a different rate if the uart setting has been changed.  See this document starting at the bottom of page one: http://www.instructables.com/files/orig/FOR/4FP2/HKZAVRT6/FOR4FP2HKZAVRT6.pdf  - SoftwareSerial works just fine at lowish baud rates (9600). It can work fairly reliably at  38400 as long as the connections are good and wires not too long.  At higher rates you might start getting dropped data or errors.</p>
+			</div>
+			</div>
+				<textarea id = "speech-2383" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2383">
+					<img id="start_img-2383" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2383">Comment</button>
+			<br><div id = "ans-3072"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-3072" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I was having the same problem. I finally solved the problem. This <a href="http://www.instructables.com/files/orig/FOR/4FP2/HKZAVRT6/FOR4FP2HKZAVRT6.pdf" rel="nofollow noreferrer">document</a> says that you have to put CR LF (\r\n) characters after you send something in AT mode. But in the arduino code that you use, uses the <code>Serial.write</code> command to send command. But  <code>Serial.write</code> command doesn't put CR LF characters. So I used Tera Term to send command. First connect PIN34 to 3.3V. Power the arduino and upload the code below. Open Tera Term. Start a new serial connection. Choose your arduino's serial port. And then click Setup>Terminal. Change Transmit to CR+LF and check Local Echo checkbox. Now you can send the AT commands.</p>
+
+<p><img src="https://i.stack.imgur.com/7qhMG.png" alt="enter image description here"></p>
+
+<p><img src="https://i.stack.imgur.com/wOl80.png" alt="enter image description here"></p>
+
+<pre><code>#include &lt;SoftwareSerial.h&gt;
+
+SoftwareSerial BTSerial(2, 3); // RX | TX
+
+void setup()
+{
+  pinMode(9, OUTPUT);  // this pin will pull the HC-05 pin 34 (key pin) HIGH to switch module to AT mode
+  digitalWrite(9, HIGH);
+  Serial.begin(9600);
+  Serial.println("Enter AT commands:");
+  BTSerial.begin(38400);  // HC-05 default speed in AT command more
+}
+
+void loop()
+{
+
+  // Keep reading from HC-05 and send to Arduino Serial Monitor
+  if (BTSerial.available())
+    Serial.write(BTSerial.read());
+
+  // Keep reading from Arduino Serial Monitor and send to HC-05
+  if (Serial.available())
+    BTSerial.write(Serial.read());
+}
+</code></pre>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-3072" data-toggle = "popover">
+				<p>user name : Yusuf</p>
+				<p> user reputation : 11</p>
+				<p class = "tagcontent" id = "usertaginfo-3072">{'None': 1}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-3072" class = 'collapse'>
+			</div>
+				<textarea id = "speech-3072" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-3072">
+					<img id="start_img-3072" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-3072">Comment</button>
+			<br><div id = "ans-3096"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-3096" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>IN CASE OF A HC05 MODULE : You could use Arduino IDE but don't forget to select "both, NL and CR" in the case nearby the baudrate selection (in the hardware serial monitor).</p>
+
+<p>IN CASE OF A HC06 MODULE: choose "no line ending"</p>
+
+<p>;)</p>
+
+<p>With this code it is ok:</p>
+
+<pre><code>    #include &lt;SoftwareSerial.h&gt;
+
+SoftwareSerial BTSerial(10, 11); // RX | TX
+
+void setup()
+{
+  pinMode(9, OUTPUT);  //HC-05 pin 34 (key pin) 
+  digitalWrite(9, HIGH);  // 5V sur Key pour activer le mode commande AT
+  Serial.begin(9600);
+  Serial.println("AT commandes:");
+  BTSerial.begin(38400);  // HC-05 vitesse par d faut pour la commande AT
+}
+
+void loop()
+{
+  // lecture des commandes AT par le serial port(9600)
+  if (BTSerial.available()) Serial.write(BTSerial.read());
+
+  // envoie   HC-05 de commandes AT saisi
+  if (Serial.available()) BTSerial.write(Serial.read());
+}
+</code></pre>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-3096" data-toggle = "popover">
+				<p>user name : John</p>
+				<p> user reputation : 1</p>
+				<p class = "tagcontent" id = "usertaginfo-3096">{'None': 0}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-3096" class = 'collapse'>
+			</div>
+				<textarea id = "speech-3096" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-3096">
+					<img id="start_img-3096" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-3096">Comment</button>
+			<br><div id = "ans-4468"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4468" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I had problems with this as well using a Pro Micro. Testing with a Mega instead and it worked no problem, using (57600) for Serial and (38400) for Serial1. I did try Serial1 as well as BTSerial with the Pro Micro, to no avail but didn't test with BTSerial on the Mega.</p>
+
+<p>There's no pin 11 on the Pro Micro, so I used</p>
+
+<p>SoftwareSerial BTSerial(10, 14);</p>
+
+<p>For whatever reason, after trying with the Mega, it now works with the Pro Micro using John's code above, which is pretty much the same as the code I originally used (and which worked on the Mega).</p>
+
+<p>I have found that Serial.println commands in the "void setup" section don't work on the Pro Micro but do on the Mega, so don't think it's not working just because you don't see those in Serial Monitor. In the "void loop" section they work fine though. It didn't make any difference using a command to wait for Serial to be ready, like so:</p>
+
+<pre><code>   Serial.begin(57600);
+   while (!Serial) {
+     ; // wait for serial port to connect. Needed for Leonardo only
+   }
+
+   Serial.println("Goodnight moon!");
+
+   // set the data rate for the SoftwareSerial port
+   Serial1.begin(38400);
+   Serial.println("Ready");
+}
+</code></pre>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4468" data-toggle = "popover">
+				<p>user name : user7008</p>
+				<p> user reputation : 11</p>
+				<p class = "tagcontent" id = "usertaginfo-4468">{'None': 1}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-4468" class = 'collapse'>
+			</div>
+				<textarea id = "speech-4468" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4468">
+					<img id="start_img-4468" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4468">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

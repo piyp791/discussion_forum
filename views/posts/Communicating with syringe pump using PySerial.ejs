@@ -1,0 +1,338 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Communicating with syringe pump using PySerial
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-5079" class = "post">
+			<h2>Question</h2>
+			<div id="vote-5079" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 805</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Communicating with syringe pump using PySerial</h2>
+<p>Let's first start of by explaining that I do not have a decent background in electronics and interfacing with them, so maybe this is a stupid question. I am currently trying to connect an old Harvard 33 syringe pump (<a href="http://www.harvardapparatus.com/webapp/wcs/stores/servlet/product_11051_10001_44004_-1_HAI_ProductDetail___" rel="nofollow">website</a>, <a href="http://www.instechlabs.com/Support/manuals/HA33Manual.pdf" rel="nofollow">PDF manual</a>) to a computer, with the goal of controlling things like pump rates and direction. For this purpose, I connected the instrument to my computer using a D-sub/USB conversion dongle. I then connected to the dongle with PySerial without issues. However, whenever I try to send commands or request the instrument's output, for example <code>write("RUN\r")</code>, the instrument does not do anything at all. Requesting data (<code>read(100)</code>) returns only a couple of <code>\x00</code>. I suspect I am communicating with the dongle itself rather than the pump. When the pump is turned off or unplugged, I get exactly the same results!</p>
+
+<p>Could anyone explain to me why my method does not work?</p>
+
+<p>My Python code for reference:</p>
+
+<pre><code>import serial # PySerial module
+
+# open the connection
+ser = serial.Serial("/dev/ttyUSB0", baudrate=9600, bytesize=8, stopbits=2, timeout=1)
+print ser # returns [Serial&lt;id=0x1cc7610, open=True&gt;(port='/dev/ttyUSB0', baudrate=9600, bytesize=8, parity='N', stopbits=2, timeout=1, xonxoff=False, rtscts=False, dsrdtr=False)]
+
+# see if the connection is truly open
+print ser.isOpen() # prints True
+
+# run the pump motor
+ser.write("RUN\r")
+</code></pre>
+
+<p><strong>Additional observations:</strong> when the instrument is plugged in but the above code is not running, the pump does all sorts of things at random (move one way, stop, move the other way, etc.). This behaviour is much less pronounce but still present when the code runs (and 'locks' the channel or something?). This seems to suggest that the reference voltages (logical high and low) are not properly set at 2-5V and 0-0.5V respectively</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-5079" data-toggle = "popover">
+				<p>user name : MPA</p>
+				<p> user reputation : 8</p>
+				<p class = "tagcontent" id = "usertaginfo-5079">{'control': 1, 'None': 0, 'rs232': 1, 'usb': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-5079">Load Comments</button></br>
+			<div id = "commentsection-5079" class = 'collapse'>
+			<div id = "comment-7853" class = "comment">
+				<p>Have you tried opening a serial terminal (hyperterminal, tera term, minicom, etc) and communicating with the instrument directly?</p>
+			</div>
+			</div>
+				<textarea id = "speech-5079" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-5079">
+					<img id="start_img-5079" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-5079">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-5080"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-5080" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p><code>ser.write</code> is always returning number of bytes written. It is not the response to your command. In order to get the response, you need to perform a <code>read</code> command.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-5080" data-toggle = "popover">
+				<p>user name : Eugene Sh.</p>
+				<p> user reputation : 311</p>
+				<p class = "tagcontent" id = "usertaginfo-5080">{'None': 15}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-5080" class = 'collapse'>
+			</div>
+				<textarea id = "speech-5080" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-5080">
+					<img id="start_img-5080" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-5080">Comment</button>
+			<br><div id = "ans-5081"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-5081" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I don't know how it would be specifically in Python, but generally speaking, when you open a file, you get a handle which you may possibly write to or read from. Again, generally speaking, the <code>read</code> and <code>write</code> system calls return the number of bytes they have read or written.</p>
+
+<p>In your case, you are writing <code>"VER\r"</code> to serial port. You get 4 because all four characters are sent. The <code>write</code> function is not responsible for waiting and retrieving a result for you. In short, it's not an API that's specifically designed to talk with your specific device.</p>
+
+<p>I imagine you should call <code>ser.read</code> to read from the serial port.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-5081" data-toggle = "popover">
+				<p>user name : Shahbaz</p>
+				<p> user reputation : 2615</p>
+				<p class = "tagcontent" id = "usertaginfo-5081">{'None': 193, 'usb': 12, 'distributed-systems': 7, 'microcontroller': 1, 'embedded-systems': 7, 'servomotor': 1, 'platform': 18, 'can': 1, 'machine-learning': 12, 'real-time': 18, 'mobile-robot': 1, 'rs232': 12, 'software': 20}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-5081">Load Comments</button></br>
+			<div id = "commentsection-5081" class = 'collapse'>
+			<div id = "comment-7838" class = "comment">
+				<p>Yes, you are right. When I perform a read, I get only a couple of `\x00`, depending on how many bytes I request. But still I can't seem to establish a connection with the pump (for instance, `ser.write("RUN\r"` does not do anything)</p>
+			</div>
+			<div id = "comment-7840" class = "comment">
+				<p>You might want to update the question with that information</p>
+			</div>
+			<div id = "comment-7848" class = "comment">
+				<p>@mpa, first thing's first, are you sure the RS232 parameters are correct? Second, do you have access to an oscilloscope?</p>
+			</div>
+			<div id = "comment-7849" class = "comment">
+				<p>@Shahbaz 1) I have no idea what parameters are used, PySerial handles those I think. 2) Yes I do, but I'm not sure if I can find one with RS232 connector.</p>
+			</div>
+			<div id = "comment-7854" class = "comment">
+				<p>@mpa, the function arguments are your parameters: `serial.Serial("/dev/ttyUSB0", baudrate=9600, bytesize=8, stopbits=2, timeout=1)` so first make sure your baudrate, bytesize and stopbits are correct.</p>
+			</div>
+			</div>
+				<textarea id = "speech-5081" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-5081">
+					<img id="start_img-5081" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-5081">Comment</button>
+			<br><div id = "ans-5089"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-5089" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><ol>
+<li><p>First, ensure that your wiring is consistent with the wiring diagram on p. 24-25.  I've seen similar "random" behavior when the grounds are not connected properly.</p></li>
+<li><p>Before attempting to programmatically talk to the pump, try it manually.  I use <a href="http://logmett.com/index.php?/download/tera-term-485-freeware.html" rel="nofollow">TeraTerm</a> to talk to my Harvard 33 during testing - but any like terminal software will do (even Hyperterminal).  First, check the pump's address (p. 16) - is it correct? If so, issue a "VER" command a few times.  <strong>Note that the pump's Remote LED becomes illuminated once the pump chain command is established.  If the LED does not illuminate, your serial commands will not work.</strong> If the <code>VER</code> command works, then move on to setting run modes.  When I use the pump, I issue the following sequence before attempting to run the pump: <code>PAR ON, MOD PRO, DIA A 26.600, DIR INF</code>. A meaningful sequence of configuration commands is key: the pump has a <em>bit</em> of intelligence and will respond appropriately to erroneous and/or conflicting commands.</p></li>
+<li><p>If the pumped responded positively to those commands, attempt to run the configured syringe: <code>RAT A 1.0000 MM</code> and then <code>RUN</code>.  If that works, you can issue the stop command: <code>STP</code>.</p></li>
+<li><p>If the pump checks out manually, <em>then</em> proceed to programmatic use.  When doing so, take extra care to follow the formatting rules for rates, etc.  The interpretation of the  <em>ffffff</em> rate and diameter specifications is inflexible, and the rules must be followed exactly (see p.18 for example).  Note that the pump also has a strict set of rules for command usage during operation (i.e. don't issue a <code>DIA</code> command while the pump is running).  Likewise, note that the pump chain commands are ignored if the device is in SET mode (p. 16).</p></li>
+<li><p>When looking for return characters, keep in mind how mind-boggling slow 9600 baud actually is.  You'll likely have to set up a polling routine to handle the pump's response.  As shown on p.16, the response should lead with a '\r' and end with a '\n'.  For example: you might set up a loop to wait until the '\n' char is seen once a command has been issued.</p></li>
+<li><p>Likewise, be prepared to parse and handle the pump's command responses: <code>?</code>, <code>NA</code>, and <code>OOR</code> (p.20). </p></li>
+</ol>
+
+<p>Good luck!</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-5089" data-toggle = "popover">
+				<p>user name : Throwback1986</p>
+				<p> user reputation : 281</p>
+				<p class = "tagcontent" id = "usertaginfo-5089">{'None': 15}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-5089">Load Comments</button></br>
+			<div id = "commentsection-5089" class = 'collapse'>
+			<div id = "comment-7856" class = "comment">
+				<p>Thanks for your answer, I will look into it when I got proper connectors for the pump.</p>
+			</div>
+			</div>
+				<textarea id = "speech-5089" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-5089">
+					<img id="start_img-5089" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-5089">Comment</button>
+			<br><div id = "ans-5091"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-5091" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Thank you for directly linking to the manual -- that makes answering questions like this much quicker.</p>
+
+<blockquote>
+  <p>I connected the instrument to my computer using a D-sub/USB conversion
+  dongle.</p>
+</blockquote>
+
+<p>I'm assuming that you've already figured out that the thing that <em>looks</em> like a standard 9-pin D-sub connector on the Harvard Model 33 is completely incompatible with standard RS-232, and you have (or can make) something that looks like the proper cable between a PC and the pump.</p>
+
+<p>The first thing I would do is "beep out" the cable:
+The cable should have a DB9 female on one end, and a RJ11 plug on the other end,
+and connections as shown on in Appendix D and Appendix F (p. 24-25) of the manual.</p>
+
+<p>As far as I can tell, for your application, you don't wan't <em>anything</em> plugged in to the "I/O" D-sub connector on the back of the pump.
+Instead, you want the RJ-11 plug end of your cable plugged into the "Port #1" RJ-11 socket on the back of the pump; and the DB9 female end of your cable plugged into the male DB-9 connector on the USB-to-RS232 dongle.</p>
+
+<p>Throwback1986 has many good tips.</p>
+
+<blockquote>
+  <p>Requesting data (read(100)) returns only a couple of \x00.
+  ...
+  Could anyone explain to me why my method does not work?</p>
+</blockquote>
+
+<p>These pumps are designed to be connected in a chain,
+and they are designed to <em>ignore</em> commands sent to other pumps in a chain.
+Also, they ignore commands sent while the pump is in setting mode (see p. 16).</p>
+
+<p>I might run a script like this to see which (if any) address the pump is responding to:</p>
+
+<pre><code># communicate with a Harvard 33 syringe pump
+# http://robotics.stackexchange.com/questions/5079/communicating-with-syringe-pump-using-pyserial
+# pump website: http://www.harvardapparatus.com/webapp/wcs/stores/servlet/product_11051_10001_44004_-1_HAI_ProductDetail___
+# pump manual: http://www.instechlabs.com/Support/manuals/HA33Manual.pdf
+# WARNING: untested code
+
+import serial # PySerial module: http://pyserial.sf.net/
+
+# open the connection
+ser = serial.Serial(port="/dev/ttyUSB0", baudrate=9600, stopbits=STOPBITS_TWO, timeout=0.5)
+print ser
+
+# see if the connection is truly open
+print ser.isOpen()
+
+# See if the pump is at address 0:
+# try to get the software version of that pump
+# using the VER command from p. 19 of the manual
+command_string = "VER\r"
+ser.write( command_string )
+response = ser.read(100)
+print "version: %r." % response
+
+# guess every possible address 0 to 99
+for guessed_address in range (0, 100):
+    # request prompt
+    prompt_request = "%d\r" % guessed_address
+    ser.write( prompt_request )
+    response = ser.read(100)
+    print "prompt: %r." % response
+
+    # try to get the software version of that pump
+    # using the VER command from p. 19 of the manual
+    command_string = "%dVER\r" % guessed_address
+    ser.write( command_string )
+    response = ser.read(100)
+    print "version: %r." % response
+
+print "All done."
+</code></pre>
+
+<p>Does this script show any "interesting" responses?</p>
+
+<p>If I had this pump in front of me, I would follow the "Configuring the Pump Chain" process on p. 14 to figure out the current pump address and baud rate.</p>
+
+<p>Does the pump display "b:9600" on the pump's front LED display when I do that?
+Does the pump display "Adr:00" on the pump's front LED display when I do that?
+If not, I would go through the "Configuring the Pump Chain" on p. 14 to get that set.</p>
+
+<p>I might try getting pyserial to communicate through that USB dongle to and from some other device, perhaps a simple loop-back wire,
+just to make sure that pyserial works with that USB dongle.</p>
+
+<p>Good luck!</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-5091" data-toggle = "popover">
+				<p>user name : David Cary</p>
+				<p> user reputation : 3365</p>
+				<p class = "tagcontent" id = "usertaginfo-5091">{'quadcopter': 38, 'stepper-driver': 9, 'None': 256, 'multi-rotor': 2, 'force-sensor': 9, 'stability': 36, 'industrial-robot': 1, 'design': 18, 'motor': 2, 'stepper-motor': 9}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-5091">Load Comments</button></br>
+			<div id = "commentsection-5091" class = 'collapse'>
+			<div id = "comment-7855" class = "comment">
+				<p>Thanks a lot for your reply, it was very helpful. I will follow up on it once I found the required connectors. Do you think I could directly use a RJ-11 to USB adapter rather than a RJ11 > RS232 > USB chain?</p>
+			</div>
+			<div id = "comment-7860" class = "comment">
+				<p>In principle, there might exist a RJ-11 to USB adapter that works with this device. In practice, all off-the-shelf RJ-11 to USB adapters I've ever used have either (a) had telephone modem tones at the RJ-11 end, or (b) had bidirectional RS-485 signals at the RJ-11 end. Neither one of those is compatible with the Harvard 33 syringe pump or with each other.</p>
+			</div>
+			<div id = "comment-7861" class = "comment">
+				<p>And so I expect you'll probably end up with a USB to RS232-on-DB9 adapter, plus a "just wires" DB9-to-RJ11 adapter something like [MJD9F6P6C](http://www.winfordeng.com/products/mjd9.php); [ADM-9F6-GR](http://www.frys.com/product/2402370); [CP-232A-6C-9F](http://www.discount-low-voltage.com/Connectivity/Adapters/CP-232A-6C-9F); [ZT1312000](http://www.cyberguys.com/product-details/?productid=798); etc.</p>
+			</div>
+			<div id = "comment-7867" class = "comment">
+				<p>Setting up the right connectors did the trick, after that I could issue commands right away. Thanks!</p>
+			</div>
+			</div>
+				<textarea id = "speech-5091" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-5091">
+					<img id="start_img-5091" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-5091">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

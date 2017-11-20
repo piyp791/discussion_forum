@@ -1,0 +1,594 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>how to implement tracking problem with PID controller
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-6859" class = "post">
+			<h2>Question</h2>
+			<div id="vote-6859" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 2052</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>how to implement tracking problem with PID controller</h2>
+<p>I'm trying to implement the tracking problem for this <a href="https://robotics.stackexchange.com/questions/4793/proportional-controller-error-doesnt-approach-zero">example</a> using PID controller. The dynamic equation is </p>
+
+<p>$$
+I  \ddot{\theta} + d \dot{\theta} + mgL \sin(\theta) = u
+$$</p>
+
+<p>where </p>
+
+<p>$\theta$ : joint variable. </p>
+
+<p>$u$ : joint torque</p>
+
+<p>$m$ : mass. </p>
+
+<p>$L$ : distance between centre mass and joint. </p>
+
+<p>$d$ : viscous friction coefficient</p>
+
+<p>$I$ : inertia seen at the rotation axis.</p>
+
+<p>$\textbf{Regulation Problem:}$</p>
+
+<p>In this problem, the desired angle $\theta_{d}$ is constant and $\theta(t)$ $\rightarrow \theta_{d}$ and $\dot{\theta}(t)$ $\rightarrow 0$ as $t$ $\rightarrow \infty$. For PID controller, the input $u$ is determined as follows</p>
+
+<p>$$
+u = K_{p} (\theta_{d} - \theta(t)) + K_{d}( \underbrace{0}_{\dot{\theta}_{d}} -  \dot{\theta}(t) ) + \int^{t}_{0} (\theta_{d} - \theta(\tau)) d\tau
+$$</p>
+
+<p>The result is </p>
+
+<p><img src="https://i.stack.imgur.com/3EFpL.png" alt="enter image description here"></p>
+
+<p>and this is my code  <code>main.m</code></p>
+
+<pre><code>clear all
+clc
+
+global error;
+error = 0;
+
+t = 0:0.1:5;
+
+x0 = [0; 0];
+
+[t, x] = ode45('ODESolver', t, x0);
+
+e = x(:,1) - (pi/2); % Error theta
+
+plot(t, e, 'r', 'LineWidth', 2);
+title('Regulation Problem','Interpreter','LaTex');
+xlabel('time (sec)');
+ylabel('$\theta_{d} - \theta(t)$', 'Interpreter','LaTex');
+grid on
+</code></pre>
+
+<p>and <code>ODESolver.m</code> is </p>
+
+<pre><code>function dx = ODESolver(t, x)
+
+global error; % for PID controller
+
+dx = zeros(2,1);
+
+%Parameters:
+m = 0.5;       % mass (Kg)
+d = 0.0023e-6; % viscous friction coefficient
+L = 1;         % arm length (m)
+I = 1/3*m*L^2; % inertia seen at the rotation axis. (Kg.m^2)
+g = 9.81;      % acceleration due to gravity m/s^2
+
+
+% PID tuning
+Kp = 5;
+Kd = 1.9;
+Ki = 0.02;
+
+% u: joint torque
+u = Kp*(pi/2 - x(1)) + Kd*(-x(2)) + Ki*error;
+error = error + (pi/2 - x(1));
+
+dx(1) = x(2);
+dx(2) = 1/I*(u - d*x(2) - m*g*L*sin(x(1)));
+
+end
+</code></pre>
+
+<p>$\textbf{Tracking Problem:}$</p>
+
+<p>Now I would like to implement the tracking problem in which the desired angle $\theta_{d}$ is not constant (i.e. $\theta_{d}(t)$); therefore, $\theta(t)$ $\rightarrow \theta_{d}(t)$ and $\dot{\theta}(t)$ $\rightarrow \dot{\theta}_{d}(t)$ as $t$ $\rightarrow \infty$. The input is </p>
+
+<p>$$
+u = K_{p} (\theta_{d} - \theta(t)) + K_{d}( \dot{\theta}_{d}(t) -  \dot{\theta}(t) ) + \int^{t}_{0} (\theta_{d}(t) - \theta(\tau)) d\tau
+$$</p>
+
+<p>Now I have two problems namely to compute $\dot{\theta}_{d}(t)$ sufficiently and how to read from <code>txt</code> file since the step size of <code>ode45</code> is not fixed. For the first problem, if I use the naive approach which is </p>
+
+<p>$$
+\dot{f}(x) = \frac{f(x+h)-f(x)}{h}
+$$</p>
+
+<p>the error is getting bigger if the step size is not small enough. The second problem is that the desired trajectory is stored in <code>txt</code> file which means I have to read the data with fixed step size but I'v read about <code>ode45</code> which its step size is not fixed. Any suggestions!</p>
+
+<hr>
+
+<p>Edit:</p>
+
+<p>For tracking problem, this is my code </p>
+
+<p><code>main.m</code></p>
+
+<pre><code>clear all
+clc
+
+global error theta_d dt;
+error = 0;
+
+
+theta_d = load('trajectory.txt');
+
+i    = 1;
+t(i) = 0;
+dt   = 0.1;
+numel(theta_d)
+while ( i &lt; numel(theta_d) )
+   i = i + 1;
+   t(i) = t(i-1) + dt;
+end
+
+x0 = [0; 0];
+options= odeset('Reltol',dt,'Stats','on');
+[t, x] = ode45(@ODESolver, t, x0, options);
+
+ e = x(:,1) - theta_d; % Error theta
+
+
+plot(t, x(:,2), 'r', 'LineWidth', 2);
+title('Tracking Problem','Interpreter','LaTex');
+xlabel('time (sec)');
+ylabel('$\dot{\theta}(t)$', 'Interpreter','LaTex');
+grid on
+</code></pre>
+
+<p><code>ODESolver.m</code></p>
+
+<pre><code>function dx = ODESolver(t, x)
+
+persistent i theta_dPrev
+
+if isempty(i)
+    i = 1;
+    theta_dPrev = 0;
+end
+
+global error theta_d dt ; 
+
+dx = zeros(2,1);
+
+%Parameters:
+m = 0.5;       % mass (Kg)
+d = 0.0023e-6; % viscous friction coefficient
+L = 1;         % arm length (m)
+I = 1/3*m*L^2; % inertia seen at the rotation axis. (Kg.m^2)
+g = 9.81;      % acceleration due to gravity m/s^2
+
+
+% PID tuning
+Kp = 35.5;
+Kd = 12.9;
+Ki = 1.5;
+
+if ( i == 49 )
+    i = 48;
+end
+% theta_d first derivative
+theta_dDot  = ( theta_d(i) - theta_dPrev ) / dt;
+theta_dPrev = theta_d(i);
+
+
+% u: joint torque
+u = Kp*(theta_d(i) - x(1)) + Kd*( theta_dDot - x(2)) + Ki*error;
+error = error + (theta_dDot - x(1));
+
+dx(1) = x(2);
+dx(2) = 1/I*(u - d*x(2) - m*g*L*sin(x(1)));
+
+i = i + 1;
+end
+</code></pre>
+
+<p>trajectory's code is </p>
+
+<pre><code>clear all 
+clc
+
+a = 0:0.1:(3*pi)/2;
+
+file = fopen('trajectory.txt','w');
+
+
+for i = 1:length(a)
+    fprintf(file,'%4f \n',a(i));
+end
+
+fclose(file);
+</code></pre>
+
+<p>The result of the velocity is </p>
+
+<p><img src="https://i.stack.imgur.com/Lr1EO.png" alt="enter image description here"></p>
+
+<p>Is this correct approach to solve the tracking problem?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6859" data-toggle = "popover">
+				<p>user name : CroCo</p>
+				<p> user reputation : 1040</p>
+				<p class = "tagcontent" id = "usertaginfo-6859">{'control': 18, 'pid': 4, 'slam': 16, 'manipulator': 3, 'mobile-robot': 14, 'dynamics': 6, 'errors': 2, 'data-association': 1, 'kinematics': 3, 'matlab': 6, 'kalman-filter': 21, 'motion-planning': 3, 'None': 41, 'noise': 24, 'theory': 1, 'localization': 14, 'microcontroller': 5, 'mapping': 5, 'sensor-error': 1, 'sensors': 7, 'quadcopter': 8, 'ekf': 26, 'simulation': 1, 'motion': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-6859" class = 'collapse'>
+			</div>
+				<textarea id = "speech-6859" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6859">
+					<img id="start_img-6859" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6859">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-6867"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6867" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I've made few changes to your ODESolver:</p>
+
+<ol>
+<li><p>The time step requested by ODE45 is not going to match what you have in your file. In your <code>ODESolver()</code> desired thetas are read one after the other and then the last one is repeated. As a result the desired theta was not a function of $t$. I used <code>interp1()</code> to fix that.</p></li>
+<li><p>The time difference between two iteration of ODE45 is not constant so you can't use <code>dt</code> to calculate the $\Delta{\theta}$. This is fixed by storing the <code>t</code> in a variable for future reference.</p></li>
+<li><p>Same goes for calculating the integral part of PID.</p></li>
+</ol>
+
+<p>Here is the new <code>ODESolver()</code>:</p>
+
+<pre><code>function dx = ODESolver(t, x)
+persistent theta_dPrev time_prev
+
+if isempty(theta_dPrev)
+    theta_dPrev = 0;
+    time_prev = 0;
+end
+
+global error theta_d dt time_array; 
+
+dx = zeros(2,1);
+
+%Parameters:
+m = 0.5;       % mass (Kg)
+d = 0.0023e-6; % viscous friction coefficient
+L = 1;         % arm length (m)
+I = 1/3*m*L^2; % inertia seen at the rotation axis. (Kg.m^2)
+g = 9.81;      % acceleration due to gravity m/s^2
+
+
+% PID tuning
+Kp = 40;%35.5;
+Kd = 10;%12.9;
+Ki = 20;%1.5;
+
+% theta_d first derivative
+theta_desired_current = interp1(time_array,theta_d,t);
+if t==time_prev
+    theta_dDot = 0;
+else
+    theta_dDot  = ( theta_desired_current - theta_dPrev ) / (t-time_prev);
+end
+theta_dPrev = theta_desired_current;
+
+
+% u: joint torque
+u = Kp*(theta_desired_current - x(1)) + Kd*( theta_dDot - x(2)) + Ki*error;
+error = error + (theta_desired_current - x(1))*(t-time_prev);
+
+dx(1) = x(2);
+dx(2) = 1/I*(u - d*x(2) - m*g*L*sin(x(1)));
+
+
+
+time_prev = t;
+end
+</code></pre>
+
+<p>I also changed the <code>main.m</code> to the following:</p>
+
+<pre><code>clear all; close all; clc;
+
+global error theta_d dt time_array;
+error = 0;
+
+theta_d = load('trajectory.txt');
+% theta_d = sin([1:.1:20]/3);
+
+time_array=0:dt:dt*(numel(theta_d)-1);
+
+
+x0 = [0; 0];
+options= odeset('Reltol',dt,'Stats','on');
+[t_ode, x] = ode45(@ODESolver, [time_array(1),time_array(end)], x0, options);
+
+theta_desired_ode = interp1(time_array,theta_d,t_ode);
+ e = x(:,1) - theta_desired_ode; % Error theta
+
+figure(1)
+plot(t_ode, x(:,2), 'r', 'LineWidth', 2);
+title('Velocity','Interpreter','LaTex');
+xlabel('time (sec)');
+ylabel('$\dot{\theta}(t)$', 'Interpreter','LaTex');
+grid on
+
+figure(2)
+plot(t_ode,x(:,1))
+hold on 
+plot(t_ode,theta_desired_ode)
+title('Theta','Interpreter','LaTex');
+xlabel('time (sec)');
+ylabel('$\dot{\theta}(t)$', 'Interpreter','LaTex');
+legend('Actual Theta', 'Desired Theta')
+grid on
+</code></pre>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6867" data-toggle = "popover">
+				<p>user name : BarzinM</p>
+				<p> user reputation : 316</p>
+				<p class = "tagcontent" id = "usertaginfo-6867">{'None': 17}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-6867">Load Comments</button></br>
+			<div id = "commentsection-6867" class = 'collapse'>
+			<div id = "comment-9828" class = "comment">
+				<p>wow this is really nice work. Thank you so much. The results are perfect.</p>
+			</div>
+			<div id = "comment-9829" class = "comment">
+				<p>I'm glad you found it useful. If you plan to implement it on hardware or want to take your control system one step further, try using anti-windup PID instead of the regular one.</p>
+			</div>
+			<div id = "comment-9830" class = "comment">
+				<p>will do. Thank you again.</p>
+			</div>
+			<div id = "comment-9831" class = "comment">
+				<p>Any good reference for anti-windup PID?</p>
+			</div>
+			<div id = "comment-9832" class = "comment">
+				<p>page 11: http://www.cds.caltech.edu/~murray/courses/cds101/fa02/caltech/astrom-ch6.pdf
+page 10: http://cse.lab.imtlucca.it/~bemporad/teaching/ac/pdf/AC2-09-AntiWindup.pdf</p>
+			</div>
+			<div id = "comment-9837" class = "comment">
+				<p>how to extract `u` in `ODESolver.m` as time goes?</p>
+			</div>
+			<div id = "comment-9843" class = "comment">
+				<p>I'm not a big fan of global variables but since you are already using them, you can also set `u` as global. A better way would be using object-oriented programming. I also want to suggest not using ODE45. Make a loop with fixed time step specially since you seem to be interested in hardware in future. A loop would simulate how your controller and sensors work much much better. Also, it is going to be easier to implement your already developed codes on hardware.</p>
+			</div>
+			</div>
+				<textarea id = "speech-6867" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6867">
+					<img id="start_img-6867" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6867">Comment</button>
+			<br><div id = "ans-6868"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6868" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Since both $\theta_d\left(t\right)$ and $\dot\theta_d\left(t\right)$ are references at your disposal, i.e. you have to provide them in some way, why don't you simply play with $\dot\theta_d\left(t\right)$ and then compute $\theta_d\left(t\right)$ accordingly by means of integration? As you might know, integration is a well posed operation compared with the derivative.</p>
+
+<p>On the other hand, $\dot\theta\left(t\right)$ is a different "beast". In physical systems you barely have access to it (you'd need ad-hoc sensors for measuring it). Valid alternatives are: Kalman estimation, Savitzky-Golay filtering, use of proper D term in the controller equipped with a high-frequency pole.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6868" data-toggle = "popover">
+				<p>user name : Ugo</p>
+				<p> user reputation : 1482</p>
+				<p class = "tagcontent" id = "usertaginfo-6868">{'None': 99}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-6868">Load Comments</button></br>
+			<div id = "commentsection-6868" class = 'collapse'>
+			<div id = "comment-9827" class = "comment">
+				<p>position reference is more intuitive than velocity reference even though what you are saying is perfect and a good alternative. Since I'm doing simulation, I am able to access to the velocity, therefore data is available every instant. Having said that, your answer is alternative but not a solution to my problem. Thank you so much though.</p>
+			</div>
+			<div id = "comment-9834" class = "comment">
+				<p>Are you sure that you have a too generic $\theta_d\left(t\right)$ so that you cannot come up with a analytical derivative of it? How do you produce your position reference profile?
+I'm insisting because these details are very important in practice. What is the purpose of your simulation then? Not to go to a real implementation? Does it have only a didactic purpose?
+I understand you can solve the specific problem differently, but this peculiarity is too narrow and there's the risk that it hides other issues, as I said.</p>
+			</div>
+			<div id = "comment-9835" class = "comment">
+				<p>I'm focusing now on simulation to enhance my skills. The problem with hardware is costly first and it needs some space and tools. A lot of academic papers are based on pure simulation. I will stick with it until I got some money and space. :)</p>
+			</div>
+			<div id = "comment-9836" class = "comment">
+				<p>I see, you've started tackling the problem. "A lot of academic papers are based on pure simulation", that's right why our field (I'm in academic, tough I'll never forget I'm an engineer too) is being populated with questionable works and everything's becoming messy. Remember: exercise always your critics and never trust them :-)
+Good luck for the future.</p>
+			</div>
+			</div>
+				<textarea id = "speech-6868" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6868">
+					<img id="start_img-6868" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6868">Comment</button>
+			<br><div id = "ans-6881"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6881" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You can treat your differential equation as a third order ODE, because of the integral in the PID controller. For this I will denote the integral of $\theta$ as $\Theta$, such that the ODE becomes,</p>
+
+<p>$$
+I\ddot{\theta}+d\dot{\theta}+mgL\sin(\theta)+K_p\left(\theta-\theta_d(t)\right)+K_i\left(\Theta-\int_0^t\theta_d(\tau)d\tau\right)+K_d\left(\dot{\theta}-\dot{\theta}_d(t)\right)=0
+$$</p>
+
+<p>One way you can write this into MATLAB code would be:</p>
+
+<pre><code>clear all
+clc
+
+% Parameters:
+m = 0.5;       % mass (Kg)
+d = 0.0023e-6; % viscous friction coefficient
+L = 1;         % arm length (m)
+I = 1/3*m*L^2; % inertia seen at the rotation axis. (Kg.m^2)
+g = 9.81;      % acceleration due to gravity m/s^2
+
+% PID tuning
+Kp = 5000;
+Ki = 166667;
+Kd = 50;
+
+% Define reference signal
+syms t
+a = 3 * pi / 10;
+temp = a * t;
+% temp = pi/2 + 0*t;
+ r = matlabFunction(temp, 'Vars', t);
+ R = matlabFunction(int(temp,t), 'Vars', t);
+dr = matlabFunction(diff(temp), 'Vars', t);
+clear temp t
+
+fun = @(t,x) [x(2); x(3); -m*g*L/I*sin(x(2))-d/I*x(3)] - [0; 0; ...
+    Kp / I * (x(2) -  r(t)) + ...
+    Ki / I * (x(1) -  R(t)) + ...
+    Kd / I * (x(3) - dr(t))];
+
+T = linspace(0, 5, 1e3);
+x0 = [0; 0; 0];
+[t, Y] = ode45(@(t,x) fun(t,x), T, x0);
+
+y = zeros(size(t));
+for i = 1 : length(t)
+    y(i) = r(t(i));
+end
+
+figure
+    subplot(2,1,1)
+    plot(t, y, t, Y(:,2))
+    xlabel('Time [s]')
+    ylabel('Position [rad]')
+    subplot(2,1,2)
+    plot(t, y-Y(:,2))
+    xlabel('Time [s]')
+    ylabel('Position error [rad]')
+</code></pre>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6881" data-toggle = "popover">
+				<p>user name : fibonatic</p>
+				<p> user reputation : 373</p>
+				<p class = "tagcontent" id = "usertaginfo-6881">{'quadcopter': 2, 'None': 19, 'design': 2}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-6881" class = 'collapse'>
+			</div>
+				<textarea id = "speech-6881" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6881">
+					<img id="start_img-6881" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6881">Comment</button>
+			<br><div id = "ans-6940"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6940" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">-3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I think that just PID is not a good approach to solve a tracking problem. </p>
+
+<p>It is better to use nonlinear control method that are suitable for that task like "Exact feedforward linearization based on differential flatness". You can get an overview in the open access paper: <a href="https://hal.archives-ouvertes.fr/hal-00431712" rel="nofollow">https://hal.archives-ouvertes.fr/hal-00431712</a> and references therein. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6940" data-toggle = "popover">
+				<p>user name : Emmanuel</p>
+				<p> user reputation : 1</p>
+				<p class = "tagcontent" id = "usertaginfo-6940">{'None': -3}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-6940">Load Comments</button></br>
+			<div id = "commentsection-6940" class = 'collapse'>
+			<div id = "comment-9908" class = "comment">
+				<p>"_PID is not a good approach to solve a tracking problem_" sounds pretty much like an heresy :-)</p>
+			</div>
+			</div>
+				<textarea id = "speech-6940" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6940">
+					<img id="start_img-6940" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6940">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,216 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Limits of PWM, Timers and Interrupts?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-1229" class = "post">
+			<h2>Question</h2>
+			<div id="vote-1229" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 4696</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Limits of PWM, Timers and Interrupts?</h2>
+<p>I have a robot with two wheels/motors and each has a quadrature encoder for odometry.  Using the <a href="http://www.pololu.com/catalog/product/1218" rel="nofollow">wheel/motor/encoder combo from Pololu</a>, I get 48 transition changes per rotation and my motors give me a max of 400RPM.  I've found it seems to miss some of the encoder state changes with the <a href="https://github.com/pololu/libpololu-avr/tree/master/src/PololuWheelEncoders" rel="nofollow">Pololu wheel encoder library</a>.</p>
+
+<p>Would I run into issues or limitations on my Arduino Uno using interrupts to track the quadrature encoders while using PWM to drive my motors through an H-bridge chip?  </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1229" data-toggle = "popover">
+				<p>user name : Robert</p>
+				<p> user reputation : 206</p>
+				<p class = "tagcontent" id = "usertaginfo-1229">{'None': 0, 'encoding': 21, 'driver': 16, 'interrupts': 5, 'arduino': 21, 'pid': 16, 'pwm': 5}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1229">Load Comments</button></br>
+			<div id = "commentsection-1229" class = 'collapse'>
+			<div id = "comment-2772" class = "comment">
+				<p>Without seeing your actual code, it would be impossible to answer whether or not interrupts are going to cause issues.</p>
+			</div>
+			</div>
+				<textarea id = "speech-1229" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1229">
+					<img id="start_img-1229" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1229">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-1230"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1230" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p><strong>Yes you would: no current [Arduino] on the market (that I know of) can effectively track the state changes without missing a few state changes.</strong> (Maybe the Due would be better or another board with a higher clock rate.) </p>
+
+<p>Interrupts can help a little, but:</p>
+
+<ul>
+<li>I believe it stops <em>everything</em> else on the chip; the motors might stop slightly when the interrupt is triggered.</li>
+<li>You may have problems if two interrupts fire at the same time</li>
+<li>After the code is processed, I believe I read it has a little delay before returning to what it was doing.</li>
+</ul>
+
+<p>Interrupts are not the best solution for this problem, but that is the only thing you can do with modern technology. However, if you wanted to still wanted interrupts, you <em>could</em> have another <code>ATmel328</code> running on the breadboard, with interrupts, that when the main chip sends a message, it can send the number of turns for each wheel since it sent it last. I don't know how it would work when a interrupt is called, but maybe if you used a developed library, such as <a href="http://arduino.cc/en/Reference/Wire" rel="nofollow">Arduino's Wire Library</a>, it might fix the kinks when it is called.</p>
+
+<p>Good luck.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1230" data-toggle = "popover">
+				<p>user name : Anonymous Penguin</p>
+				<p> user reputation : 299</p>
+				<p class = "tagcontent" id = "usertaginfo-1230">{'stepper-driver': 2, 'None': 1, 'algorithm': 1, 'arduino': 3, 'pid': 1, 'rcservo': 21, 'torque': 3, 'current': 3, 'cnc': 9, 'motor': 15, 'stepper-motor': 19}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1230">Load Comments</button></br>
+			<div id = "commentsection-1230" class = 'collapse'>
+			<div id = "comment-2773" class = "comment">
+				<p>Can an Arduino really not service 640 (2x48x400/60) interrupts per second and still have time for other processing too? Isn't that over 25 thousand clock cycles per interrupt at 16MHz?</p>
+			</div>
+			<div id = "comment-2774" class = "comment">
+				<p>Thanks @JamesC4S - I know that crafting efficient ISRs is a skill you have to learn, but I assumed that you would have to be really inefficient not to be able to cope with interrupts at that rate on an embedded CPU.</p>
+			</div>
+			<div id = "comment-2775" class = "comment">
+				<p>When an interrupt service routine is running, no other interrupts are serviced.  Up to one interrupt type can be queued and serviced in a pre-determined--by ATmel--order once the current interrupt finishes.  There is a one-instruction delay between interrupts in this case.</p>
+			</div>
+			<div id = "comment-2776" class = "comment">
+				<p>@MarkBooth Yes, it should be able to handle so few interrupts, provided the ISRs aren't bloated with unnecessary instructions.</p>
+			</div>
+			<div id = "comment-2777" class = "comment">
+				<p>@MarkBooth You're right again.  However, a really good example are people who try to do relatively slow things like floating point math or Serial.print()s inside the ISR.  [And with Arduino 1.0, it doesn't work since Serial.print() is now interrupt driven.]  It's best to set a flag or increment a counter, then get out.</p>
+			</div>
+			</div>
+				<textarea id = "speech-1230" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1230">
+					<img id="start_img-1230" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1230">Comment</button>
+			<br><div id = "ans-1231"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1231" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p><a href="http://en.wikipedia.org/wiki/Interrupt_handler" rel="nofollow noreferrer">Interrupt service routines</a> should always do the <strong>absolute minimum</strong>. Remember that while your MCU is servicing an interrupt, it is doing <strong>nothing else</strong>.</p>
+
+<p>For a simple quadrature encoder, it should be possible to have a pair of ISR's, one triggered by a change on the A channel, the other triggered by a change on the B channel.</p>
+
+<p>Pretty much the only thing these ISRs should do is identify whether that change means the position variable should be incremented or decremented, then update the position and end the ISR and <em>possibly</em> update a state transition time (if you are using this information to better estimate velocity<sup>&dagger;</sup>).</p>
+
+<p>&dagger;<sub> See <a href="http://www.mate.tue.nl/mate/pdfs/10617.pdf" rel="nofollow noreferrer"><em>Velocity and acceleration estimation for optical incremental encoders</em> by R.J.E. Merry, M.J.G. van de Molengraft, M. Steinbuch</a></sub></p>
+
+<p>With a pair of standard quadrature encoders, 48 transition changes per rotation and a maximum of 400RPM, your cross channel interrupts shouldn't be more frequent than 640 times a second, which should be well within the capability of a 16MHz processor.</p>
+
+<p>An individual channel may produce more interrupts more frequently than that (for instance when the detector is sat on the edge) but missing those state changes does not have to affect the final position value, and there will always be a clear 1.5ms between that channel stabilising and the other channel activating.</p>
+
+<p>So, as long as you can service every A/B and B/A transition, it doesn't matter if you occasionally fail to process an A/A or B/B transition as long as the state of both A and B is taken into account at the next A/B or B/A transition.</p>
+
+<p>Note that if you don't need to calculate the time for your A-B and B-A transition (to calculate velocity more responsively with low resolution encoders) then you would probably be batter off having a fixed 640Hz/1.5ms timer based interrupt service routine that looks at both A and B channels, as suggested by <a href="https://robotics.stackexchange.com/a/1536/37">Tim Wescott</a>.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1231" data-toggle = "popover">
+				<p>user name : Mark Booth</p>
+				<p> user reputation : 3037</p>
+				<p class = "tagcontent" id = "usertaginfo-1231">{'control': 7, 'quadcopter': 2, 'None': 258, 'tuning': 7, 'uav': 2, 'design': 2, 'stepper-motor': 7}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-1231" class = 'collapse'>
+			</div>
+				<textarea id = "speech-1231" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1231">
+					<img id="start_img-1231" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1231">Comment</button>
+			<br><div id = "ans-1536"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1536" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>When I'm processing quadrature encoder input in an <a href="http://en.wikipedia.org/wiki/Interrupt_handler" rel="nofollow">ISR</a>, I prefer to have a simple ISR running on a timer that's guaranteed to run fast enough to catch every state (not state change) of the encoder.  Interrupting on every pin transition invites a situation where the processor gets bogged down if a pin starts bouncing.  Interrupting at a fixed rate may use up processor resources all the time, but it always uses the same amount of resources, so it doesn't catch you by surprise when you least want it to happen.</p>
+
+<p>For your 48 transitions/rotation, 400RPM motor, that works out to 320 transitions per second: I would set my ISR to interrupt at least twice that fast.  It should do nothing but check the current state of the two pins against the previous one, and then increment or decrement the wheel's counter as appropriate based on what it sees.  At 640Hz, such an ISR should load the processor very lightly, even if you're doing updates for multiple wheels.</p>
+
+<p>I've built quite a few successful control systems that use this method, so it can't be all bad.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1536" data-toggle = "popover">
+				<p>user name : TimWescott</p>
+				<p> user reputation : 1336</p>
+				<p class = "tagcontent" id = "usertaginfo-1536">{'None': 107}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-1536" class = 'collapse'>
+			</div>
+				<textarea id = "speech-1536" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1536">
+					<img id="start_img-1536" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1536">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

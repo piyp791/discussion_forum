@@ -1,0 +1,197 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Motion planning with sequential convex optimization
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11202" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11202" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 128</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Motion planning with sequential convex optimization</h2>
+<p>I recently read a paper titled <a href="http://www.roboticsproceedings.org/rss09/p31.pdf" rel="nofollow noreferrer">Finding Locally Optimal, Collision-Free
+Trajectories with Sequential Convex Optimization</a> by <em>John Schulman, Jonathan Ho, Alex Lee, Ibrahim Awwal, Henry Bradlow and Pieter Abbeel</em>.</p>
+
+<p>The authors mention that the end-effector final pose constraint can be readily incorporated in the planning scheme which is based on solving an unconstrained optimization with the equality and inequality constraints added in penalty function.</p>
+
+<p>Let $F_{targ} \in $ SE(3) be the desired pose and $F_{cur}(\theta)$ be the current pose, then the pose error is given as $F^{-1}_{targ}F_{cur}(\theta)$. However, I am wondering that if we plan motion in the joint space, then how can this error be incorporated in the objective function as a penalty term?,since $F_{cur}(\theta)$ is a highly nonlinear, $nonconvex$ forward kinematics map, are we linearizing the forward kinematics map to make it convex and add it in the penalty formulation?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11202" data-toggle = "popover">
+				<p>user name : jjgarrison</p>
+				<p> user reputation : 18</p>
+				<p class = "tagcontent" id = "usertaginfo-11202">{'None': 0, 'manipulator': 1, 'humanoid': 2, 'kinematics': 1, 'robotic-arm': 1, 'jacobian': 1, 'motion-planning': 2, 'forward-kinematics': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11202" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11202" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11202">
+					<img id="start_img-11202" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11202">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-11219"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11219" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>This isn't my area of expertise, but it looks like your guess in your question is correct. From <a href="http://www.roboticsproceedings.org/rss09/p31.pdf" rel="nofollow noreferrer">the paper</a>:</p>
+
+<blockquote>
+  <p>Let $F_{\mbox{targ}}$ denote the target pose of the gripper, and let $F_{\mbox{cur}}(\theta)$ be the current pose. Then $F^{-1}_{\mbox{targ}} F_{\mbox{cur}}(\theta)$ gives the pose error, measured in the frame of
+  the target pose. This pose error can be represented as the six dimensional
+  error vector $h(\theta) = (t_x, t_y, t_z, r_x, r_y, r_z)$ (26).</p>
+</blockquote>
+
+<p>Earlier in the paper, it is stated, "</p>
+
+<blockquote>
+  <p>Sequential convex optimization solves a non-convex optimization
+  problem by repeatedly constructing a convex subproblem   an approximation to the problem around the current iterate x. The subproblem is used to generate a step
+   x that makes progress on the original problem.</p>
+</blockquote>
+
+<p>And, earlier still,</p>
+
+<blockquote>
+  <p>Robotic motion planning problems can be formulated as non-convex optimization problems, i.e., minimize an objective subject to inequality and equality constraints:</p>
+  
+  <p>$$ 
+\begin{array}{ll}
+\mbox{minimize } f(x) &amp; (1) \\
+\mbox{subject to}    &amp; (2) \\
+g_i(x)   0, i = 1, 2, . . . , n_{\mbox{ineq}} &amp; (3) \\
+h_i(x) = 0, i = 1, 2, . . . , n_{\mbox{eq}} &amp; (4)
+\end{array}
+$$
+  where $f$, $g_i$, $h_i$, are scalar functions.</p>
+  
+  <p>[...later...]</p>
+  
+  <p>The nonlinear constraints are incorporated into the problem as penalties, while the linear constraints are directly imposed in the convex subproblems.</p>
+</blockquote>
+
+<p>So, in <strong>Algorithm 1</strong>, line 15 gives where the $h(\theta)$ error vector is incorporated:</p>
+
+<p>$$
+x \leftarrow \mbox{arg min}\tilde{f}(x) + \mu \Sigma_{i=1}^{n_{\mbox{ineq}}} \left|\tilde{g}_i(x)\right|^+ + \mu \Sigma_{i=1}^{n_{\mbox{eq}}} \left|\tilde{h}_i(x)\right|
+$$</p>
+
+<p>I wish there were more detail or a worked example; I don't see where "TrueImprove" or "ModelImprove" is given, I don't see how the initial convex approximations are calculated, etc. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11219" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-11219">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11219" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11219" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11219">
+					<img id="start_img-11219" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11219">Comment</button>
+			<br><div id = "ans-11220"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11220" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><blockquote>
+  <p>are we linearizing the forward kinematics map to make it convex and
+  add it in the penalty formulation?</p>
+</blockquote>
+
+<p>No. The reason is that "convex optimization" is not the solution it is the problem description like "minimize the function f(x) with constraints a,b and c". The same mistake made Emo Todorov in his paper <a href="https://pdfs.semanticscholar.org/3e67/7b1fa07d66f539f8086046779190694327eb.pdf" rel="nofollow noreferrer">A convex, smooth and invertible contact model for trajectory optimization</a>. The trajectory optimization problem is described as logic calculus but that shows only that we have a np-hard problem which is not solvable on current hardware.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11220" data-toggle = "popover">
+				<p>user name : Manuel Rodriguez</p>
+				<p> user reputation : 463</p>
+				<p class = "tagcontent" id = "usertaginfo-11220">{'None': 18, 'motion-planning': 0, 'machine-learning': 1, 'algorithm': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11220">Load Comments</button></br>
+			<div id = "commentsection-11220" class = 'collapse'>
+			<div id = "comment-20284" class = "comment">
+				<p>Please try to stick to the facts and refrain from making personal comments about the authors of papers. Without your full reasoning, it is difficult to tell whether it is you or they who do not understand their models.</p>
+			</div>
+			</div>
+				<textarea id = "speech-11220" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11220">
+					<img id="start_img-11220" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11220">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,159 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Understanding Arduino bootloader
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2186" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2186" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 1191</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Understanding Arduino bootloader</h2>
+<p>That is what I came to understand while reading here and there about flashing a new bootloader/understanding what a bootloader is etc etc</p>
+
+<p>The bootloader is supposed to be the first thing that runs when I power up my Arduino Duemilanove (or micro controllers in general). It does some setup then runs my app. It also listens to the usb cable so that if I upload some code it erases the old one and run the new one. There are 2 sections in the memory, one for the bootloader (S1) and one for the app (S2). Code on S1 can write to S2 but not to S1 (or strongly discouraged I don't remember).</p>
+
+<p>There are things that I don't understand though :</p>
+
+<ol>
+<li><p>If I upload some new code <em>while my app is running</em>, the upload works. What happened ? I thought that the bootloader gave hand to my app</p></li>
+<li><p>How can we flash a new bootloader ? If the bootloader is the thing that runs on section 1 (S1) and can only write to S2 and if the bootloader is the only thing that listens to new code uploads, ...</p></li>
+</ol>
+
+<p>Can you help me correct my thoughts and answer my questions ? Many thanks !</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2186" data-toggle = "popover">
+				<p>user name : Thomas</p>
+				<p> user reputation : 118</p>
+				<p class = "tagcontent" id = "usertaginfo-2186">{'None': 0, 'microcontroller': 3, 'arduino': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2186">Load Comments</button></br>
+			<div id = "commentsection-2186" class = 'collapse'>
+			<div id = "comment-4296" class = "comment">
+				<p>How do you know the upload works? Do you actually get a confirmation from the Arduino that reprogramming has been done?</p>
+			</div>
+			<div id = "comment-4297" class = "comment">
+				<p>@Shahbaz program nb 1 makes led 1 blink, while program nb 2 makes led 2 blink, that's how I know the reprogramming worked</p>
+			</div>
+			</div>
+				<textarea id = "speech-2186" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2186">
+					<img id="start_img-2186" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2186">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-2188"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2188" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>(1) On several Arduino models, there's a 100 nF capacitor (at red dot in diagram) connected between DTR# on the FT232RL (or equivalent) chip and the RESET pin on the CPU.
+<img src="https://i.stack.imgur.com/IHRoq.jpg" alt="portion of schematic from arduino-duemilanove-schematic.pdf">  (Obtain file <a href="http://arduino.cc/en/uploads/Main/arduino-duemilanove-schematic.pdf" rel="nofollow noreferrer">arduino-duemilanove-schematic.pdf</a> to see whole schematic.  Also see arduino.cc <a href="http://arduino.cc/en/Main/arduinoBoardDuemilanove" rel="nofollow noreferrer">Duemilanove</a> page.)</p>
+
+<p>DTR# normally sits high, and RESET normally is high due to an internal pullup resistor (eg 20K-50K ) so C13 usually has 0 volts across it.  In the Arduino process for programming via USB-serial, a programming cycle starts with DTR# being pulled down for 22ms 
+(<a href="http://playground.arduino.cc/Learning/AutoResetRetrofit" rel="nofollow noreferrer">1</a>,<a href="http://playground.arduino.cc/Main/DisablingAutoResetOnSerialConnection" rel="nofollow noreferrer">2</a>), which pulls RESET low long enough to reset the processor.  </p>
+
+<p>After the reset, the bootloader initializes; stores the received program into flash memory; then runs the stored program.</p>
+
+<p>Note, auto-reset can be disabled (on some Arduino models) by cutting a jumper (eg, RESET-EN).  See the  Automatic (Software) Reset  sections or similar of <a href="http://playground.arduino.cc/Learning/AutoResetRetrofit" rel="nofollow noreferrer">1</a>,<a href="http://playground.arduino.cc/Main/DisablingAutoResetOnSerialConnection" rel="nofollow noreferrer">2</a>,<a href="http://arduino.cc/en/Main/ArduinoBoardFioTips" rel="nofollow noreferrer">3</a>,<a href="http://arduino.cc/en/Main/arduinoBoardUno" rel="nofollow noreferrer">4</a>.</p>
+
+<p>(2) To <a href="http://arduino.cc/en/Hacking/Bootloader" rel="nofollow noreferrer">flash a new bootloader</a>, you attach a programmer to either the 6-pin ICSP header (marked by green dot in diagram) or to J3 (blue dot).  (Using J3 may require manually pressing S1 to reset the CPU before programming; see <a href="http://playground.arduino.cc/Main/DisablingAutoResetOnSerialConnection" rel="nofollow noreferrer">2</a>.)</p>
+
+<p>A bootloader is a program that accepts data to store into flash; or, if no program begins arriving in the first half second or so after a reset (see refs 1-4 above), it starts a previously loaded program.</p>
+
+<p>Programming via <a href="http://en.wikipedia.org/wiki/Serial_Peripheral_Interface_Bus" rel="nofollow noreferrer">SPI</a> (the Serial Peripheral Interface Bus, which uses the SCK, MISO, MOSI, SS pins of ICSP header for high speed full duplex serial data transfer) by contrast is a hardware operation that does not run a program from flash.  Like <a href="http://en.wikipedia.org/wiki/JTAG#Storing_firmware" rel="nofollow noreferrer">JTAG</a>, it's one of the built-in hardware-level programming protocols in typical AVR chips.</p>
+
+<p>During SPI programming, RESET is held low and the AVR is like a puppet carrying out directives issued to it by the programmer device.  The AVR is not executing a user-accessible stored program during programming; it is carrying out low-level directives issued to it by the programmer device.  A programming directive precedes each bit of data on the SPI bus.  For an explanation of the serial programming algorithm, see (eg) section 30.8 in doc2549.pdf, ATmega manual #2549P AVR 10/2012.  Section 30.8.2 on p. 350-351 explains the method.  Table 30-17 on p. 352 shows the directives used to control programming.  These include  Programming Enable ,   Chip Erase ,  Load Extended Address byte ,  Write Program Memory Page , etc. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2188" data-toggle = "popover">
+				<p>user name : James Waldby - jwpat7</p>
+				<p> user reputation : 1856</p>
+				<p class = "tagcontent" id = "usertaginfo-2188">{'None': 134}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2188">Load Comments</button></br>
+			<div id = "commentsection-2188" class = 'collapse'>
+			<div id = "comment-4298" class = "comment">
+				<p>Thanks @jwpat7. In 2) How does the arduino know that I am using the SPI port to program it and not to talk with other modules that I have ?</p>
+			</div>
+			<div id = "comment-4299" class = "comment">
+				<p>It doesn't know.  Programming with SPI happens with RESET held low.  (See added paragraph in answer)  If other SPI devices are attached to the SPI lines, they may need isolating resistors, per last section of [an SPI note](http://avrbeginners.net/architecture/spi/spi.html)</p>
+			</div>
+			</div>
+				<textarea id = "speech-2188" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2188">
+					<img id="start_img-2188" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2188">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

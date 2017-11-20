@@ -1,0 +1,266 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Unable to read pushbutton press properly in Arduino
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2063" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2063" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 2336</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Unable to read pushbutton press properly in Arduino</h2>
+<p>I am trying to use a push button in order to know and print number of time a push button is pressed using a counter.But everytime i press the button , counter get incremented to sometime 3 and sometime 5 and some time counter does start >100 and continue.</p>
+
+<p>I had preferred the <a href="http://arduino.cc/en/Tutorial/Button" rel="nofollow">this link</a> for wiring PUSH button with arduino.</p>
+
+<p>and here is my code</p>
+
+<pre><code>const int buttonPin = 2;     // the number of the pushbutton pin
+const int ledPin =  13;      // the number of the LED pin
+
+// variables will change:
+int buttonState = 0;         // variable for reading the pushbutton status
+int count = 0;
+void setup() {
+  // initialize the LED pin as an output:
+  pinMode(ledPin, OUTPUT);      
+  // initialize the pushbutton pin as an input:
+  pinMode(buttonPin, INPUT);   
+  pinMode(buttonPin, INPUT); 
+  Serial.begin(9600);
+    buttonState = digitalRead(buttonPin);
+  digitalWrite(ledPin,LOW);  
+}
+
+void loop(){
+    // read the state of the pushbutton value:
+  buttonState = digitalRead(buttonPin);
+
+  // check if the pushbutton is pressed.
+  // if it is, the buttonState is HIGH:
+  if (buttonState == HIGH) {
+
+    // turn LED on:    
+    digitalWrite(ledPin, HIGH); 
+    count = count + 1;  
+    Serial.print(count);
+  } 
+  else {
+    // turn LED off:
+    digitalWrite(ledPin, LOW); 
+  }
+}
+</code></pre>
+
+<p>I dont know why count is coming absurdly and unevenly.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2063" data-toggle = "popover">
+				<p>user name : shailendra</p>
+				<p> user reputation : 82</p>
+				<p class = "tagcontent" id = "usertaginfo-2063">{'None': 2, 'computer-vision': 2, 'cameras': 2, 'arduino': 11, 'communication': 6, 'microcontroller': 5, 'c': 8, 'serial': 6}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2063" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2063" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2063">
+					<img id="start_img-2063" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2063">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-2065"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2065" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>What your experiencing is known as "button bounce". When you push a standard pushbutton, it actually makes and breaks contact many times very quickly for a few microseconds, usually enough to make the processor detect between 10 and 100 pushes, or more. There are many different methods of "debouncing" a pushbutton. The easiest approach is to add a small delay in your code right after you check if the pushbutton is pressed:</p>
+
+<pre><code>if(buttonState == HIGH){
+    delay(10);
+    //turn the light on, etc. 
+}
+</code></pre>
+
+<p>There are other methods, both hardware and software. The most elegant method which will not interrupt the running of other code is to have a timer that scans the pushbutton periodically (i.e. every 5 milliseconds or so), and sets a boolean variable to TRUE when it detects a push. You could also rig up a small capacitor to the button; the schematic is available on the internet. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2065" data-toggle = "popover">
+				<p>user name : Chris</p>
+				<p> user reputation : 562</p>
+				<p class = "tagcontent" id = "usertaginfo-2065">{'quadcopter': 44, 'None': 15, 'accelerometer': 8, 'power': 29, 'localization': 15, 'battery': 29, 'multi-rotor': 2, 'pid': 2, 'uav': 8, 'motion': 2, 'imu': 8, 'cnc': 6, 'gyroscope': 8, 'gps': 15}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2065">Load Comments</button></br>
+			<div id = "commentsection-2065" class = 'collapse'>
+			<div id = "comment-4139" class = "comment">
+				<p>Well Adding a delay of 400 mili seconds works fine for me</p>
+			</div>
+			</div>
+				<textarea id = "speech-2065" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2065">
+					<img id="start_img-2065" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2065">Comment</button>
+			<br><div id = "ans-2066"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2066" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Chris is right, the problem is that the mechanical contact of the switch is bouncing. However, I disagree with his statement that the most elegant solution is polling. Polling is very inefficient for the task of counting how many times a button was pressed, and so I decided to post my own answer for clarification:</p>
+
+<p>Interrupts are what you want. Polling is used when you want to constantly capture information, for example from a range sensor. Interrupts give you time sensitive control, and only performs processing at the exact time you need it.</p>
+
+<p>For a more thorough answer...</p>
+
+<p>This design problem is commonly referred to as "switch debouncing." As Chris correctly mentions, you can do this in hardware or software. The optimal method of implementation with respect to count accuracy and CPU load is to use hardware to smooth out the signal and connect your button to an interrupt pin on the Arduino. You can then use the built in attachInterrupt() function to eliminate the need to poll constantly. Polling is a waste of CPU power. The attachInterrupt() function will assign an interrupt handler that will be called whenever the interrupt pin sees a RISING or FALLING edge (this depends on how you have your switch electrically connected), or even more generally on a CHANGE. This would look similar to the following:</p>
+
+<pre><code>attachInterrupt(0, buttonHandler, RISING);
+
+void buttonHandler() {
+   // turn LED on:    
+  digitalWrite(ledPin, HIGH); 
+  count = count + 1;  
+  Serial.print(count);
+}
+</code></pre>
+
+<p>This page explains the problem of switch debouncing and shows some example hardware circuits you can easily implement: <a href="http://www.elexp.com/t_bounc.htm" rel="nofollow">http://www.elexp.com/t_bounc.htm</a></p>
+
+<p>Note: You probably won't be able to see the led go HIGH because it will be handled so quickly. This code will increment the count once every time the button is pressed or released, depending on whether you attach the interrupt to the rising or falling edge of the signal.</p>
+
+<p>Edit for OP's comment:
+If you want the serial.print to say that the button is pressed the entire time, then add a while loop in the interrupt:</p>
+
+<pre><code>void buttonHandler() {
+   // turn LED on:    
+  digitalWrite(ledPin, HIGH); 
+  count = count + 1;
+  Serial.print(count);
+  while(digitalRead(buttonPin)) //This will loop until the button is released
+    Serial.print("ON");
+}
+</code></pre>
+
+<p>Please note that this will cause your program to stay inside the interrupt handler, and your main function will not execute. In your main function, you can then have a Serial.print("OFF").</p>
+
+<p>You may also be able to use a boolean that is set to true in your interrupt handler:</p>
+
+<pre><code>void buttonHandler() {
+   // turn LED on:    
+  digitalWrite(ledPin, HIGH); 
+  count = count + 1;  
+  Serial.print(count);
+  buttonWasPressed = true;
+}
+</code></pre>
+
+<p>That way, in your main you can have an if statement to prevent your code from having to loop in the interrupt handler:</p>
+
+<pre><code>void loop() {
+  if(buttonWasPressed) {
+    while(digitalRead(buttonPin)) {
+      Serial.print("ON");
+    }
+    buttonWasPressed = false;
+  }
+  else
+    Serial.print("OFF");
+}
+</code></pre>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2066" data-toggle = "popover">
+				<p>user name : Andrew Capodieci</p>
+				<p> user reputation : 826</p>
+				<p class = "tagcontent" id = "usertaginfo-2066">{'None': 54}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2066">Load Comments</button></br>
+			<div id = "commentsection-2066" class = 'collapse'>
+			<div id = "comment-4142" class = "comment">
+				<p>I should have also mentioned that it's typically bad form to include print statements in interrupt handlers, depending on your application. Print functions are infamously slow, and since interrupt handlers temporarily cause the main thread to pause, having lengthy print statements can slow your algorithm down dramatically. Fortunately for you, a human pressing a button isn't all that fast, and printing a single int should be fine. If you had an actuator pushing this button at 100Hz you might want to start thinking about how much time is sunk by the print statement.</p>
+			</div>
+			<div id = "comment-4165" class = "comment">
+				<p>Well i am looking for a interrupt that can measure any event between 40 mili seconds and send a varible ON or OFF through serial print....</p>
+			</div>
+			<div id = "comment-4169" class = "comment">
+				<p>I believe my updated answer should solve the problem posed in your comment...the last example using the buttonWasPressed boolean is what I would recommend, because it's generally bad form to do a lot of processing in an interrupt handler.</p>
+			</div>
+			</div>
+				<textarea id = "speech-2066" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2066">
+					<img id="start_img-2066" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2066">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

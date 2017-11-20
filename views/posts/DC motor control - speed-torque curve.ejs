@@ -1,0 +1,174 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>DC motor control - speed-torque curve
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-4492" class = "post">
+			<h2>Question</h2>
+			<div id="vote-4492" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">7</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 2080</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>DC motor control - speed-torque curve</h2>
+<p>I am having some trouble understanding how to practically use the speed-torque curve of a DC motor.</p>
+
+<p>I understand that the gradient of the speed-torque curve is defined by the design of the motor, the exact position of the curve depending on the voltage applied. So if the voltage is changed the speed-torque curve is also changed but remains parallel to the initial curve before the voltage was changed. See figure below.</p>
+
+<p><img src="https://i.stack.imgur.com/eIjJF.jpg" alt="enter image description here"></p>
+
+<p>So my intuitive guess is that when using the motor at a given desired operation point (desired speed and desired torque), the corresponding speed-torque curve <em>Cd</em> has a gradient specified in the data sheet of the motor and passes through the operation point. This curve <em>Cd</em> is obtained at a corresponding voltage <em>Vd</em>. See diagram below.</p>
+
+<p><img src="https://i.stack.imgur.com/wlmxm.jpg" alt="enter image description here"></p>
+
+<p>So my next guess is that in order to have the motor operate at this desired operation point, you have to set the voltage applied to the motor to <em>Vd</em>, and apply a current <em>Id</em> (computed using the torque and the torque constant).</p>
+
+<p>Now from what I read this is not what is done in DC motor controllers. These seem to only drive the motor using current and some sort of PWM magic as is shown in the following diagram by maxon.</p>
+
+<p><img src="https://i.stack.imgur.com/rRxj2.jpg" alt="enter image description here"></p>
+
+<p>Anyone knows why voltage is not used in DC motor control and only current is? I do not understand how you can set the speed if you do not modify the voltage? And what is PWM useful for?</p>
+
+<p>I have looked for hours over the internet and could not find anything relevant.</p>
+
+<p>Thanks,</p>
+
+<p>Antoine.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4492" data-toggle = "popover">
+				<p>user name : arennuit</p>
+				<p> user reputation : 170</p>
+				<p class = "tagcontent" id = "usertaginfo-4492">{'control': 20, 'servomotor': 6, 'None': 0, 'errors': 3, 'motor': 14, 'communication': 10, 'pid': 4, 'brushless-motor': 5, 'design': 9, 'robotic-arm': 4, 'dynamics': 3, 'servos': 6}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-4492" class = 'collapse'>
+			</div>
+				<textarea id = "speech-4492" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4492">
+					<img id="start_img-4492" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4492">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-4493"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4493" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The problem is that you cannot control both the voltage and the current. You apply a voltage, and the motor draws whatever current it wants (subject to your ability to supply that current). Alternatively, you make a current controller which automatically adjusts the voltage to maintain the desired current.</p>
+
+<p>An analogy would be pushing an object through honey. Voltage is equivalent to the force you're applying, and current is equivalent to the speed of the object.</p>
+
+<p>The object moves at a speed which depends on how hard you're pushing, and the dimensions of the object. You cannot choose to push gently and quickly, and you cannot choose to push really hard and slowly. If you want the object to move at a certain speed, you have no choice but to adjust the amount of force you apply until it moves at that speed. If it's moving too fast, you reduce the force. Too slow, and you increase the force.</p>
+
+<p>This is how a motor is controlled. PWM 'magic' is just a way to control the voltage that doesn't cause the voltage controller to get really hot. (The alternative is a linear voltage source, which will get really hot).</p>
+
+<p>Before we get into what's happening in the motor controller, it would be worth looking at a different graph:</p>
+
+<p><img src="https://i.stack.imgur.com/yDxYC.gif" alt="Motor current torque graph"></p>
+
+<p>Here we can see that the torque produced by the motor is purely a function of the current flowing through the windings, and it's pretty linear. If you want to produce a certain torque at the motor, all you need to do is look up on the graph for the current required, then tell your current controller to deliver this current. It does this by constantly measuring the actual current, and adjusting the voltage at the motor (using PWM magic). </p>
+
+<p>Now we have a very nice situation for our robot's controller. Assuming a world with no friction, motor torque is proportional to acceleration. If you can control the acceleration, then you can easily control the velocity and position of the motor.</p>
+
+<p>The motor position controller knows the trajectory it needs from the motor, and can calculate how much torque it needs at every point during this trajectory (because it knows the acceleration at every point in the trajectory). It's also looking at the actual position of the motor, which won't quite be correct because of friction, and uses that position error to adjust the amount of torque it wants. It then converts the torque demand into a current demand, and gives that to the current controller.</p>
+
+<p>And there you have a servo.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4493" data-toggle = "popover">
+				<p>user name : Rocketmagnet</p>
+				<p> user reputation : 4235</p>
+				<p class = "tagcontent" id = "usertaginfo-4493">{'control': 31, 'force': 8, 'multi-agent': 5, 'pid': 29, 'air-muscle': 6, 'uav': 52, 'stepper-driver': 3, 'reliability': 5, 'motor': 12, 'esc': 1, 'mobile-robot': 6, 'ros': 35, 'stepper-motor': 3, 'tuning': 12, 'swarm': 10, 'research': 5, 'platform': 17, 'imu': 4, 'kalman-filter': 49, 'hri': 4, 'None': 266, 'raspberry-pi': 24, 'localization': 7, 'python': 7, 'torque': 3, 'brushless-motor': 28, 'failure': 5, 'force-sensor': 15, 'sensors': 20, 'pwm': 10, 'wireless': 10, 'servos': 7, 'wifi': 24, 'simulation': 6, 'servomotor': 11, 'particle-filter': 0, 'sensor-fusion': 4, 'automatic': 12, 'software': 17}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-4493">Load Comments</button></br>
+			<div id = "commentsection-4493" class = 'collapse'>
+			<div id = "comment-7087" class = "comment">
+				<p>Ok, so what I understand is that the end-variable actually adjusted and input in the motor is voltage U. This voltage U is adjusted so as to obtain desired current Id inside the motor. Now what's the relation between U and Id? I mean if observed I != Id how should U be adjusted? Is this relation simply U = R x Id? (with R being the terminal resistance of the motor given in the data sheet). I think I am beginning to get there!</p>
+			</div>
+			<div id = "comment-7089" class = "comment">
+				<p>Also another thing I understood is that the voltage applied to the motor is actually not U, but Upwm. Upwm being a PWM chopped signal which mean is U. And the reason for using Upwm rather than U lies in some kind of thermal reason. Is that right?</p>
+			</div>
+			<div id = "comment-7091" class = "comment">
+				<p>@arennuit - A motor acts nothing like a resistor, so the only way to control the current is with some active current controller. You can see on your diagram, the actual current is measured, and fed back to the current controller. But that's another question, and one which is probably better asked on [Electronics Stack Exchange](http://electronics.stackexchange.com).</p>
+			</div>
+			<div id = "comment-7092" class = "comment">
+				<p>@arennuit - As for the reason for using PWM, that's another question too. But briefly, if you turn a switch (e.g. transistor) fully on or fully off, then there's very little heating. If you try to limit the current by turning it partially on, then it gets warm. Imagine the switch as your hands, and the current as a rope being pulled through them. If you hold the rope tight so it can't move, or if you let the rope pull through completely freely, then everything's fine. But if you try to slow the rope down by squeezing on it, then you can get serious burns.</p>
+			</div>
+			<div id = "comment-7101" class = "comment">
+				<p>Your parabols are very much self explaining indeed. Thanks a lot Rocketmagnet!</p>
+			</div>
+			</div>
+				<textarea id = "speech-4493" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4493">
+					<img id="start_img-4493" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4493">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

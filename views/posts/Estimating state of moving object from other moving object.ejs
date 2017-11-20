@@ -1,0 +1,270 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Estimating state of moving object from other moving object
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-10631" class = "post">
+			<h2>Question</h2>
+			<div id="vote-10631" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 111</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Estimating state of moving object from other moving object</h2>
+<p>What is the best way to estimate the state </p>
+
+<pre><code>[x-position;
+y-position; 
+heading (yaw angle); 
+velocity; 
+acceleration; 
+curvature (or yaw rate)]
+</code></pre>
+
+<p>of a moving leading vehicle with sensors mounted on a follower/ego vehicle?</p>
+
+<p>The following measurements of the leading vehicle are obtained via radar sensors mounted on the ego vehicle.</p>
+
+<blockquote>
+  <ul>
+  <li>x-y-position in the ego coordinate frame </li>
+  <li>heading in ego coordinates</li>
+  <li>relative and absolute velocity and acceleration</li>
+  </ul>
+</blockquote>
+
+<p>No information about curvature (yaw rate). This should be estimated which is possible using the lateral acceleration and longitudinal velocity.</p>
+
+<p>For estimation I think of using EKF or nonlinear moving horizon estimation.</p>
+
+<p>Considering that no prediction about the moving leader vehicle can be made because the control inputs are unknown. Only the measurments (update step) and the movements of the ego vehicle are available (incroporate in prediction).</p>
+
+<p>What kind of model would be appropriate for the whole scenario?</p>
+
+<ul>
+<li>just a model for the leading vehicle? (e.g. bicycle model)</li>
+<li>just a model for the following ego vehicle?</li>
+<li>or a combination of both vehicles?</li>
+</ul>
+
+<p>Option 1 would be perfect in combination with a simple bicycle model if there was an outside observer who is not moving. Option 2 is not really an option because the configuration of the leader vehicle should be estimated. Option 3 seems to me the right way because of the following thoughts:</p>
+
+<p>Looking from the ego coordinates: is it correct correct that a motion change of the ego vehicle will seem as if the measured locations of the leading vehicle changed? If so will I need a coordinate transformation or is it better to use a model in global coordinates, then transform the measurements (which are in ego coordinates)?. The approach using global coordinates seems counter intuitive because the final estimate should be used for the follower/ego vehicle as reference trajectory.</p>
+
+<p>Can you give me a hint which coordinate frame (global or ego) to use, which model to use in the prediction step and if my thoughts on motion changes are correct?</p>
+
+<p>Or do you know any sources that address this or a similar issue?</p>
+
+<hr>
+
+<p>For the process model I thought of</p>
+
+<pre><code>x_k+1 = x_k + v_k * cos(heading_k)
+y_k+1 = y_k + v_k * sin(heading_k)
+heading_k+1 = heading_k
+v_k+1 = v_k 
+a_k+1 = a_k 
+curvature_k+1 = curvature_k + a_y_k/v_x_k
+</code></pre>
+
+<p>of course there should be some process noise added, especially for heading, velocity acceleration and curvature because these measurements are rather inaccurate.
+For heading, velocity and acceleration I would use the previous estimates (or measurements) since no other source except the measurements from the sensors are available.
+Curvature is computed using the acceleration in (global?) y-direciton and the (global?) velocity in x-direction <code>curvature = a_y/v_x</code></p>
+
+<p>The measurement model looks probably something like this:</p>
+
+<pre><code>y = [1 1 1 1 1 0; 
+     0 1 0 0 0 0; 
+     0 0 1 0 0 0; 
+     0 0 0 1 0 0;
+     0 0 0 0 1 0;
+     0 0 0 0 0 0]*x
+</code></pre>
+
+<p>where x is the state vector <code>[x-position; y-position; heading (yaw angle); velocity; acceleration; curvature or (yaw rate)]</code></p>
+
+<hr>
+
+<p>The trajectory must be smooth and should be exactly like the driven path of the leader vehicle. So I think some sort of estimation will be necesseray in order to avoid following the measurements in straight lines, which would lead to an unsteady trajectory.</p>
+
+<p>The mesurements of the heading, velocity and acceleration have a rather high variance depending on the situation.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10631" data-toggle = "popover">
+				<p>user name : evolved</p>
+				<p> user reputation : 134</p>
+				<p class = "tagcontent" id = "usertaginfo-10631">{'None': 0, 'algorithm': 2, 'motion': 2, 'kalman-filter': 4, 'mobile-robot': 4, 'movement': 4}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10631">Load Comments</button></br>
+			<div id = "commentsection-10631" class = 'collapse'>
+			<div id = "comment-19117" class = "comment">
+				<p>You don't mention what sensors are on the ego vehicle for any inertial reference. Are there any? As a side note you may want to rethink your statement that no prediction of the leader vehicle can be made. Between inertia and most ground contact conditions it seems like you can predict a lot. More if you know the steering kinematics.</p>
+			</div>
+			<div id = "comment-19118" class = "comment">
+				<p>Thanks for your reply. The ego vehicle is fully aware of its state using odometry, imu,... and radar sensors to track the leader vehicle.</p>
+			</div>
+			<div id = "comment-19119" class = "comment">
+				<p>I know that I can make predicitons using e.g. the simple bicycle model for the leading vehicle. Unfortunately I wouldn't know any steering kinematics. Can you give me a hint on which other model could be useful?</p>
+			</div>
+			<div id = "comment-19122" class = "comment">
+				<p>There is no physical connection between the leader and ego correct? The path of the leader vehicle is unknown and the path of the follower is under your control? This is my understanding so far.</p>
+			</div>
+			<div id = "comment-19123" class = "comment">
+				<p>What is the trajectory? Is it the estimated trajectory of the leader? Is it the desired trajectory of the follower?</p>
+			</div>
+			<div id = "comment-19131" class = "comment">
+				<p>Yes your understanding is correct.</p>
+			</div>
+			<div id = "comment-19132" class = "comment">
+				<p>The trajectory is the estimated trajectory of the leader which should act as reference (desired) trajectory of the follower</p>
+			</div>
+			<div id = "comment-19135" class = "comment">
+				<p>I think your application might be very similar to this paper https://www.researchgate.net/profile/Daniel_Wilson12/publication/263125877_A_Vision_Based_Relative_Navigation_Framework_for_Formation_Flight/links/54b770360cf2e68eb280133b.pdf</p>
+			</div>
+			<div id = "comment-19379" class = "comment">
+				<p>@evolved Did you have any luck to get the answer for this question: "Can you give me a hint which coordinate frame (global or ego) to use, which model to use in the prediction step and if my thoughts on motion changes are correct?"</p>
+			</div>
+			<div id = "comment-19391" class = "comment">
+				<p>@user76646 I posted an answer which describes my current approach.</p>
+			</div>
+			<div id = "comment-19392" class = "comment">
+				<p>@evolved Thanks!</p>
+			</div>
+			</div>
+				<textarea id = "speech-10631" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10631">
+					<img id="start_img-10631" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10631">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-10637"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10637" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>It sounds like you can estimate everything you need to with a direct calculation of the transform between each vehicle since that is provided for you. For the derivative parameters, if your sensors give direct measurement (velocity from doppler on the radar for instance) you probably want to use those values rather than filtering.</p>
+
+<p>Without knowing more I'd be a bit wary of the heading measurement. For instance, is it a direct measurement or an estimate from the velocity info?</p>
+
+<p>The EKF seems unnecessary.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10637" data-toggle = "popover">
+				<p>user name : hauptmech</p>
+				<p> user reputation : 2621</p>
+				<p class = "tagcontent" id = "usertaginfo-10637">{'battery': 2, 'None': 220, 'lithium-polymer': 2}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10637">Load Comments</button></br>
+			<div id = "commentsection-10637" class = 'collapse'>
+			<div id = "comment-19120" class = "comment">
+				<p>Soory I was a bit vague on the trajectory requirements. It must be a smooth trajectory, which should be exactly like the driven path of the leader vehicle. So I think some sort of estimation will be necesseray in order to avoid following the measurements in straight lines, which would lead to an unsteady trajectory.</p>
+			</div>
+			<div id = "comment-19121" class = "comment">
+				<p>The heading the velocity as well as the acceleration have a high variance depending on the current situation.</p>
+			</div>
+			</div>
+				<textarea id = "speech-10637" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10637">
+					<img id="start_img-10637" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10637">Comment</button>
+			<br><div id = "ans-10778"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10778" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>My current approach is the following:</p>
+
+<ol>
+<li><p>transform the the noisy leader vehicle state from ego coordinates to global coordinates using the current pose of the ego vehicle $(x_{ego},y_{ego},\theta_{ego})$.</p></li>
+<li><p>estimate an improved (less noisy) trajectory of the leader in global coordinates.</p></li>
+<li><p>backtransform the optimized state estimates from global to ego coordinates using the corresponding ego vehicle pose.</p></li>
+</ol>
+
+<p>It is possible to stay in the ego frame but this seems to need more effort, since it would be harder to tell if the leader or the ego vehicle moved. However, I was told the common approach is the solution in global coordinates.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10778" data-toggle = "popover">
+				<p>user name : evolved</p>
+				<p> user reputation : 134</p>
+				<p class = "tagcontent" id = "usertaginfo-10778">{'None': 0, 'algorithm': 2, 'motion': 2, 'kalman-filter': 4, 'mobile-robot': 4, 'movement': 4}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-10778" class = 'collapse'>
+			</div>
+				<textarea id = "speech-10778" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10778">
+					<img id="start_img-10778" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10778">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

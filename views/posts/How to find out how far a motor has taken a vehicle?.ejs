@@ -1,0 +1,281 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to find out how far a motor has taken a vehicle?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-812" class = "post">
+			<h2>Question</h2>
+			<div id="vote-812" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">7</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 258</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to find out how far a motor has taken a vehicle?</h2>
+<p>I have a small motorized vehicle with gears as wheels running up and down a track made of gear racks. How can this robot know when it has run half the track? And what's the best method to keep it from running off its track at the end and then return to start.</p>
+
+<p>The robot is carrying water, not exactly the same amount each time, so it will not weigh the same. Therefore it might not be the same amount of steps in the stepper-motor each time.</p>
+
+<p>Here I have some ideas that might work, though I am a beginner, and don't know what's the best solution.</p>
+
+<ul>
+<li>GPS tracking it (overkill on such a small scale?)</li>
+<li>Some kind of distance measurer</li>
+<li>Have a knob it will hit at the middle of the track, telling program to delay for a given time</li>
+<li>Track amount of steps the motor has performed (won't be as accurate?)</li>
+</ul>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-812" data-toggle = "popover">
+				<p>user name : hakonbogen</p>
+				<p> user reputation : 192</p>
+				<p class = "tagcontent" id = "usertaginfo-812">{'None': 0, 'arduino': 9, 'microcontroller': 2, 'motion': 2, 'motor': 10, 'mobile-robot': 7, 'sensors': 15}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-812">Load Comments</button></br>
+			<div id = "commentsection-812" class = 'collapse'>
+			<div id = "comment-2052" class = "comment">
+				<p>If your track is geared, then you are guaranteed to use the same number of stepper motor steps every time.  If the weight of the water changes then you will use different amounts of power to make those steps, but the size of each step is constant.</p>
+			</div>
+			<div id = "comment-2063" class = "comment">
+				<p>@Ian, that assumes that the motor is specified for a worst case scenario, and there are no external factors applying (such as something blocking the tracks). See the *Soft endstops* section of [my answer](http://robotics.stackexchange.com/a/813/37) and my comments on [Spiked3](http://robotics.stackexchange.com/a/814/37)'s and [Joe Baker](http://robotics.stackexchange.com/a/817/37)'s answers.</p>
+			</div>
+			</div>
+				<textarea id = "speech-812" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-812">
+					<img id="start_img-812" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-812">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-813"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-813" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">7</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>If you are running on a fixed track, by far the easiest method is to use a pair of <em>endstops</em>.</p>
+
+<p>Typically these would be <em>mechanical</em>, <em>magnetic</em> or <em>optical</em>.</p>
+
+<h3>Mechanical</h3>
+
+<p>A <em>mechanical endstop</em> could be as simple as a physical barrier at the end of your track, much like a train track <a href="http://en.wikipedia.org/wiki/Buffer_stop" rel="nofollow noreferrer">buffer stop</a>. Your vehicle would bump up to buffer, detect that it wasn't moving and take that as a signal that it had reached the end of travel.</p>
+
+<p>If you are moving slowly, with low toque and the restraining force of the buffer is significantly greater than the motive force of the vehicle plus the force from dissipating the <a href="http://en.wikipedia.org/wiki/Momentum" rel="nofollow noreferrer">momentum</a> of the vehicle, then a simple mechanical <em>endstop</em> might be sufficient.</p>
+
+<p>If you want to get a little more sophisticated, you could add a mechanical switch to your vehicle <a href="http://en.wikipedia.org/wiki/Bumper_%28automobile%29" rel="nofollow noreferrer">bumpers</a>, ideally on a spring such that it is closed before the main body of the vehicle hits the buffer. When the buffer stop is close, the control system would be told by the closing of the switch that and could apply the brakes.</p>
+
+<h3>Magnetic</h3>
+
+<p>A <em>magnetic endstop</em> would be a magnet on the track with a <a href="http://en.wikipedia.org/wiki/Reed_switch" rel="nofollow noreferrer">reed-switch</a> attached to your control system. When the reed switch rolls over the magnet, the circuit is closed and the control system can stop the vehicle.</p>
+
+<p>This has the advantage over the mechanical switch that it is non contact, so is less likely to be damages if the vehicle becomes a run-away.</p>
+
+<h3>Optical</h3>
+
+<p>An <em>optical endstop</em> would be a <a href="http://www.micromo.com/why-stepper-motors-lose-steps.aspx" rel="nofollow noreferrer">slotted optical switch</a> on the vehicle and a blade of metal near the end of travel on the track, which runs through optical switch, blocking the beam when the vehicle gets close to the end of travel.</p>
+
+<p>This has the advantage that rather than relying on a magnet that is in one spot on the track being detected, it can signal an end of travel condition for the whole distance from the end of required travel right up to any mechanical endstop.</p>
+
+<h3>Soft endstops</h3>
+
+<p>Essentially, this is just keeping track of where you have commanded your stepper motor to move and applying limits on how far you allow the higher level software to move. If you are requesting motion which is well within the parameters of the motor you have specified for your vehicle (speed, torque and acceleration profile etc.), then it should not be <a href="http://www.micromo.com/why-stepper-motors-lose-steps.aspx" rel="nofollow noreferrer">skipping steps</a> and soft end-stops may well be sufficient.</p>
+
+<p>If you do this though, I would also recommend adding one of the other mechanisms as <a href="http://idioms.thefreedictionary.com/belt+and+braces" rel="nofollow noreferrer">belt and braces</a>.</p>
+
+<h2>Combinations</h2>
+
+<p>Most industrial systems have multiple end of travel detection and over travel prevention systems, usually soft limits and either a <a href="http://reprap.org/wiki/Mechanical_Endstop" rel="nofollow noreferrer">mechanical endstop</a> plus <a href="http://en.wikipedia.org/wiki/Limit_switch" rel="nofollow noreferrer">limit switches</a> or soft limits, mechanical endstop plus <a href="http://reprap.org/wiki/OptoEndstop_2.1" rel="nofollow noreferrer">opto endstop</a>. All three systems have to fail in order for the system fail overall.</p>
+
+<p>You might also want to have a look at the answers to <a href="https://electronics.stackexchange.com/q/41733/3774">Why do I need an endstop sensor with stepper motor?</a> over on <a href="https://electronics.stackexchange.com/">Electrical Engineering</a> Stack exchange.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-813" data-toggle = "popover">
+				<p>user name : Mark Booth</p>
+				<p> user reputation : 3037</p>
+				<p class = "tagcontent" id = "usertaginfo-813">{'control': 7, 'quadcopter': 2, 'None': 258, 'tuning': 7, 'uav': 2, 'design': 2, 'stepper-motor': 7}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-813" class = 'collapse'>
+			</div>
+				<textarea id = "speech-813" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-813">
+					<img id="start_img-813" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-813">Comment</button>
+			<br><div id = "ans-814"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-814" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>If you are running gears as wheels on gear tracks, I do not understand how weight could change the number of steps. How can they slip? If there is no slippage, then the amount of steps should always be sufficient, although as mark suggested, most real world solutions would also include a limiting touch switch in case of mechanical failure.</p>
+
+<p>Since using number of steps involves some math, it may be just easier and as good to use only  limiting touch switches. It is common to put touch switches at any location such as the middle. In the case for a middle switch, some protrusion on the tracks would trigger the switch on the robot.</p>
+
+<p><a href="http://www.radioshack.com/product/index.jsp?productId=2049718" rel="nofollow noreferrer">typical switch</a></p>
+
+<p><img src="https://i.stack.imgur.com/JgKH5.jpg" alt="Touch Switch"></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-814" data-toggle = "popover">
+				<p>user name : Spiked3</p>
+				<p> user reputation : 1881</p>
+				<p class = "tagcontent" id = "usertaginfo-814">{'None': 125}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-814">Load Comments</button></br>
+			<div id = "commentsection-814" class = 'collapse'>
+			<div id = "comment-2053" class = "comment">
+				<p>Hall effect sensors (magnet + sensor) might be better, removing the mechanical switch from the "might break" list</p>
+			</div>
+			<div id = "comment-2056" class = "comment">
+				<p>If you are commanding the stepper motor to perform a move which is beyond it's capability (for instance requesting too high an acceleration for the weight load) then the motor itself could *slip* even if the gears etc don't.</p>
+			</div>
+			<div id = "comment-2058" class = "comment">
+				<p>Isn't that true for ANYTHING? I assume we were talking 'within mechanical limits' here, if not then I'd challenge any answer.</p>
+			</div>
+			<div id = "comment-2062" class = "comment">
+				<p>Yup, but it is worth mentioning in your answer (as I did), since not taking account of it is a common mistake. I've even know large expensive industrial systems brought low because a little too much friction at one point in a move caused the system to miss steps occasionally, and whacking a bigger stepper motor on it just caused another part of the system to break (it couldn't cope with the new torque output of the motor).</p>
+			</div>
+			<div id = "comment-2065" class = "comment">
+				<p>gotcha. I made the mistake once of thinking a servo would make it better - they just flash a fault light - still cause the same problems :(</p>
+			</div>
+			</div>
+				<textarea id = "speech-814" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-814">
+					<img id="start_img-814" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-814">Comment</button>
+			<br><div id = "ans-817"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-817" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>A stepper motor actually will move the same amount of steps per control signal regardless of weight, drawing more current as needed to turn the motor shaft the same amount. If there was wheel slip to account for, weight would be a factor there. However, given your gear rack track, wheel slip is negligible and can be ignored. </p>
+
+<p>I've built small line-follower robots in the past using 5V geared stepper motors running off AA batteries. Wheel slip was fairly small due to rubber O-rings mounted to the wheels. We took two identical prototypes and set them side by side and sent a move forward signal to both simultaneously. They moved in perfect lockstep over the course of a meter. We then placed a glass bottle of beer on one of the robots and repeated the experiment. Same result despite the weight difference.</p>
+
+<p>The specifications for your stepper motor will list a <b>Step Angle</b>, the number of degrees that the motor shaft turns for a single step (I'm assuming that you're not doing any microstepping). You then need to account for the gear ratio to figure out how far you actually move. This is a little trickier to calculate with a rack and pinion than a normal pair of spur gears. Gear ratio is normally determined by the diameter of the input and output gears, but your output gear (the rack) is technically of infinite diameter.</p>
+
+<p>If you haven't already, set up your control code so that you can make your stepper motor turn a given number of steps. Suppose the step angle of your motor is 7.5 degrees. The number of steps required to turn 360 degrees is:</p>
+
+<p>360&deg; / 7.5&deg; per step = 48 steps</p>
+
+<p>You can verify your 360 degree turn code by by placing a small mark on the pinion gear. Now set your robot on the rack and measure how far it travels along the rack when you turn the motor 360 degrees (48 steps in this case). You can use this measurement to determine how far along the rack the robot moves per step. Suppose it travels 12 centimeters.</p>
+
+<p>12 cm / 48 steps = <b>0.25 cm of linear motion per step</b></p>
+
+<p>Try the track measurement again with the maximum water load and verify that a 360 degree turn of the pinion gear still occurs. If not, you are trying to step too fast for the motor torque to keep up and it's missing steps. Increase the interval between steps until you get a full 360 degree turn of the pinion gear with the water weight.</p>
+
+<p>You can now encode movements to 0.25 cm resolution. If you know the length of the track and can guarantee your start position, you can get away with not having an endstop or limit switch. That being said, it's always a good idea to have them there anyways just in case.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-817" data-toggle = "popover">
+				<p>user name : Joe Baker</p>
+				<p> user reputation : 477</p>
+				<p class = "tagcontent" id = "usertaginfo-817">{'None': 33}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-817" class = 'collapse'>
+			</div>
+				<textarea id = "speech-817" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-817">
+					<img id="start_img-817" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-817">Comment</button>
+			<br><div id = "ans-7845"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7845" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I would suggest you to check the HC-SR04 Ultrasonic Sensor that could easily wired and programmed into your robo vehicle. By adjusting the sensor to correctly emit ultrasound on a fixed object and measuring echo/ping from the object, you can judge the distance quite accurately.
+<a href="https://i.stack.imgur.com/aTwd5.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/aTwd5.jpg" alt="enter image description here"></a>
+Another option would be to lay encoder track(alternate black and white zebra-striped track, so you can use an optical eye -an LDR or LED opto sensor to count the contrast changes while traversing through the track).
+<a href="https://i.stack.imgur.com/arX6r.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/arX6r.png" alt="enter image description here"></a>
+(I am not so good with photoshop, HTH :) )</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7845" data-toggle = "popover">
+				<p>user name : Anil</p>
+				<p> user reputation : 21</p>
+				<p class = "tagcontent" id = "usertaginfo-7845">{'None': 2}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7845" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7845" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7845">
+					<img id="start_img-7845" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7845">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

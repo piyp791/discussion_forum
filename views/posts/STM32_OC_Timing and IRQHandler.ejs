@@ -1,0 +1,340 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>STM32_OC_Timing and IRQHandler
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7595" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7595" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 937</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>STM32_OC_Timing and IRQHandler</h2>
+<p>I created a program to simple time base delay (in seconds). I have problem:</p>
+
+<p>How to read a interrupt flag from channel 1 etc.?</p>
+
+<p>When I use <code>if(__HAL_TIM_GET_FLAG(&amp;htim2, TIM_FLAG_CC1) != RESET)</code> an error occurs.</p>
+
+<p>When the interrupt occurred , uC should clear flag and set Blue LED in Discovery Board.</p>
+
+<p>Here is my program:</p>
+
+<p><strong>Main.c</strong></p>
+
+
+
+<pre><code>/* Includes */
+#include "stm32f3xx_hal.h"
+
+/* Private variables */
+TIM_HandleTypeDef htim2;
+
+/* Private function prototypes */
+void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
+static void MX_TIM2_Init(void);
+
+int main(void)
+{
+
+  /* MCU Configuration----------------------------------------------------------*/
+
+  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+ HAL_Init();
+
+  /* Configure the system clock */
+  SystemClock_Config();
+
+  /* Initialize all configured peripherals */
+  MX_GPIO_Init();
+  MX_TIM2_Init();
+
+  /* Infinite loop */
+
+  while (1)
+  {
+      HAL_GPIO_WritePin(GPIOE,GPIO_PIN_11,GPIO_PIN_RESET);
+  }
+}
+
+/** System Clock Configuration*/
+
+void SystemClock_Config(void)
+{
+
+  RCC_OscInitTypeDef RCC_OscInitStruct;
+  RCC_ClkInitTypeDef RCC_ClkInitStruct;
+
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+  RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL9;
+  HAL_RCC_OscConfig(&amp;RCC_OscInitStruct);
+
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_SYSCLK|RCC_CLOCKTYPE_PCLK1;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+  HAL_RCC_ClockConfig(&amp;RCC_ClkInitStruct, FLASH_LATENCY_2);
+
+  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
+
+  HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
+
+}
+
+/* TIM2 init function */
+void MX_TIM2_Init(void)
+{
+
+  TIM_ClockConfigTypeDef sClockSourceConfig;
+  TIM_MasterConfigTypeDef sMasterConfig;
+  TIM_OC_InitTypeDef sConfigOC;
+
+  htim2.Instance = TIM2;
+  htim2.Init.Prescaler = 7199; //72Mhz/7200 
+  htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim2.Init.Period = 65535;
+  htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  HAL_TIM_Base_Init(&amp;htim2);
+
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  HAL_TIM_ConfigClockSource(&amp;htim2, &amp;sClockSourceConfig);
+
+  HAL_TIM_OC_Init(&amp;htim2);
+
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  HAL_TIMEx_MasterConfigSynchronization(&amp;htim2, &amp;sMasterConfig);
+
+  sConfigOC.OCMode = TIM_OCMODE_TIMING;
+  sConfigOC.Pulse = 20000; //0.0001[s] * 20000 = 2 [s] DELAY
+  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+  HAL_TIM_OC_ConfigChannel(&amp;htim2, &amp;sConfigOC, TIM_CHANNEL_1);
+
+  sConfigOC.OCMode = TIM_OCMODE_TIMING;
+  sConfigOC.Pulse = 30000;
+  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+  HAL_TIM_OC_ConfigChannel(&amp;htim2, &amp;sConfigOC, TIM_CHANNEL_2);
+  HAL_TIM_Base_Start_IT(&amp;htim2);
+
+  HAL_TIM_OC_Start_IT(&amp;htim2,TIM_CHANNEL_1 );
+  //HAL_TIM_OC_Start_IT(&amp;htim2,TIM_CHANNEL_2 );
+}
+
+/** Configure pins as 
+        * Analog
+        * Input 
+        * Output
+        * EVENT_OUT
+        * EXTI
+     PC9   ------&gt; I2S_CKIN
+*/
+void MX_GPIO_Init(void)
+{
+  GPIO_InitTypeDef GPIO_InitStruct;
+
+  /* GPIO Ports Clock Enable */
+  __GPIOF_CLK_ENABLE();
+  __GPIOC_CLK_ENABLE();
+  __GPIOE_CLK_ENABLE();
+
+  /*Configure GPIO pin : PC9 */
+  GPIO_InitStruct.Pin = GPIO_PIN_9;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
+  GPIO_InitStruct.Alternate = GPIO_AF5_SPI1;
+  HAL_GPIO_Init(GPIOC, &amp;GPIO_InitStruct);
+
+ /*
+  * Configure GPIO pin : PE8 BLUE LED
+  */
+
+  GPIO_InitStruct.Pin=GPIO_PIN_8;
+  GPIO_InitStruct.Mode=GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull=GPIO_NOPULL;
+  GPIO_InitStruct.Speed=GPIO_SPEED_HIGH;
+  HAL_GPIO_Init(GPIOE,&amp;GPIO_InitStruct);
+
+  GPIO_InitStruct.Pin=GPIO_PIN_12;
+  GPIO_InitStruct.Mode=GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull=GPIO_NOPULL;
+  GPIO_InitStruct.Speed=GPIO_SPEED_HIGH;
+  HAL_GPIO_Init(GPIOE,&amp;GPIO_InitStruct);
+
+/*
+ * COnfigure GPIO pin : PE11 GREEN LED
+ */
+
+  GPIO_InitStruct.Pin=GPIO_PIN_11;
+  GPIO_InitStruct.Mode=GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull=GPIO_NOPULL;
+  GPIO_InitStruct.Speed=GPIO_SPEED_HIGH;
+  HAL_GPIO_Init(GPIOE,&amp;GPIO_InitStruct);
+}
+</code></pre>
+
+<p>low level implementation:</p>
+
+
+
+<pre><code>void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base)
+{
+  if(htim_base-&gt;Instance==TIM2)
+  {
+    /* Peripheral clock enable */
+    __TIM2_CLK_ENABLE();
+    /* Peripheral interrupt init*/
+    HAL_NVIC_SetPriority(TIM2_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(TIM2_IRQn);
+
+  }
+
+}
+
+void TIM2_IRQHandler(void)
+{
+
+  /* USER CODE BEGIN TIM2_IRQn 0 */
+  HAL_GPIO_WritePin(GPIOE,GPIO_PIN_8,GPIO_PIN_SET);
+
+  // HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_12);
+  HAL_TIM_IRQHandler(&amp;htim2); //THis function is implemented by StmCubeMX , WHAT IS THIS?
+}
+</code></pre>
+
+<p>So how should my <code>TIM2_IRQHandler</code> look like? Each channel generate delay in +1 sec. When I am debugging this program, when LED is set the period is equal to 1s (time for set LED). </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7595" data-toggle = "popover">
+				<p>user name : Micha  G</p>
+				<p> user reputation : 6</p>
+				<p class = "tagcontent" id = "usertaginfo-7595">{'None': 0, 'microcontroller': 0, 'c': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7595">Load Comments</button></br>
+			<div id = "commentsection-7595" class = 'collapse'>
+			<div id = "comment-11015" class = "comment">
+				<p>What is the error that you receive? Can you add it to your question?</p>
+			</div>
+			<div id = "comment-11016" class = "comment">
+				<p>Also, could you remove the HTML formatting from your code?</p>
+			</div>
+			</div>
+				<textarea id = "speech-7595" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7595">
+					<img id="start_img-7595" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7595">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7602"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7602" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>(This really should be a comment, but I don't have enough reputation to comment, my apologies)</p>
+
+<p>I'm not very familiar with this "HAL" version of ST's library, but how I normally do timers with STM32 is the following:</p>
+
+<pre><code>void TIM2_IRQHandler()
+{
+     if (TIM_GetITStatus(TIM2, TIM_IT_CC1) != RESET)
+     {
+          TIM_ClearITPendingBit(TIM2, TIM_IT_CC1);
+
+          // TODO: Your code
+     }
+}
+</code></pre>
+
+<p>Hopefully that translates to your environment.  In terms of your error, you'll need to be more descriptive about what the error is for us to help you.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7602" data-toggle = "popover">
+				<p>user name : JMarple</p>
+				<p> user reputation : 106</p>
+				<p class = "tagcontent" id = "usertaginfo-7602">{'None': 9}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7602" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7602" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7602">
+					<img id="start_img-7602" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7602">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

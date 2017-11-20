@@ -1,0 +1,173 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Conventional Land Vehicle Dynamic Models for GPS~INS augmentation
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-993" class = "post">
+			<h2>Question</h2>
+			<div id="vote-993" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 90</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Conventional Land Vehicle Dynamic Models for GPS~INS augmentation</h2>
+<p>I am looking to augment a GPS/INS solution with a conventional land vehicle (car-like) model. That is, front-wheel steered, rear wheels passive on an axle.  I don't have access to odometry or wheel angle sensors.</p>
+
+<p>I am aware of the Bicycle Model (e.g. Chapter 4 of <a href="http://link.springer.com/book/10.1007/978-3-642-20144-8/page/1" rel="nofollow">Corke</a>), but I am not sure how to apply the heading/velocity constraint on the filter.</p>
+
+<p>So my questions are:</p>
+
+<ol>
+<li>Are there any other dynamic models that are applicable to the land vehicle situation, especially if they have the potential to provide better accuracy?</li>
+<li>Are there any standard techniques to applying such a model/constraint to this type of filter, bearing in mind I don't have access to odometry or wheel angle?</li>
+<li>Are there any seminal papers on the topic that I should be reading?</li>
+</ol>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-993" data-toggle = "popover">
+				<p>user name : Damien</p>
+				<p> user reputation : 166</p>
+				<p class = "tagcontent" id = "usertaginfo-993">{'particle-filter': 8, 'None': 0, 'pose': 8, 'dynamics': 5, 'gps': 5}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-993">Load Comments</button></br>
+			<div id = "commentsection-993" class = 'collapse'>
+			<div id = "comment-2348" class = "comment">
+				<p>There is a [question](http://robotics.stackexchange.com/questions/763/differences-between-ackermann-steering-and-standard-bi-tricycles-concerning-kine) on the difference between the bicycle model and Ackerman model that's interesting, but doesn't answer everything that I need.</p>
+			</div>
+			<div id = "comment-2359" class = "comment">
+				<p>Not really an answer but a clue for Part (3). It looks like one of the first works on the topic was [Salah Sukkarieh's thesis](http://www.mecatronica.eesc.usp.br/wiki/upload/d/dc/2000_Thesis_Low_Cost_High_Integrity_Aided_Navigation_System.pdf) ([via google](http://scholar.google.com.au/scholar?hl=en&q=salah+sukkarieh+thesis&btnG=&as_sdt=1%2C5&as_sdtp=)), but it's going to take me a while to sort through the 117 papers that cite this work...</p>
+			</div>
+			</div>
+				<textarea id = "speech-993" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-993">
+					<img id="start_img-993" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-993">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-996"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-996" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>When doing filtering, the Kinematic model comes into play <em>only</em> during the prediction step.  That is, you predict that the next state is one which is reachable given your current kinematic constraints. I'll reiterate: <em>this is not  a hard constraint on the filter output</em>. It simply makes unreachable states unlikely, with only the granularity available to the 2-D Gaussian distribution.</p>
+
+<p>Then, the sensors are used to find which <em>of the predicted states</em> are likely <em>given given the new information</em> (GPS, etc). </p>
+
+<p>If you <em>must</em> apply a kinematic model as a <em>constraint</em> (i.e., we <em>cannot</em> consider any state outputs which violate the kinematic model), then I know of only one option off hand: Use a particle filter to sample all nearby states, then apply a zero weight to all states which are not reachable given your Kinematics. Note, a particle filter is a general term with lots of different meanings. </p>
+
+<ul>
+<li><p>A particle can represent all positions, $x,y,\theta$, e.g., a grid over the environment. </p></li>
+<li><p>A particle can represent all <em>nearby</em> positions. In this case you sample the kinematic model many times with some noise, and propagate those forward. This implicitly honors the kinematic constraint.</p></li>
+<li><p>A particle can represent possible <em>paths</em> (i.e., <a href="http://robots.stanford.edu/papers/montemerlo.fastslam-tr.html" rel="nofollow">fastslam</a>).</p></li>
+</ul>
+
+<p>Then, you can re-weight each particle according to it's probability given the GPS measurements. </p>
+
+<hr>
+
+<p>However, I recommend that you use the INS in place of the wheel odometry during the prediction step. It will likely be a reasonable proxy, especially over the short term. In fact, this is a very common practice in the literature.</p>
+
+<p>To make this clearer, you predict your next pose $x^+$, based on your current pose $x^-$, and your INS measurement which gives you a $\delta x$ (because you integrate the accellerations). So your EKF_PREDICT function goes from:</p>
+
+<p>$x_{t+1|t} = f_{kinematics}(x_{t}, u_t)$, with odometry $u_t$ instead of the control vector. To something like:</p>
+
+<p>$x_{t+1|t} = x_{t}+\delta x$. </p>
+
+<p>What have we lost? We have lost the ability to condition on the fact that the robot can only take certain types of movements, i.e., is kinematically constrained.  To compensate for this, what I've suggested is you then <em>condition</em> the estimate based on the liklihood given the kinematic model. That means, during the EKF_UPDATE step. </p>
+
+<p>To do this, you need to find the conditional probability:</p>
+
+<p>$P(\delta x | x_{t}, u_t)$</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-996" data-toggle = "popover">
+				<p>user name : Josh Vander Hook</p>
+				<p> user reputation : 3960</p>
+				<p class = "tagcontent" id = "usertaginfo-996">{'None': 345}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-996">Load Comments</button></br>
+			<div id = "commentsection-996" class = 'collapse'>
+			<div id = "comment-2352" class = "comment">
+				<p>> "Otherwise, it is also possible to use the INS in place of the wheel odometry during the prediction step." Classically, the INS mechanisation equations form the kinematic model, with the specific force and angular rates of the IMU forming the "control inputs" to the KF.   This is pretty much standard (see, for example, [Groves](http://www.amazon.com/Principles-Multi-Sensor-Integrated-Navigation-Applications/dp/1580532551)). The trick is, how does one combine this kinematic model (i.e. INS mechanisation) with constraints imposed by the vehicle dynamics?</p>
+			</div>
+			<div id = "comment-2353" class = "comment">
+				<p>I guess I don't understand the question. There are no constraints, only predictions and corrections. In Gaussian-land, everything is possible.</p>
+			</div>
+			<div id = "comment-2357" class = "comment">
+				<p>I think I haven't made myself clear, so I've edited my response more.</p>
+			</div>
+			</div>
+				<textarea id = "speech-996" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-996">
+					<img id="start_img-996" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-996">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

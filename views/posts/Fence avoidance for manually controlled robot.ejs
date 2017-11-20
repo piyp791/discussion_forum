@@ -1,0 +1,194 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Fence avoidance for manually controlled robot
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-10249" class = "post">
+			<h2>Question</h2>
+			<div id="vote-10249" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 88</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Fence avoidance for manually controlled robot</h2>
+<p>I'm trying to find known techniques for keeping a manually controlled robot within a known polygon fence. More specifically, a pilot controls a robot by issuing desired velocity vectors, and the autopilot adjusts the velocity so that the distance to any boundary is always at least the stopping distance of the robot.</p>
+
+<p>My goal is to implement a system that:</p>
+
+<ol>
+<li>Tries to follow the pilot's desired velocity as closely as possible.</li>
+<li>Is robust to changes in position and desired velocity. At a minimum, I want the velocity to change <strong>continuously</strong> with respect to the position of the robot and desired velocity of the pilot. Informally, this means that sufficiently small changes in the position or desired velocity of the pilot induce arbitrarily small changes in the velocity.</li>
+</ol>
+
+<p>The second point is particularly important. Suppose that the policy were to find the intersection with the boundary in the direction of the desired velocity and slow down smoothly to that point. The below figure depicts a couple of scenarios in which this would <em>not</em> be continuous. In this figure, the black lines represent the fence boundary, the red dot is the position of the robot, and the blue line is the desired velocity of the pilot. In figure (a), a small perturbation of the position to the left will cause a large increase in allowed velocity because the desired velocity will intersect the far edge instead of the near edge. In figure (b), a small clockwise rotation of the velocity vector will result in a large decrease in allowed velocity because the desired velocity will intersect the near edge instead of the far edge.</p>
+
+<p><a href="https://i.stack.imgur.com/yDbWx.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/yDbWx.jpg" alt="enter image description here"></a></p>
+
+<p>I have searched for relevant papers, but most of the papers I've seen have dealt with fully autonomous obstacle avoidance. Moreover, I haven't seen any papers address the robustness/continuity of the system.</p>
+
+<h2>:EDIT:</h2>
+
+<p>The robot knows its own location and the location of the boundary at all times. I also have some equations for maximum velocity that allow a smooth ramp-down to a single line boundary (though I'd be interested in seeing a better one). I would like the velocity limits to be continuous in the position and desired velocity of the pilot.</p>
+
+<p>I want to continuously throttle the user's input such that a minimum safe distance between the robot and the boundary is maintained, but see the figure that I added to the question. The hard part (I think) is to make sure that small changes in position (e.g. due to sensor noise) or small changes in desired velocity (e.g. due to pilot noise) don't cause huge changes in what the autopilot allows.</p>
+
+<p>I want continuity because I think it will provide a much nicer experience for the pilot while still enforcing the fence boundary. There is a trade-off with optimally but I think this is worth it. Even though the physical world smoothes any discontinuities in velocity, big changes could still cause large jerk which will be somewhat disturbing to the pilot. The goal is to not have the autopilot introduce large oscillations not intended by the pilot.</p>
+
+<p>This Will be implemented On a physical system that has sensors that provide an estimation of position, and the boundary shape is known and is unchanging. The actual system that I'm targeting is a quadcopter.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10249" data-toggle = "popover">
+				<p>user name : BmoreDaniel</p>
+				<p> user reputation : 23</p>
+				<p class = "tagcontent" id = "usertaginfo-10249">{'quadcopter': 0, 'control': 4, 'None': 0, 'geometry': 4, 'reference-request': 4, 'dynamics': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10249">Load Comments</button></br>
+			<div id = "commentsection-10249" class = 'collapse'>
+			<div id = "comment-18356" class = "comment">
+				<p>Welcome to *Robotics* BmoreDaniel. On stack exchange, it is better to edit your answer to add information requested in comments, rather than adding more comments. Comments are for helping to improve questions and answers, and are distracting, so we try to keep them to a minimum. If all of the information needed to answer the question is contained within it, the comments can be tidied up (deleted). I removed the comment chain between you, Mark, and NBCKLY and incorporated your statements into your question. If you all need to chat, please use [chat].</p>
+			</div>
+			<div id = "comment-18373" class = "comment">
+				<p>@Chuck thanks. How do I notify someone that I've edited the question in response to a comment? Do I post a comment for that and then delete it?</p>
+			</div>
+			</div>
+				<textarea id = "speech-10249" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10249">
+					<img id="start_img-10249" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10249">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-10254"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10254" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I think that your problem is rather uncommon, so there may be no solutions ready to use without any modifications. However, you may have a look at <a href="https://www.ri.cmu.edu/pub_files/pub1/fox_dieter_1997_1/fox_dieter_1997_1.pdf" rel="nofollow">"The Dynamic Window Approach to Collision Avoidance"</a> by Dieter Fox, Wolfram Burgard and Sebastian Thrun. This reverses your problem: given current velocity and achievable accelerations, find a path for a robot that avoids all the obstacles. </p>
+
+<p>Or you could just calculate maximum velocity in any given point basing just on a distance to the closes point of the fence. That will of course mean that even going away from the fence you will go slowly, if you are close to the border, but it will surely be continuous. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10254" data-toggle = "popover">
+				<p>user name : mactro</p>
+				<p> user reputation : 925</p>
+				<p class = "tagcontent" id = "usertaginfo-10254">{'control': 1, 'None': 59, 'radio-control': 1, 'pid': 1, 'wifi': 1, 'wheeled-robot': 1, 'mechanism': 1, 'automation': 1, 'wireless': 1, 'industrial-robot': 2, 'design': 1, 'cnc': 2, 'actuator': 2, 'mobile-robot': 2}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-10254" class = 'collapse'>
+			</div>
+				<textarea id = "speech-10254" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10254">
+					<img id="start_img-10254" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10254">Comment</button>
+			<br><div id = "ans-10255"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10255" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I'll second <a href="https://robotics.stackexchange.com/a/10254/9720">mactro's answer</a>, with a few notes:</p>
+
+<p>I'm not sure why you are so concerned with continuity. With the window, you setup an imaginary line on all axes of motion where the distance is basically, "If I issue a stop command right now, where do I come to a stop?" Add a buffer to that stopping distance, then if an object gets between you and your stopping limit, then issue a stop command. A stop command would be zero speed. </p>
+
+<p>So your reference is  until the fence gets <em>almost</em> so close that you won't be able to avoid it, in which case you set the speed <em>on that axis</em> to zero. This is where my question on continuity comes in - what difference does it make if the speed reference has a jump from  to ? The quadcopter, being a <em>physical</em> system, will not be able to instantaneously change speeds. That is, by being a physical object, the quadcopter will filter that discontinuity for you. </p>
+
+<p>Further, hypothetically speaking, if your boundary isn't the fastest you could come to a stop, then what is it? You sound like you want to lower the maximum speed when operating near the wall, but why? As long as the operator isn't requesting to fly into the wall, why limit the performance? Leave the speed maximum at 100%, and then kill the operator input <em>on that axis</em> when they request to fly into the wall. </p>
+
+<p>As a pre-rebuttal (prebuttal?) to a comment I'd imagine you'll make, a PID controller has some time step involved. Even if you have an instantaneous change in reference speed, that change doesn't <em>register</em> until the next time step. So it may be a large jump, but that large jump is going to look like a step command, which is generally the standard to which PID controllers are tuned. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10255" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-10255">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10255">Load Comments</button></br>
+			<div id = "commentsection-10255" class = 'collapse'>
+			<div id = "comment-18372" class = "comment">
+				<p>I want continuity because I think it will provide a much nicer experience for the pilot while still enforcing the fence boundary. There is a trade-off with optimally but I think this is worth it. Even though the physical world smoothes any discontinuities in velocity, big changes could still cause big accelerations which will be somewhat disturbing to the pilot. For an example, consider figure (a) in my question. Figure (b) is fine as long as you limit velocity only in the direction of the boundary, as you said.</p>
+			</div>
+			<div id = "comment-18376" class = "comment">
+				<p>Actually, the above comment should say that a lack of continuity around reflex interior angles can cause a very large jerk which could be a bad experience for the pilot. I've added the above to the original question.</p>
+			</div>
+			<div id = "comment-18380" class = "comment">
+				<p>@BmoreDaniel - If you don't want to go to peak acceleration limits of the quadcopter, you can set arbitrarily lower acceleration limits. In any event, at speed $v_0$ and acceleration rate $a$, you have still get a known stopping distance. If you're still concerned about jerk then you can use a low-pass filter to "ease" into the ramp-down acceleration. Just know that, the more you try to monkey with the *anti-collision* deceleration, the more likely you are to have a collision. PS - Also, the pilot isn't actually on the quadrotor, so I don't know what the "bad experience" would be.</p>
+			</div>
+			<div id = "comment-18388" class = "comment">
+				<p>Stopping before a single edge is not the issue. Consider figure (a) in the original question. Due to sensor noise or noise in the pilot's commanded velocity, the desired velocity vector could alternate between intersecting the course edge and not intersecting the close edge. This means that the velocity allowed by the autopilot would alternate very quickly between high and low, causing the vehicle to try to rock back and forth very quickly. In my opinion, this would be a bad experience for a novice pilot who doesn't realize that he's hit a corner.</p>
+			</div>
+			</div>
+				<textarea id = "speech-10255" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10255">
+					<img id="start_img-10255" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10255">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

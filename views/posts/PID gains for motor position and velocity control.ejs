@@ -1,0 +1,209 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>PID gains for motor position and velocity control
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7640" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7640" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 1378</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>PID gains for motor position and velocity control</h2>
+<p>I have a servo motor with quad optical encoder and I'm trying to control its position and velocity. By controlling both I meant that if I input that the motor should reach 90  at 200rpm then it should. How can I do that? I am using an Arduino Uno. Kindly share some code if possible. </p>
+
+<p>Though I have implemented the PID, I don't think it is correct because I didn't implement the feedforward controller (because I have no idea what that is) and I have not been able to find suitable gains for PID. The gains I find for small steps (or say degree rotation) do not work out well for large steps and vice versa. I have also not used a limit for integral sum (because I don't how much it should be).</p>
+
+<p>I am using a Pittman motor.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7640" data-toggle = "popover">
+				<p>user name : Arsh</p>
+				<p> user reputation : 6</p>
+				<p class = "tagcontent" id = "usertaginfo-7640">{'None': 0, 'robotic-arm': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7640">Load Comments</button></br>
+			<div id = "commentsection-7640" class = 'collapse'>
+			<div id = "comment-11070" class = "comment">
+				<p>Under what circumstances are you trying to control your flight systems with a PID?  For example: 1) to track an object and trail at a fixed distance, 2) to maintain a target path, 3) to control a planned ascent/descent?</p>
+			</div>
+			</div>
+				<textarea id = "speech-7640" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7640">
+					<img id="start_img-7640" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7640">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7686"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7686" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>There are different ways to approach this problem, but in a general sense you could try this:</p>
+
+<p>You have a PID controller for velocity.  It'll look something like this (untested code):<br/></p>
+
+<pre>
+// PID Controller
+struct PID
+{
+  float kP, kI, kD;
+  float error, integral, derivative, previousError;
+  float dT;
+};<br/>
+int computePID(PID* pid, float error)
+{
+  pid->error = error;
+  pid->integral += error*dT;
+  pid->derivative = (error - pid->previousError)/dT;
+  pid->previousError = error;
+
+  return pid->kP*pid->error + pid->kI*pid->integral + pid->kD*pid->derivative;
+}
+
+//Somewhere else
+setArmMotor(computePID(&pid, some_error));
+</pre>
+
+<p>When you tune the constants right, you should be able to run your arm at a constant speed.  However, this is dependent that you have a fairly high resolution encoder, if you don't you won't have much of a way to controlling how fast your motors are spinning.  </p>
+
+<p>Now to control position, this will depend on your application.  The "easy" solution is to have another PID controller that controls position, where this new controller outputs a velocity instead of a motor power.  </p>
+
+<p>If you want a more "controlled" method of controlling velocity, you can use an acceleration profile.  For instance:
+<img src="https://i.stack.imgur.com/xwEoU.png" alt="PID Velocity on an trapezoidal acceleration profile"></p>
+
+<p>The code for this will look something like this:
+<code>
+float time = 0;
+float enterSpeed = 0;
+float maxSpeed = 10;
+float exitSpeed = 0;
+float speed = 0; // This is the variable that your PID's should correct to.
+float acceleration = 1.0;
+float distance = 100;<br/>
+// Acceleration
+while (speed &lt; maxSpeed)
+{
+  speed = acceleration*time + enterSpeed;
+  time+=1;
+  delay(1);
+}<br/>
+// Kinematic Equations to calculate how far we need to maintain top speed for
+float timeToStop = (exitSpeed-maxSpeed) / acceleration;
+float distanceToStop<br/> = maxSpeed * timeToStop + 0.5 * acceleration * timeToStop * timeToStop;
+<br/>// Maintain top velocity
+while (encodersPosition + distanceToStop > distance)
+{
+  speed = maxSpeed;
+}
+<br/>// Deceleration 
+time = 0;
+while (speed > exitSpeed)
+{
+  speed = maxSpeed - acceleration * time;
+  time+=1;
+  delay(1);
+}
+</code></p>
+
+<p>I did a lot of that memory, correct me if I messed up something. There are a lot of edge cases in that profile that isn't checked for, but that's the basic idea.  </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7686" data-toggle = "popover">
+				<p>user name : JMarple</p>
+				<p> user reputation : 106</p>
+				<p class = "tagcontent" id = "usertaginfo-7686">{'None': 9}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7686">Load Comments</button></br>
+			<div id = "commentsection-7686" class = 'collapse'>
+			<div id = "comment-11125" class = "comment">
+				<p>I see a lot of people using `derivativeError = error - previousError`, which, of note first is that you have `previousError - error`, which means that the sign of your `derivativeError` is going to be flipped. The problem here is that this does NOT give the true derivative error; for that you need to divide by the sample time! `derviativeError = (error - previousError)/dT`. Likewise, for the integral error you need `integralError = integralError + error * dT`, as `+=` is just an accumulation not an integration.</p>
+			</div>
+			<div id = "comment-11126" class = "comment">
+				<p>You could argue that `dT` just serves to scale the integral/derivative errors, but (1) that's only the case if your sample time is consistent, and (2) you can't use tuning methods like [Ziegler-Nichols](https://en.wikipedia.org/wiki/Ziegler%E2%80%93Nichols_method) if you don't calculate the errors correctly. If you have any kind of logic in your controller that branches then you have variable sweep times in your code and thus a variable amount of time between error checks. The best way to avoid this is to call error checking on an interrupt, but you're still left with point (2) to deal with.</p>
+			</div>
+			<div id = "comment-11128" class = "comment">
+				<p>Good catch on the derivative! I was indeed assuming consistent sample times for the purpose of this example, but I edited my answer to include change in time.   
+
+As for the integral, I'm not too sure I understand what you mean "+= is just an accumulation not an integration".  In C atleast, 
+`integral += error*dt` is equivalent to `integral = integral + error*dt`</p>
+			</div>
+			<div id = "comment-11129" class = "comment">
+				<p>Yeah, you're correct, if you do `+= error*dT`, but I think initially you just had `+=error`. That dT is key!</p>
+			</div>
+			</div>
+				<textarea id = "speech-7686" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7686">
+					<img id="start_img-7686" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7686">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

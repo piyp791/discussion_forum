@@ -1,0 +1,193 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to know the desired orientation of a quadcopter?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2244" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2244" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 2694</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to know the desired orientation of a quadcopter?</h2>
+<p>I am trying to simulate a quadcopter model on Simulink. I want to implement a PID controller for each of X,Y,Z and phi,theta, psi angles. PID gets the error, as input, which is to be minimized.
+For the X,Y and Z, the desired values are entered by the user and the actual values are calculated from the accelerometer data, hence, the error is the desired set value - actual value.</p>
+
+<p>For phi,theta and psi, the actual values may be obtained from the gyroscope and accelerometer (sensor fusion) but I don't actually know how to calculate the desired values for each one of them since the user is usually interested in giving the position values X,Y and Z as desired not the angle values! The absence of the desired values prevents me form calculating the angular error which is needed for the PID controller.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2244" data-toggle = "popover">
+				<p>user name : Moayad Abu Rmilah</p>
+				<p> user reputation : 79</p>
+				<p class = "tagcontent" id = "usertaginfo-2244">{'quadcopter': 9, 'control': 5, 'None': 0, 'tuning': 5, 'accelerometer': 3, 'frame': 1, 'pid': 10, 'design': 5, 'sensor-fusion': 3, 'navigation': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2244" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2244" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2244">
+					<img id="start_img-2244" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2244">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-2252"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2252" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">8</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You're trying to implement more PIDs than you have <a href="http://en.wikipedia.org/wiki/Degrees_of_freedom_(engineering)" rel="nofollow noreferrer">degrees of freedom</a>.  In a quadcopter, you have only 4: $(Z, \phi, \theta, \psi)$ i.e. (Altitude, Roll, Pitch, and Yaw). </p>
+
+<p><a href="http://www.draganfly.com/uav-helicopter/draganflyer-x4/features/stability.php" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/3H4Ba.jpg" alt="enter image description here"></a></p>
+
+<p>via (<a href="http://www.draganfly.com/uav-helicopter/draganflyer-x4/features/stability.php" rel="nofollow noreferrer">http://www.draganfly.com/uav-helicopter/draganflyer-x4/features/stability.php</a>)</p>
+
+<p>Interestingly, from a PID perspective you definitely <em>do</em> have desired values for $\phi$ and $\theta$: you want them both to default to zero, so that your quadcopter hovers stably.  (You could also constrain $\psi$ to a fixed value like zero, but since the quadcopter is symmetric about the Z axis, all you really need to do is prevent excessive rotation by bumping up the 'D' term in the $\psi$ PID.)  The Z PID can then be tuned to ensure that you can set and hold a desired altitude.</p>
+
+<p>So in the simplest case, the X and Y PIDs will end up sitting "on top" of the other PIDs.<br>
+<a href="https://i.stack.imgur.com/hUzW8.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/hUzW8.png" alt="Processing chain"></a></p>
+
+<p>In other words, the output of the X and Y PIDs will be (respectively) become the desired $\phi$ and $\theta$ angles that will nudge the quadcopter toward the desired position.  (Note that you'll have to convert the world-relative desired X and Y to quadcopter-relative X and Y to compensate for $\psi$.  <a href="https://robotics.stackexchange.com/a/727/350">This answer</a> has more.)</p>
+
+<p>There are more sophisticated ways to control aerial vehicles, but this is one of the easiest to learn.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2252" data-toggle = "popover">
+				<p>user name : Ian</p>
+				<p> user reputation : 9640</p>
+				<p class = "tagcontent" id = "usertaginfo-2252">{'planning': 10, 'None': 809, 'power': 1, 'algorithm': 10, 'battery': 1, 'slam': 7, 'coverage': 10, 'mobile-robot': 9, 'sensors': 9}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2252">Load Comments</button></br>
+			<div id = "commentsection-2252" class = 'collapse'>
+			<div id = "comment-4383" class = "comment">
+				<p>A quadcopter does not have enough degrees of freedom to hold an X,Y,Z position in addition to a 45 degree tilt.</p>
+			</div>
+			<div id = "comment-4384" class = "comment">
+				<p>Yes it needs to change the _angle of attack_ to correct the position in the X and Y (in this type of quad-copter) and thus that is not considered a directly DOF of it, thanks.</p>
+			</div>
+			<div id = "comment-4385" class = "comment">
+				<p>Why did you delete your original comment?</p>
+			</div>
+			<div id = "comment-4386" class = "comment">
+				<p>I'm free to delete my comments :) Anyway it has wrong and so has not much to add to the answer, that's why I deleted.</p>
+			</div>
+			<div id = "comment-4418" class = "comment">
+				<p>@Ian By setting the desired values of   and   to zero is only good to maintain its orientation on the horizontal plane (the quadcopter doesn't move along the X and Y axes). If it is to move, for example, forward (along X), the desired value of   should change. I think there is an equation which I can use to calculate the desired angles from the desired position.
+Would you explain the last sentence "(Note that you'll..."?</p>
+			</div>
+			<div id = "comment-4423" class = "comment">
+				<p>I've updated my answer with a block diagram that should help explain what I'm talking about.</p>
+			</div>
+			<div id = "comment-7914" class = "comment">
+				<p>@RobotAaly: I have the same question. Did you solve it? Or have some ideas? Regards</p>
+			</div>
+			</div>
+				<textarea id = "speech-2252" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2252">
+					<img id="start_img-2252" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2252">Comment</button>
+			<br><div id = "ans-2260"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2260" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Defining the state of the quadcopter as $\bf{x} = \left[ \begin{matrix} \mathbf{p} &amp; \mathbf{v} &amp; \mathbf{r} &amp; \mathbf{w} \end{matrix} \right]^T$ where $\mathbf{p}$, $\mathbf{v}$, $\mathbf{r}$, and $\mathbf{w}$ are the position, velocity, angular position, and angular velocity of the quadcopter respectively. A simplified transition model for a quadcopter using PD control is:
+\begin{align}
+\dot{\mathbf{p}} &amp; = \mathbf{v} \\
+\dot{\mathbf{v}} &amp; = -g\mathbf{e}_3 + \text{exp}([\mathbf{r}])\mathbf{e}_3u_1/m \\
+\dot{\mathbf{r}} &amp; = \mathbf{w} + \frac{1}{2}[\mathbf{r}]\mathbf{w} + (1 - \frac{||\mathbf{r}||}{2\text{tan}(||\mathbf{r}||/2)})\frac{[\mathbf{r}]^2}{||\mathbf{r}||^2}\mathbf{w} \\
+\dot{\mathbf{w}} &amp; = \begin{bmatrix} k_1(u_2 - r_x) + k_2w_x \\ k_1(u_3 - r_y) + k_2w_y \\ 0 \end{bmatrix}
+\end{align}
+where $\mathbf{e}_3 = \left[ \begin{matrix} 0 &amp; 0 &amp; 1 \end{matrix} \right]^T$, $[\mathbf{r}]$ represents the skew-symmetric matrix of $\mathbf{r}$, $||\mathbf{r}||$ represents the magnitude of $\mathbf{r}$, $k_1$ and $k_2$ represent the proportional and derivative gains respectively, and the control $\mathbf{u} = \left[ \begin{matrix} u_1 &amp; u_2 &amp; u_3 \end{matrix} \right]^T$ is comprised of the desired total thrust $u_1$, the desired roll angle $u_2$, the desired pitch angle $u_3$, and assumes yaw remains the same. Note that this uses a PD controller because the integration term I is generally not useful for trajectory following.</p>
+
+<p>Using this model you can, given the current state $\mathbf{x}$, calcualte how the state will change. This of course does not give you the desired angular positions about which you asked. Assuming the user expects the quadcopter to hover once it has reached the specified desired position $\mathbf{p} = [X, Y, Z]^T$ then we need $\mathbf{v} = \mathbf{r} = \mathbf{w} = \left[ \begin{matrix} 0 &amp; 0 &amp; 0 \end{matrix} \right]^T$ for the final state.</p>
+
+<p>However that still does not give you the desired angles to transition between the initial state $\mathbf{x}_i$ and the final state $\mathbf{x}_f = \left[ \begin{matrix} \mathbf{p} &amp; \mathbf{v} &amp; \mathbf{r} &amp; \mathbf{w} \end{matrix} \right]^T$. To get that you need a higher level controller to calculate a trajectory $\pi = (\mathbf{x}[], \mathbf{u}[], \tau)$ with $\mathbf{x} : [0, \tau] \rightarrow \mathcal{X}$, $\mathbf{u} : [0, \tau] \rightarrow \mathcal{U}$ for the state-space $\mathcal{X}$ and control space $\mathcal{U}$ and some travel time $\tau$. This trajectory will give you the desired angles at any given moment.</p>
+
+<p>Unfortunately there are a lot of ways to calculate this trajectory. One possibility is to look at my own work in this area. Specifically my paper titled <a href="http://arl.cs.utah.edu/research/krrtstar/" rel="nofollow">Kinodynamic RRT*: Asymptotically Optimal Motion Planning for Robots with Linear Dynamics</a>.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2260" data-toggle = "popover">
+				<p>user name : DaemonMaker</p>
+				<p> user reputation : 3321</p>
+				<p class = "tagcontent" id = "usertaginfo-2260">{'control': 4, 'stereo-vision': 15, 'None': 271, 'computer-vision': 15, 'battery': 7, 'cameras': 15, 'research': 4, 'troubleshooting': 7}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2260" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2260" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2260">
+					<img id="start_img-2260" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2260">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

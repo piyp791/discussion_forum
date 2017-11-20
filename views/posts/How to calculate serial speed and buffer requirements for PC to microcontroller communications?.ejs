@@ -1,0 +1,338 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to calculate serial speed and buffer requirements for PC to microcontroller communications?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-237" class = "post">
+			<h2>Question</h2>
+			<div id="vote-237" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 2883</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to calculate serial speed and buffer requirements for PC to microcontroller communications?</h2>
+<p>A common scenario is to have a PC that sends commands to a microcontroller via RS232.  My PC program is sending commands (each of which are composed of multiple bytes) as fast as it can to a small robot.  The microcontroller on the robot is a Parallax Propellor.</p>
+
+<p>I have noticed that if I don't process bytes quickly enough on the microcontroller side of things, it can very quickly overflow the default buffers in the popular serial port drivers that are available for the Propellor. (The buffers are generally anywhere from 16 to 256 bytes).  I can arbitrarily increase these buffers or create my own larger circular buffer, but I would like to have a more methodical approach to determining appropriate size requirements and/or the minimal amount of time I can wait before pulling bytes out of the serial port driver buffer.</p>
+
+<p>At 1st glance:</p>
+
+<ul>
+<li>115200 == 115.2 bits per millisecond == ~12.8 bytes per millisecond (assuming 1 stop bit)</li>
+</ul>
+
+<p><strong>1) Is that a valid way to calculate timing for serial transmissions?</strong></p>
+
+<p>Also, given my specific setup:</p>
+
+<ul>
+<li>PC Program &lt;--> Bluetooth Serial Profile Driver &lt;--> Bluetooth Transceiver &lt;-<em>*</em>-> BlueSMIRF Wireless Modem &lt;--> Parallax Propellor Program</li>
+</ul>
+
+<p><strong>2) What is the maximum amount of data I can send for a given period of time consistently without eventually running in to problems?</strong></p>
+
+<p>Maybe I'm over complicating things, but it seems like there are potentially multiple buffers involved in the transmission chain above.  How do others commonly deal with this? Do they throttle the PC sending to a known safe rate? Implement flow control?  If implementing flow control, how does that affect bandwidth and response times?</p>
+
+<p>(If it matters, my experiment is to use a joystick on the PC to control multiple servos with instant reaction to the joystick movements. So every small movement of the joystick results in multiple commands being sent to the microcontroller. The commands are not just simple positional commands though, they also involve acceleration/deacceleration of servos over time and this is the reason that the microcontroller spends a significant amount of clock cycles before processing new bytes.)</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-237" data-toggle = "popover">
+				<p>user name : kaliatech</p>
+				<p> user reputation : 472</p>
+				<p class = "tagcontent" id = "usertaginfo-237">{'None': 28, 'microcontroller': 5, 'serial': 5, 'rs232': 5}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-237" class = 'collapse'>
+			</div>
+				<textarea id = "speech-237" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-237">
+					<img id="start_img-237" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-237">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-238"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-238" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>There is no right answer to this, and I'm sure you already know (or can guess) all you need to solve this problem. However</p>
+
+<p>The first obvious thing to say is that downstream devices must be capable of dealing with the flow of data, both in the long term and in the short term. In the short term, devices use buffering to cope with the flow. In the long term, the need processing power to act on the data.</p>
+
+<p>One problem you have is that you don't control all of the steps in your chain, so if one of them is causing delays, there might not be much you can do about it, short of replacing it. Hoever, I'd have thought that the Bluetooth serial driver would have a nice big buffer, and would play nice with the transceiver and BlueSMIRF, so it's probably safe to ignore them. I guess the real problem is between the Propeller and the PC.</p>
+
+<p>What seems to be happening in your case is that the interaction between the data producer and the consumer is producing unpredictable queue lengths, and you would like to apply some proper theory to that.</p>
+
+<p>Interestingly, studies have been done on exactly this problem with regards to queuing at restaurants, E.G. <a href="http://www.ipedr.com/vol6/11-A00030.pdf" rel="nofollow">Case Study for Restaurant Queuing Model</a> and <a href="http://faculty.chicagobooth.edu/laurens.debo/Research/Papers/Debo-Veeraraghavan-Sputtering-Equilibria-July-2012.pdf" rel="nofollow">Equilibrium in Queues under Unknown Service Times and Service Value</a>. But there are easier to understand resources online, like <a href="http://www.win.tue.nl/~iadan/queueing.pdf" rel="nofollow">Queueing Theory</a> <a href="http://www.embedded.com/design/connectivity/4023310/Queueing-Theory-for-Dummies" rel="nofollow">Queueing Theory for Dummies</a>. But the one you really want is probably <a href="http://www.embedded.com/design/other/4024545/How-to-size-message-queues" rel="nofollow"><strong>How to size message queues</strong></a>.</p>
+
+<p>You have a few options:</p>
+
+<ul>
+<li>Just make sure that the PC sends data at an orderly rate. Decide exactly what rate you really need, and don't go above that.</li>
+<li>Use a <a href="http://en.wikipedia.org/wiki/Real-time_operating_system" rel="nofollow">Realtime Operating System</a> on the MCU to make sure that the bytes are being dealt with in a timely manner.</li>
+<li>Implement flow control.</li>
+</ul>
+
+<hr>
+
+<p>But here's my preferred solution. <a href="http://en.wikipedia.org/wiki/IEEE_1355" rel="nofollow"><strong>Spacewire</strong></a>! Or at least use the flow control system from it.</p>
+
+<p>Essentially the downstream device sends bytes to the upstream device stating the number of empty places in its FIFO. This way the data producer only sends what the consumer can cope with.</p>
+
+<p>If you're interested, you can read the full Spacewire standard: <a href="http://ams.cern.ch/AMS/Electronics/Docs/1355-1995.pdf" rel="nofollow">IEEE 1355</a>.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-238" data-toggle = "popover">
+				<p>user name : Rocketmagnet</p>
+				<p> user reputation : 4235</p>
+				<p class = "tagcontent" id = "usertaginfo-238">{'control': 31, 'force': 8, 'multi-agent': 5, 'pid': 29, 'air-muscle': 6, 'uav': 52, 'stepper-driver': 3, 'reliability': 5, 'motor': 12, 'esc': 1, 'mobile-robot': 6, 'ros': 35, 'stepper-motor': 3, 'tuning': 12, 'swarm': 10, 'research': 5, 'platform': 17, 'imu': 4, 'kalman-filter': 49, 'hri': 4, 'None': 266, 'raspberry-pi': 24, 'localization': 7, 'python': 7, 'torque': 3, 'brushless-motor': 28, 'failure': 5, 'force-sensor': 15, 'sensors': 20, 'pwm': 10, 'wireless': 10, 'servos': 7, 'wifi': 24, 'simulation': 6, 'servomotor': 11, 'particle-filter': 0, 'sensor-fusion': 4, 'automatic': 12, 'software': 17}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-238" class = 'collapse'>
+			</div>
+				<textarea id = "speech-238" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-238">
+					<img id="start_img-238" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-238">Comment</button>
+			<br><div id = "ans-312"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-312" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I'd suggest two possible approaches.</p>
+
+<ol>
+<li><p>Use a 'heartbeat' to transfer a well known state packet at a fixed frequency that fits within your 'speed budget'.  In this case, you never send ad hoc messages directly from the PC or MCU, all you can do is update the state packet which will be sent at the scheduled time.</p></li>
+<li><p>Put a hard limit on your 'transmission budget' and enforce it.  E.g. you can only send one packet every 100 ms and if a 2nd packet is submitted before 100 ms has expired, its transmission is delayed until the 100 ms timeout (e.g. quantum) has expired.  This requires you to add messages to a queue and then send from the queue at a fixed rate.  Similar in approach to the heartbeat in #1 but a bit more efficient since data isn't sent when it hasn't changed.  The downside of this design is if you are oversending, you build higher and higher latencies into your communications and if you have variable bursty communication the communications latency can vary widely.</p></li>
+</ol>
+
+<p>I tend to work with #1 to send data from the MCU since the algorithm is simple and small.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-312" data-toggle = "popover">
+				<p>user name : Jay Beavers</p>
+				<p> user reputation : 969</p>
+				<p class = "tagcontent" id = "usertaginfo-312">{'None': 68}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-312" class = 'collapse'>
+			</div>
+				<textarea id = "speech-312" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-312">
+					<img id="start_img-312" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-312">Comment</button>
+			<br><div id = "ans-376"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-376" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I think the form of your question is wrong.  The problem is not that you've improperly calculated how much data-per-second can be thrown at the microcontroller; it's that you have no way for the microcontroller to indicate its readiness to receive the next command.  </p>
+
+<p>To put it another way, if you attempt to solve this problem by precisely calculating how quickly to send data, you will inevitably do one of the following things:</p>
+
+<ol>
+<li>send less data than the microcontroller can handle</li>
+<li>send more data than the microcontroller can handle (and in the worst case, it will be only <em>very</em> slightly more so that the buffer takes an hour to overrun and leads you to debug something completely unrelated)</li>
+</ol>
+
+<p>The solution is for your microcontroller to provide feedback -- flow control.  In the most basic example just send back a single character representing command completion (@Rocketmagnet's SpaceWire suggestion would be the most robust, but also heavy handed).</p>
+
+<p>Most likely, you can afford to have a few commands in the buffer.  So, the calculation you should do is to divide your buffer size by the size of the largest command you'll send, then subtract 1 (or more) for safety.  That will tell you the greatest allowable difference between commands sent and acknowledgements received, and will allow you to work at maximum speed by keeping the buffer filled.</p>
+
+<h2>Example</h2>
+
+<p>Say that your longest possible command is 7 bytes ("fw 4.32") or some such, and that you have a 64-byte buffer.  That means you can fit 9 commands in the buffer ($7 \times 9 = 63 &lt; 64$), but for safety you'll subtract one and only allow 8 commands.  Here's some python psudeocode:</p>
+
+<pre><code>MAX_UNACKED = 8  # constant, how many un-acked commands to send
+unacked = 0      # number of un-acked commands that have been sent
+while (true):
+    # can send up to MAX_UNACKED commands as we like
+    if MAX_UNACKED &gt; unacked:
+        send_command()
+        unacked = unacked + 1
+
+    # assume that the ack is a single character, we don't care which
+    acks = receive_response()      # receive a string of characters
+    unacked = unacked - len(acks)  # number of characters = number of acks
+</code></pre>
+
+<p>Note that this psuedocode is an example of spin blocking and that there are better ways to wait for input... but which one specifically will depend on how your PC code works.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-376" data-toggle = "popover">
+				<p>user name : Ian</p>
+				<p> user reputation : 9640</p>
+				<p class = "tagcontent" id = "usertaginfo-376">{'planning': 10, 'None': 809, 'power': 1, 'algorithm': 10, 'battery': 1, 'slam': 7, 'coverage': 10, 'mobile-robot': 9, 'sensors': 9}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-376">Load Comments</button></br>
+			<div id = "commentsection-376" class = 'collapse'>
+			<div id = "comment-428" class = "comment">
+				<p>Thanks, this is a great answer. However, the delay of waiting for an "ack" type message is quite significant. I was hoping to avoid it, but perhaps it is simply unavoidable for 100% reliability.  
+
+I agree the Spacewire protocol suggested by Rocketmagnet looks very robust, but perhaps too much for what I need.</p>
+			</div>
+			<div id = "comment-438" class = "comment">
+				<p>Well, remember that you don't need to wait for each command to be ack'd.  You can send as many commands as you have buffer space, and *then* start sending one message per ack received.  That should eliminate any delays (by keeping the microcontroller command queue full) but prevent you from overrunning the buffer -- the original problem.</p>
+			</div>
+			</div>
+				<textarea id = "speech-376" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-376">
+					<img id="start_img-376" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-376">Comment</button>
+			<br><div id = "ans-379"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-379" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Instead of calculating the speed requirement (which may vary from time to time/comp to comp and whenever you change the code), there are some other things you can do:</p>
+
+<ul>
+<li><p>Have your  C <em>request</em> input by sending interrupts to the master device (in this case, it's a PC--you may not need to use interrupts, just keep a port reserved). You can either have the master device buffer the outputs (easier to do that with a pc--effectively unlimited buffering), or you can just discard them unless necessary.</p></li>
+<li><p>With your scenario, it's better to get rid of buffering entirely. Accept the inputs to the   C via the interrupt pin. Have some flag variable that basically says "need input" on the  C. If this flag is set, the   C will accept the input. Otherwise, it will just discard it. This way, all the input is rapidly consumed (keeping buffers free), but not all is used. For efficiency, adjust the timing to the approximate baud of the entire setup. Instead of discarding it, you may wish to code your own buffer-type thing--have a small array in which a few inputs are stored. Now, you have gotten rid of all the upstream buffers, and have a single "artificial" buffer on the  C--over which you have complete control.</p></li>
+<li><p>It may be better to keep all computations on the pc and use the  C as a simple slave controller--give it simple motion/position commands that can be piped directly to the motors. If you have enough interrupt pins/interrupt MUXing, you may want to send these commands via interrupts for faster response.</p></li>
+</ul>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-379" data-toggle = "popover">
+				<p>user name : Manishearth</p>
+				<p> user reputation : 1068</p>
+				<p class = "tagcontent" id = "usertaginfo-379">{'underwater': 30, 'None': 53, 'protection': 64, 'motor': 64, 'auv': 30, 'actuator': 11}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-379" class = 'collapse'>
+			</div>
+				<textarea id = "speech-379" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-379">
+					<img id="start_img-379" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-379">Comment</button>
+			<br><div id = "ans-381"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-381" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><blockquote>
+  <p>At 1st glance:</p>
+  
+  <p>115200 == 115.2 bits per millisecond == ~12.8 bytes per millisecond
+  (assuming 1 stop bit)</p>
+  
+  <p>Is that a valid way to calculate timing for
+  serial transmissions?</p>
+</blockquote>
+
+<p>Very simplistically, this is OK - but don't forget any start and parity bits also, and don't forget any protocol overhead along the bluetooth links</p>
+
+<blockquote>
+  <p>Also, given my specific setup:</p>
+  
+  <p>PC Program &lt;--> Bluetooth Serial Profile Driver &lt;--> Bluetooth
+  Transceiver &lt;-*-> BlueSMIRF Wireless Modem &lt;--> Parallax Propellor
+  Program</p>
+</blockquote>
+
+<p>I think it is reasonable to assume that the PC through to the Modem are capable of handling the traffic at 115200 bps, so you can eliminate these from the equation.</p>
+
+<p>However, having multiple hops like this does prevent use of flow-control signals, without introducing response messages... which would slow down response time.</p>
+
+<p>Now, take the worst case, of no protocol overhead, 115200 bps means your Parallax will be receiving a byte every 69us - adding in start, stop or parity bits will slow this rate down a little bit, but assuming worst case gives you some leeway.</p>
+
+<p>This means that your controller has to handle receiving a byte every 69us, as well as doing its normal stuff (calculations etc).</p>
+
+<p>But in reality, you will be sending a message string of (n) bytes, which need to be buffered, and processed as a string - whilst still doing the normal stuff.  Calculating the buffer is an art in itself, but I would normally work on (a minimum of) twice the size of the longest string (if you have the RAM space).  Anything less has the potential for losing messages, if one is not processed before reception of the next commences.</p>
+
+<p>If you are restricted to only the length of the longest message, you need to be 100% sure that you can process that message between the receipt of the last byte, and the receipt of the first byte of the next message. (Obviously less of a problem with smaller messages).</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-381" data-toggle = "popover">
+				<p>user name : Andrew</p>
+				<p> user reputation : 570</p>
+				<p class = "tagcontent" id = "usertaginfo-381">{'None': 41}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-381" class = 'collapse'>
+			</div>
+				<textarea id = "speech-381" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-381">
+					<img id="start_img-381" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-381">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

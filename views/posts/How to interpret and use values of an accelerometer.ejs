@@ -1,0 +1,202 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to interpret and use values of an accelerometer
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11217" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11217" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 358</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to interpret and use values of an accelerometer</h2>
+<p>Currently, I'm building a quadcopter using Arduino. To make the copter able to stabilize I use an mpu6050 accelerometer + gyroscope.</p>
+
+<p>I understand that I can get the angle of rotation by integrating the values of the gyro. I understand too that I can calculate the angle using the amount of G working on the different axes of the accelerometer.</p>
+
+<p>But from the accelerometer I get values from around 1000 to 14000.</p>
+
+<ul>
+<li>What are these values?</li>
+<li>How can I get the angle from these values?</li>
+<li>How can I turn these values into motor rotation?</li>
+</ul>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11217" data-toggle = "popover">
+				<p>user name : Raoul1234</p>
+				<p> user reputation : 16</p>
+				<p class = "tagcontent" id = "usertaginfo-11217">{'None': 0, 'accelerometer': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11217">Load Comments</button></br>
+			<div id = "commentsection-11217" class = 'collapse'>
+			<div id = "comment-20280" class = "comment">
+				<p>This topic is not about robotics. It is about arduino and mpu6050. you should look at data sheet of mpu6050. https://www.invensense.com/wp-content/uploads/2015/02/MPU-6000-Datasheet1.pdf.</p>
+			</div>
+			</div>
+				<textarea id = "speech-11217" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11217">
+					<img id="start_img-11217" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11217">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-11218"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11218" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">8</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You should really <a href="https://www.invensense.com/wp-content/uploads/2015/02/MPU-6000-Datasheet1.pdf" rel="nofollow noreferrer">read the datasheet</a> that <a href="https://robotics.stackexchange.com/questions/11217/how-to-interpretet-and-use-values-of-an-accelerometer#comment20280_11217">acs linked</a> in a comment to your question. </p>
+
+<p>The device you're using has a set of 16-bit analog to digital converters (ADCs) that convert the actual outputs of the gyroscopes and accelerometers to a digital format the microcontrollers can process. </p>
+
+<p>The device outputs positive and negative accelerations and speeds, which means the output needs to be interpreted as a <em>signed</em> 16-bit integer. That is, the raw (unsigned) 16-bit number would normally read from 0 to 65535, but it's <em>signed</em> so you need to interpret the output as existing between -32768 to 32767.</p>
+
+<p>Once you get the raw output put into the correct signed integer output, you need to <em>scale</em> it to get the reading of the sensor. This depends on the "full scale selection" you make when you configure the device. On page 12 of the datasheet, you can see, for the gyroscope, the "Sensitivity Scale Factor" for each selection.</p>
+
+<p>$$
+\begin{array}{}
+\mbox{PARAMETER}                &amp; \mbox{CONDITIONS} &amp; \mbox{TYP} &amp; \mbox{UNITS} \\
+\mbox{Sensitivity Scale Factor} &amp; \mbox{FS_SEL=0}   &amp; 131        &amp; \mbox{LSB}\left(^\circ /s\right) \\
+                                &amp; \mbox{FS_SEL=1}   &amp; 65.5       &amp; \mbox{LSB}\left(^\circ /s\right) \\
+                                &amp; \mbox{FS_SEL=2}   &amp; 32.8       &amp; \mbox{LSB}\left(^\circ /s\right) \\
+                                &amp; \mbox{FS_SEL=3}   &amp; 16.4       &amp; \mbox{LSB}\left(^\circ /s\right)
+\end{array}
+$$</p>
+
+<p>So you take your signed integer, divide by the value given for the scale factor (again, based on how you have the device configured), and get your reading. </p>
+
+<p>If you've got the maximum value, 32767, and you've got FS_SEL=2, then your sensor is reading (32767/32.8) = 998.99 $^\circ /s$, which is approximately the +1000 degrees per second limit for that FS_SEL setting. </p>
+
+<p>The accelerometer scale settings are given on the next page (13), but generally speaking it works the same. The accelerometer reading is also a signed 16-bit output. </p>
+
+<hr>
+
+<p>As you correctly stated in your question, you need to numerically integrate the outputs to get to positions and angles. The accelerometer outputs an acceleration, so you need to integrate once to get speed and then again to get position. The gyroscope outputs angular velocities and thus needs to be integrated once to get to angular positions (angles). </p>
+
+<p>Generically, numeric integration is done as follows:</p>
+
+<p>$$
+\mbox{output}_k = \mbox{output}_{k-1} + \mbox{input}_k \Delta T \\
+$$</p>
+
+<p>The current value for the integrated term is the previous value plus the rate term multiplied by the sample interval. So, for example, current speed is previous speed plus acceleration multiplied by the sample interval. Angle is the previous angle plus angular speed multiplied by the sample interval. </p>
+
+<hr>
+
+<p>I'm not sure what your background is or how you got to work on this project, but getting from the output of an inertial measurement unit (IMU, a device that gives accelerometer and gyro readings) to a flight controller is quite a step. </p>
+
+<p>There are lots of questions here (and elsewhere) about quadrotor flight controllers. Generally speaking, most flight controllers operate on PID control loops. You provide, via control inputs, the desired angular positions, angular rates, linear speeds, etc., as the "reference input." The controller subtracts the IMU feedback from the reference input to get a "control error." </p>
+
+<p>If you want to go forward, and the vehicle is stationary, the control error is (+v - 0) = +v, which means the vehicle should move forward. You can modify the error terms by multiplying the errors by "control gains." The gains scale the error terms. Bigger gains make the controller "think" there is more error and force a larger response.</p>
+
+<p>A lot of tuning is trial and error; too little throttle and you don't get a response. <a href="https://www.youtube.com/watch?v=jfuDx2hRLlQ" rel="nofollow noreferrer">Too much throttle and the system goes unstable</a>. </p>
+
+<p>Most of what I've said about controls and controllers is hand waving; if you don't have controls experience then I'd recommend doing <em>just</em> a controls project; if you don't have programming experience, I'd recommend doing <em>just</em> a programming project, etc. </p>
+
+<p>Trying to go from no experience to building your own quadrotor from scratch is a good way to get really discouraged fast. There are <em>so many</em> things to try to manage that it's not a good way to build fundamental experience.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11218" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-11218">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11218">Load Comments</button></br>
+			<div id = "commentsection-11218" class = 'collapse'>
+			<div id = "comment-20288" class = "comment">
+				<p>He's right I'm already at my third semester with my quadcopter, it's really frustrating having to retune the PID controller every crash, I was almost done with the obstacle avoidance two weeks ago but a single crash brought me back close to square 1 and there's only 1 week left this semseter. Takes me 2 weeks to three months each crash to get the quadcopter hovering properly again by retuning the PID's. Quadcopters are really hard but you are sure to learn a lot :) Getting the quadcopter to hover is not enough, checking if the response time for commanding each axis is fast enough, is needed.</p>
+			</div>
+			<div id = "comment-20289" class = "comment">
+				<p>@user123456098 - Gosh that seems excessive. Is your frame deforming after a crash? Bending props? Is the IMU rigidly mounted? (Screwed and not velcro or clips?) I would expect the PID controllers to be able to make up small changes. 3 months (or even weeks) to re-tune makes it seem like it's a completely different system after a crash.</p>
+			</div>
+			<div id = "comment-20291" class = "comment">
+				<p>Yes, sometimes part of the cage housing the computer and IMU bends or breaks, same with the props. The cage is modular (3D printed) via a stacking design, however is mounted only using zip ties. There is a consistent behaviour during every crash with one of the axis making fast but minute oscillations. The quadcopter is still flyable but without proper callibration it would be hard to steer the quadcopter consistently during obstacle avoidance.</p>
+			</div>
+			<div id = "comment-20292" class = "comment">
+				<p>Also making the quadcopter hover is less difficult than making the quadcopter hover while simultatenously making sure that the reaction time of the quadcopter is fast enough when making maneuvers. The latter is what makes my tuning take so long haha.</p>
+			</div>
+			<div id = "comment-20293" class = "comment">
+				<p>@user123456098 - Is it always the same axis, or a random axis that has the oscillation? Again, it sounds to me like maybe the IMU/control board isn't fastened *rigidly* to the body. Hot glue, velcro, or other flexible fasteners aren't sufficient. Beyond that, I'd check that your integral/derivative gains are in the [right ballpark](https://en.wikipedia.org/wiki/Ziegler%E2%80%93Nichols_method) - Integral gain should be about 16x larger than derivative gain. (This thumbrule assumes you're calculating the integral/derivative errors correctly, by including sample times in the error calculations).</p>
+			</div>
+			<div id = "comment-20294" class = "comment">
+				<p>@user123456098 - Ah I see. We can talk about this more in [chat] if you want. Generally speaking, I'd guess that, unless you're using a high-end 3d printer, build quality could vary on the parts to the point that masses and moments of inertia could vary by an appreciable amount, meaning that the parts might not be interchangeable.</p>
+			</div>
+			<div id = "comment-20295" class = "comment">
+				<p>It's alright :) it was nice talking to you again :)</p>
+			</div>
+			</div>
+				<textarea id = "speech-11218" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11218">
+					<img id="start_img-11218" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11218">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

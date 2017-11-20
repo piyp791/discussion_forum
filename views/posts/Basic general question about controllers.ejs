@@ -1,0 +1,303 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Basic general question about controllers
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-6817" class = "post">
+			<h2>Question</h2>
+			<div id="vote-6817" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 140</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Basic general question about controllers</h2>
+<p>Suppose I have a mechanical system which is free to move on a given rail [-5m, 5m] like a motorized cart. The whole system can be mathematically expressed through a <em>linear timeinvariant</em> system equations.</p>
+
+<p>If I need to <em>control</em> <em>only</em> the position (for example saying the controller: "move to +2.3") I can simply design a PID controller that, given a set point moves the cart to that position.</p>
+
+<p>Now I need much more and I want to <em>control</em> the <em>position</em> <strong>and</strong> the <em>velocity</em> of the cart. So I need for example to say: "move to +2.3 with a specific velocity's profile". Of course the <em>vel = 0</em> at the end position.</p>
+
+<p>Question: how should I design such a controller? Do I need specifically a special type of controller? Or I have a huge choice?</p>
+
+<p>Any help, graph, link and example is really appreciated.</p>
+
+<p>Regards</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6817" data-toggle = "popover">
+				<p>user name : Dave</p>
+				<p> user reputation : 294</p>
+				<p class = "tagcontent" id = "usertaginfo-6817">{'control': 10, 'quadcopter': 11, 'None': 6, 'pid': 13, 'uav': 3, 'matlab': 0, 'mobile-robot': 0, 'ros': 2, 'movement': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-6817">Load Comments</button></br>
+			<div id = "commentsection-6817" class = 'collapse'>
+			<div id = "comment-9765" class = "comment">
+				<p>Wouldn't it be position OR velocity but not both ? I fail to see how providing a velocity profile doesn't, by default, provide a position to reach.</p>
+			</div>
+			<div id = "comment-9776" class = "comment">
+				<p>Hi Dave, it seems you did not catch the take home message of my answer to the [question](http://robotics.stackexchange.com/questions/5260/the-aerial-refueling-problem-sketch-of-a-feedback-controller) you posted in the past :-)</p>
+			</div>
+			<div id = "comment-9778" class = "comment">
+				<p>They are different problems to me: at the time I was interested in keeping a distance constant and control velocity. Now I need to control both. I have already tried to solve this problem with your answer but to me they are different problems</p>
+			</div>
+			<div id = "comment-9781" class = "comment">
+				<p>The principle is the same, instead.
+Of course the control can be improved, but if you provide a proper varying position profile as reference - and the controller is correctly tuned - then you'll track the velocity as well.</p>
+			</div>
+			</div>
+				<textarea id = "speech-6817" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6817">
+					<img id="start_img-6817" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6817">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-6825"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6825" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>PID would work just fine. Your system can be easily modeled as a linear system and is relatively easy to control. When you want to choose a control method, you need to know the dynamics of your system, computation resources, and how much you wanna go deep into mathematical stuff(one reason why so many people choose PID). </p>
+
+<p>To solve your control problem using PID, you need to define your X and Y as functions of time based on your desired velocity. So you will have:
+$$ X(t), Y(t)$$</p>
+
+<p>Or in case of moving on a rail, define travel distance as a function of time. Then in each iteration of your control loop you know where the cart was supposed to be and where it really is. The difference is the error that you should put in PID equation. It might not always be so straight forward. In most of multi-output control systems error is a mix of multiple state errors(such as path tracking in 2D with differential wheel robots). </p>
+
+<p>The Matlab code below might help you better understand the process. In case you don't have access to Matlab, Octave should be able to run the code too(maybe with some small adjustments).</p>
+
+<p>I've assumed that there is a rail that looks like this:
+<img src="https://raw.githubusercontent.com/BarzinM/PID-on-rails/master/path.png" alt="Path"></p>
+
+<p>And you want to move on it with a velocity profile like this:
+<img src="https://raw.githubusercontent.com/BarzinM/PID-on-rails/master/velocity.png" alt="Velocity"></p>
+
+<p>Then follow this example:</p>
+
+<pre><code>clc; clear all; close all
+
+%% Path setup
+path_step = transpose(0:.01:500);
+x_path = path_step/17 + 2*sin(path_step/50);
+y_path = sqrt(path_step) + 5*sin(path_step/10);
+
+position_matrix = [x_path,y_path];
+distance_between_points = diff(position_matrix,1);
+dist_from_vertex_to_vertex = hypot(distance_between_points(:,1), distance_between_points(:,2));
+cumulative_dist_along_path = [0; cumsum(dist_from_vertex_to_vertex,1)];
+
+
+%% Cart setup
+saturation_limit = 4;
+motor_coef = .5;
+motor_model = @(input_command) min(saturation_limit, max(-saturation_limit, input_command * motor_coef)) + .3 * randn(1);
+k_p = 3;
+k_i = 1;
+k_d = .1;
+
+
+%% Simulation and initial conditions setup and array initialization
+time_step = .1;
+sim_time = 100;
+t = transpose(0:time_step:sim_time);
+distance_actual = zeros(size(t));
+err = zeros(size(t));
+
+err_integrated = 0;
+err_derivative = 0;
+distance_actual(1) = 20; % actual starting point
+
+
+%% Desired trajectory following pattern
+velocity = .5 + 2*sin(t/13).^8;
+velocity=[velocity(1:end-100); zeros(100,1)];
+reference_starting_point = 40;
+desired_travel_distances = cumsum(velocity .* time_step,1) + reference_starting_point; 
+desired_trajectory = interp1(cumulative_dist_along_path, position_matrix, desired_travel_distances);
+x_pos = desired_trajectory(:,1);
+y_pos = desired_trajectory(:,2);
+
+%% Run simulation
+for sim_step = 1:sim_time/time_step
+    err(sim_step) = desired_travel_distances(sim_step) - distance_actual(sim_step); % calculate error
+    err_integrated = err_integrated + err(sim_step) * time_step;
+    if sim_step&gt;1
+        err_derivative = (err(sim_step) - err(sim_step-1)) / time_step;
+    end
+    u_motor = k_p * err(sim_step) + k_d * err_derivative + k_i * err_integrated; % apply PID magic and calculate control input
+    actual_velocity(sim_step) = motor_model(u_motor); % Send the command to the motor and it will have a new velocity based on that
+    distance_actual(sim_step+1) = actual_velocity(sim_step) * time_step + distance_actual(sim_step); % calculate traveled distance from new
+end
+
+
+%% How good it follows the desired velocity pattern
+figure()
+title('Velocity Profile')
+xlabel('Simulation Step')
+ylabel('Velocity')
+plot(velocity,'LineWidth',3)
+hold on
+plot(actual_velocity, ':')
+hold off
+legend('Desired', 'Actual')
+
+
+%% Error analysis
+figure()
+title('Error')
+xlabel('Simulation Step')
+ylabel('Error')
+plot(err)
+
+
+%% Make an animation
+actual_position = interp1(cumulative_dist_along_path, position_matrix, distance_actual);
+figure()
+title('Simulation')
+xlabel('X')
+ylabel('Y')
+plot(x_path, y_path)
+hold on
+h1 = plot(x_pos(1), y_pos(1), 'rx');
+h2 = plot(actual_position(1, 1), actual_position(1, 2), 'ko');
+legend('Path', 'Desired Position', 'Actual Position')
+disp('Press key ...')
+waitforbuttonpress()
+for sim_step=1:sim_time/time_step
+    delete(h1)
+    delete(h2)
+    clc
+    disp('Time:')
+    t = sprintf('%0.3f', sim_step * time_step);
+    disp(t)
+    h1 = plot(x_pos(sim_step), y_pos(sim_step), 'rx');
+    h2 = plot(actual_position(sim_step, 1), actual_position(sim_step, 2), 'ko');
+    drawnow
+    pause(.05)
+end
+clc
+disp('Finished!')
+</code></pre>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6825" data-toggle = "popover">
+				<p>user name : BarzinM</p>
+				<p> user reputation : 316</p>
+				<p class = "tagcontent" id = "usertaginfo-6825">{'None': 17}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-6825">Load Comments</button></br>
+			<div id = "commentsection-6825" class = 'collapse'>
+			<div id = "comment-9768" class = "comment">
+				<p>Thanks for the Matlab code. That is very important to understand how the PID in that case works</p>
+			</div>
+			<div id = "comment-9770" class = "comment">
+				<p>Could you please provide a simple simulink diagram or something like that for the case above, please?</p>
+			</div>
+			<div id = "comment-9789" class = "comment">
+				<p>The diagram is basically the same that you use for any PID. The only difference is that your desired state keeps changing. How to add this changing state in Simulink depends on how you want to define your desired state. In simple case, you can make a block that takes the time and spits out the distance. Substitute that with the constant block that you had before.</p>
+			</div>
+			</div>
+				<textarea id = "speech-6825" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6825">
+					<img id="start_img-6825" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6825">Comment</button>
+			<br><div id = "ans-6858"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6858" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The best control you can design is "exact feed forward linearization based on differential flatness". This is a complete approach to design control laws for flat systems. </p>
+
+<p>Just PID is not a good idea : you will get overshoot and you do not master precisely position/velocity.</p>
+
+<p>Flatness is a generalization on controllability. Hence you are sure that your system can achieve any position/velocity profile provided you remain inside the physical constraints.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6858" data-toggle = "popover">
+				<p>user name : Emmanuel</p>
+				<p> user reputation : 21</p>
+				<p class = "tagcontent" id = "usertaginfo-6858">{'None': 2}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-6858">Load Comments</button></br>
+			<div id = "commentsection-6858" class = 'collapse'>
+			<div id = "comment-9808" class = "comment">
+				<p>That sounds really interesting. Do you have a paper or can you give me some right tips to get start from?</p>
+			</div>
+			</div>
+				<textarea id = "speech-6858" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6858">
+					<img id="start_img-6858" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6858">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

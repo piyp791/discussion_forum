@@ -1,0 +1,172 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Performing inverse kinematics based on a displacement of the end effector?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9686" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9686" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 77</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Performing inverse kinematics based on a displacement of the end effector?</h2>
+<p>I think i have an simple problem, but can't my head around how i should resolve it...</p>
+
+<p>My setup looks like this: </p>
+
+<p><a href="https://i.stack.imgur.com/fMAEU.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/fMAEUm.jpg" alt="enter image description here"></a>
+<a href="https://i.stack.imgur.com/BbdFh.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/BbdFhm.jpg" alt="enter image description here"></a></p>
+
+<p>The grey box on end effector is supposed to be an camera, which measures a dx,dy,dz between the object and the camera. These are used to  position the camera such that dz between the object and the camera is equal to 0.5, and dx = dy = 0. </p>
+
+<p>I know that I using inverse kinematics can determine the Q which positions it according the given rotation and position, but what if I only provide it a position only?</p>
+
+<p>How do extract all Q that make dx = dy = 0, and dz = 0.5, while keeping the object in sight at all time?</p>
+
+<p>An example could be if an object was placed just above the base (see second image), it should then find all possible configurations which in this case would consist of the arm rotating around the object, while the camera keeps the object in sight...</p>
+
+<p><strong>Update</strong></p>
+
+<p>I just realized a possible solution would be to create a sphere with the object in centrum  an radius of dz, and then use this sphere to extract all pairs of rotations and position... But how would one come by with such an solution?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9686" data-toggle = "popover">
+				<p>user name : James potter</p>
+				<p> user reputation : 226</p>
+				<p class = "tagcontent" id = "usertaginfo-9686">{'stereo-vision': 3, 'visualization': 1, 'None': 0, 'inverse-kinematics': 11, 'algorithm': 5, 'c++': 4, 'kinematics': 5, 'matlab': 1, 'robotic-arm': 18, 'jacobian': 3, 'motion-planning': 8}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-9686" class = 'collapse'>
+			</div>
+				<textarea id = "speech-9686" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9686">
+					<img id="start_img-9686" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9686">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9689"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9689" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You always have both position ad orientation. In your case the orientation can be chosen by you to be constant (e.g. 0, 0, 0), in which case you will be not be able to track the object if it is for example above the camera.</p>
+
+<p>Th camera measures the relative position of the object (relative to the camera). You subtract the distance on the z axis that you want to keep and you add the difference to the current poseition of the robot. Morever you can calculate the angle how much the endefector has to rotate to face the object. Eg. If the camera measures:
+Dx = 0,5, dy=0 and dz=0,5 then you would add the dx to the current tcp position (since dz=0,5 which is the distance you want to keep). After that you can calulate the change in orientation needed to face the object by</p>
+
+<p>$RotY = atan2(dx,dz) = atan2(0.5,0.5) = 45deg$</p>
+
+<p>You add this (also calculate RotX and RotZ if not defined as "tool axis") to the current orientation of the end-effector and give it as reference (together withe the changed position) value for the next motion.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9689" data-toggle = "popover">
+				<p>user name : 50k4</p>
+				<p> user reputation : 2800</p>
+				<p class = "tagcontent" id = "usertaginfo-9689">{'geometry': 0, 'None': 193, 'kinematics': 0, 'robotic-arm': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9689">Load Comments</button></br>
+			<div id = "commentsection-9689" class = 'collapse'>
+			<div id = "comment-17191" class = "comment">
+				<p>What about my solution.. It seem like your solution only provide one solution..</p>
+			</div>
+			<div id = "comment-17194" class = "comment">
+				<p>Your inverse knematics should provide all solutions to the IK problem. This is independent of all the tracking functionality. For one given position (not considering the camera axis rotation) there is only one orientation that faces the object. You can define the spehre as you mentioned and get different positions and for the different orientations. You can write the shere equation with a known center point and radius. You can descretize it and each descerte point on the surface you can calculate the orientation which faces the object and use the IK function the get the Q angles.</p>
+			</div>
+			<div id = "comment-17195" class = "comment">
+				<p>I am still confused... Is it a bad solution or a good solution. 
+I am still struggling with getting the rotation matrices from each point on the sphere..</p>
+			</div>
+			<div id = "comment-17196" class = "comment">
+				<p>You do not need rotation matrices. You just need then x rotation angle and y rotation angle (if the z axis is your tool axis). Simplofy the problem. Consider a circle first, not a shpere (only on orientation, fix the other one). Make a sketch calculate the one angle for orientation geometrically then go on and to a sphere ad get the second angle similarly. It is not a good or a bas solution, it is one way of modelling the same thing. It as as good as any other solution.</p>
+			</div>
+			<div id = "comment-17197" class = "comment">
+				<p>I am not sure I understand why I don't need a rotation matrix, shouldn't i somehow determine my desires rotation aswell?
+Trying to simplify the problem seems a good idea, but i am not sure which angles you want me to compute,  The angle between the orientation vector and coordinate angle (x - axis,y-axis,z-axis)  or?</p>
+			</div>
+			<div id = "comment-17198" class = "comment">
+				<p>It seem like i would need an "Up vector" with my orientation vector to compute the desired rotation matrix..</p>
+			</div>
+			<div id = "comment-17199" class = "comment">
+				<p>Let me ask you differently. The IK function needs an angle as an input. Why would you need a rotation matrix? Imagine not a sphere, just a circle around your object, i.e. The sam pronlem in 2D. Determine the orinetationof the end effectro (in this case it has only 1 component)  which faces the object. Then go to 3D and do the same</p>
+			</div>
+			<div id = "comment-17200" class = "comment">
+				<p>The orientation is the vector it self from any point on the circle.  The vector has a x, component and y, component.  and x angle would be  between the vector and the coordinate axis.</p>
+			</div>
+			<div id = "comment-17201" class = "comment">
+				<p>Let us [continue this discussion in chat](http://chat.stackexchange.com/rooms/38772/discussion-between-james-potter-and-50k4).</p>
+			</div>
+			</div>
+				<textarea id = "speech-9689" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9689">
+					<img id="start_img-9689" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9689">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

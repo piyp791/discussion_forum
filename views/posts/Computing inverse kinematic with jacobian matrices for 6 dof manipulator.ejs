@@ -1,0 +1,352 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Computing inverse kinematic with jacobian matrices for 6 dof manipulator
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2760" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2760" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 5034</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Computing inverse kinematic with jacobian matrices for 6 dof manipulator</h2>
+<p>I'm trying to calculate the inverse kinematic for an 6 dof manipulator.</p>
+
+<h3>Task:</h3>
+
+<p>A target point $p_{target} = (x,y,z)^T$ and the orientation $o_{target} = (a, b, c)^T$ are given and I want to get the angle configuration $q = (q_1, q_2, q_3, q_4, q_5, q_6)^T$ for my robot.</p>
+
+<h3>Method:</h3>
+
+<p>For that I try to implement the Jacobian method (with the transposed jacobian matrix) with <a href="http://graphics.cs.cmu.edu/nsp/course/15-464/Fall09/handouts/IK.pdf">this</a> guide and followed the pseudocode at slide 26. But instead using the pseudoinverse of the Jacobian matrix I used the transposed one.</p>
+
+<p>I'll try to compute the Jacobian matrix numerically and analytically, but didn't get a solution (endless loop) for any of them. Here's how I retrieve the Jacobian:</p>
+
+<ul>
+<li><p>Numerically: </p>
+
+<pre><code>private void calculateMatrixNumerically()
+{
+    var deltaTheta = 0.01;
+    var newAxisConfiguration = new AxisConfiguration(
+        this.currentAxisConfiguration.joints[0] + deltaTheta,
+        this.currentAxisConfiguration.joints[1] + deltaTheta,
+        this.currentAxisConfiguration.joints[2] + deltaTheta,
+        this.currentAxisConfiguration.joints[3] + deltaTheta,
+        this.currentAxisConfiguration.joints[4] + deltaTheta,
+        this.currentAxisConfiguration.joints[5] + deltaTheta
+        );
+
+    var ePos = this.kinematic.CalculateDirectKinematic(newAxisConfiguration);
+
+    for (var column = 0; column &lt; this.Columns; column++)
+    {
+        this.M[0, column] = (this.currentPos.Point.X - ePos.Point.X) / deltaTheta;
+        this.M[1, column] = (this.currentPos.Point.Y - ePos.Point.Y) / deltaTheta;
+        this.M[2, column] = (this.currentPos.Point.Z - ePos.Point.Z) / deltaTheta;
+        this.M[3, column] = (this.currentPos.Orientations[0].A - ePos.Orientations[0].A) / deltaTheta;
+        this.M[4, column] = (this.currentPos.Orientations[0].B - ePos.Orientations[0].B) / deltaTheta;
+        this.M[5, column] = (this.currentPos.Orientations[0].C - ePos.Orientations[0].C) / deltaTheta;
+    }
+}
+</code></pre></li>
+<li><p>Analytically:</p>
+
+<pre><code>private void calculateMatrixAnalytically()
+{
+    var peMatrix = calculateJointPositions();
+    var zMatrix = calculateZ();
+
+    for (var column = 0; column &lt; this.Columns; column++)
+    {
+        double[] p_p = new double[3];
+        for(var row = 0; row &lt; zMatrix.Rows; row++)
+        {
+            p_p[row] = peMatrix.M[row, this.Columns-1] - peMatrix.M[row, column];
+        }
+
+        this.M[0, column] = zMatrix.M[1, column] * p_p[2] - zMatrix.M[2, column] * p_p[1];
+        this.M[1, column] = zMatrix.M[2, column] * p_p[0] - zMatrix.M[0, column] * p_p[2];
+        this.M[2, column] = zMatrix.M[0, column] * p_p[1] - zMatrix.M[1, column] * p_p[0];
+        this.M[3, column] = zMatrix.M[0, column];
+        this.M[4, column] = zMatrix.M[1, column];
+        this.M[5, column] = zMatrix.M[2, column];
+    }
+}
+
+/// &lt;summary&gt;
+/// Calculate the positions of every joint.
+/// &lt;/summary&gt;
+/// &lt;returns&gt;The Matrix with the joint coordinate for each joint.&lt;/returns&gt;
+private Matrix calculateJointPositions()
+{
+    Matrix jointPositions = new Matrix(3,6);
+    Position pos;
+
+    for (var joint= 0; joint&lt; this.currentAxisConfiguration.joints.Count(); joint++)
+    {
+        pos = this.kinematic.CalculateDirectKinematic(this.currentAxisConfiguration, joint);
+        jointPositions.M[0, joint] = pos.Point.X;
+        jointPositions.M[1, joint] = pos.Point.Y;
+        jointPositions.M[2, joint] = pos.Point.Z;
+    }
+
+    return jointPositions;
+}
+
+private Matrix calculateZ()
+{
+    // (z0^T-z1^T-z2^T-...-z6^T)
+    var ksEnd = Kinematics.TranslateRobotToWorld();
+    var zMatrix = new Matrix(3, 6);
+
+    for (var column = 0; column &lt; this.currentAxisConfiguration.joints.Count(); column++)
+    {
+        for (var row = 0; row &lt; zMatrix.Rows; row++)
+            zMatrix.M[row, column] = Math.Round(ksEnd.M[row, 2], 7);
+
+        ksEnd = ksEnd.Multiply(
+            Kinematics.TranslateCoordinateSystem(
+            Robo.theta[column] + this.currentAxisConfiguration.joints[column],
+            Robo.d[column],
+            Robo.alpha[column],
+            Robo.a[column])
+            );
+    }
+    return zMatrix;
+}
+</code></pre></li>
+</ul>
+
+<p>Here is the implementation of the Pseudocode:</p>
+
+<pre><code>        do
+        {
+            jacob = JacobiMatrix.GetJacobi(currentPosition, currentAxisConfiguration);
+            jacobiTranspose = jacob.getTransposeMatrix();
+
+            // deltaE = (x2-x1, y2-y1, z2-z1, a2-a1, b2-b1, c2-c1)    
+            deltaE = Position
+                .GetDistanceVector(currentPosition, targetPosition);
+
+            deltaThetas = jacobiTranspose.Multiply(deltaE).
+                                    Scale(beta);
+
+            for (var axis = 0; axis &lt; deltaThetas.Rows; axis++ )
+                currentAxisConfiguration.joints[axis] += deltaThetas.M[axis, 0];
+
+            currentPosition = this.CalculateDirectKinematic(currentAxisConfiguration);
+        } while (Math.Abs(Position.Distance(currentPosition, targetPosition)) &gt; epsilon);
+</code></pre>
+
+<p>where $beta = 0.5$ and $epsilon = 0.0001$</p>
+
+<h3>Problems:</h3>
+
+<p>The transformation matrice should be fine, because it behaves good for the forward kinematic.
+In my opinion the Jacobian matrix must be somehow wrong. I'm not sure if it is correct how I put the orientation data in the numerical calculation. For the analytical computation I didn't have any clue what could be wrong.
+I would be thankful for any advice. An explicit example for calculating the Jacobian would also be very helpful. </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2760" data-toggle = "popover">
+				<p>user name : user3361135</p>
+				<p> user reputation : 26</p>
+				<p class = "tagcontent" id = "usertaginfo-2760">{'None': 0, 'manipulator': 5, 'inverse-kinematics': 5}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2760" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2760" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2760">
+					<img id="start_img-2760" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2760">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-2779"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2779" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">7</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><h3>Disclaimer!</h3>
+
+<p>I will try to solve your problem but it may or may not solve the problem with your code!</p>
+
+<hr>
+
+<p><strong>TL;DR</strong>: Two possible mistake in your code. In your pseudo-code, you are using transpose of jacobian instead of pseudo-inverse of jacobian (as suggested in your referenced slide). The other possible mistake is in the calculation of cross product in your analytical jacobian code.</p>
+
+<hr>
+
+<h3>Long answer for future readers:</h3>
+
+<p>First: In gradient based jacobian approach, if the target point is out of workspace of the robot, your algorithm traps in an infinite loop, trying to reach the error threshold. In inverse methods, jacobian looses rank and program crashes!</p>
+
+<p>Second: Note that under some conditions a 6dof for manipulator there is always a closed form solution that gives you 6 answers for a IK problem of position and orientation. These conditions are as follow:</p>
+
+<ol>
+<li>Three consecutive rotational joint axes are incident (e.g., spherical wrist)</li>
+<li>Three consecutive rotational joint axes are parallel</li>
+</ol>
+
+<p>To give you an idea, consider an anthropomorphic arm. First joint brings the end-effector to a plane that answer lies within and next two joints solve the position problem. The rest of three degrees of freedom cat tackle the orientation part. There is a brief explanation in 7th page of <a href="http://excelsior.cs.ucsb.edu/courses/cs290n_cg_modeling/notes/uiuc_notes/chap4.pdf" rel="nofollow noreferrer">this</a> file.</p>
+
+<p>Three: Regarding your code, I'm not sure if the following is correct (to be very honest, I'm not sure what is happening!).</p>
+
+<pre><code>this.M[0, column] = zMatrix.M[1, column] * p_p[2] - zMatrix.M[2, column] * p_p[1];
+this.M[1, column] = zMatrix.M[2, column] * p_p[0] - zMatrix.M[0, column] * p_p[2];
+this.M[2, column] = zMatrix.M[0, column] * p_p[1] - zMatrix.M[1, column] * p_p[0];
+</code></pre>
+
+<p>To calculate the contribution of $i^{th}$ revolute joint motion to end-effector velocity, the correct way to go is:</p>
+
+<p>$$J_{Li}(q) = z_{i-1}\times (p_{ee}-p_{i-1})$$
+$$J_{Ai}(q) = z_{i-1}$$</p>
+
+<p>where</p>
+
+<ul>
+<li><p>$J_{Li}$ and $J_{Ai}$ are linear and angular velocity of end-effector</p></li>
+<li><p>$q$ is a vector of the current configuration of the robot and </p></li>
+<li><p>$z_{i}$ is the a vector expressing the orientation of the joint in space. If you are using <em>Denavit Hartenberg</em> convention, this will be the first three elements of the third column of DH matrix related to the joint.</p></li>
+<li><p>$p_{i}$ and $p_{ee}$ are position of $i^{th}$ joint and end-effector respectively (First three elements of fourth column of DH).</p></li>
+<li><p>At last but not least, $\times$ is the <em>cross product</em> of two vectors (I think this is one of the places that your code <em>might</em> have gone wrong).</p></li>
+</ul>
+
+<p>This, is the proper way of calculating the <strong>geometric</strong> jacobian. Once you have this, there are several ways to solve IK problem numerically. Apart from transpose, newton method, gradient method and etc.</p>
+
+<p>To have a deep study of these methods, have a look at <a href="http://www.dis.uniroma1.it/~deluca/rob1_en/10_InverseKinematics.pdf" rel="nofollow noreferrer"><strong>these very nice set of slides</strong></a>.</p>
+
+<p><img src="https://i.stack.imgur.com/w7keV.png" alt="enter image description here"></p>
+
+<hr>
+
+<p><img src="https://i.stack.imgur.com/2wCC9.png" alt="enter image description here"></p>
+
+<hr>
+
+<h3>Bonus!</h3>
+
+<p>I strongly suggest, if you are doing to do serious robot programming, consider using some linear algebra libraries such as <a href="http://www.boost.org/doc/libs/1_55_0b1/libs/numeric/ublas/doc/index.htm" rel="nofollow noreferrer">boost::numeric::ublas</a> or <a href="http://eigen.tuxfamily.org/index.php?title=Main_Page" rel="nofollow noreferrer">Eigen</a>. They are fast, comprehensive and common. To give you an insight, here is how you can do a simple jacobian in <code>Eigen</code> for a 7dof robot:</p>
+
+<pre><code>    //Hint:
+    // A0i = A01*A12*A23...Ai
+    // Aij = DH matrix related to transformation for ith to jth joint.
+    Eigen::Vector3d z0, p0, pe;
+        z0  &lt;&lt; 0, 0, 1;
+        p0  &lt;&lt; 0, 0, 0;
+        pe = A07.block&lt;3,1&gt;(0,3);
+
+    // Ji linear velocity
+    Jacobian.block&lt;3,1&gt;(0,0) = z0.cross(pe-p0);                                  
+    Jacobian.block&lt;3,1&gt;(0,1) = A01.block&lt;3,1&gt;(0,2).cross(pe-A01.block&lt;3,1&gt;(0,3));
+    Jacobian.block&lt;3,1&gt;(0,2) = A02.block&lt;3,1&gt;(0,2).cross(pe-A02.block&lt;3,1&gt;(0,3));
+    Jacobian.block&lt;3,1&gt;(0,3) = A03.block&lt;3,1&gt;(0,2).cross(pe-A03.block&lt;3,1&gt;(0,3));
+    Jacobian.block&lt;3,1&gt;(0,4) = A04.block&lt;3,1&gt;(0,2).cross(pe-A04.block&lt;3,1&gt;(0,3));
+    Jacobian.block&lt;3,1&gt;(0,5) = A05.block&lt;3,1&gt;(0,2).cross(pe-A05.block&lt;3,1&gt;(0,3));
+    Jacobian.block&lt;3,1&gt;(0,6) = A06.block&lt;3,1&gt;(0,2).cross(pe-A06.block&lt;3,1&gt;(0,3));
+
+    // Ji angular velocity
+    Jacobian.block&lt;3,1&gt;(3,0) = z0;                 
+    Jacobian.block&lt;3,1&gt;(3,1) = A01.block&lt;3,1&gt;(0,2); 
+    Jacobian.block&lt;3,1&gt;(3,2) = A02.block&lt;3,1&gt;(0,2); 
+    Jacobian.block&lt;3,1&gt;(3,3) = A03.block&lt;3,1&gt;(0,2); 
+    Jacobian.block&lt;3,1&gt;(3,4) = A04.block&lt;3,1&gt;(0,2); 
+    Jacobian.block&lt;3,1&gt;(3,5) = A05.block&lt;3,1&gt;(0,2); 
+    Jacobian.block&lt;3,1&gt;(3,6) = A06.block&lt;3,1&gt;(0,2); 
+</code></pre>
+
+<p>And if you are sure your jacobian is not rank deficient, calculating right pseudo inverse is as easy as:</p>
+
+<pre><code>inline Eigen::Matrix&lt;float, Eigen::Dynamic, Eigen::Dynamic&gt; pInv(const Eigen::Matrix&lt;float, Eigen::Dynamic, Eigen::Dynamic&gt; &amp;a) {
+    Eigen::Matrix&lt;float, Eigen::Dynamic, Eigen::Dynamic&gt; aT= a.transpose();
+    Eigen::Matrix&lt;float, Eigen::Dynamic, Eigen::Dynamic&gt; aaT = a*aT;
+    return aT*(aaT.inverse());
+}
+</code></pre>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2779" data-toggle = "popover">
+				<p>user name : Pouya</p>
+				<p> user reputation : 206</p>
+				<p class = "tagcontent" id = "usertaginfo-2779">{'None': 9}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2779">Load Comments</button></br>
+			<div id = "commentsection-2779" class = 'collapse'>
+			<div id = "comment-5163" class = "comment">
+				<p>Thank you for your answer. I'll will go through the details the next days. The lines of code that confuses you are the implementation of $J_{Li}(q)=zi 1 (p_{ee} p_i 1)$, where $p_p$ is the difference between the i-th joint position and the end-effector position. $zMatrix.M[1, column]$ is the orientation of the joint. The $peMatrix$ got in each column the i-th joint position coordinate and the $zMatrix$ got in each column the orientation for the i-th joint.</p>
+			</div>
+			</div>
+				<textarea id = "speech-2779" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2779">
+					<img id="start_img-2779" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2779">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

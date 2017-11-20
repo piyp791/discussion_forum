@@ -1,0 +1,204 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Arduino Uno getting a type of "HANGED" while runing samll code of switc debounce and Serial print
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2083" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2083" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 160</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Arduino Uno getting a type of "HANGED" while runing samll code of switc debounce and Serial print</h2>
+<p>I am using Arduino UNO to read a push button every time it is pressed.Earlier i was simply reading the Digital IO pin to read the count and then i faced the condition of switch debounce regarding which i had asked a <a href="https://robotics.stackexchange.com/questions/2063/unable-to-read-pushbutton-press-properly-in-arduino">question here</a> and get to know that i must use Interrupt instead of reading a digital IO pin but even after using interrupt, i was facing the problem of Switch Debouncing.</p>
+
+<p>So i used <a href="http://www.arduino.cc/en/Tutorial/Debounce" rel="nofollow noreferrer">this link</a> and code given on this link</p>
+
+<pre><code>const int buttonPin = 2;    // the number of the pushbutton pin
+const int ledPin = 13;      // the number of the LED pin
+
+// Variables will change:
+int ledState = HIGH;         // the current state of the output pin
+int buttonState;             // the current reading from the input pin
+int lastButtonState = LOW;   // the previous reading from the input pin
+
+// the following variables are long's because the time, measured in miliseconds,
+// will quickly become a bigger number than can be stored in an int.
+long lastDebounceTime = 0;  // the last time the output pin was toggled
+long debounceDelay = 50;    // the debounce time; increase if the output flickers
+
+void setup() {
+  pinMode(buttonPin, INPUT);
+  pinMode(ledPin, OUTPUT);
+
+  // set initial LED state
+  digitalWrite(ledPin, ledState);
+}
+
+void loop() {
+  // read the state of the switch into a local variable:
+  int reading = digitalRead(buttonPin);
+
+  // check to see if you just pressed the button
+  // (i.e. the input went from LOW to HIGH),  and you've waited
+  // long enough since the last press to ignore any noise:  
+
+  // If the switch changed, due to noise or pressing:
+  if (reading != lastButtonState) {
+    // reset the debouncing timer
+    lastDebounceTime = millis();
+  }
+
+  if ((millis() - lastDebounceTime) &gt; debounceDelay) {
+    // whatever the reading is at, it's been there for longer
+    // than the debounce delay, so take it as the actual current state:
+
+    // if the button state has changed:
+    if (reading != buttonState) {
+      buttonState = reading;
+
+      // only toggle the LED if the new button state is HIGH
+      if (buttonState == HIGH) {
+        ledState = !ledState;
+      }
+    }
+  }
+
+  // set the LED:
+  digitalWrite(ledPin, ledState);
+
+  // save the reading.  Next time through the loop,
+  // it'll be the lastButtonState:
+  lastButtonState = reading;
+}
+</code></pre>
+
+<p>and change </p>
+
+<pre><code> long debounceDelay = 50;
+</code></pre>
+
+<p>to 10(means read any thing ina time gap of 10 mili second) as the code says.Now what is happening, code is running on the board and after some time my board get hang and LED stop toggling on any press of push button and then i had to manually reset my board.I also want to add upon a thing that i am also using a serial port in between when LED toggles or switch is pressed.</p>
+
+<p>I am totally confused why this is happening.There can beone possibility that this is happening because i reduced time gap between two consecutive events to 10 from 50 miliseconds and that might be making AVR get hanged and thus require a manual reset.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2083" data-toggle = "popover">
+				<p>user name : shailendra</p>
+				<p> user reputation : 82</p>
+				<p class = "tagcontent" id = "usertaginfo-2083">{'None': 2, 'computer-vision': 2, 'cameras': 2, 'arduino': 11, 'communication': 6, 'microcontroller': 5, 'c': 8, 'serial': 6}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2083">Load Comments</button></br>
+			<div id = "commentsection-2083" class = 'collapse'>
+			<div id = "comment-4168" class = "comment">
+				<p>Have you tried disabling the UART part? Could it be a bug on that part that's causing the AVR to hang?</p>
+			</div>
+			<div id = "comment-4172" class = "comment">
+				<p>In my opinion nothing in the code that you show will cause the microprocessor to "hang". So maybe you should show your complete code?</p>
+			</div>
+			<div id = "comment-4173" class = "comment">
+				<p>It get solved automatically and that give me clear hint that when i was using 9v 1 Amp adaptor, because of heat Arduino was getting a type of HANGED..but when i powered it with USB cable..it works fine.</p>
+			</div>
+			<div id = "comment-4302" class = "comment">
+				<p>@shailendra you should write your latest comment as an answer and accept it so that everybody clearly knows that your problem is fixed already.</p>
+			</div>
+			<div id = "comment-4303" class = "comment">
+				<p>Also you have not mentioned where into the Arduino you have plugged your 9V supply. Did you directly plug it into the 5V pin? That should be avoided (as there is no regulator behind this pin).</p>
+			</div>
+			</div>
+				<textarea id = "speech-2083" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2083">
+					<img id="start_img-2083" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2083">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-2191"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2191" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>It get solved automatically and that give me clear hint that when i was using 9v 1 Amp adaptor, because of heat Arduino was getting a type of HANGED..but when i powered it with USB cable..it works fine now.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2191" data-toggle = "popover">
+				<p>user name : shailendra</p>
+				<p> user reputation : 82</p>
+				<p class = "tagcontent" id = "usertaginfo-2191">{'None': 2, 'computer-vision': 2, 'cameras': 2, 'arduino': 11, 'communication': 6, 'microcontroller': 5, 'c': 8, 'serial': 6}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2191" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2191" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2191">
+					<img id="start_img-2191" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2191">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

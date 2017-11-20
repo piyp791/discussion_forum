@@ -1,0 +1,273 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Assigning Serial number and GUID to a microcontroller
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-1753" class = "post">
+			<h2>Question</h2>
+			<div id="vote-1753" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 3649</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Assigning Serial number and GUID to a microcontroller</h2>
+<p>This might be a out of league question and may seems to be very odd.I am using multiple Arduino UNO boards over network and want to assign a GUID and Serial number to each board so that when ever they send any data to a central server, server is able to find which Device it is if we have assign name for each device.</p>
+
+<ul>
+<li>first way to do this is to assign GUID and serial number of device before each message that is send to central server manually while programming and then burn that hex to arduino.</li>
+</ul>
+
+<p>Now is there any way out that we can burn a program that always give a output as a string (GUID+Serial number of device) like we program EEPROM for this and then burn our main code in Arduino which pick the GUID+Serial ID combo from EEPROM and write it before every message which arduino is pushing to central server.</p>
+
+<p>Or my another way of asking is can we program EEPROM with a different program and our Arduino separately like 2 files running in parallel or is it not possible?</p>
+
+<p>Is there any other way of doing this?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1753" data-toggle = "popover">
+				<p>user name : shailendra</p>
+				<p> user reputation : 82</p>
+				<p class = "tagcontent" id = "usertaginfo-1753">{'None': 2, 'computer-vision': 2, 'cameras': 2, 'arduino': 11, 'communication': 6, 'microcontroller': 5, 'c': 8, 'serial': 6}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1753">Load Comments</button></br>
+			<div id = "commentsection-1753" class = 'collapse'>
+			<div id = "comment-3652" class = "comment">
+				<p>Instead of a GUID, check out the UUID (http://en.wikipedia.org/wiki/Uuid)</p>
+			</div>
+			<div id = "comment-3706" class = "comment">
+				<p>Please post whatever details you can about your GSM module.</p>
+			</div>
+			<div id = "comment-22769" class = "comment">
+				<p>I used Arduino as an AVR (non of that Arduino language/IDE nonesense), and yes it was entirely possible to program different ranges of even flash, let alone programming flash and EEPROM separately. `avrdude` is the name of the programmer.</p>
+			</div>
+			</div>
+				<textarea id = "speech-1753" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1753">
+					<img id="start_img-1753" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1753">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-1754"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1754" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The answer to this question depends entirely on the type of connection you are using to build your network.</p>
+
+<p>Assuming that when you say you have arduinos "on a network" you are using ethernet shields or similar to put them on an ethernet network, one way to accomplish your goal would be to take advantage of the MAC address on the ethernet shield as this is a pre-existing globally-unique identifier. The MAC address is appended to every ethernet <em>frame</em>. Now, you only have access to that data at Level 2 (the "link layer") of ethernet and you are not going through a switch / hub which will modify the frames which you almost certainly are.</p>
+
+<p>So instead, you could have your hub or switch assign IP addresses through DHCP based on the MAC address of the ethernet shield. This is sometimes referred to as "link layer filtering." Then when you get packets with data from the Arduino, you know which one it comes from by the source IP address on the <em>packet</em>.</p>
+
+<p>You suggested you might be using cellular data, IP addresses are probably dynamic and the problem becomes more difficult. You would need to talk to your provider and see if you can get static IP addresses.</p>
+
+<p>If you are using SMS, then simply identify by phone number.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1754" data-toggle = "popover">
+				<p>user name : foobarbecue</p>
+				<p> user reputation : 513</p>
+				<p class = "tagcontent" id = "usertaginfo-1754">{'quadcopter': 1, 'None': 24, 'ardupilot': 7, 'rocket': 1, 'power': 4, 'arduino': 5, 'python': 1, 'multi-rotor': 7, 'lithium-polymer': 1, 'brushless-motor': 3, 'esc': 3}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1754">Load Comments</button></br>
+			<div id = "commentsection-1754" class = 'collapse'>
+			<div id = "comment-3690" class = "comment">
+				<p>You can't read the MAC address from a TCP/IP packet -- you only get the data payload.  However, one thing you might be able to do is have the Arduino boards read their own MAC address and explicitly append that onto the payload portion of the packets they send.</p>
+			</div>
+			<div id = "comment-3694" class = "comment">
+				<p>@lan: so that is what i was asking.If i am not using Ethernet shield as suggested by foobarbecue, how i am able to access the MAC ID of the arduino board i am using?</p>
+			</div>
+			<div id = "comment-3696" class = "comment">
+				<p>@shailendra if you aren't using an Ethernet interface, then you don't have a mac address.</p>
+			</div>
+			<div id = "comment-3697" class = "comment">
+				<p>@Ian: yes you can, as long as you are on the same network segment. If I understand correctly the MAC is attached to the frame rather than the packet, i.e. it is present in Layer 2 of ethernet.</p>
+			</div>
+			<div id = "comment-3699" class = "comment">
+				<p>@foobarbecue: The MAC address is indeed part of what gets sent "on the wire" (and received by the destination host), but this information is not available to the reader of the network socket -- it's discarded by the [lower layer](http://www.tcpipguide.com/free/t_IPDatagramEncapsulation.htm).  If you have a coded-up example that demonstrates otherwise, I'd really like to see it.  Ordinarily if you want to get the MAC address of an IP address (which you *can* get from the packet), you use [arp](http://en.wikipedia.org/wiki/Address_Resolution_Protocol).</p>
+			</div>
+			<div id = "comment-3700" class = "comment">
+				<p>@shailendra, can you describe the architecture that connects the Arduino Uno boards to your network, and what network technology you're using?</p>
+			</div>
+			<div id = "comment-3702" class = "comment">
+				<p>@lan: I am using GSM module to rather communicate with web-server or any other Arduino(via HTTP or SMS).What i need to do is to provide a unique ID to each Arduino so that it is uniquely identified.Generally we can always add a ID manually in program but it will be to great if we can get it from any hardware itself like if we are suing Bluetooth Module, we can get its ID.</p>
+			</div>
+			<div id = "comment-3703" class = "comment">
+				<p>@Ian ok, interesting. Probably not the place to discuss this... but somehow link layer filtering is implemented by routers and I guess I figured that could be a solution for shaliendra as well. But as you point out he is unlikely to have access to layer 2. So, the router solution would make sense, right? Just have the router do DHCP assignment of IP by MAC and then use the IPs. Or, just set static IPs.</p>
+			</div>
+			<div id = "comment-3704" class = "comment">
+				<p>@shailendra, if you're using SMS then just identify by phone number... If you are using some kind of cellular internet connection then you will have a MAC address and an IP so effectively the same as wifi except that you aren't on the same network segment.</p>
+			</div>
+			<div id = "comment-3718" class = "comment">
+				<p>@foobarbecue - It would be better to add information in comments to your answer, that way all of these comments can be tidied up (deleted) and they will no longer distract readers from your answer.</p>
+			</div>
+			<div id = "comment-3721" class = "comment">
+				<p>@MarkBooth Done.</p>
+			</div>
+			</div>
+				<textarea id = "speech-1754" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1754">
+					<img id="start_img-1754" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1754">Comment</button>
+			<br><div id = "ans-1805"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1805" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I would create a small sketch that allows you to communicate over serial port that will let you create a GUID on the desktop computer and write it to the EEPROM of your uno to a known location.</p>
+
+<p>Then later on in your networked arduino code you can use that saved value.  I've done this before and it's pretty simple to implement.  You can even copy / paste guid values from the web like this <a href="http://www.famkruithof.net/uuid/uuidgen" rel="nofollow">Online GUID Generator</a>.</p>
+
+<p>See this for simple usage.  <a href="http://arduino.cc/en/Tutorial/EEPROMWrite" rel="nofollow">Arduino EEPROMWrite Command</a></p>
+
+<p>Another option if you have networking already active is to setup a server on your network and have the machines request a GUID from a network server if they don't have one already present on the device, then write that to the EEPROM.</p>
+
+<p>Either way it should be a small step you perform when first programming your devices.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1805" data-toggle = "popover">
+				<p>user name : Great Turtle</p>
+				<p> user reputation : 176</p>
+				<p class = "tagcontent" id = "usertaginfo-1805">{'control': 6, 'None': 3}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-1805" class = 'collapse'>
+			</div>
+				<textarea id = "speech-1805" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1805">
+					<img id="start_img-1805" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1805">Comment</button>
+			<br><div id = "ans-5055"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-5055" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>(I know it's old but I still feel I need to add my solution)<br>
+I have a similar issue, multiple units sending data and need a way to know what unit it is. I create a random unitId and save it in eeprom. If needed I can read it on serial port or by activating one at a time and check on the receiver side.<br>
+I guess I could easily write a small sketch to write a specific unitId if that was needed.<br>
+Code I have in setup()</p>
+
+<pre><code>long unitId;
+...
+Setup(){
+ long notunitId;
+ ..
+ pinMode(RESET_PIN, INPUT_PULLUP);
+ unitId = (long)EEPROM.read(0) &lt;&lt; 24 | (long)EEPROM.read(1) &lt;&lt; 16 | (long)EEPROM.read(2) &lt;&lt; 8 | (long)EEPROM.read(3);
+  notunitId = (long)EEPROM.read(4) &lt;&lt; 24 | (long)EEPROM.read(5) &lt;&lt; 16 | (long)EEPROM.read(6) &lt;&lt; 8 | (long)EEPROM.read(7);
+  if (digitalRead(RESET_PIN) == LOW) {
+    Serial.println("Force generation of a new unitId");
+    unitId = notunitId = 4711;
+  }
+  if (unitId == -notunitId) {
+    Serial.print("unitId from eeprom: ");
+    Serial.print(unitId, HEX);
+  } else {
+    randomSeed(analogRead(7)*analogRead(6)*analogRead(5)+micros());
+    unitId = random();
+    notunitId = -unitId;
+    EEPROM.write(0, unitId &gt;&gt; 24 &amp; 0xFF);
+    EEPROM.write(1, unitId &gt;&gt; 16 &amp; 0xFF);
+    EEPROM.write(2, unitId &gt;&gt; 8  &amp; 0xFF);
+    EEPROM.write(3, unitId     &amp; 0xFF);
+    EEPROM.write(4, notunitId &gt;&gt; 24 &amp; 0xFF);
+    EEPROM.write(5, notunitId &gt;&gt; 16 &amp; 0xFF);
+    EEPROM.write(6, notunitId &gt;&gt; 8  &amp; 0xFF);
+    EEPROM.write(7, notunitId     &amp; 0xFF);
+
+    Serial.print("Generated new unitId: ");
+    Serial.print(unitId, HEX);
+  }
+  Serial.println();
+</code></pre>
+
+<p>And in loop I then just add unitId to the message wherever needed.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-5055" data-toggle = "popover">
+				<p>user name : lpaseen</p>
+				<p> user reputation : 101</p>
+				<p class = "tagcontent" id = "usertaginfo-5055">{'None': 0}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-5055" class = 'collapse'>
+			</div>
+				<textarea id = "speech-5055" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-5055">
+					<img id="start_img-5055" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-5055">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

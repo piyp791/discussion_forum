@@ -1,0 +1,185 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Handling GYROSCOPE BIAS DRIFT
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11312" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11312" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 160</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Handling GYROSCOPE BIAS DRIFT</h2>
+<p>I am working on a MEMS based project which requires me to calculate the orientation(Euler Angles) of an object using only GYROSCOPES.</p>
+
+<p>The GYROSCOPE BIAS is calculated in the beginning for 2 seconds keeping it stationary. </p>
+
+<p>Right now GYROSCOPES give me an accuracy of 2 degrees for a period of 3-4 mins of continuous movement.</p>
+
+<p>Now if there is continuous movement beyond 3-4 mins, the GYROSCOPE BIAS would have changed and hence the errors increases rapidly.</p>
+
+<p>My Question is:</p>
+
+<p>1). If the bias drift changes randomly(as read),the angles start increasing in one direction, then why cant we track it for first ten seconds and then keep subtracting the present angles from  initially calculated angles,for every ten seconds during movement.</p>
+
+<p>I tried this out, but it does not work as expected.</p>
+
+<p>Can GYROSCOPE BIAS be tracked by any way?</p>
+
+<p>Thanks in advance.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11312" data-toggle = "popover">
+				<p>user name : Nithin G A</p>
+				<p> user reputation : 64</p>
+				<p class = "tagcontent" id = "usertaginfo-11312">{'None': 0, 'accelerometer': 11, 'algorithm': 2, 'calibration': 1, 'integration': 3, 'gyroscope': 5, 'orientation': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11312">Load Comments</button></br>
+			<div id = "commentsection-11312" class = 'collapse'>
+			<div id = "comment-20503" class = "comment">
+				<p>Comment: If your issue is keeping the error under 2 degrees for more than 4 minutes with arbitrary rotations then you have to account for the earth's rotation and for other sources of cumulative error. The earth is not an inertial reference. In 4 minutes the earth has rotated about 1 degree (360 degrees per sideral day). And if you are not located at the poles or on the equator that rotation is on a computationaly awkward axis. As you turn on a locally vertical axis the contribution from the earth's rotation varies across roll,pitch, & yaw. Calibrated on the equator facing North you have to...</p>
+			</div>
+			<div id = "comment-20504" class = "comment">
+				<p>...subtract 0.25 degrees per minute to show 0 rotation rate on the primary axis. Then turn to face South and it will read 0.5 degrees per minute! Rotation of the earth makes rotation rate (relative to the earth) challenging to compute. Consider the contribution of the accuracy/precision of the original orientation relative to earth, the angular rate measurements, sampling rate (because you can only sample the continuously changing rotation rates), coordinate transformation calculations from the current measurement axes to the starting axes, and the accumulation of the incremental rotations...</p>
+			</div>
+			<div id = "comment-20505" class = "comment">
+				<p>...to the current Euler angles relative to the starting position (underflow during addition). There is a limit to the achievable accuracy even with no gyro "bias".</p>
+			</div>
+			<div id = "comment-20538" class = "comment">
+				<p>Yes true....Now I have calibrated the gyroscope for Sensitivity,Cross axis sensitivity and Non Orthogonality, and the results are more consistent and there is a bit improvement in the drift also</p>
+			</div>
+			</div>
+				<textarea id = "speech-11312" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11312">
+					<img id="start_img-11312" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11312">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-11315"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11315" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You say,</p>
+
+<blockquote>
+  <p>Then why can't we track [the angles] for first ten seconds and then keep subtracting the present angles from initially calculated angles for every ten seconds during movement?</p>
+</blockquote>
+
+<p>You can't subtract <em>angles</em> from a gyroscope reading because the gyroscope measures angular <em>velocity</em>. This is kind of like asking why you can't subtract your odometer reading in your car from your speedometer - you're talking about a distance and a speed. Well, an angle is an angular <em>position</em> or an angular <em>distance</em>, and again, the gyroscope measures an angular <em>speed</em>. </p>
+
+<p>You can "calibrate" a gyroscope by controlling its speed (generally ensuring it's stationary) and measuring the output. Then you average the output and offset it such that it reads the known speed (again, this usually means averaging and subtracting whatever that average is from future readings). </p>
+
+<p>The problem you'll have with trying to do this continuously is that the actual (physical) input to the gyroscope is probably not zero-mean. So, if you average the angular speed (angular velocity, angular rate, etc.) over some period of time, you don't have a good way of separating the actual input signal from the bias ("offset") of the gyroscope. </p>
+
+<p>For example, if you read an average angular speed of 1.5 deg/s for 10 seconds, is that reading correct, or is it actually 1 deg/s and a bias of +0.5 deg/s, or is it actually 2 deg/s and a bias of -0.5 deg/s?</p>
+
+<p>Here's the problematic part of what you're doing - when you take that average and subtract it from all future readings, you are <em>mathematically</em> stating that the gyroscope is, on average, <strong>stationary</strong> for that 10 second interval because the very next sample you get that says it's rotating at 1.5 deg/s, you're going to subtract the running average from that and get (1.5-1.5) = 0 deg/s.</p>
+
+<p>The only way you can do what you're talking about - averaging angular <strong>speed</strong> and using that to correct future samples - is to <em>know</em> that the device will be "stationary" over the average of whatever your sampling interval is. </p>
+
+<p>What you might be able to do is to take <em>multiple</em> units, and average their output, use that average as truth, and then conclude that the bias is the difference between the individual unit's reading and the averaged output.</p>
+
+<p>So, if you had two units, and one read 1.5 deg/s averaged over 10 seconds, and the other read 2.0 deg/s averaged over the <em>same</em> interval, then you could say that the "true" motion was 1.75 deg/s, and the first unit has a bias offset of -0.25 deg/s and the second has a bias offset of +0.25 deg/s. </p>
+
+<p>The more units you get, the better your results will be. It would of course be extremely important that the units are all rigidly coupled; any significant flexing of the substrate between sensors would ruin your data. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11315" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-11315">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11315">Load Comments</button></br>
+			<div id = "commentsection-11315" class = 'collapse'>
+			<div id = "comment-20476" class = "comment">
+				<p>I think there is a misunderstanding.Calculate the drifted angles from the first ten seconds, Say x, then keep subtracting them after ten seconds by all the angles calculated.</p>
+			</div>
+			<div id = "comment-20477" class = "comment">
+				<p>Adding units is a nice idea ...will try that out</p>
+			</div>
+			<div id = "comment-20480" class = "comment">
+				<p>@NithinGA - The gyro measures an angular *rate*; the bias offset is an offset on the *speed*. So you measure the angular drift (caused by the *speed* offset) for the first ten seconds, and then what? The *speed* offset still exists, so if you subtract the initial *angle* offset from future samples, then that only corrects the drift that occurred in the first ten seconds. You need to hold the gyro stationary, measure the *speed* for 10 seconds, average that, then subtract that *average speed* from future *speed* readings. Angle output is the first integral of the (now corrected) speed.</p>
+			</div>
+			<div id = "comment-20484" class = "comment">
+				<p>Right now I am doing that...Avearging first 2 seconds gyro ANGULAR RATE and then subtracting from the future ANGULAR RATE.</p>
+			</div>
+			<div id = "comment-20485" class = "comment">
+				<p>But What I observe is,because of the RANDOM DRIFT, the angles increase or decreases in a particular direction LINEARLY,so why cant we calculate the angles drifted for say for 10 seconds, then in the future,we can subtract this for every ten seconds once from the calculated future angles, I am saying this because of the LINEAR INCREASE OR DECREASE observed in the angles.</p>
+			</div>
+			</div>
+				<textarea id = "speech-11315" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11315">
+					<img id="start_img-11315" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11315">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

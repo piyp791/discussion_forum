@@ -1,0 +1,161 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Angular velocities and rotation matrices
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8247" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8247" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 118</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Angular velocities and rotation matrices</h2>
+<p>Let us assume I have an object O with axis $x_{O}$, $y_{O}$, $z_{O}$, with different orientation from the global frame S with $x_{S}$, $y_{S}$, $z_{S}$ (I don't care about the position).
+Now I know the 3 instantaneous angular velocities of the object O with respect to the same O frame, that is $\omega_O^O = [\omega_{Ox}^O \omega_{Oy}^O \omega_{Oz}^O]$.
+How can I obtain this angular velocity with respect to the global frame (that is $\omega_O^S$)?</p>
+
+<p>Thank you!</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8247" data-toggle = "popover">
+				<p>user name : charles</p>
+				<p> user reputation : 266</p>
+				<p class = "tagcontent" id = "usertaginfo-8247">{'None': 9, 'ekf': 3, 'frame': 3, 'slam': 3, 'imu': 4, 'kalman-filter': 3, 'mobile-robot': 4, 'gyroscope': 4}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8247" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8247" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8247">
+					<img id="start_img-8247" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8247">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8252"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8252" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>If your object $O$ has a different orientation from your global frame $S$, and you know what that difference in orientation is, you can create a 4x4 transform matrix between the two:</p>
+
+<p>$$
+T = \left[ \begin{array}{cc}
+ R &amp; s \\
+0 &amp; 1 \end{array} \right]
+$$</p>
+
+<p>where $R$ is the 3x3 rotation matrix, $s$ is the 3x1 translation vector, $0$ is a 1x3 row of zeros, and $1$ is just 1. You can transform your (points, angular velocities, etc.) from one frame to another with:</p>
+
+<p>$$
+\left[ \begin{array}{c}
+x' \\
+y' \\
+z' \\
+1 \end{array}
+\right] = \left[ \begin{array}{cc}
+R &amp; s \\
+0 &amp; 1 \end{array} \right] \left[ \begin{array}{c}
+x \\
+y \\
+z \\
+1 \end{array} \right]
+$$</p>
+
+<p>If you don't care about translation you can just set 
+$s = \left[ \begin{array}
+00 \\ 
+0 \\
+0 \\ \end{array} \right]$</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8252" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-8252">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8252">Load Comments</button></br>
+			<div id = "commentsection-8252" class = 'collapse'>
+			<div id = "comment-13223" class = "comment">
+				<p>This is correct but not clear. It may be that OP does not have $R$ handy. It might be helpful to add how to construct $R$. A simple method is using the dot-product-of-axes.</p>
+			</div>
+			<div id = "comment-13225" class = "comment">
+				<p>@JoshVanderHook - OP had asked this question and a related one back-to-back, and I believe the questions boil down to, "How do I convert gyro data to a global attitude?" I advised OP in a [comment on my answer there](http://robotics.stackexchange.com/a/8251/9720) that some people may opt to use quaternions instead of $R$ because of the difficulty in picking the correct way to calculate $R$ - Euler angles vs. Tait-Bryan angles, intrinsic vs. extrinsic rotation, and which of the 12 ways to multiply the three rotations together.</p>
+			</div>
+			<div id = "comment-13227" class = "comment">
+				<p>Those methods (and we're digressing here), are useful for constructing rotation matrices from angles and avoiding singularities, given two frames, no such method is needed as R is simply the columns of one frame projected onto the columns of the other frame (basis dot product). For all practical purposes, this never happens however. But in this case, it seems both coordinate frames are known. (x,y,z), and what's being translated is, say, the axis of rotation.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8252" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8252">
+					<img id="start_img-8252" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8252">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

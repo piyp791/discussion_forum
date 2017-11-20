@@ -1,0 +1,221 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Inverse kinematics showing incorrect results for 4 dof robot in MATLAB using Robotics Toolbox
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11234" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11234" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 226</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Inverse kinematics showing incorrect results for 4 dof robot in MATLAB using Robotics Toolbox</h2>
+<p>I'm doing inverse kinematics for 4 dof robot using robotics toolbox matlab. The code is given below:</p>
+
+<pre><code>    preach = [0.326 0.223 0.342]; % reach point of end-effector
+% create links using D-H parameters
+% Link('d', 0.15005, 'a', 0.0203, 'alpha', -pi/2)
+L(1) = Link([0  0     0.15   pi/2    0], 'standard');
+L(2) = Link([0  0     0.15   0       0], 'standard');
+L(3) = Link([0  0     0.15   0       0], 'standard');
+L(4) = Link([0  0     0.15   0       0], 'standard');
+  % set limits for joints
+ L(1).qlim=[deg2rad(-160) deg2rad(160)];
+ L(2).qlim=[deg2rad(-45) deg2rad(45)];
+ L(3).qlim=[deg2rad(-60) deg2rad(60)];
+ L(4).qlim=[deg2rad(-50) deg2rad(50)];
+ %build the robot model
+rob = SerialLink(L, 'name','rob');
+qready = [0 0 0 0]; % initial position of robot
+plot(rob,qready,'noname');
+T1= transl(preach); % convert of reach point of 4x4 homogenous matrix
+[qreach,err] =  rob.ikcon(T1, qready); % find inverse kinematics with error
+</code></pre>
+
+<p>Matlab shows results like this(using robotics toolbox ):</p>
+
+<pre><code>    &gt;&gt; [qreach,err] =  rob.ikcon(T1, qready)
+qreach =
+    2.7925    0.7854    1.0472    0.8727
+err =
+    9.6055
+</code></pre>
+
+<p>I'm not taking preach = [0.326 0.223 0.342]; randomly. Infact, first I do forward kinemtics to get these points. code is below:</p>
+
+<pre><code>    % to find forward kinemtics
+qreadyrr = [0.6 0.45 0.63 0.22]; % setting the four angles randomly within range to get preach
+T0 = fkine(rob, qreadyrr);
+</code></pre>
+
+<p>then, I got T0 as</p>
+
+<pre><code>     &gt;&gt; T0
+T0 =
+    0.2208   -0.7953    0.5646    0.3267
+    0.1510   -0.5441   -0.8253    0.2235
+    0.9636    0.2675    0.0000    0.3421
+         0         0         0    1.0000
+</code></pre>
+
+<p>Also, when I put this T0 in place of T1 in inverse kinematics code as given above, the values I got is very accurate with negligible error.</p>
+
+<pre><code>    &gt;&gt; [qreach,err] =  rob.ikcon(T0, qready)
+qreach =
+    0.6002    0.4502    0.6296    0.2204
+err =
+   4.6153e-07
+</code></pre>
+
+<p>The point is, in my case, I have only px, py and pz values for transformation matrix but with this, inverse kinematics is not solving it correctly. I want to do inverse kinematics px, py and pz values. how can I do it correctly.</p>
+
+<p>Thanks.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11234" data-toggle = "popover">
+				<p>user name : Naseeb Gill</p>
+				<p> user reputation : 62</p>
+				<p class = "tagcontent" id = "usertaginfo-11234">{'None': 0, 'manipulator': 2, 'inverse-kinematics': 5, 'simulator': 0, 'arduino': 2, 'simulation': 2, 'servomotor': 1, 'kinematics': 1, 'matlab': 6, 'robotic-arm': 5, 'rotation': 1, 'forward-kinematics': 0, 'dynamics': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11234" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11234" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11234">
+					<img id="start_img-11234" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11234">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-11236"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11236" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The <code>T0</code> matrix in your code has an orientation component which (since it comes from the forward kinematics) is a reachable orientation. </p>
+
+<p>The <code>T1</code> matrix in your code has been created with the command: </p>
+
+<pre><code>T1= transl(preach);
+</code></pre>
+
+<p>It most probably look like this</p>
+
+<pre><code>T1 =
+1.0000   0.0000    0.0000    0.3267
+0.0000   1.0000    0.0000    0.2235
+0.0000   0.0000    1.0000    0.3421
+     0         0        0    1.0000
+</code></pre>
+
+<p>This specifies that the orientation of the end-effector is <code>[0, 0, 0]</code>. This orientation might not be possible to reach in the position you have specified.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11236" data-toggle = "popover">
+				<p>user name : 50k4</p>
+				<p> user reputation : 2800</p>
+				<p class = "tagcontent" id = "usertaginfo-11236">{'geometry': 0, 'None': 193, 'kinematics': 0, 'robotic-arm': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11236">Load Comments</button></br>
+			<div id = "commentsection-11236" class = 'collapse'>
+			<div id = "comment-20315" class = "comment">
+				<p>Thanks for response@50k4, but, I tries for many points and it shows error components every time high. So, what should I do to remove these error. I'm not concern about end-effector orientation, I just concern about end-effector position.</p>
+			</div>
+			<div id = "comment-20316" class = "comment">
+				<p>You are not concerned about the orientation, however by specifying it to be zero, you tell the solver that you need zero orientation. There is a discrepancy between what you are trying to do and what you implemented. It is not important how many points you try, you still are in the same situation. (I think if you give a point that lies on the Oz axis you might be able to get a good solution.)</p>
+			</div>
+			<div id = "comment-20317" class = "comment">
+				<p>Since you have 4 dof and you only care about 3, you could calculate an orientation that is not zero and is reachable for the given position and use that in the IK instead of zero orientation. Since the critical part is rotation around the Z axis I would start by calculating what is the "natural" orientation of the robot around the Z axis for a given px and py and use that instead of 0 for the IK. That should bring you one step further. After, you can do the same for X and y orientations</p>
+			</div>
+			<div id = "comment-20333" class = "comment">
+				<p>Can you please tell me or suggest me any pdf to calculate natural orientation of the robot around the Z axis for a given px and py. I have read about IK, rotation matrix, DH parameters etc. but I struck here. Can you please explain me how to calculate orientation matrix which will work accurately for every position in robot workspace.</p>
+			</div>
+			<div id = "comment-20334" class = "comment">
+				<p>If I am not mistakeing, the Z axis orientation (gamma) will be gamam = atan2(px, py). you will need to set another orientation which is reachable (aside from this), then the solver will be able to cope with the IK. I did not recreate your mechanism, but to solve FK for a few points and see if any of the orientations are constant. If yes then use that constant orientation and the Z orientation to set a reachable pose for the IK</p>
+			</div>
+			<div id = "comment-20376" class = "comment">
+				<p>As you told me, I used  Z axis orientation (gamma) = atan2(px, py) and also find out that rotation around x-axis is constant i.e. +/- 90 (I solved few FK and this orientation is constant). But I don't know rotation around y-axis (because it changes with points )so can not create rotation matrix. I used random angle for y-axis rotation and error get reduced but it's still high. How can I move forward to solve this orientation matrix problem.  Also, I have little query. What is this err (error i think), what is its unit and what is its physical meaning. Thanks</p>
+			</div>
+			<div id = "comment-20377" class = "comment">
+				<p>Check with FK that the Z axis rotation is indeed as described. If X rotation is constant you should be able to set e.g. 0 y rotation and px py and pz since your robot has 4 degrees of freedom.</p>
+			</div>
+			<div id = "comment-20378" class = "comment">
+				<p>The error is the RMS of all errors sqrt(x_error^2 + y_error^2 + z_error^2+a_error^2 + b_error^2 + c_error^2) so it does not really have a unit of measurment. I expresses how far away are you form the set goal, but it Cartesian terms it has no physical meaning (like an actual Cartesian distance)</p>
+			</div>
+			<div id = "comment-20836" class = "comment">
+				<p>The unit of the RMS value is the same as for the error value - in this case a distance.  @50k4 is correct that you can't infer a particular Cartesian distance based on the RMS value.  But the unit of RMS does have meaning.  It is a form of the total displacement from the ideal case, when all errors are treated as positive numbers in order to prevent positive and negative errors from cancelling out.  So an RMS error of 0 mm (or inches, or meters, etc.) describes perfect alignment between the expected values and the actual values.  A larger distance for RMS implies larger individual errors.</p>
+			</div>
+			</div>
+				<textarea id = "speech-11236" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11236">
+					<img id="start_img-11236" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11236">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

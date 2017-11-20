@@ -1,0 +1,220 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Connecting a Raspberry Pi to a roomba via an FTDI cable
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2462" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2462" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 1199</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Connecting a Raspberry Pi to a roomba via an FTDI cable</h2>
+<p>I have a Raspberry Pi with <a href="https://www.sparkfun.com/products/9718" rel="nofollow">this</a> FTDI cable and a Roomba 560. The Roomba has an SCI port to allow for control of the roomba via serial. I installed the PySerial library on the pi and send valid commands to Roomba, but the roomba doesn't respond. I have the TXD of the cable attached to the TXD of the roomba, the RXD on the cable wired to the RXD on the roomba, and a ground on the cable wired to the ground on the roomba (everything in  it's respective port). I do not have power going from the cable to the roomba or vice-versa.</p>
+
+<p>What I can't figure out is why the commands aren't working. There's no error message upon running the python code. <a href="http://www.irobot.com/images/consumer/hacker/Roomba_SCI_Spec_Manual.pdf" rel="nofollow">This</a> is the information sheet for the Roomba's SCI port.</p>
+
+<p>Code:</p>
+
+<pre><code>import serial
+
+ser = serial.Serial('/dev/ttyUSB0')
+# this is the defualt Roomba baud rate
+ser.baudrate = 57600
+
+# Start SCI - puts into safe mode
+ser.write(chr(128))
+# Enable full mode
+ser.write(chr(131))
+# Spot clean
+ser.write(chr(134))
+
+print 'Done'
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2462" data-toggle = "popover">
+				<p>user name : Ian H</p>
+				<p> user reputation : 38</p>
+				<p class = "tagcontent" id = "usertaginfo-2462">{'None': 2, 'roomba': 0, 'raspberry-pi': 1, 'wheeled-robot': 2, 'mobile-robot': 3, 'serial': 0, 'irobot-create': 0, 'software': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2462" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2462" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2462">
+					<img id="start_img-2462" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2462">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-2463"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2463" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Try:</p>
+
+<pre><code>ser = serial.Serial('/dev/ttyUSB0', 57600)
+</code></pre>
+
+<p>(though from a quick look at the docs your way should work too).</p>
+
+<p>A very common mistake is switching RX and TX.  The TX from your board need to go into the Roomb'a RX. Given your note about connecting TX to TX you've almost certainly wired this wrong.  TXD in your cable (JP1-4) is an output and needs to go into RXD in the Roomba which is the corresponding input.  Looks like reversing these shouldn't cause any damage as your cable schematic shows a 100ohm resistor in series with TXD.</p>
+
+<p>I see there's also a "device detect" input on the Roomba which seems to only be needed when the Roomba is "sleeping" but you may want to wire it to RTS so you can control it.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2463" data-toggle = "popover">
+				<p>user name : Guy Sirton</p>
+				<p> user reputation : 970</p>
+				<p class = "tagcontent" id = "usertaginfo-2463">{'None': 75}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2463">Load Comments</button></br>
+			<div id = "commentsection-2463" class = 'collapse'>
+			<div id = "comment-4793" class = "comment">
+				<p>I switched the two and it's still not responding.</p>
+			</div>
+			<div id = "comment-4794" class = "comment">
+				<p>@IanHyzy: Hmm.  Something damaged is always possible but there are lots of other things that could go wrong.  The two interfaces seem to be compatible though, both 5V TTL.  You can try looping back TX to RX on your Pi and you should be able to read back what you've sent.  That will test your code and your Pi.</p>
+			</div>
+			</div>
+				<textarea id = "speech-2463" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2463">
+					<img id="start_img-2463" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2463">Comment</button>
+			<br><div id = "ans-2464"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2464" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><ol>
+<li>Even though the port is automatically opened when the Serial object is created, make sure that is open using <code>ser.isOpen()</code>. If it is not opened, then open it with <code>ser.open()</code></li>
+<li>Try to add a small pause between the <code>ser.write</code> commands</li>
+<li>Make sure you connected the ground to the correct pin. Maybe you connected it to pin 5 (on the roomba connector) instead on 6 or 7</li>
+</ol>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2464" data-toggle = "popover">
+				<p>user name : Demetris</p>
+				<p> user reputation : 414</p>
+				<p class = "tagcontent" id = "usertaginfo-2464">{'None': 24}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2464">Load Comments</button></br>
+			<div id = "commentsection-2464" class = 'collapse'>
+			<div id = "comment-4795" class = "comment">
+				<p>`ser = isOpen()` always returns True, I added a .1s pause in between each command (didn't seem to have an effect), and I have the cable grounded correctly.</p>
+			</div>
+			</div>
+				<textarea id = "speech-2464" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2464">
+					<img id="start_img-2464" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2464">Comment</button>
+			<br><div id = "ans-2466"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2466" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>It turns out that the statement in the Roomba SCI spec sheet about ports is either outdated or incorrect. The Roomba 5XX series (and 7XX series) uses port 115200 to communicate, and that's what was wrong.</p>
+
+<p>Wiring: I wired the TXD of the cable to the RXD of the roomba (so the orange cable would go into port 3 on the roomba), and vice versa. I also wired the ground and that was all that was needed.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2466" data-toggle = "popover">
+				<p>user name : Ian H</p>
+				<p> user reputation : 38</p>
+				<p class = "tagcontent" id = "usertaginfo-2466">{'None': 2, 'roomba': 0, 'raspberry-pi': 1, 'wheeled-robot': 2, 'mobile-robot': 3, 'serial': 0, 'irobot-create': 0, 'software': 2}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2466">Load Comments</button></br>
+			<div id = "commentsection-2466" class = 'collapse'>
+			<div id = "comment-4797" class = "comment">
+				<p>Glad to hear it's working.  Maybe post the final way your connector is wired so other people can reference it?</p>
+			</div>
+			<div id = "comment-4798" class = "comment">
+				<p>I second that, I got a Roomba 564 (the pet version) and been meaning to hook it up to a Pi, so that info would certainly come in handy when I finally get around to it.</p>
+			</div>
+			<div id = "comment-4809" class = "comment">
+				<p>I added how I wired it, it was just TXD to RXD/vice versa and ground. Nothing else is necessary.</p>
+			</div>
+			</div>
+				<textarea id = "speech-2466" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2466">
+					<img id="start_img-2466" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2466">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

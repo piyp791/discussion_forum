@@ -1,0 +1,256 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Mobile robot path following using Model Predictive Control (MPC)
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9620" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9620" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 369</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Mobile robot path following using Model Predictive Control (MPC)</h2>
+<p>I'am trying to implement a path following algorithm based on MPC (Model Predictive Control), found in this paper : <a href="http://www2.imm.dtu.dk/pubdb/views/edoc_download.php/189/pdf/imm189.pdf" rel="nofollow noreferrer">Path Following Mobile Robot in the Presence of Velocity Constraints</a>  </p>
+
+<p><strong>Principle:</strong> Using the robot model and the path, the algorithm predict the behavior of the robot over N future steps to compute a sequence of commands $(v,\omega)$ to allow the robot to follow the path without overshooting the trajectory, allowing to slow down before a sharp turn, etc.<br>
+$v:$ Linear velocity<br>
+$\omega:$ Angular velocity</p>
+
+<p><strong>The robot:</strong> I have a non-holonomic robot like this one (Image extracted from the paper above) :<br>
+<a href="https://i.stack.imgur.com/K6MRY.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/K6MRY.png" alt="Non-holonomic robot with castor wheel. (Extracted from the paper above)"></a></p>
+
+<p><strong>Here is my problem:</strong> Before implementing on the mobile robot, I'am trying to compute the needed matrices (using Matlab) to test the efficiency of this algorithm. At the end of the matrices computation some of them have dimension mismatch</p>
+
+<p><strong>What I did:</strong><br>
+For those interested, this calculation is from  4 (4.1, 4.2, 4.3, 4.4) p6-7 of the paper.  </p>
+
+<blockquote>
+  <h2>4.1 Model</h2>
+  
+  <p>$z_{k+1} =  Az_k + B_\phi\phi_k + B_rr_k$ (18) 
+  with:<br>
+  $A = \begin{bmatrix} 1 &amp; Tv \\ 0 &amp; 1 \end{bmatrix}$
+  $B_\phi = \begin{bmatrix} {T^2\over2}v^2\\ Tv  \end{bmatrix}$
+  $B_r = \begin{bmatrix} 0 &amp; -Tv \\ 0 &amp; 0 \end{bmatrix}$<br>
+  $T$: sampling period<br>
+  $v$: linear velocity<br>
+  $k$: sampling index (i.e. $t= kT$)<br>
+  $z_k:$ the state vector $z_k = (d_k, \theta_k)^T$ position and angle difference to the reference path
+  $r_k:$ the reference vector $r_k = (0, \psi_k)^T$ with $\psi_k$ is the reference angle of the path at step k </p>
+  
+  <h2>4.2 Criterion</h2>
+  
+  <p>The predictive receding horizon controller is based on a minimization of the criterion<br>
+  $J= \Sigma^N_{n=0} (\hat{z}_{k+n} - r_{k+n})^T Q(\hat{z}_{k+n} - r_{k+n}) + \lambda\phi^2_{k+n}$, (20)<br>
+  Subject to the inequality constraint<br>
+  $ P\begin{bmatrix} v_n \\ v_n\phi_n \end{bmatrix} \leq q,$<br>
+  $n=0,..., N,$<br>
+  where $\hat{z}$ is the predicted output, $Q$ is a weight matric, $\lambda$ is a scalar weight, and $N$ is prediction horizon.</p>
+  
+  <h2>4.3 Predictor</h2>
+  
+  <p>An n-step predictor $\hat{z}_{k+n|k}$ is easily found from iterating (18). Stacking the predictions $\hat{z}_{k+n|k},n = n,...,N$ in the vector $\hat{Z}$ yields<br>
+  $\hat{Z} = \begin{bmatrix} \hat{z}_{k|k} \\ \vdots \\ \hat{z}_{k+N|k}\end{bmatrix} = Fz_k + G_\phi\Phi_k + G_rR_k$  (22)<br>
+  with<br>
+  $\Phi_k = \begin{bmatrix} \phi_k, \ldots, \phi_{k+N}\end{bmatrix}^T$,<br>
+  $R_k = \begin{bmatrix} r_k, \ldots, r_{k+N}\end{bmatrix}^T$,<br>
+  and<br>
+  $F = \begin{bmatrix}I &amp; A &amp; \ldots &amp; A^N \end{bmatrix}^T$<br>
+  $G_i = \begin{bmatrix} 0 &amp; 0 &amp; \ldots &amp; 0 &amp; 0 \\ B_i &amp; 0 &amp; \ldots &amp; 0 &amp; 0 \\ AB_i &amp; B_i &amp; \ddots &amp; \vdots &amp; \vdots \\ \vdots &amp; \ddots &amp; \ddots &amp; 0 &amp; 0 \\ A^{N-1}B_i &amp; \ldots &amp; AB_i &amp; B_i &amp; 0 \end{bmatrix}$  </p>
+</blockquote>
+
+<p>where index $i$ should be substituted with either $\phi$ or $r$</p>
+
+<blockquote>
+  <h2>4.4 Controller</h2>
+  
+  <p>Using the N-step predictor (22) simplifies the criterion (20) to
+  $J_k = (\hat{Z}_k - R_k)^T I_q (\hat{Z}_k - R_k) + \lambda\Phi^T_k\Phi_k$, (23)
+  where $I_q$ is a diagonal matrix of appropriate dimension with instances of Q in the diagonal. The unconstrained controller is found by minimizing (23) with respect to $\Phi$:<br>
+  $\Phi_k = -L_zz_k - L_rR_k$, (24)<br>
+  with<br>
+  $L_z = (lambda + G^T_wI_qG_w)^{-1}G^T_wI_qF$
+  $L_r = (lambda + G^T_wI_qG_w)^{-1}G^T_wI_q(Gr - I)$</p>
+</blockquote>
+
+<p>I'am trying to compute $\Phi_k = -L_zz_k - L_rR_k$ but the dimension of $L_r$ and $R_k$ does not match for matrix multiplication.</p>
+
+<p>Parameters are :   </p>
+
+<ul>
+<li>$T=0.1s$</li>
+<li>$N=10$</li>
+<li>$\lambda=0.0001$</li>
+<li>$Q=\begin{bmatrix} 1 &amp; 0 \\ 0 &amp; \delta \end{bmatrix}$ with $\delta=0.02$</li>
+</ul>
+
+<p>I get :<br>
+$R_k$ a (11x2) matrix (N+1 elements of size 2x1, transposed)<br>
+$G_w$ a (22x11) matrix<br>
+$G^T_w$ a (11x22) matrix<br>
+$I_q$ a (22x22) matrix<br>
+$F$ a (22x2) matrix<br>
+$G_r$ a (22x22) matrix    </p>
+
+<p>so Lz computation gives (according to the matrix sizes)<br>
+$L_z=(scalar + (11x22)(22x22)(22x11))^{-1} (11x22)(22x22)(22x22)$<br>
+a (11x2) matrix.<br>
+as $z_k$ is (2x1) matrix, doing $L_zz_k$ from (24) is fine.  </p>
+
+<p>and Lr computation gives (according to the matrix sizes)
+$L_r=(scalar + (11x22)(22x22)(22x11))^{-1} (11x22)(22x22)((22x22) - (22x22))$<br>
+a (11x22) matrix.<br>
+as $R_k$ is (11x2) matrix, doing $L_rR_k$ from (24) is not possible.<br>
+I have a (11x22) matrix multiplicated by a (11x2) matrix.</p>
+
+<p>I'm sure I'm missing something big here but unable to see what exactly.
+Any help appreciated.</p>
+
+<p>Thanks</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9620" data-toggle = "popover">
+				<p>user name : Inounx</p>
+				<p> user reputation : 66</p>
+				<p class = "tagcontent" id = "usertaginfo-9620">{'mobile-robot': 4, 'None': 3, 'navigation': 4}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9620">Load Comments</button></br>
+			<div id = "commentsection-9620" class = 'collapse'>
+			<div id = "comment-20535" class = "comment">
+				<p>I would like to discuss this algorithm with you, however the contact page on your website is broken. (I don't have enough credit to write a comment)</p>
+			</div>
+			</div>
+				<textarea id = "speech-9620" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9620">
+					<img id="start_img-9620" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9620">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-10306"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10306" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The paper uses a mathematical formula for predicting the consequences of actions. That makes it difficult to debug possible failures. Improvement would be to use a physics engine like Box2D to predict actions. The advantage is, that prediction and controller are separated.</p>
+
+<p>Update:
+Optimal Control is done with a forward model. (From the current situation a projection is made into future). I'm not sure how this can be done with "Rk=[rk, ,rk+N]T".</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10306" data-toggle = "popover">
+				<p>user name : Manuel Rodriguez</p>
+				<p> user reputation : 3</p>
+				<p class = "tagcontent" id = "usertaginfo-10306">{'None': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10306">Load Comments</button></br>
+			<div id = "commentsection-10306" class = 'collapse'>
+			<div id = "comment-18490" class = "comment">
+				<p>What makes the predictor more difficult to debug? It would seem like you either use a mathematical formula to do predictions, or a "black box" (physics engine) to do predictions. Is there something I'm missing?</p>
+			</div>
+			</div>
+				<textarea id = "speech-10306" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10306">
+					<img id="start_img-10306" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10306">Comment</button>
+			<br><div id = "ans-10309"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10309" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I found the solution to my problem : I was misunderstanding $R_k$ notation.</p>
+
+<p>$r_k:$ the reference vector $r_k = (0, \psi_k)^T$</p>
+
+<p>$R_k = \begin{bmatrix} r_k, \ldots, r_{k+N}\end{bmatrix}^T$</p>
+
+<p>To compute $R_k$, I was replacing each value of $r_k$ and then, doing the transpose. But instead I have to do the transpose first, and then replace the values of $r_k$. Doing this, I get $R_k$ a (22x1) matrix and the computation works.</p>
+
+<p>I did some tests with Matlab, but didn't manage to really make it work and as I didn't have the time to continue to work on it, it's in stand by. Anyway, if someone reading this, managed or trying to make a similar algorithm work, I'm interested to talk about it (but this is out of the scope of my original question).</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10309" data-toggle = "popover">
+				<p>user name : Inounx</p>
+				<p> user reputation : 66</p>
+				<p class = "tagcontent" id = "usertaginfo-10309">{'mobile-robot': 4, 'None': 3, 'navigation': 4}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-10309" class = 'collapse'>
+			</div>
+				<textarea id = "speech-10309" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10309">
+					<img id="start_img-10309" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10309">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

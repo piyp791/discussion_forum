@@ -1,0 +1,404 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>APM Accelerometer Calibration
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2146" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2146" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 674</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>APM Accelerometer Calibration</h2>
+<p>I am trying to manually calibrate the on-board accelerometer of an APM 2.6 controller.</p>
+
+<p>I am using the following code (I found this somewhere, don't remember where) with Arduino 1.0.5 (in Windows environment) to fetch the accelerometer and gyro data:</p>
+
+<pre><code>  #include &lt;SPI.h&gt;
+  #include &lt;math.h&gt;
+
+  #define ToD(x) (x/131)
+  #define ToG(x) (x*9.80665/16384)
+
+  #define xAxis 0
+  #define yAxis 1
+  #define zAxis 2
+
+  #define Aoffset 0.8
+
+  int time=0;
+  int time_old=0;
+
+  const int ChipSelPin1 = 53;
+
+  float angle=0;
+  float angleX=0;
+  float angleY=0;
+  float angleZ=0;
+
+
+
+  void setup() {
+     Serial.begin(9600);  
+
+     pinMode(40, OUTPUT);
+     digitalWrite(40, HIGH);
+
+
+     SPI.begin();  
+     SPI.setClockDivider(SPI_CLOCK_DIV16); 
+
+     SPI.setBitOrder(MSBFIRST); 
+     SPI.setDataMode(SPI_MODE0);
+
+
+      pinMode(ChipSelPin1, OUTPUT);
+
+     ConfigureMPU6000();  // configure chip
+    }
+
+void loop()
+
+{
+ Serial.print("Acc X ");
+
+
+  Serial.print(AcceX(ChipSelPin1));
+  Serial.print("   ");
+  Serial.print("Acc Y ");
+  Serial.print(AcceY(ChipSelPin1));
+  Serial.print("   ");
+  Serial.print("Acc Z ");  
+  Serial.print(AcceZ(ChipSelPin1));  
+  Serial.print(" Gyro X ");  
+  Serial.print(GyroX(ChipSelPin1)); 
+  Serial.print(" Gyro Y ");  
+  Serial.print(GyroY(ChipSelPin1)); 
+  Serial.print(" Gyro Z ");  
+  Serial.print(GyroZ(ChipSelPin1)); 
+  Serial.println();
+}
+
+
+void SPIwrite(byte reg, byte data, int ChipSelPin) {
+  uint8_t dump;
+  digitalWrite(ChipSelPin,LOW);
+  dump=SPI.transfer(reg);
+  dump=SPI.transfer(data);
+  digitalWrite(ChipSelPin,HIGH);
+}
+
+
+uint8_t SPIread(byte reg,int ChipSelPin) {
+  uint8_t dump;
+  uint8_t return_value;
+  uint8_t addr=reg|0x80;
+  digitalWrite(ChipSelPin,LOW);
+  dump=SPI.transfer(addr);
+  return_value=SPI.transfer(0x00);
+  digitalWrite(ChipSelPin,HIGH);
+  return(return_value);
+}
+
+
+int AcceX(int ChipSelPin) {
+  uint8_t AcceX_H=SPIread(0x3B,ChipSelPin);
+  uint8_t AcceX_L=SPIread(0x3C,ChipSelPin);
+  int16_t AcceX=AcceX_H&lt;&lt;8|AcceX_L;
+  return(AcceX);
+}
+
+
+int AcceY(int ChipSelPin) {
+  uint8_t AcceY_H=SPIread(0x3D,ChipSelPin);
+  uint8_t AcceY_L=SPIread(0x3E,ChipSelPin);
+  int16_t AcceY=AcceY_H&lt;&lt;8|AcceY_L;
+  return(AcceY);
+}
+
+
+int AcceZ(int ChipSelPin) {
+  uint8_t AcceZ_H=SPIread(0x3F,ChipSelPin);
+  uint8_t AcceZ_L=SPIread(0x40,ChipSelPin);
+  int16_t AcceZ=AcceZ_H&lt;&lt;8|AcceZ_L;
+  return(AcceZ);
+}
+
+
+int GyroX(int ChipSelPin) {
+  uint8_t GyroX_H=SPIread(0x43,ChipSelPin);
+  uint8_t GyroX_L=SPIread(0x44,ChipSelPin);
+  int16_t GyroX=GyroX_H&lt;&lt;8|GyroX_L;
+  return(GyroX);
+}
+
+
+int GyroY(int ChipSelPin) {
+  uint8_t GyroY_H=SPIread(0x45,ChipSelPin);
+  uint8_t GyroY_L=SPIread(0x46,ChipSelPin);
+  int16_t GyroY=GyroY_H&lt;&lt;8|GyroY_L;
+  return(GyroY);
+}
+
+
+int GyroZ(int ChipSelPin) {
+  uint8_t GyroZ_H=SPIread(0x47,ChipSelPin);
+  uint8_t GyroZ_L=SPIread(0x48,ChipSelPin);
+  int16_t GyroZ=GyroZ_H&lt;&lt;8|GyroZ_L;
+  return(GyroZ);
+}
+
+
+//--- Function to obtain angles based on accelerometer readings ---//
+float AcceDeg(int ChipSelPin,int AxisSelect) {
+  float Ax=ToG(AcceX(ChipSelPin));
+  float Ay=ToG(AcceY(ChipSelPin));
+  float Az=ToG(AcceZ(ChipSelPin));
+  float ADegX=((atan(Ax/(sqrt((Ay*Ay)+(Az*Az)))))/PI)*180;
+  float ADegY=((atan(Ay/(sqrt((Ax*Ax)+(Az*Az)))))/PI)*180;
+  float ADegZ=((atan((sqrt((Ax*Ax)+(Ay*Ay)))/Az))/PI)*180;
+  switch (AxisSelect)
+  {
+    case 0:
+    return ADegX;
+    break;
+    case 1:
+    return ADegY;
+    break;
+    case 2:
+    return ADegZ;
+    break;
+  }
+}
+
+
+//--- Function to obtain angles based on gyroscope readings ---//
+float GyroDeg(int ChipSelPin, int AxisSelect) {
+  time_old=time;
+  time=millis();
+  float dt=time-time_old;
+  if (dt&gt;=1000)
+  {
+    dt=0;
+  }
+  float Gx=ToD(GyroX(ChipSelPin));
+  if (Gx&gt;0 &amp;&amp; Gx&lt;1.4)
+  {
+    Gx=0;
+  }
+  float Gy=ToD(GyroY(ChipSelPin));
+  float Gz=ToD(GyroZ(ChipSelPin));
+  angleX+=Gx*(dt/1000);
+  angleY+=Gy*(dt/1000);
+  angleZ+=Gz*(dt/1000);
+  switch (AxisSelect)
+  {
+    case 0:
+    return angleX;
+    break;
+    case 1:
+    return angleY;
+    break;
+    case 2:
+    return angleZ;
+    break;
+  }
+}
+
+
+void ConfigureMPU6000()
+{
+  // DEVICE_RESET @ PWR_MGMT_1, reset device
+  SPIwrite(0x6B,0x80,ChipSelPin1);
+  delay(150);
+
+  // TEMP_DIS @ PWR_MGMT_1, wake device and select GyroZ clock
+  SPIwrite(0x6B,0x03,ChipSelPin1);
+  delay(150);
+
+  // I2C_IF_DIS @ USER_CTRL, disable I2C interface
+  SPIwrite(0x6A,0x10,ChipSelPin1);
+  delay(150);
+
+  // SMPRT_DIV @ SMPRT_DIV, sample rate at 1000Hz
+  SPIwrite(0x19,0x00,ChipSelPin1);
+  delay(150);
+
+  // DLPF_CFG @ CONFIG, digital low pass filter at 42Hz
+  SPIwrite(0x1A,0x03,ChipSelPin1);
+  delay(150);
+
+  // FS_SEL @ GYRO_CONFIG, gyro scale at 250dps
+  SPIwrite(0x1B,0x00,ChipSelPin1);
+  delay(150);
+
+  // AFS_SEL @ ACCEL_CONFIG, accel scale at 2g (1g=8192)
+  SPIwrite(0x1C,0x00,ChipSelPin1);
+  delay(150);
+}
+</code></pre>
+
+<p>My objective use to calibrate the accelerometers (and gyro), so that I can use them without having to depend on Mission Planner.</p>
+
+<p>I'm reading values like:</p>
+
+<pre><code>Acc X 288   Acc Y -640   Acc Z 16884 Gyro X -322 Gyro Y 26 Gyro Z 74
+Acc X 292   Acc Y -622   Acc Z 16854 Gyro X -320 Gyro Y 24 Gyro Z 79
+Acc X 280   Acc Y -626   Acc Z 16830 Gyro X -328 Gyro Y 23 Gyro Z 71
+Acc X 258   Acc Y -652   Acc Z 16882 Gyro X -314 Gyro Y 22 Gyro Z 78
+Acc X 236   Acc Y -608   Acc Z 16866 Gyro X -321 Gyro Y 17 Gyro Z 77
+Acc X 238   Acc Y -642   Acc Z 16900 Gyro X -312 Gyro Y 26 Gyro Z 74
+Acc X 226   Acc Y -608   Acc Z 16850 Gyro X -321 Gyro Y 26 Gyro Z 68
+Acc X 242   Acc Y -608   Acc Z 16874 Gyro X -325 Gyro Y 27 Gyro Z 69
+Acc X 236   Acc Y -576   Acc Z 16836 Gyro X -319 Gyro Y 19 Gyro Z 78
+Acc X 232   Acc Y -546   Acc Z 16856 Gyro X -321 Gyro Y 24 Gyro Z 68
+Acc X 220   Acc Y -624   Acc Z 16840 Gyro X -316 Gyro Y 30 Gyro Z 77
+Acc X 252   Acc Y -594   Acc Z 16874 Gyro X -320 Gyro Y 19 Gyro Z 59
+Acc X 276   Acc Y -622   Acc Z 16934 Gyro X -317 Gyro Y 34 Gyro Z 69
+Acc X 180   Acc Y -564   Acc Z 16836 Gyro X -320 Gyro Y 28 Gyro Z 68
+Acc X 250   Acc Y -596   Acc Z 16854 Gyro X -329 Gyro Y 33 Gyro Z 70
+Acc X 220   Acc Y -666   Acc Z 16888 Gyro X -316 Gyro Y 19 Gyro Z 71
+Acc X 278   Acc Y -596   Acc Z 16872 Gyro X -307 Gyro Y 26 Gyro Z 78
+Acc X 270   Acc Y -642   Acc Z 16898 Gyro X -327 Gyro Y 28 Gyro Z 72
+Acc X 260   Acc Y -606   Acc Z 16804 Gyro X -308 Gyro Y 31 Gyro Z 64
+Acc X 242   Acc Y -650   Acc Z 16906 Gyro X -313 Gyro Y 31 Gyro Z 78
+Acc X 278   Acc Y -628   Acc Z 16898 Gyro X -309 Gyro Y 22 Gyro Z 67
+Acc X 250   Acc Y -608   Acc Z 16854 Gyro X -310 Gyro Y 23 Gyro Z 75
+Acc X 216   Acc Y -634   Acc Z 16814 Gyro X -307 Gyro Y 27 Gyro Z 83
+Acc X 228   Acc Y -604   Acc Z 16904 Gyro X -326 Gyro Y 17 Gyro Z 75
+Acc X 270   Acc Y -634   Acc Z 16898 Gyro X -320 Gyro Y 31 Gyro Z 77
+</code></pre>
+
+<p>From what I understand, SPIread(...,...) returns an analog voltage value from the data pins of the sensor, which happens to be proportional to the acceleration values. Right?</p>
+
+<p><strong>My question is:</strong> How do I go about calibrating the accelerometer?</p>
+
+<p><strong>What I've tried till date:</strong> I've tried the "place horizontal... place nose down... left side, right side" technique used by mission planner. </p>
+
+<p>Basically, when placed on horizontal position, the sensor is experiencing +1g on it's Z axis and 0g in X and Y axis. Left/right side provides  1g on Y axis and nose down/up provides  1g on X axis. </p>
+
+<p>Now for every orientation, I've passed the raw sensor data through a LPF and then computed the mean, median and SD of this sensor data over 100 iterations. I store this mean, median and SD value in the EEPROM for each axis (one for +1g and one for 0g).</p>
+
+<p>Now, when I use the sensor, I load the stats from the EEPROM, match the mean/median and standard deviation with the current reading of 4/5 iterations. </p>
+
+<p>Here I'm working under the assumption that the values between 0g and +1g (and anything above 1g) can be interpolated/extrapolated from the data using a linear plot. </p>
+
+<ul>
+<li>Is this the correct approach for calibration?</li>
+<li>Can you suggest a better way?</li>
+<li>I noticed that the maxima/minima for each axis is different. Is this
+the expected outcome or is there something wrong in the code?</li>
+<li>What do I do with the gyro? How to calibrate for angular
+acceleration?</li>
+</ul>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2146" data-toggle = "popover">
+				<p>user name : metsburg</p>
+				<p> user reputation : 269</p>
+				<p class = "tagcontent" id = "usertaginfo-2146">{'quadcopter': 15, 'None': 8, 'ardupilot': 6, 'accelerometer': 1, 'arduino': 13, 'ekf': 0, 'pid': 12, 'stability': 10, 'slam': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2146" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2146" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2146">
+					<img id="start_img-2146" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2146">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-2157"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2157" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You can use least square approach and solve this problem using Gauss-Newton method. Following blog post sums it up very well. </p>
+
+<p><a href="http://chionophilous.wordpress.com/2011/08/26/accelerometer-calibration-iii-improving-accuracy-with-least-squares-and-the-gauss-newton-method/" rel="nofollow">http://chionophilous.wordpress.com/2011/08/26/accelerometer-calibration-iii-improving-accuracy-with-least-squares-and-the-gauss-newton-method/</a></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2157" data-toggle = "popover">
+				<p>user name : nikhil</p>
+				<p> user reputation : 633</p>
+				<p class = "tagcontent" id = "usertaginfo-2157">{'wireless': 0, 'communication': 0, 'None': 36, 'serial': 0, 'raspberry-pi': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2157">Load Comments</button></br>
+			<div id = "commentsection-2157" class = 'collapse'>
+			<div id = "comment-4264" class = "comment">
+				<p>I love people who document their work in elaborate blogs. :) Gauss Newton would be a nice approach, trying that next...</p>
+			</div>
+			</div>
+				<textarea id = "speech-2157" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2157">
+					<img id="start_img-2157" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2157">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

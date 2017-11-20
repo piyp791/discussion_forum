@@ -1,0 +1,145 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>increase PID sampling rate on embedded system
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7703" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7703" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 218</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>increase PID sampling rate on embedded system</h2>
+<p>my robotic project is running at every 1ms and the processes are taking about 0.9ms. I am running PID so my max clock rate is 1kHz. About half of the processing time are taken by SPI peripherals, IMU and encoders. Is there any recommendation on how I can run faster PID sampling rate?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7703" data-toggle = "popover">
+				<p>user name : user14042</p>
+				<p> user reputation : 134</p>
+				<p class = "tagcontent" id = "usertaginfo-7703">{'control': 6, 'None': 5, 'robotic-arm': 6, 'pid': 5, 'embedded-systems': 2, 'joint': 6, 'imu': 1, 'kalman-filter': 2, 'design': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7703">Load Comments</button></br>
+			<div id = "commentsection-7703" class = 'collapse'>
+			<div id = "comment-11186" class = "comment">
+				<p>Why do you need a higher sample rate?</p>
+			</div>
+			<div id = "comment-11194" class = "comment">
+				<p>You have to change sensor reading time. Sample time bounded to sensors. PID sample rate has no matter. Try assembly language to shorten. Also can you share your hardware specifications.</p>
+			</div>
+			<div id = "comment-11206" class = "comment">
+				<p>@Daniel I wanted to experiment. And hope it improves performance.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7703" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7703">
+					<img id="start_img-7703" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7703">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7704"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7704" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Increasing the sample rate probably isn't going to buy you much if you can't do something useful. That is, if you don't update the control signal (e.g., motor current) at the same high sample rate, then I don't think you're going to gain much. Similarly, if your IMU or other sensors don't update at the higher frequency, polling them at a higher frequency isn't going to get you much either.</p>
+
+<p>You need high frequency feedback, high frequency output, and the headroom to process at those high frequencies. If you could increase the PID sample rate, if you're still relying on the 1kHz process to provide the output then you haven't gained much. However, note that the input frequency doesn't matter <em>too</em> much; at a bounding <em>very</em> low frequency input the controller would interpret the reference like a step input, but you still get PID control/stability.</p>
+
+<p>What I would suggest is either going with a faster processor or (preferred) splitting PID off into its own processor. Use a "master" to interface with the user, generate a reference signal, then pass that reference off to the PID controller. Doing this frees up the PID controller to handle only the relevant feedback (sensors) and outputs (motors). </p>
+
+<p>For example, say you are running a quadcopter. The master controller gets the motion control input from the pilot, but also gets periphery input from the pilot, for things such as maybe camera gimbal control, camera control, lighting/display control, audio, heartbeat messages, feedback vehicle parameters to the pilot, etc. </p>
+
+<p>Of all of these things, parse the motion refernce (pitch/roll/yaw/thrust etc.) and pass that off to the PID control chip. </p>
+
+<p>Now the PID control chip gets the motion reference at the 1kHz input, but the <em>reference</em> doesn't need to update very quickly. The PID control chip can now focus only on polling the IMU/compass/other sensors, calculating reference-feedback errors, and modifying the outputs. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7704" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-7704">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7704">Load Comments</button></br>
+			<div id = "commentsection-7704" class = 'collapse'>
+			<div id = "comment-11182" class = "comment">
+				<p>could you elaborate on "reference doesn't need to update very quickly"? or direct me to some other place where I can look into the validity of such implementation?</p>
+			</div>
+			<div id = "comment-11185" class = "comment">
+				<p>It's just a step response. Say you get control reference signals every 1ms (1kHz) but your PID runs every 0.1ms (10kHz), then you essentially have a 10 sample step followed by another 10 sample step - PID will still work to control to the input. This is akin to breaking down a system response as a summation of impulse responses.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7704" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7704">
+					<img id="start_img-7704" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7704">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

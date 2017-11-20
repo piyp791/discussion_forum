@@ -1,0 +1,141 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to periodically estimate states of a LTI if the output is measured irregularly?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-4663" class = "post">
+			<h2>Question</h2>
+			<div id="vote-4663" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 48</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to periodically estimate states of a LTI if the output is measured irregularly?</h2>
+<p>How can I periodically estimate the states of a discrete <a href="http://en.wikipedia.org/wiki/LTI_system_theory" rel="nofollow">linear time-invariant system</a> in the form $$\dot{\vec{x}}=\textbf{A}\vec{x}+\textbf{B}\vec{u}$$ 
+$$\vec{y}=\textbf{C}\vec{x}+\textbf{D}\vec{u} $$if the measurements of its output $y$ are performed in irregular intervals? (suppose the input can always be measured).</p>
+
+<hr>
+
+<p>My initial approach was to design a <a href="http://en.wikipedia.org/wiki/State_observer" rel="nofollow">Luenberger observer</a> using estimates $\hat{\textbf{A}}$, $\hat{\textbf{B}}$, $\hat{\textbf{C}}$ and $\hat{\textbf{D}}$ of the abovementioned matrices, and then update it periodically every $T_s$ seconds according the following rule:</p>
+
+<blockquote>
+  <p>If there has been a measurement of $y$ since the last update: $$\dot{\hat{x}}=\hat{\textbf{A}}\hat{x}+\hat{\textbf{B}}\hat{u}+\textbf{L}(y_{measured}-\hat{\textbf{C}}\hat{x})$$
+  If not:
+  $$\dot{x}=\hat{\textbf{A}}\hat{x}+\hat{\textbf{B}}\hat{u}$$</p>
+</blockquote>
+
+<p>(I have omitted the superscript arrows for clarity)</p>
+
+<p>I believe that there may be a better way to do this, since I'm updating the observer using an outdated measurement of $y$ (which is outdated by $T_s$ seconds in the worst case).</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4663" data-toggle = "popover">
+				<p>user name : JLagana</p>
+				<p> user reputation : 185</p>
+				<p class = "tagcontent" id = "usertaginfo-4663">{'control': 2, 'quadcopter': 6, 'None': 0, 'computer-vision': 5, 'sensor-fusion': 2, 'accelerometer': 6, 'calibration': 5, 'ekf': 6, 'filter': 2, 'kalman-filter': 8, 'orientation': 6}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-4663">Load Comments</button></br>
+			<div id = "commentsection-4663" class = 'collapse'>
+			<div id = "comment-9202" class = "comment">
+				<p>Please consider accepting an answer or commenting on incorrect answers. This helps new users find the information they need.</p>
+			</div>
+			</div>
+				<textarea id = "speech-4663" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4663">
+					<img id="start_img-4663" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4663">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-4906"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4906" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>This problem can be conveniently addressed in the context of multi-rate Kalman estimation.</p>
+
+<p>See for example "<a href="http://www.researchgate.net/publication/223050722_Multi-rate_Kalman_filtering_for_the_data_fusion_of_displacement_and_acceleration_response_measurements_in_dynamic_system_monitoring" rel="nofollow">Multi-rate Kalman filtering for the data fusion of displacement and acceleration response measurements in dynamic system monitoring</a>" (Section 4).</p>
+
+<p>Essentially, you have to establish a time sample $T_s$ lower than the minimum time interval you can expect from two consecutive measurements. Then, you always perform the Kalman time update step each $T_s$ instant, whereas the measurement update is run only upon fresh data.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4906" data-toggle = "popover">
+				<p>user name : Ugo</p>
+				<p> user reputation : 1482</p>
+				<p class = "tagcontent" id = "usertaginfo-4906">{'None': 99}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-4906" class = 'collapse'>
+			</div>
+				<textarea id = "speech-4906" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4906">
+					<img id="start_img-4906" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4906">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

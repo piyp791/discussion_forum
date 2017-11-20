@@ -1,0 +1,354 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to fuse linear and angular data from sensors
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-382" class = "post">
+			<h2>Question</h2>
+			<div id="vote-382" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">21</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 18500</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to fuse linear and angular data from sensors</h2>
+<p>My team and I are setting up an outdoor robot that has encoders, a commercial-grade <a href="http://en.wikipedia.org/wiki/IMU">IMU</a>, and <a href="http://en.wikipedia.org/wiki/Global_Positioning_System">GPS</a> sensor. The robot has a basic tank drive, so the encoders sufficiently supply ticks from the left and right wheels. The IMU gives roll, pitch, yaw, and linear accelerations in x, y, and z. We could later add other IMUs, which would give redundancy, but could also additionally provide angular rates of roll, pitch, and yaw. The GPS publishes global x, y, and z coordinates.</p>
+
+<p>Knowing the robot's x y position and heading will useful for the robot to localize and map out it's environment to navigate. The robot's velocity could also be useful for making smooth movement decisions. It's a ground-based robot, so we don't care too much about the z axis. The robot also has a <a href="http://en.wikipedia.org/wiki/LIDAR">lidar</a> sensor and a camera--so roll and pitch will be useful for transforming the lidar and camera data for better orientation. </p>
+
+<p>I'm trying to figure out how to fuse all these numbers together in a way that optimally takes advantage of all sensors' accuracy. Right now we're using a <a href="http://en.wikipedia.org/wiki/Kalman_filter">Kalman filter</a> to generate an estimate of <code>[x, x-vel, x-accel, y, y-vel, y-accel]</code> with the simple transition matrix:</p>
+
+<pre><code>[[1, dt, .5*dt*dt, 0,  0,        0],
+ [0,  1,       dt, 0,  0,        0],
+ [0,  0,        1, 0,  0,        0],
+ [0,  0,        0, 1, dt, .5*dt*dt],
+ [0,  0,        0, 0,  1,       dt],
+ [0,  0,        0, 0,  0,        1]]
+</code></pre>
+
+<p>The filter estimates state exclusively based on the accelerations provided by the IMU. (The IMU isn't the best quality; within about 30 seconds it will show the robot (at rest) drifting a good 20 meters from its initial location.) I want to know out how to use roll, pitch, and yaw from the IMU, and potentially roll, pitch, and yaw rates, encoder data from the wheels, and GPS data to improve the state estimate. </p>
+
+<p>Using a bit of math, we can use the two encoders to generate x, y, and heading information on the robot, as well as linear and angular velocities. The encoders are very accurate, but they can be susceptible to slippage on an outdoor field. </p>
+
+<p>It seems to me that there are two separate sets of data here, which are difficult to fuse:</p>
+
+<ol>
+<li>Estimates of x, x-vel, x-accel, y, y-vel, y-accel</li>
+<li>Estimates of roll, pitch, yaw, and rates of roll, pitch, and yaw</li>
+</ol>
+
+<p>Even though there's crossover between these two sets, I'm having trouble reasoning about how to put them together. For example, if the robot is going  at a constant speed, the direction of robot, determined by its x-vel and y-vel, will be the same as its yaw. Although, if the robot is at rest, the yaw cannot be accurately determined by the x and y velocities. Also, data provided by the encoders, translated to angular velocity, could  be an update to the yaw rate... but how could an update to the yaw rate end up providing better positional estimates?</p>
+
+<p>Does it make sense to put all 12 numbers into the same filter, or are they normally kept separate? Is there already a well-developed way of dealing with this type of problem?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-382" data-toggle = "popover">
+				<p>user name : Robz</p>
+				<p> user reputation : 954</p>
+				<p class = "tagcontent" id = "usertaginfo-382">{'pid': 8, 'embedded-systems': 0, 'slam': 20, 'sensor-error': 8, 'accelerometer': 5, 'kinematics': 7, 'mechanism': 1, 'differential-drive': 8, 'imu': 12, 'kalman-filter': 28, 'actuator': 21, 'gyroscope': 5, 'gps': 20, 'magnetometer': 5, 'None': 25, 'noise': 5, 'power': 0, 'localization': 20, 'microcontroller': 0, 'brushless-motor': 13, 'sensors': 41, 'quadcopter': 13, 'navigation': 7, 'sensor-fusion': 21, 'sonar': 8, 'servos': 7}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-382" class = 'collapse'>
+			</div>
+				<textarea id = "speech-382" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-382">
+					<img id="start_img-382" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-382">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-386"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-386" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">27</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Two things. </p>
+
+<ol>
+<li><p>If you plan to do mapping, you need a full-fledged Simultaneous Localization and Mapping (SLAM) Algorithm. See: <a href="http://www.cs.berkeley.edu/~pabbeel/cs287-fa09/readings/Durrant-Whyte_Bailey_SLAM-tutorial-I.pdf" rel="nofollow noreferrer">Simultaneous Localisation and Mapping (SLAM):
+Part I The Essential Algorithms</a>. In SLAM, estimating the robot state is only half the problem. How to do that is a bigger question than can be answered here.</p></li>
+<li><p>Regarding localization (estimating the state of the robot), this is not a job for a Kalman Filter. The transition from
+$x(t)=[x,y,\dot{x},\dot{y},\theta,\dot{\theta}]$ to $x(t+1)$ is not a linear function due to the
+angular accelerations and velocities. Therefore you need to consider
+non-linear estimators for this task. Yes, there are standard ways of
+doing this. Yes, they are available in literature. Yes, typically all
+inputs are put into the same filter. Position, velocity,
+orientation, and angular velocity of the robot are
+used as outputs. And Yes, I'll present a brief introduction to their
+common themes here.   The main take-aways are</p>
+
+<ol>
+<li>include the Gyro and IMU bias in your state or your estimates will
+diverge</li>
+<li>An <a href="http://en.wikipedia.org/wiki/Extended_Kalman_filter" rel="nofollow noreferrer">Extended Kalman Filter
+(EKF)</a> is commonly used for this problem</li>
+<li>Implementations can be derived from scratch, and don't generally
+need to be "looked up". </li>
+<li>Implementaitons exist for most of the localization and SLAM problem, so don't do more work than you have to. See: Robot Operating System <a href="http://www.ros.org" rel="nofollow noreferrer">ROS</a></li>
+</ol></li>
+</ol>
+
+<p>Now, to explain the EKF in the context of your system.
+We have an IMU+Gyro, GPS, and
+odometry. The robot in question is a differential drive as mentioned.
+The filtering task is to take the current pose estimate of the robot
+${\hat{x}_t}$, the control inputs $u_t$, and the measurements from
+each sensor, $z_t$, and produce the estimate at the next time step
+$\hat{x}_{t+1}$. We'll call the IMU measurements $I_t$, GPS is $G_t$, and
+odometry, $O_t$. </p>
+
+<p>I assume we are interested in estimating the robot pose as
+$x_t={x,y,\dot{x},\dot{y},\theta,\dot{\theta}}$.
+The problem with IMU and Gyros is drift. There is a non-stationary
+bias in the accelerations which you must account for in the EKF. This
+is done (usually) by putting the bias into the estimated state. This
+allows you to directly estimate the bias at each time step.
+$x_t={x,y,\dot{x},\dot{y},\theta,\dot{\theta},b}$, for a vector of
+biases $b$.</p>
+
+<p>I'm assuming:</p>
+
+<ol>
+<li>$O_t$ = two distance measurements representing the distance the
+treads have travelled in some small time increment</li>
+<li>$I_t$ = three orientation measurements ${\alpha, \beta, \theta}$ and three accelleration
+measurements ${\ddot{x},\ddot{y},\ddot{z}}$. </li>
+<li>$G_t$ = the position of the robot in the <em>global</em> frame,
+$^Gx_t,^Gy_t$.</li>
+</ol>
+
+<p>Typically, the result of the control inputs (desired speeds for each
+tread) are difficult to map to the outputs (the change in the pose of
+the robot).  In place of $u$, it is common (see <a href="http://www.probabilistic-robotics.org/" rel="nofollow noreferrer">Thrun</a>, <a href="https://robotics.stackexchange.com/questions/106/what-is-a-suitable-model-for-two-wheeled-robots/134#134">Odometry Question</a>) to use the
+odometry as the "result" of the control. This assumption works well
+when you are not on a near-frictionless surface. The IMU and GPS can
+help correct for slippage, as we'll see.</p>
+
+<p>So the first task is to predict the next state from the current state:
+$\hat{x}_{t+1} = f(\hat{x}_t,u_t)$. In the case of a differential
+drive robot, this prediction can be obtained directly from literature
+(see <a href="http://ijr.sagepub.com/content/8/5/15.short" rel="nofollow noreferrer">On the Kinematics of Wheeled Mobile Robots</a> or the more concise treatment in any modern robotics textbook), or derived from scratch as shown here: <a href="https://robotics.stackexchange.com/questions/106/what-is-a-suitable-model-for-two-wheeled-robots/134#134">Odometry Question</a>.</p>
+
+<p>So, we can now predict $\hat{x}_{t+1} = f(\hat{x}_t, O_t)$. This is
+the propagation or prediction step. You <em>can</em> operate a robot by simply
+propagating. If the values $O_t$ are completely accurate, you will
+never have an estimate $\hat{x}$ which does not exactly equal your
+true state. This never happens in practice.</p>
+
+<p>This only gives a predicted value from the previous estimate,
+and does not tell us how the accuracy of the estimate degrades with
+time. So, to propagate the uncertainty, you must use the EKF equations
+(which propagate the uncertainty in closed form under Gaussian noise
+assumptions), a particle filter (which uses a sampling-based
+approach)*, the UKF (which uses a point-wise approximation of the
+uncertainty), or one of many other variants.</p>
+
+<p>In the case of the EKF, we proceed as follows. Let $P_t$ be the
+covariance matrix of the robot state. We linearize the function $f$
+using Taylor-series expansion to obtain a linear system. A linear
+system can be easily solved using the Kalman Filter. Assume the
+covariance of the estimate at time $t$ is $P_t$, and the assumed
+covariance of the noise in the odometry is given as the matrix $U_t$
+(usually a diagonal $2\times2$ matrix, like $.1\times I_{2\times 2}$).
+In the case of the function $f$, we obtain the <a href="http://en.wikipedia.org/wiki/Jacobian_matrix_and_determinant" rel="nofollow noreferrer">Jacobian</a>
+$F_x=\frac{\partial f}{\partial x}$ and $F_u=\frac{\partial f}{\partial
+u}$, then propagate the uncertainty as,</p>
+
+<p>$$P_{t+1}=F_x*P_t*F_x^T + F_u*U_t*F_u^T$$</p>
+
+<p>Now we can propagate the estimate and the uncertainty. Note the
+uncertainty will monotonically increase with time. This is expected.
+To fix this, what is typically done, is to use the $I_t$ and $G_t$ to
+update the predicted state. This is called the measurement step of the
+filtering process, as the sensors provide an indirect measurement of
+the state of the robot.</p>
+
+<p>First, use each sensor to estimate some part of the robot state
+as some function $h_g()$ and $h_i()$ for GPS, IMU. Form
+the <em>residual</em> or <em>innovation</em> which is the difference of the
+predicted and measured values. 
+Then, estimate the accuracy for each sensor estimate in
+the form of a covariance matrix $R$ for all sensors ($R_g$, $R_i$ in
+this case). Finally, find the Jacobians of $h$ and update the state
+estimate as follows:</p>
+
+<p>For each sensor $s$ with state estimate $z_s$  (<a href="http://en.wikipedia.org/wiki/Extended_Kalman_filter#Update" rel="nofollow noreferrer">Following wikipedia's entry</a>)</p>
+
+<p>$$v_s=z_s- h_s(\hat{x}_{t+1})$$
+$$S_s = H_s*P_{t+1}*H_s^T + R_s$$
+$$K = P_{t+1}*H_s^T S^{-1}_s$$
+$$\hat{x}_{t+1} = \hat{x}_{t+1} - K*v$$
+$$P_{t+1} = (I-K*H_s)*P_{t+1}$$</p>
+
+<p>In the case of GPS, the measurement $z_g=h_g()$ it is probably just a
+transformation from latitude and longitude to the local frame of the
+robot, so the Jacobian $H_g$ will be nearly Identity. $R_g$ is
+reported directly by the GPS unit in most cases.</p>
+
+<p>In the case of the IMU+Gyro, the function $z_i=h_i()$ is an integration of
+accelerations, and an additive bias term. One way to handle the IMU is
+to numerically integrate the accelerations to find a position and
+velocity estimate at the desired time.  If your IMU has a small
+additive noise term $p_i$ for each acceleration estimate, then you
+must integrate this noise to find the accuracy of the position
+estimate.  Then the covariance $R_i$ is the integration of all the
+small additive noise terms, $p_i$. Incorporating the update for the
+bias is more difficult, and out of my expertise. However, since you are interested in planar motion, you can probably simplify the problem. 
+You'll have to look in literature for this.</p>
+
+<p>Some off-the-top-of-my-head references: </p>
+
+<ol>
+<li><p><a href="http://www.ee.ucr.edu/~mourikis/papers/Li2012-ICRA.pdf" rel="nofollow noreferrer">Improving the Accuracy of EKF-Based Visual-Inertial
+Odometry</a></p></li>
+<li><p><a href="http://www-users.cs.umn.edu/~stergios/papers/AR-CL-Consistency-2010.pdf" rel="nofollow noreferrer">Observability-based Consistent EKF Estimators for Multi-robot
+Cooperative
+Localization</a></p></li>
+<li><p><a href="http://s-space.snu.ac.kr/handle/10371/10151" rel="nofollow noreferrer">Adaptive two-stage EKF for INS-GPS loosely coupled system with
+unknown fault bias</a></p></li>
+</ol>
+
+<p>This field is mature enough that google (scholar) could probably find
+you a working implementation. If you are going to be doing a lot of
+work in this area, I recommend you pick up a solid textbook. Maybe
+something like <a href="http://www.probabilistic-robotics.org/" rel="nofollow noreferrer">Probablistic Robotics by S. Thrun</a> of Google Car fame.
+(I've found it a useful reference for those late-night
+implementations).</p>
+
+<p>*There are several PF-based estimators available in the
+<a href="http://ros.org" rel="nofollow noreferrer">Robot Operating System</a> (ROS). However, these have
+been optimized for indoor use. Particle filters deal with the
+multi-modal PDFs which can result from map-based localization (am I
+near <em>this</em> door or <em>that</em> door). I believe most outdoor
+implementations (especially those that can use GPS, at least
+intermittently) use the <a href="http://en.wikipedia.org/wiki/Extended_Kalman_filter" rel="nofollow noreferrer">Extended Kalman Filter</a> (EKF). I've
+successfully used the Extended Kalman Filter for an outdoor, ground
+rover with differential drive. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-386" data-toggle = "popover">
+				<p>user name : Josh Vander Hook</p>
+				<p> user reputation : 3960</p>
+				<p class = "tagcontent" id = "usertaginfo-386">{'None': 345}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-386">Load Comments</button></br>
+			<div id = "commentsection-386" class = 'collapse'>
+			<div id = "comment-474" class = "comment">
+				<p>(1) I don't see the "obvious" connection to particle filters. (2) If there are other questions/threads that discuss something similar to my question, please show a link to them. (3) I understand the jist of EKFs, and would definitely switch to using one... IF I actual knew the state transition in the first place (which is a big part of my question). (4) The idea of improving a state estimate with cameras and lidars is cool in abstract, but it is outside of the scope of what I need. Thanks for the references, though.</p>
+			</div>
+			<div id = "comment-478" class = "comment">
+				<p>The particle filter is a non-linear estimator. I'll update the links / refs shortly.  The state transitions for IMU, Gyro, and Odometry are covered extensively in literature (including ref 1). Again, I'll update a few references shortly.</p>
+			</div>
+			<div id = "comment-508" class = "comment">
+				<p>@Robz Massively edited OP. Not sure of the standard practice for responding to comments, so I added as much info to the post as I could.</p>
+			</div>
+			</div>
+				<textarea id = "speech-386" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-386">
+					<img id="start_img-386" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-386">Comment</button>
+			<br><div id = "ans-456"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-456" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">6</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You can greatly simplify the problem in most common cases:</p>
+
+<ul>
+<li>A lot of "commercial grade" IMus (e.g. Xsens) have very noisy accelerometers. Don't even bother fusing them to get speed, the odometry is already order of magnitudes better. The only usable data the IMU is going to provide is the pitch and roll, and to some extent the heading (see next point)</li>
+<li>heading from IMUs is not that trustworthy. It uses magetometers, and will show huge drifts (up to 25 degrees over 2m in our case) near ferromagnetic masses, such as the one you can find in building walls. What we did to solve this is to use the IMU heading, but estimate a heading bias.</li>
+<li>If you are outdoors, don't forget that travelling 10m on a 10 degree incline does not lead to the same change in X and Y than travelling 10m on a flat terrain. This is usually accounted for by estimating Z, but I guess it can be estimated differently.</li>
+<li>GPS is also a lying bitch, typically in high-multipath environments. Plus low-grade (and even in some conditions high-grade) GPSes have a tendency to report very wrong standard deviations. We used some simple chi-square tests to check whether a particular GPS measurement should be integrated (i.e. checking that it matches the current filter estimate up to a certain point), which gave us decent results.</li>
+</ul>
+
+<p>The "typical" solution for us is to use odometry + IMU to get an ego-motion estimate and then use GPS to correct X,Y,Z and heading bias.</p>
+
+<p><a href="http://www.rock-robotics.org/stable/pkg/slam/pose_ekf/index.html">Here is an EKF implementation that we extensively used.</a> If you need to estimate the IMU's orientation (i.e. if it does not already have a built-in filter), you can also use on of these two filter: <a href="http://www.rock-robotics.org/master/pkg/slam/quater_ukf/index.html">UKF</a> and <a href="http://www.rock-robotics.org/master/pkg/slam/quater_ekf/index.html">EKF</a>.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-456" data-toggle = "popover">
+				<p>user name : sylvain.joyeux</p>
+				<p> user reputation : 363</p>
+				<p class = "tagcontent" id = "usertaginfo-456">{'None': 20, 'kalman-filter': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-456">Load Comments</button></br>
+			<div id = "commentsection-456" class = 'collapse'>
+			<div id = "comment-6915" class = "comment">
+				<p>So you included in your EKF state an estimation of the heading bias? Out of curiousity, how well did that work?</p>
+			</div>
+			</div>
+				<textarea id = "speech-456" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-456">
+					<img id="start_img-456" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-456">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

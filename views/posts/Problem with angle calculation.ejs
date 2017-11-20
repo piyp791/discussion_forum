@@ -1,0 +1,174 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Problem with angle calculation
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11313" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11313" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 124</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Problem with angle calculation</h2>
+<p>I'm using MPU6050(accelerometer+gyro) connected to ATmega328P microcontroller, but probably it isn't even important in my case.</p>
+
+<p>In my project, I need an angle around the X axis. And it's calculated like this:</p>
+
+<pre><code>angle = -(atan2(acc.XAxis, sqrt(acc.YAxis*acc.YAxis + acc.ZAxis*acc.ZAxis))*180.0)/M_PI;
+</code></pre>
+
+<p>where acc is vector of accelerations in all directions.</p>
+
+<p>The problem is, that it gives me credible value only when angle between Z axis and ground is right (so it's not rotated around Y axis). When I start to rotate it around Y axis it also changes value of X axis rotation.</p>
+
+<p><img src="https://i.imgur.com/ar0t9Lag.png" alt="sketch"></p>
+
+<p>I know, that it's due to YAxis acceleration in my algorithm, but I have no idea how to get rid of it.</p>
+
+<p>How can I solve this problem?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11313" data-toggle = "popover">
+				<p>user name : JanW</p>
+				<p> user reputation : 1</p>
+				<p class = "tagcontent" id = "usertaginfo-11313">{'None': 0, 'rotation': 0, 'gyroscope': 0, 'accelerometer': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11313">Load Comments</button></br>
+			<div id = "commentsection-11313" class = 'collapse'>
+			<div id = "comment-20448" class = "comment">
+				<p>Does the acc vector include acceleration due to gravity?</p>
+			</div>
+			<div id = "comment-20457" class = "comment">
+				<p>Where did you get the equation from? If you have gyroscopes, why are you using accelerometers to calculate angles? Why write your code from scratch when there is [freely available code](http://x-io.co.uk/open-source-imu-and-ahrs-algorithms/) that does it for you?</p>
+			</div>
+			<div id = "comment-20471" class = "comment">
+				<p>Please more clearly explain the values that you get that you feel are not credible, and what the system attitude is that creates them.  Give numerical examples if possible.</p>
+			</div>
+			<div id = "comment-20472" class = "comment">
+				<p>I realize that you may be talking about accelerations which are due to rotating your system about a point different than its IMU center point.  That will cause a transverse acceleration due to the lever arm effect i.e. "omega cross r".  You would need to explicitly compensate for this, using your gyros ("omega") and the known lever arm vector "r".  Then you can apply the angle finding above.</p>
+			</div>
+			<div id = "comment-20474" class = "comment">
+				<p>To be more precise - I use kalman filter to calculate angle more accurately. It gets angle from the algorithm above and data from gyroscope about angular velocity around axis. But I checked it and kalman filter isn't a problem in this case, cause it happens also with raw angle calculated from accelerations
+
+@Chuck I got it from website which unfortunately isn't available in english. But [here](https://theccontinuum.com/2012/09/24/arduino-imu-pitch-roll-from-accelerometer/) is the same (I have wrong naming so X and Y are swapped)</p>
+			</div>
+			<div id = "comment-20475" class = "comment">
+				<p>@mikeTronix When it isn't rotated around Y axis it gives me values from 0 degrees (when it's placed vertical) to 90 degrees (horizontal). When I turn it around Y axis the  value of my angle (it is when there isn't any X axis rotation) starts to fall (despite there weren't any X axis rotation. When I rotate it  90 degrees around Y axis, the X axis rotation value is close to zero and it nearly stops to react for X axis rotation (value doesnt change).</p>
+			</div>
+			</div>
+				<textarea id = "speech-11313" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11313">
+					<img id="start_img-11313" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11313">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-11329"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11329" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Your equation is formed so that the angle can be zero only when the projection of the gravity vector onto the X axis is zero.  That gives zero when the system is oriented vertically, because the gravity vector is aligned with the -Y axis.  But you also will get a zero angle result if the gravity vector lies <strong>exactly</strong> in the Y-Z plane, regardless of the system's angle to the vertical.  That's because there is no projection of the gravity vector into the X direction in that scenario, no matter how you twist the system about the X axis.</p>
+
+<p><a href="https://i.stack.imgur.com/zL6vV.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/zL6vV.png" alt="a vector with respect to system axes"></a></p>
+
+<p>If you just want the angle of tilt of your system from the vertical, use:</p>
+
+<p>tilt = acos(-acc.Yaxis)</p>
+
+<p>which will be zero when your system is vertical, and +/- 90 degrees when the system is as far away from vertical as possible.</p>
+
+<p>Angles must always be defined very specifically to match the way you want to use them.  I recommend drawing a diagram and using trigonometry to derive the equations that you use to compute them.  Don't forget that in 3D, multiple angles must always be applied in a specific order, and their values interact within the final result.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11329" data-toggle = "popover">
+				<p>user name : mikeTronix</p>
+				<p> user reputation : 131</p>
+				<p class = "tagcontent" id = "usertaginfo-11329">{'None': 3}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11329">Load Comments</button></br>
+			<div id = "commentsection-11329" class = 'collapse'>
+			<div id = "comment-20487" class = "comment">
+				<p>I don't think this is quite what OP was looking for. OP said they can already find the angle about the x-axis, but the problem they were having was the fact that rotation about their alternate axis caused the readings to be skewed. You touch briefly on the subject (it *is* because of how gravity is projected onto the plane), but then proceed to give OP the answer they already had. In your drawing, what is "tilt"? Z-axis rotation? What is happens to tilt if you rotate the x-axis? That's OP's problem - a tilt reading occurs regardless of input axis and/or the two axes interfere with the reading.</p>
+			</div>
+			<div id = "comment-20489" class = "comment">
+				<p>Okay, I see where you're going here.  I was alluding to the equation being the wrong one, but I should have been more straightforward.  The problem is that the equation OP provided doesn't give an angle of rotation **about** the X-axis, as he expected.  It gives the deviation of the gravity vector from the YZ plane.  The equation of rotation about the X axis would be:   theta = atan2(acc.Zaxis, acc.Yaxis), assuming we want vertical to be the zero angle.</p>
+			</div>
+			<div id = "comment-20490" class = "comment">
+				<p>I agree; that's the comment I made to the question. OP states, "I'm using MPU6050(accelerometer+gyro)" but then goes on to ask about using the accelerometer to measure angles. That's what the gyro is for! It can still be done with accelerometers, but also as I mentioned that math has already been done and is [freely available](http://x-io.co.uk/open-source-imu-and-ahrs-algorithms/).</p>
+			</div>
+			</div>
+				<textarea id = "speech-11329" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11329">
+					<img id="start_img-11329" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11329">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

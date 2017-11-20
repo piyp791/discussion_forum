@@ -1,0 +1,158 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>In order to integrate MCL and Occupancy Grid to implement Grid-based FastSLAM, do you have to record all data?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8595" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8595" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 118</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>In order to integrate MCL and Occupancy Grid to implement Grid-based FastSLAM, do you have to record all data?</h2>
+<p>It's unclear as to how one goes about integrating Occupancy Grid mapping and Monte Carlo localization to implement SLAM.</p>
+
+<p>Assuming <strong>Mapping</strong> is one process, <strong>Localization</strong> is another process, and some motion generating process called <strong>Exploration</strong> exist. Is it necessary to record all data as sequenced or with time stamps for coherence? </p>
+
+<p>There's Motion: $U_t$, Map: $M_t$, Estimated State: $X_t$, Measurement: $Z_t$</p>
+
+<p>so..</p>
+
+<ul>
+<li><p>each <strong>Estimated state</strong>, $X_t$, is a function of the <strong>current motion</strong>, $U_t$, <strong>current measurement</strong>, $Z_t$, and <strong>previous map</strong>, $M_{t-1}$;</p></li>
+<li><p>each <strong>confidence weight</strong>, $w_t$, of estimated state is a function of <strong>current measurement</strong>, $Z_t$,  <strong>current estimate state</strong>, $X_t$, and <strong>previous map</strong>, $M_{t-1}$;</p></li>
+<li><p>then each <strong>current map</strong>, $M_t$ is a function of <strong>current measurement</strong>, $Z_t$, <strong>current estimated state</strong>, $X_t$,  and <strong>previous map</strong>, $M_{t-1}$.</p></li>
+</ul>
+
+<p>So the question is, is there a proper way of integrating mapping and localization processes? Is it something you record with timestamp or sequences? Are you suppose to record all data, like FullSLAM, and maintain full history. 
+How can we verify they are sequenced at the same time to be referred to as <strong>current</strong> (i.e. measurement) and <strong>previous</strong> (measurement).</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8595" data-toggle = "popover">
+				<p>user name : Iancovici</p>
+				<p> user reputation : 121</p>
+				<p class = "tagcontent" id = "usertaginfo-8595">{'None': 0, 'slam': 3, 'sensors': 1, 'occupancygrid': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8595">Load Comments</button></br>
+			<div id = "commentsection-8595" class = 'collapse'>
+			<div id = "comment-14019" class = "comment">
+				<p>it seems like there should be two estimated states, one thats relative to the starting state when slam starts and one in the global map that you're trying to localize in</p>
+			</div>
+			<div id = "comment-14020" class = "comment">
+				<p>it seems unlikely that the maps would be a function of the estimated state, i would image that they're a product of measurements and motions</p>
+			</div>
+			</div>
+				<textarea id = "speech-8595" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8595">
+					<img id="start_img-8595" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8595">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9461"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9461" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The question is a bit old but an answer might help. I think you are getting confused by thinking of mapping, localization and exploration as separate processes in the context of grid-based FastSLAM. In the most basic form of the algorithm you have the three steps you described:</p>
+
+<p>At every timestep :</p>
+
+<ol>
+<li><p>Update the poses of your particles using your motion model</p></li>
+<li><p>Assign weights using your measurement model</p></li>
+<li><p>Use the calculated weights to resample the particle set</p></li>
+</ol>
+
+<p>For a given particle, once you have estimated $x_{t}$ based on $x_{t-1}$ through sampling (step 1), you simply update the previous map by integrating the new measurements you have made at time $t$ "trusting" that they were made from pose $x_{t}$.</p>
+
+<p>It's because the algorithm gives importance to assigning precise weights (step 2) and regularly resampling your particle set (step 3) that it can confidently use the $x_{t}$ estimates made through the sampling step to update the map.</p>
+
+<p>Because with every timestep you are marginalizing over the previous state - like all Bayesian filtering approaches to online SLAM - you do not need to keep track of the full history of your data.</p>
+
+<p>If you are still fuzzy on how these steps work together, you can take a look at the pseudocode for gmapping from <a href="http://www.cs.berkeley.edu/~pabbeel/cs287-fa11/slides/gmapping.pdf" rel="nofollow noreferrer">this presentation</a>:</p>
+
+<p><a href="https://i.stack.imgur.com/YCUmJ.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/YCUmJ.png" alt="Pseudocode for gmapping"></a></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9461" data-toggle = "popover">
+				<p>user name : al-dev</p>
+				<p> user reputation : 106</p>
+				<p class = "tagcontent" id = "usertaginfo-9461">{'None': 9}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-9461" class = 'collapse'>
+			</div>
+				<textarea id = "speech-9461" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9461">
+					<img id="start_img-9461" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9461">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

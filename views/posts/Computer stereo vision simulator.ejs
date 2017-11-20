@@ -1,0 +1,220 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Computer stereo vision simulator
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9341" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9341" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 274</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Computer stereo vision simulator</h2>
+<p>In my research project I deal with a mobile robot that perceives through stereo vision. As the stereo input data I currently use several datasets taken from a passenger vehicle that contain real world photos. The datasets are good to get started but have a limited content so I would need to model my own traffic situations to further work on the stereo vision system.</p>
+
+<p>I am thinking about using some kind of synthetic graphics simulation as the input for the stereo system. What are my options? I can imagine a 3D graphics rendering engine whose output would be fed as the input for the stereo vision could probably be used.</p>
+
+<p>I found there are general robotic simulators available like <a href="http://gazebosim.org/" rel="nofollow">Gazebo</a> but since I am all new to robotic simulation I do not really know where to begin.</p>
+
+<p><strong>EDIT:</strong></p>
+
+<p>I forgot to write that all my code is a pure C++. I use OpenCV and LIBELAS for stereo vision and Point Cloud Library (PCL) for visualization. All glued together into a single C++ project and compiles into single binary.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9341" data-toggle = "popover">
+				<p>user name : Kozuch</p>
+				<p> user reputation : 338</p>
+				<p class = "tagcontent" id = "usertaginfo-9341">{'stereo-vision': 12, 'structure-from-motion': 1, 'autonomous-car': 0, 'encoding': 2, 'precise-positioning': 0, 'hardware': 0, 'mobile-robot': 6, 'monocular': 2, 'rotation': 2, 'rcservo': 0, 'self-driving': 0, 'cameras': 2, 'point-cloud': 1, 'kinect': 1, 'opencv': 1, 'electronics': 1, 'gazebo': 0, 'gps': 7, 'engine': 1, 'odometry': 5, 'None': 8, 'electric': 1, 'localization': 0, 'wheeled-robot': 2, 'simulator': 1, 'visual-odometry': 2, 'gnss': 0, 'sensors': 2, 'steering': 0, '3d-reconstruction': 1, 'computer-vision': 12, 'algorithm': 2, 'calibration': 4, 'scale-model': 1, 'simulation': 0, 'servomotor': 0, 'sensor-fusion': 2, 'navigation': 0, 'software': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-9341" class = 'collapse'>
+			</div>
+				<textarea id = "speech-9341" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9341">
+					<img id="start_img-9341" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9341">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9343"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9343" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I did similar project with v-rep, python and opencv. </p>
+
+<p>1- Set up an enviorement with visible objects</p>
+
+<p>2- Set up your vision sensors with parameters</p>
+
+<p>3- Write a python script that connects you to v-rep and do stereo vision application</p>
+
+<p>Example code:</p>
+
+<pre><code>import vrep
+import time
+import cv2
+import numpy as np
+
+vrep.simxFinish(-1)
+
+clientID = vrep.simxStart('127.0.0.1', 19999, True, True, 5000, 5)
+
+if clientID!=-1:
+    print 'Connected to remote API server'
+    print 'Vision Sensor object handling'
+    res, v1 = vrep.simxGetObjectHandle(clientID, 'Vision_sensor#0', vrep.simx_opmode_oneshot_wait)
+    print 'Getting first image'
+    err, resolution, image = vrep.simxGetVisionSensorImage(clientID, v1, 0, vrep.simx_opmode_streaming_split)
+    if err==0:
+        print "Image ok"
+    time.sleep(2)
+    while (vrep.simxGetConnectionId(clientID) != -1):
+        err, resolution, image = vrep.simxGetVisionSensorImage(clientID, v1, 0, vrep.simx_opmode_buffer)
+        if err == vrep.simx_return_ok:
+            img = np.array(image,dtype=np.uint8)
+            img.resize([resolution[0],resolution[1],3])
+            cv2.imshow('image',img)
+            if cv2.waitKey(1) &amp; 0xFF == ord('q'):
+                break
+        elif err == vrep.simx_return_novalue_flag:
+            print "no image yet"
+            pass
+        else:
+          print err
+else:
+  print "Failed to connect to remote API Server"
+  vrep.simxFinish(clientID)
+
+cv2.destroyAllWindows()
+</code></pre>
+
+<p><strong>Configuration</strong></p>
+
+<p>OS: Windows 7 x64</p>
+
+<p>IDE: <a href="http://python-xy.github.io/" rel="nofollow">PythonXY</a>(Python version: 2.7, OpenCV version: 2.4) </p>
+
+<p>Simulator: <a href="http://www.coppeliarobotics.com/downloads.html" rel="nofollow">V-REP PRO EDU V3.3.0</a></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9343" data-toggle = "popover">
+				<p>user name : acs</p>
+				<p> user reputation : 838</p>
+				<p class = "tagcontent" id = "usertaginfo-9343">{'stereo-vision': 4, 'control': 1, '3d-printing': 2, 'simulator': 8, 'multi-agent': 0, 'pid': 1, 'slam': 2, 'robotic-arm': 1, 'mobile-robot': 10, 'ros': 8, 'battery': 0, 'swarm': 2, 'cameras': 4, 'lidar': 4, '3d-model': 2, 'imu': 3, 'kalman-filter': 3, 'gazebo': 1, 'gps': 2, 'None': 34, 'localization': 4, 'sensors': 7, '3d-reconstruction': 2, 'quadcopter': 0, 'computer-vision': 2, 'algorithm': 1, 'sensor-fusion': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9343">Load Comments</button></br>
+			<div id = "commentsection-9343" class = 'collapse'>
+			<div id = "comment-16537" class = "comment">
+				<p>Thanks for a nice answer! However, I forgot to write I use pure C++ - I just added it to the question.</p>
+			</div>
+			<div id = "comment-16538" class = "comment">
+				<p>@Kozuch  There is a c++ interface of V-Rep. I think V-rep easier than gazebo. You should try this : http://www.coppeliarobotics.com/helpFiles/en/remoteApiFunctions.htm</p>
+			</div>
+			<div id = "comment-16542" class = "comment">
+				<p>@Kozuch also you can try to use datasets like : http://www.mrpt.org/Karlsruhe_Dataset_Rawlog_Format</p>
+			</div>
+			<div id = "comment-16543" class = "comment">
+				<p>Yes I used this dataset and also its successor the KITTI one... but I want to try a synthetic environment.</p>
+			</div>
+			</div>
+				<textarea id = "speech-9343" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9343">
+					<img id="start_img-9343" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9343">Comment</button>
+			<br><div id = "ans-9350"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9350" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I highly advise against using synthetic image data for testing your stereo vision algorithms. What will happen is that you end up with a system that works excellent on your synthetic data, but poorly in the real-world. Synthetic images are much easier to process than real-world images, as they lack all the shortcomings of real cameras that will make stereo matching hard.</p>
+
+<p>You can try it out yourself. There are some synthetic image sequences out there. Have a look at this one:</p>
+
+<p><a href="https://cerv.aut.ac.nz/set-2/">https://cerv.aut.ac.nz/set-2/</a></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9350" data-toggle = "popover">
+				<p>user name : Konstantin</p>
+				<p> user reputation : 51</p>
+				<p class = "tagcontent" id = "usertaginfo-9350">{'None': 5}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-9350" class = 'collapse'>
+			</div>
+				<textarea id = "speech-9350" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9350">
+					<img id="start_img-9350" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9350">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

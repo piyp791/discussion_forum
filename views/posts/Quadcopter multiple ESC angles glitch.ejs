@@ -1,0 +1,218 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Quadcopter multiple ESC angles glitch
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-6442" class = "post">
+			<h2>Question</h2>
+			<div id="vote-6442" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 224</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Quadcopter multiple ESC angles glitch</h2>
+<p>I'm developing my fligth controller board on Tiva Launchpad for quadcoper and while calibrating PID I discovered an unexpected behaviour: sometimes quadcopter seems to experience random angle errors. While trying to investigate it, I've figured out that my code if fairly trying to compensate tham, as soon as they appear - but do not cause them. Even more - i've discovered that such behaviour appears only when two (or more) motors are adjusted, while one motor system shows pretty good stabilisation.</p>
+
+<p>Here is code for PMW output for different motors:</p>
+
+<pre><code>torque[0] = (int16_t)(+ angles_correction.pitch - angles_correction.roll) + torque_set;
+torque[1] = (int16_t)(+ angles_correction.pitch + angles_correction.roll) + torque_set;
+torque[2] = (int16_t)(- angles_correction.pitch + angles_correction.roll) + torque_set;
+torque[3] = (int16_t)(- angles_correction.pitch - angles_correction.roll) + torque_set;
+</code></pre>
+
+<p>and here is recorded angles for system with one motor and two motors:
+<img src="https://i.stack.imgur.com/7CJIU.png" alt="enter image description here"></p>
+
+<p>To be sure that it's not the algorithm problem, while recording this angles only Integral part of PID was non-zero, so angles were not even stabilised.</p>
+
+<p>My question is - could esc noise each other (in my quad they are quite close to each other - just few sentimeters away) to cause such behaviour?
+Thanks a lot!</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6442" data-toggle = "popover">
+				<p>user name : Mikhail Pershin</p>
+				<p> user reputation : 1</p>
+				<p class = "tagcontent" id = "usertaginfo-6442">{'quadcopter': 0, 'esc': 0, 'None': 0, 'pid': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-6442" class = 'collapse'>
+			</div>
+				<textarea id = "speech-6442" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6442">
+					<img id="start_img-6442" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6442">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7022"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7022" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>It looks like your PID is oscillating, have you tried turning down the P gains in your controllers? Most PIDs are tuned P first by turning all terms to zero and turning up the P to just above the point where it oscillates then for the I gain adjust it till it "snaps" into position, the D gain can be trickier  to get but you should start there. <a href="http://blog.oscarliang.net/quadcopter-pid-explained-tuning/" rel="nofollow">Here</a> is a good reference for tuning PIDs on a Multicopter.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7022" data-toggle = "popover">
+				<p>user name : Mark Omo</p>
+				<p> user reputation : 1786</p>
+				<p class = "tagcontent" id = "usertaginfo-7022">{'None': 119}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7022" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7022" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7022">
+					<img id="start_img-7022" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7022">Comment</button>
+			<br><div id = "ans-7688"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7688" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I don't know that there's enough information here to diagnose anything. </p>
+
+<p>How can you get any angle on a quadcopter with only one or two motors running? </p>
+
+<p>What do you mean, "while recording [these] angles <strong>only the integral part of PID was non-zero</strong>"?? Did you manually set the proportional and derivative errors or gains to zero? </p>
+
+<p>My guesses would be that:</p>
+
+<p>(1) you are supplying power to the motors as though they were a quadcopter when you have the physical configuration in something other than a quadcopter - you can't tune a stabilization algorithm with half of the stabilizers (motors) offline.</p>
+
+<p>(2) don't monkey with the PID controller by turning off random portions and expecting performance to be the same.</p>
+
+<p>(3) in general, I would avoid using the derivative term of a PID controller if at all possible (that is, use a PI controller instead). If noise causes a spike in your sensor reading for one sample then it doesn't add a lot to the P or I terms, but it causes a <em>huge</em> spike in the D term. Sensor noise may also play a part in your issues, but you can filter the sensor to check. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7688" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-7688">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7688">Load Comments</button></br>
+			<div id = "commentsection-7688" class = 'collapse'>
+			<div id = "comment-11130" class = "comment">
+				<p>They probably get the angle by manually tilting it, at least that's what we used to do when testing our quad. I agree with (3) in particular, the derivative term isn't easy to tune. I would also like to know how the sensor data is filtered (if it is filtered at all).</p>
+			</div>
+			<div id = "comment-11136" class = "comment">
+				<p>The whole process confuses me - why would you disable all but one or two of the motors, then manually tilt it, and then expect to get any useful data? The quadrotor is a *system*, to me this sounds kind of like, "Oh I took two tires off my car, why is pulling so hard to the right?" Well, because half your car is sitting on the pavement. You can look at the per-motor *performance*, but you can't try to tune the *system* on a per-motor (per-tire) basis. Each has a contribution, but you need the *system*, intact, to do any useful tuning.</p>
+			</div>
+			<div id = "comment-11137" class = "comment">
+				<p>Don't get me wrong, as I mentioned, you can do per-motor *performance* tuning, speed regulation, etc., but you can't look at any "angle" stabilization and expect to be able to tune the system on a per-motor basis.</p>
+			</div>
+			<div id = "comment-11138" class = "comment">
+				<p>Nah I completely agree, I was just trying to put in a reason for why they might be doing it. We didn't disable motors while tuning, but we did while trying to debug the error going on with the sensor measurements. First we were tuning normally (4 motors), then noticed that sometimes the entire system would go haywire, which lead us to the angle measurement problem, at which point we disabled motors and tilted by hand to make sure the measurements were correct.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7688" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7688">
+					<img id="start_img-7688" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7688">Comment</button>
+			<br><div id = "ans-8029"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8029" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>To me, the straightforward explanation seems that you are applying a desired torque, but on multiple motors -- when you use 1 motor you get 1&times; torque, and when you use two motors you are getting 2&times; torque.</p>
+
+<p>I'd imagine that your code should look more like this:</p>
+
+<pre><code>motors_active = 2
+c_p = angles_correction.pitch / motors_active
+c_r = angles_correction.roll / motors_active
+torque[0] = (int16_t)(+ c_p - c_r) + torque_set;
+torque[1] = (int16_t)(+ c_p + c_r) + torque_set;
+torque[2] = (int16_t)(- c_p + c_r) + torque_set;
+torque[3] = (int16_t)(- c_p - c_r) + torque_set;
+</code></pre>
+
+<p>I'm unsure why all 4 motors are contributing to both pitch and roll (I would have expected pitch and roll axes to be aligned on the quadrotor axes, but technically things will still work if they are 45&deg; rotated).  If that's the case, I assume you've corrected for the rotation in the calculation of <code>angles_correction</code>.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8029" data-toggle = "popover">
+				<p>user name : Ian</p>
+				<p> user reputation : 9640</p>
+				<p class = "tagcontent" id = "usertaginfo-8029">{'planning': 10, 'None': 809, 'power': 1, 'algorithm': 10, 'battery': 1, 'slam': 7, 'coverage': 10, 'mobile-robot': 9, 'sensors': 9}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8029" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8029" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8029">
+					<img id="start_img-8029" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8029">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

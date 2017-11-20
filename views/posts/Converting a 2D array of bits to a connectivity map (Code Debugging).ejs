@@ -1,0 +1,348 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Converting a 2D array of bits to a connectivity map (Code Debugging)
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7506" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7506" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 337</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Converting a 2D array of bits to a connectivity map (Code Debugging)</h2>
+<p>I'm working on an robot that would be able to navigate through a maze, avoid obstacles and identify some of the objects (Boxes in which it has to pot the balls)  in it. I have a monochromatic bitmap of the maze, that is supposed to be used in the robot navigation.</p>
+
+<p>Up till now, I have converted/read the bitmap image of the maze into a 2D array of bits. Right now I am writing a code that should convert the 2D array (that represents the maze) into a connectivity map so that I could apply a path planning algorithm on it. Mr. @Chuck has helped me by providing a code in MATLAB. i have converted that code into C++, however the code isn't providing the right output. Kindly see the code and tell me what I am doing wrong.</p>
+
+<p>I am sharing the link to the 2D array that has been made, the MATLAB code, and my code in C++ to convert the array into a connectivity map.</p>
+
+<p><strong>Link to the 2D array:-</strong></p>
+
+<p><a href="https://drive.google.com/file/d/0BwUKS98DxycUZDZwTVYzY0lueFU/view?usp=sharing" rel="nofollow">https://drive.google.com/file/d/0BwUKS98DxycUZDZwTVYzY0lueFU/view?usp=sharing</a></p>
+
+<p><strong>MATLAB CODE:-</strong></p>
+
+<pre><code>Map = load(map.mat);
+nRows = size(Map,1);
+nCols = size(Map,2);
+mapSize = size(Map);
+N = numel(Map);
+Digraph = zeros(N, N);
+
+for i = 1:nRows
+  for j = 1:nCols
+    currentPos = sub2ind(mapSize,i,j);
+    % left neighbor, if it exists
+    if (j-1)&gt; 0
+      destPos = sub2ind (mapSize,i,j-1);
+      Digraph(currentPos,destPos) = Map(currentPos)*Map(destPos);
+    end
+    % right neighbor, if it exists
+    if (j+1)&lt;=nCols
+      destPos = sub2ind (mapSize,i,j+1);
+      Digraph(currentPos,destPos) = Map(currentPos)*Map(destPos);
+    end
+    % top neighbor, if it exists
+    if (i-1)&gt; 0
+      destPos = sub2ind (mapSize,i-1,j);
+      Digraph(currentPos,destPos) = Map(currentPos)*Map(destPos);
+    end
+    % bottom neighbor, if it exists
+    if (i+1)&lt;=nRows
+      destPos = sub2ind (mapSize,i+1,j);
+      Digraph(currentPos,destPos) = Map(currentPos)*Map(destPos);
+    end
+  end
+end
+</code></pre>
+
+<p><strong>Code in C++:-</strong></p>
+
+<pre><code>int **digraph = NULL;
+digraph = new int *[6144];
+
+for (int i = 0; i &lt; 6144; i++)
+{
+    digraph[i] = new int[6144];
+}
+
+for (j = 0; j &lt; 96; j++)
+{
+    for (z = 0; z &lt; 64; z++)
+    {
+        currentPos = sub2ind[j][z];
+        digraph[currentPos][currentPos] = 0; //------NEW ADDITION-----------
+
+    if ((z - 1) &gt;= 0)
+        {
+            destPos = sub2ind[j][z - 1];
+            digraph[currentPos][destPos] = bitarray[j][z] * bitarray[j][z - 1];
+        }
+
+    if ((z + 1) &lt; 64)
+        {
+            destPos = sub2ind[j][z + 1];
+            digraph[currentPos][destPos] = bitarray[j][z] * bitarray[j][z + 1];
+        }
+
+    if ((j - 1) &gt;= 0)
+        {
+            destPos = sub2ind[j - 1][z];
+            digraph[currentPos][destPos] = bitarray[j][z] * bitarray[j - 1][z];
+        }
+
+    if ((j + 1) &lt; 96)
+        {
+            destPos = sub2ind[j + 1][z];
+            digraph[currentPos][destPos] = bitarray[j][z] * bitarray[j + 1][z];
+        }
+    }
+
+}
+
+ofstream connectivityMap;
+connectivityMap.open("diGraph.txt");
+
+for (int l = 0; j &lt; 100; l++) // printing only 100 elements
+{
+    for (int k = 0; k &lt; 100; k++)
+    {
+        connectivityMap &lt;&lt; digraph[l][k] &lt;&lt; " ";
+    }
+}
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7506" data-toggle = "popover">
+				<p>user name : Muhammad Faique Shakeel</p>
+				<p> user reputation : 30</p>
+				<p class = "tagcontent" id = "usertaginfo-7506">{'None': 0, 'accelerometer': 1, 'localization': 4, 'arduino': 3, 'mapping': 3, 'planning': 1, 'imu': 1, 'mobile-robot': 4, 'motion-planning': 2, 'gyroscope': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7506">Load Comments</button></br>
+			<div id = "commentsection-7506" class = 'collapse'>
+			<div id = "comment-10790" class = "comment">
+				<p>For any future visitors, [here's the link](http://robotics.stackexchange.com/questions/7438/how-to-make-a-directed-graph) to the first portion of this problem - how do I plan a path through a maze.</p>
+			</div>
+			<div id = "comment-10951" class = "comment">
+				<p>This is going to give you a graph with sooooo many 0's in it. It's such a waste of space and consequently has bad effects on the performance as well. Your original bitmap itself is the best representation of the graph. Can't you modify the algorithm you want to use to use the bitmap directly instead of an adjacency matrix?</p>
+			</div>
+			<div id = "comment-10952" class = "comment">
+				<p>@Shahbaz I wasn't able to do so. I mean what should be the number of vertices if I use the original bitmap array? I couldn't figure it out. Should I share the code for dijsktra I am using now, and you tell me if I can modify the algorithm?</p>
+			</div>
+			<div id = "comment-10957" class = "comment">
+				<p>I don't have access to a desktop for a while, so I can't write up an answer. That specific question (Dijkstra on a bitmap) is fit for stackoverflow.com and is most likely already answered. Each pixel is a vertex by the way, which can have up to 4 neighbors; its surrounding pixels.</p>
+			</div>
+			<div id = "comment-10970" class = "comment">
+				<p>@Shahbaz I can wait for your answer. However ill search it tomorrow on stackoverflow and let you know if I find an answer. Otherwise, Ill be glad to have your answer.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7506" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7506">
+					<img id="start_img-7506" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7506">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7508"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7508" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>What is the problem you're having with the file? </p>
+
+<p>The only two things I notice off the bat are that you aren't outputting an endline character between rows on your output stream and that it looks like you're initializing the digraph variable in an odd manner. As I mentioned previously, it's been a long time since I've used c++, but could you not just call <code>int digraph[6144][6144] = {0};</code>?</p>
+
+<p>For the endline character, </p>
+
+<pre><code>for (int l = 0; j &lt; 300; l++) // printing only 300 elements
+{
+    for (int k = 0; k &lt; 300; k++)
+    {
+        connectivityMap &lt;&lt; digraph[l][k] &lt;&lt; " ";
+    }
+//End the line when you're done outputting rows
+connectivityMap &lt;&lt; endl;
+}
+</code></pre>
+
+<p>Lastly, note that you're only outputting the first 300 columns of the first 300 rows - you're looking at the upper left 300x300 portion of the digraph. <code>digraph[a][b]</code> will equal 1 if <code>a</code> and <code>b</code> are connected; as you have a straightforward map this means it will equal 1 if they are neighbors and neither is a wall. </p>
+
+<p>:EDIT: </p>
+
+<p>I think I see most of the problems you're having with this. </p>
+
+<ol>
+<li>Here is the map image I made from your map text file. Note that you have a lot of pixels in the map, but it's really a low-resolution map that has been blown up.</li>
+</ol>
+
+<p><img src="https://i.stack.imgur.com/SFPuf.png" alt="map"></p>
+
+<ol start="2">
+<li>Here is a map image I made that is functionally equivalent but much smaller in resolution. Instead of having 6144 points, the small map has 84. I'm not sure how the black squares with the white 'X's should be treated, so I counted them as walls, though I think it would probably make more sense if they were paths and your start/end position. You should replace the 0's with 1's in those locations if this is the case. </li>
+</ol>
+
+<p><img src="https://i.stack.imgur.com/eenRZ.png" alt="small map"></p>
+
+<ol start="3">
+<li>You are getting entries on the diagonal in your digraph because your map is very basic. Point 1 connects to point 2, point 2 to 3, then 3 to 4, etc., so you wind up with 1's (path exists) on the diagonals. Matlab has a function called <code>imwrite</code> that you can use to generate images from matrices; I used this function to generate the digraph images below. </li>
+</ol>
+
+<p><img src="https://i.stack.imgur.com/xgLo9.png" alt="Small Digraph">
+<img src="https://i.stack.imgur.com/nizJe.png" alt="Large Digraph"></p>
+
+<p>Aside from the scale, the small digraph and large digraph have the same data regarding path connectivity. If you want to avoid keeping such a large, sparse matrix (it's all zeros on the upper/lower triangles because you don't have any paths from start to the middle of the map or start to finish!) then you can check out some of the other methods of map representation in <a href="https://www.cs.princeton.edu/~rs/AlgsDS07/13DirectedGraphs.pdf" rel="nofollow noreferrer">this document on creating directed graphs</a>. </p>
+
+<p>Lastly, <a href="https://drive.google.com/file/d/0B26_5S6Jh4mYWXZ2Sl9mclcxZlU/view?usp=sharing" rel="nofollow noreferrer">here's a link to the Matlab script I wrote</a> to generate the images and digraphs. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7508" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-7508">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7508">Load Comments</button></br>
+			<div id = "commentsection-7508" class = 'collapse'>
+			<div id = "comment-10857" class = "comment">
+				<p>The reason I am not simply calling int digraph[6144][6144] = {0}; is because the array size is too big. Even my core i5 laptop with 6GB Ram isn't able to dedicate that much memory to the program this way. Thats why I am using dynamic allocation to make the array. Chuck why do we need to initialize the digraph array to zeros? I haven't initialized it here and so in the output I get many -842150451 values apart from 0s (because I added a new line in the code please see; otherwise only got 1s and -842150451s) and 1s. -842150451 means that no value was allocated.</p>
+			</div>
+			<div id = "comment-10858" class = "comment">
+				<p>Ofcourse, there is no problem if I initialize the array to 0's, and I do get a digraph with 1s and 0s. But why do we need to initialize the array and why isn't every element of digraph allocated a 1 or 0 when those for loops run? Thanks</p>
+			</div>
+			<div id = "comment-10859" class = "comment">
+				<p>Heres the link to the output file. This I have onlu outputted first 100 rows and columns.
+
+[link](https://drive.google.com/file/d/0BwUKS98DxycUU2t5WG5lZWxKbGc/view?usp=sharing)</p>
+			</div>
+			<div id = "comment-10860" class = "comment">
+				<p>if I initialize the digraph array to zeros all the -842150451s are replaced by 0s in the output....</p>
+			</div>
+			<div id = "comment-10863" class = "comment">
+				<p>In your C++ conversion, you call `digraph = new int *[6144];`, then just below that you have a `for` loop where you declare `digraph[i] = new int [6144];`. Now, as mentioned, I am on the low end of C++ literacy, but it looks like your initial declaration creates `digraph` as a **pointer** (with the * notation), then, for each pointer in your pointer array, you assign it a row of integers? I'm not sure why you're not just declaring this as a two-dimensional int array. I don't know what you get by having pointers on one dimension.</p>
+			</div>
+			<div id = "comment-10864" class = "comment">
+				<p>That said, 6144 x 6144 = 37.7M. Even at 4 bytes per integer entry, the entire array is still "only" 144MB. I created the array on my laptop, and the array AND Matlab together are only taking up 636MB of the RAM on my computer. I'm wondering if your problem is due to the odd pointer/non-pointer declaration you have?</p>
+			</div>
+			<div id = "comment-10865" class = "comment">
+				<p>I looked at your output file; your valid entries are only happening on the diagonal. Is the code that you've got in your question the exact code you are actually using to generate the file? I ask because (a) it looks like you're not looping correctly because only the diagonal is checked, and (b), you have rows in your output file, but you don't have any `endl` statements in your file creation code. So, ultimately, right now my suggestions are (1) - Post the exact code you're using. (2) - Don't use the pointer declaration for `digraph`. (3) - Check your loop structure.</p>
+			</div>
+			<div id = "comment-10866" class = "comment">
+				<p>I don't know but I get an error if I simply declare the 2D array. Please see the screenshot in the question...</p>
+			</div>
+			<div id = "comment-10867" class = "comment">
+				<p>Please also see the update 2, in the question.</p>
+			</div>
+			<div id = "comment-10870" class = "comment">
+				<p>Any comment regarding why you're using pointer arrays? Can you remove every asterisk `*` from your digraph definition and try again?</p>
+			</div>
+			<div id = "comment-10886" class = "comment">
+				<p>if I dont use pointers I get an error. I have posted its screenshot in tbe update</p>
+			</div>
+			<div id = "comment-10887" class = "comment">
+				<p>Use the `static` function for your digraph call (`static int digraph[6144][6144] = { 0 };`) or [use any of these other means to put the int on the heap](http://stackoverflow.com/questions/851122/large-2d-array-gives-segmentation-fault).</p>
+			</div>
+			<div id = "comment-10891" class = "comment">
+				<p>I have now used the static function for digraph call. Please see the output now. [digraph output file](https://drive.google.com/file/d/0BwUKS98DxycUM2prNld5QWVQU1U/view?usp=sharing)</p>
+			</div>
+			<div id = "comment-10892" class = "comment">
+				<p>By the way I get the same output if I initialize the dynamic array to zero, i.e
+ `/*for (int g = 0; g < 2688; g++)
+    {
+        for (int h = 0; h < 2688; h++)
+        {
+            digraph[g][h] = 0;
+        }
+    }*/` If I don't comment it out from the code in the question.</p>
+			</div>
+			<div id = "comment-10897" class = "comment">
+				<p>can you share your MATLAB output?</p>
+			</div>
+			<div id = "comment-10904" class = "comment">
+				<p>I have outputted the complete digraph as well. Do you want to see it as well. Should I share its link?</p>
+			</div>
+			<div id = "comment-10909" class = "comment">
+				<p>@MuhammadFaiqueShakeel - I've updated the answer with more content. I was busy all day yesterday so I didn't get a chance to update this earlier.</p>
+			</div>
+			<div id = "comment-10910" class = "comment">
+				<p>I understand. That means I am getting the right output, as in for digraph, right? And chuck how did you make that smaller image with 84 points. Id be gratefull if you tell me that as well. And thanks a lot,  sir!</p>
+			</div>
+			<div id = "comment-10914" class = "comment">
+				<p>I drew it using your larger map as a guide; I wrote it out in the M-file I linked to if you want the numeric entries for it.</p>
+			</div>
+			<div id = "comment-11239" class = "comment">
+				<p>Kindly help me with this as well. [Its a bit different topic, though related, so asked a new question](http://robotics.stackexchange.com/questions/7739/navigating-through-a-maze-using-path-planning-dijkstra)</p>
+			</div>
+			</div>
+				<textarea id = "speech-7508" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7508">
+					<img id="start_img-7508" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7508">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

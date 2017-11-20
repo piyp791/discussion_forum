@@ -1,0 +1,159 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to make one robot follow the other in parallel formation
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-3035" class = "post">
+			<h2>Question</h2>
+			<div id="vote-3035" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 114</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to make one robot follow the other in parallel formation</h2>
+<p>This is quite a basic question. I'm practising robot programming with VRep. I have 2 K3 robots in the scene. One robot follows a predefined path. I want the second robot to move "in parallel" with the first one so they keep same orientation and same distance at all time. When there is a turn, I want the follower to slow/accelerate a little to keep the parallel.</p>
+
+<p>In my implementation, I use wireless communication. The first robot will periodically "tell" the second about its speed, orientation. The second will use these parameters to calculate two speed to its two wheel. But when I run it, it doesn't work. The orientation of the follower is wrong. The distance is not maintained. I was totally confused.</p>
+
+<p>I think this is quite a rudimentary task. There must be some practise to follow. Can somebody help to provide some ideas, references? That will be highly appreciated! </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-3035" data-toggle = "popover">
+				<p>user name : Archer</p>
+				<p> user reputation : 18</p>
+				<p class = "tagcontent" id = "usertaginfo-3035">{'None': 0, 'kinematics': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-3035">Load Comments</button></br>
+			<div id = "commentsection-3035" class = 'collapse'>
+			<div id = "comment-5534" class = "comment">
+				<p>Can you tell us what the follower robot is doing? Is it turning but not enough, going too fast/slow? Are the instructions as simple as 'turn x degrees clockwise, change speed to y m/s" or more complicated?</p>
+			</div>
+			<div id = "comment-5536" class = "comment">
+				<p>@MatthewGordon Thank you for your help Matthew. The message follower robot get is the radius of the turn, and the average speed of the first robot. I use this radius to calculate a ratio that will multiple to the speed to get how much thrust the follower robot should apply to its two wheels. I don't know how to implement routines to let K3 to turn x degrees. What I do is hope the thrust is proportional so that it will have the effect of turning same angles like the first one. But it doesn't turn out that way. Can you point out what I was wrong? Apprecaite!</p>
+			</div>
+			<div id = "comment-5537" class = "comment">
+				<p>Why would the second one slow down or accelerate to keep in parallel? Is it keeping in parallel with a fixed cartesian translation? Or is it keeping in parallel with a fixed radial distance in some polar coordinate?</p>
+			</div>
+			</div>
+				<textarea id = "speech-3035" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-3035">
+					<img id="start_img-3035" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-3035">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-3039"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-3039" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>As is often the case in robotics, there is no universally agreed-upon approach to formation control (which is what you are trying to achieve). As explained in the introduction to <a href="http://www.journal.univagora.ro/download/pdf/46.pdf" rel="nofollow">this article</a>, there are roughly three basic approaches currently in use:</p>
+
+<ul>
+<li><em>Behaviour-based,</em> where each robot moves according to a set of local rules, and the formation dynamics results from the interactions between neighboring robots;</li>
+<li><em>Virtual structure,</em> where the robots are conceived to be parts of a single body (e.g. vertices of a polygon) and trajectories are calculated to conserve the shape of that abstract body;</li>
+<li><em>Leader-following,</em> where a designated "leader" robot follows a prescribed trajectory, and the "followers" track transformed versions of the leader current pose.</li>
+</ul>
+
+<p>Given your description of the intended scenario, I'd say leader-following would be the best approach. This could be achieved fairly easily in the following manner (see <a href="http://april.eecs.umich.edu/courses/eecs498_f09/wiki/images/6/6b/L02.LinAlgCoordinates.pdf" rel="nofollow">this presentation</a> for references on terminology and formulas):</p>
+
+<ol>
+<li>Define the intended pose $p_f$ for the follower robot in the leader's reference frame   e.g. $p_f = [0 \quad 1 \quad 0]^T$ for keeping to the left, or  $p_f = [0 \quad -1 \quad 0]^T$ for keeping to the right;</li>
+<li>Every once in a while calculate the follower's pose in the global reference frame $g_f = Tp_f$ and relay it to the follower robot;</li>
+<li>Have the follower robot adjust its position to comply with the received pose $g_f$.</li>
+</ol>
+
+<p>Just for reference, the Rigid Body Transformation matrix T is given by:</p>
+
+<p>$$
+T = 
+\begin{bmatrix}
+cos(\theta) &amp; -sin(\theta) &amp; x \\
+sin(\theta) &amp; cos(\theta) &amp; y \\
+0 &amp; 0 &amp; 1
+\end{bmatrix}
+$$</p>
+
+<p>Where $[x \quad y \quad \theta]^T$ is the leader robot's current pose.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-3039" data-toggle = "popover">
+				<p>user name : xperroni</p>
+				<p> user reputation : 386</p>
+				<p class = "tagcontent" id = "usertaginfo-3039">{'None': 19, 'inverse-kinematics': 3, 'algorithm': 2, 'speech-processing': 2, 'rangefinder': 2, 'linux': 3, 'mobile-robot': 8, 'sensors': 2, 'digital-audio': 3}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-3039" class = 'collapse'>
+			</div>
+				<textarea id = "speech-3039" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-3039">
+					<img id="start_img-3039" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-3039">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

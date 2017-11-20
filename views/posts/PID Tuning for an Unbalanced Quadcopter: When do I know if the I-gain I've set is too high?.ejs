@@ -1,0 +1,354 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>PID Tuning for an Unbalanced Quadcopter: When do I know if the I-gain I've set is too high?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9077" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9077" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 606</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>PID Tuning for an Unbalanced Quadcopter: When do I know if the I-gain I've set is too high?</h2>
+<p>Good day,</p>
+
+<p>I am working on an autonomous flight controller for a quadcopter ('X' configuration) using only angles as inputs for the setpoints used in a single loop PID controller running at 200Hz (PID Implementation is Here: <a href="https://robotics.stackexchange.com/questions/8998/quadcopter-pid-controller-derivative-on-measurement-removing-the-derivative-k">Quadcopter PID Controller: Derivative on Measurement / Removing the Derivative Kick</a>). For now I am trying to get the quadcopter to stabilize at a setpoint of 0 degrees. The best I was able to come up with currently is +-5 degrees which is bad for position hold. I first tried using only a PD controller but since the quadcopter is inherently front heavy due to the stereo cameras, no amount of D or P gain is enough to stabilize the system. An example is the image below which I added a very small I gain:</p>
+
+<p><a href="https://i.stack.imgur.com/OvijX.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/OvijX.jpg" alt="Small/Almost Negligible I-gain"></a></p>
+
+<p>As you can see from the image above (at the second plot), the oscillations occur at a level below zero degrees due to the quadcopter being front heavy. This means that the quad oscillates from the level postion of 0 degrees to and from a negative angle/towards the front. To compensate for this behaviour, I discovered that I can set the DC level at which this oscillations occur using the I gain to reach the setpoint. An image is shown below with [I think] an adequate I gain applied:</p>
+
+<p><a href="https://i.stack.imgur.com/o9Qmh.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/o9Qmh.jpg" alt="Ok I-gain, I think"></a></p>
+
+<p>I have adjusted the PID gains to reduce the jitters caused by too much P gain and D gain. These are my current settings (Which are two tests with the corresponding footage below):</p>
+
+<p><a href="https://i.stack.imgur.com/JfZX8.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/JfZX8.png" alt="Current Settings"></a></p>
+
+<p>Test 1: <a href="https://youtu.be/8JsraZe6xgM" rel="nofollow noreferrer">https://youtu.be/8JsraZe6xgM</a></p>
+
+<p>Test 2: <a href="https://youtu.be/ZZTE6VqeRq0" rel="nofollow noreferrer">https://youtu.be/ZZTE6VqeRq0</a></p>
+
+<p>I can't seem to tune the quadcopter to reach the setpoint with at least +-1 degrees of error. I noticed that further increasing the I-gain no longer increases the DC offset. </p>
+
+<blockquote>
+  <p>When do I know if the I-gain I've set is too high? How does it reflect on the plot?</p>
+</blockquote>
+
+<p>EDIT:
+The Perr in the graphs are just the difference of the setpoint and the CF (Complementary Filter) angle.
+The Derr plotted is not yet divided by the deltaTime because the execution time is small ~ 0.0047s which will make the other errors P and I hard to see.
+The Ierr plotted is the error integrated with time.</p>
+
+<p>All the errors plotted (Perr, Ierr, Derr) are not yet multiplied by the Kp, Ki, and Kd constants</p>
+
+<p>The 3rd plot for each of the images is the response of the quadcopter. The values on the Y axis correspond to the value placed as the input into the gpioPWM() function of the pigpio library. I had mapped using a scope the values such that 113 to 209 pigpio integer input corresponds to 1020 to 2000ms time high of the PWM at 400Hz to the ESC's</p>
+
+<p>EDIT:</p>
+
+<p>Here is my current code implementation with the setpoint of 0 degrees:</p>
+
+<pre><code>cout &lt;&lt; "Starting Quadcopter" &lt;&lt; endl;
+
+float baseThrottle = 155; //1510ms
+float maxThrottle = 180; //This is the current set max throttle for the PITCH YAW and ROLL PID to give allowance to the altitude PWM. 205 is the maximum which is equivalent to 2000ms time high PWM 
+float baseCompensation = 0; //For the Altitude PID to be implemented later
+
+
+delay(3000);
+
+float startTime=(float)getTickCount();
+deltaTimeInit=(float)getTickCount(); //Starting value for first pass
+
+while(1){
+//Read Sensor Data
+readGyro(&amp;gyroAngleArray);
+readAccelMag(&amp;accelmagAngleArray);
+
+//Time Stamp
+//The while loop is used to get a consistent dt for the proper integration to obtain the correct gyroscope angles. I found that with a variable dt, it is impossible to obtain correct angles from the gyroscope.
+
+while( ( ((float)getTickCount()-deltaTimeInit) / ( ((float)getTickFrequency()) ) ) &lt; 0.005){ //0.00209715|0.00419
+       deltaTime2=((float)getTickCount()-deltaTimeInit)/(((float)getTickFrequency())); //Get Time Elapsed
+       cout &lt;&lt; " DT endx = " &lt;&lt; deltaTime2 &lt;&lt; endl;
+}
+//deltaTime2=((float)getTickCount()-deltaTimeInit)/(((float)getTickFrequency())); //Get Time Elapsed
+deltaTimeInit=(float)getTickCount(); //Start counting time elapsed
+cout &lt;&lt; " DT end = " &lt;&lt; deltaTime2 &lt;&lt; endl;
+
+
+//Complementary Filter
+float pitchAngleCF=(alpha)*(pitchAngleCF+gyroAngleArray.Pitch*deltaTime2)+(1-alpha)*(accelmagAngleArray.Pitch);
+float rollAngleCF=(alpha)*(rollAngleCF+gyroAngleArray.Roll*deltaTime2)+(1-alpha)*(accelmagAngleArray.Roll);
+float yawAngleCF=(alpha)*(yawAngleCF+gyroAngleArray.Yaw*deltaTime2)+(1-alpha)*(accelmagAngleArray.Yaw);
+
+
+//Calculate Orientation Error (current - target)
+float pitchError = pitchAngleCF - pitchTarget;
+pitchErrorSum += (pitchError*deltaTime2);
+float pitchErrorDiff = pitchError - pitchPrevError;
+pitchPrevError = pitchError;
+
+float rollError = rollAngleCF - rollTarget;
+rollErrorSum += (rollError*deltaTime2);
+float rollErrorDiff = rollError - rollPrevError;
+rollPrevError = rollError;
+
+float yawError = yawAngleCF - yawTarget;
+yawErrorSum += (yawError*deltaTime2);
+float yawErrorDiff = yawError - yawPrevError;
+yawPrevError = yawError;
+
+
+//PID controller list
+float pitchPID = pitchKp*pitchError + pitchKi*pitchErrorSum + pitchKd*pitchErrorDiff/deltaTime2;
+float rollPID = rollKp*rollError + rollKi*rollErrorSum + rollKd*rollErrorDiff/deltaTime2;
+float yawPID = yawKp*yawError + yawKi*yawErrorSum + yawKd*yawErrorDiff/deltaTime2;
+
+//Motor Control - Mixing    
+//Motor Front Left (1)
+float motorPwm1 =  -pitchPID + rollPID - yawPID + baseThrottle + baseCompensation;
+
+//Motor Front Right (2)
+float motorPwm2 =  -pitchPID - rollPID + yawPID + baseThrottle + baseCompensation; 
+
+//Motor Back Left (3)
+float motorPwm3 = pitchPID + rollPID + yawPID + baseThrottle + baseCompensation; 
+
+//Motor Back Right (4)
+float motorPwm4 = pitchPID - rollPID - yawPID + baseThrottle + baseCompensation;
+
+
+ //Check if PWM is Saturating - This method is used to fill then trim the outputs of the pwm that gets fed into the gpioPWM() function to avoid exceeding the earlier set maximum throttle while maintaining the ratios of the 4 motor throttles. 
+    float motorPWM[4] = {motorPwm1, motorPwm2, motorPwm3, motorPwm4};
+    float minPWM = motorPWM[0];
+    int i;
+    for(i=0; i&lt;4; i++){ // Get minimum PWM for filling
+        if(motorPWM[i]&lt;minPWM){
+            minPWM=motorPWM[i];
+        }
+    }
+
+    cout &lt;&lt; " MinPWM = " &lt;&lt; minPWM &lt;&lt; endl;
+
+    if(minPWM&lt;baseThrottle){
+        float fillPwm=baseThrottle-minPWM; //Get deficiency and use this to fill all 4 motors
+        cout &lt;&lt; " Fill = " &lt;&lt; fillPwm &lt;&lt; endl;
+        motorPwm1=motorPwm1+fillPwm;
+        motorPwm2=motorPwm2+fillPwm;
+        motorPwm3=motorPwm3+fillPwm;
+        motorPwm4=motorPwm4+fillPwm;
+    }
+
+    float motorPWM2[4] = {motorPwm1, motorPwm2, motorPwm3, motorPwm4};
+    float maxPWM = motorPWM2[0];
+    for(i=0; i&lt;4; i++){ // Get max PWM for trimming
+        if(motorPWM2[i]&gt;maxPWM){
+            maxPWM=motorPWM2[i];
+        }
+    }
+
+    cout &lt;&lt; " MaxPWM = " &lt;&lt; maxPWM &lt;&lt; endl;
+
+    if(maxPWM&gt;maxThrottle){
+        float trimPwm=maxPWM-maxThrottle; //Get excess and use this to trim all 4 motors
+        cout &lt;&lt; " Trim = " &lt;&lt; trimPwm &lt;&lt; endl;
+        motorPwm1=motorPwm1-trimPwm;
+        motorPwm2=motorPwm2-trimPwm;
+        motorPwm3=motorPwm3-trimPwm;
+        motorPwm4=motorPwm4-trimPwm;
+    }
+
+//PWM Output
+    gpioPWM(24,motorPwm1);  //1
+    gpioPWM(17,motorPwm2);  //2
+    gpioPWM(22,motorPwm3);  //3
+    gpioPWM(18,motorPwm4);  //4
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9077" data-toggle = "popover">
+				<p>user name : user123456098</p>
+				<p> user reputation : 415</p>
+				<p class = "tagcontent" id = "usertaginfo-9077">{'control': 16, 'stereo-vision': 2, 'communication': 0, 'pid': 19, 'uav': 0, 'stability': 13, 'mobile-robot': 2, 'sensor-error': 0, 'tuning': 2, 'cameras': 0, 'integration': 0, 'opencv': 2, 'differential-drive': 0, 'motion-planning': 0, 'None': 13, 'raspberry-pi': 14, 'localization': 0, 'microcontroller': 0, 'mapping': 0, 'path-planning': 0, 'real-time': 1, 'sensors': 0, 'quadcopter': 19, 'computer-vision': 2, 'vfh': 0, 'c++': 2, 'filter': 0, 'dead-reckoning': 0, 'sensor-fusion': 5, 'sonar': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9077">Load Comments</button></br>
+			<div id = "commentsection-9077" class = 'collapse'>
+			<div id = "comment-14983" class = "comment">
+				<p>Have you tried this with a longer leash? It looks like your vehicle is sitting (some weight) on the tether and not fully in the air. Also it looks like you're actively pulling on the tether. Both of these means the tether is forcing your vehicle and maybe that's why it's not stabilizing. Also, I don't see the reference command in your plots - is it zero? And what is 'cf'?</p>
+			</div>
+			<div id = "comment-14984" class = "comment">
+				<p>@Chuck the test is just with the PItch PID active. The green ropes are just the limit the quadcopter's movement to +-45 degrees on the earlier tests. They actually serve no purpose now since the quad oscillates at +- 5 degrees. There is no weight placed to tether the quadcopter. I am pulling on the string to increase the tension since some of the bounce that occurs due to low tension causes instability. Doing this also helps in actually isolating the movement of the quadcopter in one axis only. The setpoint for tuning is zero degrees.</p>
+			</div>
+			<div id = "comment-14985" class = "comment">
+				<p>cf stands for complementary filter</p>
+			</div>
+			<div id = "comment-15025" class = "comment">
+				<p>@Chuck I just read over your reply again. I misread this statement: "It looks like your vehicle is sitting (some weight) on the tether and not fully in the air."  I adjusted the throttle such that its enough for it to balance it self while taking care to leave room for the Throttle/ALtitude PID. Should have I adjusted the throttle first such that its already lifting itself before adjusting the PID values? Here's a video to illustrate my current set up ( https://youtu.be/LHEzem0QJzQ ). I took some of Ian's previous advice and tightened the ropes such that I need not to pull on them.</p>
+			</div>
+			<div id = "comment-15026" class = "comment">
+				<p>Will also try to find a way to mount a pole in the center of the quad's battery compartment.</p>
+			</div>
+			</div>
+				<textarea id = "speech-9077" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9077">
+					<img id="start_img-9077" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9077">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9080"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9080" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>What does your code look like that you use to calculate your errors? I had <a href="https://robotics.stackexchange.com/a/8999/9720">suggestions to revise your code</a>, but you're just linking back to your earlier questions so I don't know if that's current or not. </p>
+
+<p>If you are calculating your error terms correctly, you could try an experimental tuning method like <a href="https://en.wikipedia.org/wiki/Ziegler%E2%80%93Nichols_method" rel="nofollow noreferrer">Ziegler-Nichols</a>, but again, this relies on your error terms to be calculated correctly.</p>
+
+<p>In general, the integral <em>term</em> is used to "accumulate" error such that there is ultimately no steady state error. If the integral gain is too low then it will take a long time to reach (near) zero steady state error, but if it's too high then you will experience overshoot and oscillations as your controller overreacts to minor error accumulation. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9080" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-9080">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9080">Load Comments</button></br>
+			<div id = "commentsection-9080" class = 'collapse'>
+			<div id = "comment-14981" class = "comment">
+				<p>I posted my code implementation. I followed your suggestion to move the time stamp however I added a while loop to place a consistent delay to obtain a consistent integration when obtaining the gyroscope angles such that it converges(accelerometer is slower) with the accelerometer angles at no throttle.</p>
+			</div>
+			<div id = "comment-14982" class = "comment">
+				<p>I found that when using a variable dt, the gyroscope drifts like crazy making it impossible to get accurate orientation measurements</p>
+			</div>
+			</div>
+				<textarea id = "speech-9080" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9080">
+					<img id="start_img-9080" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9080">Comment</button>
+			<br><div id = "ans-9086"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9086" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Based on the videos, it looks like the answer is, unfortunately, "the test setup you have might be insufficient to say one way or the other". </p>
+
+<p>There is too much slack in the tethers to draw any meaningful conclusions about whether your code is doing the right thing.  The quadcopter seemed to be reacting somewhat correctly to the way it was being tugged by the ropes.  There were some moments where it looked incorrect as well, but they were not isolated enough to point to a specific logic error.</p>
+
+<p>Spend some time on the quality and stability of your test setup so that you can rigidly constrain two axes while letting the other move freely.  (For example, disable one pair of motors and hang the quadcopter from strings around those propeller shafts.)  That will let you troubleshoot one axis at a time in a very reasonable way, and provide more accurate feedback on the correctness of your PID values.</p>
+
+<p>Looking at your setup, another problem seems to be that you're attaching the tether too low and creating an "inverted pendulum" effect.  (See also, <a href="https://aviation.stackexchange.com/q/9787">this question on quadcopter center of lift</a>).</p>
+
+<p><a href="https://i.stack.imgur.com/o3rnQ.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/o3rnQ.png" alt="enter image description here"></a></p>
+
+<p>You need to create a mounting bracket for your tether that will rigidly mount it to the quadcopter body at the level of the center of lift that the propellers provide.  It would also help to use something structural (like a metal post vertically attached to a sturdy base), instead of just rope or wire.  </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9086" data-toggle = "popover">
+				<p>user name : Ian</p>
+				<p> user reputation : 9640</p>
+				<p class = "tagcontent" id = "usertaginfo-9086">{'planning': 10, 'None': 809, 'power': 1, 'algorithm': 10, 'battery': 1, 'slam': 7, 'coverage': 10, 'mobile-robot': 9, 'sensors': 9}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9086">Load Comments</button></br>
+			<div id = "commentsection-9086" class = 'collapse'>
+			<div id = "comment-14992" class = "comment">
+				<p>should I increase the tension on the strings? I am actually confused on how to do this procedure because on some people who did tunings this way using strings, they first made sure that the base throttle was lifting the quadcopter before adjusting PID values. However, others who also used strings did not do the latter (adjusting the throttle first) but instead just let the quadcopter balance on it's own weight. Also I cant disable one pair of motors since they are both required for one axis since I am using an 'X' quadcopter configuration</p>
+			</div>
+			<div id = "comment-14993" class = "comment">
+				<p>Examples of each method (strings) are:
+
+1. Letting the quadcopter balance on its own. https://www.youtube.com/watch?v=3650JlYrp7E
+
+2. Initiating throttle first. https://www.youtube.com/watch?v=fYUQgmkYi5o</p>
+			</div>
+			<div id = "comment-15009" class = "comment">
+				<p>I've updated my answer to address this.</p>
+			</div>
+			<div id = "comment-15024" class = "comment">
+				<p>Will try this thank you :) I will try to narrow down other possible problems as well. I am currently trying higher I gains.</p>
+			</div>
+			<div id = "comment-16526" class = "comment">
+				<p>How did things turn out?  Do you have a picture of the working test setup?</p>
+			</div>
+			<div id = "comment-16819" class = "comment">
+				<p>I am sorry I have disassembled the set up already, but the quadcopter now flies and I am now tuning the PID gains inflight. I have used a sonar sensor for the altitude hold however I have not yet tuned the PID gains enough for a good position hold. Though I think without a sensor (camera, mouse/optical sensors), it would be hard to do that. Thank you for your help :)</p>
+			</div>
+			</div>
+				<textarea id = "speech-9086" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9086">
+					<img id="start_img-9086" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9086">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

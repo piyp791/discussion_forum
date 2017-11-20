@@ -1,0 +1,168 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Defining a trajectory for a quadrotor
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-5149" class = "post">
+			<h2>Question</h2>
+			<div id="vote-5149" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 228</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Defining a trajectory for a quadrotor</h2>
+<p>I' m looking for a trajectory generator (the algorithm doesn't matter, since I m going to write it using C++ ) that generates a trajectory (a parametric curve in space) defined point by point which is going lately to be feed into my quadrotor drivers.</p>
+
+<p>I'm honest: I don't know where to start.</p>
+
+<ol>
+<li><strong>Reading</strong> the following interesting <a href="https://robotics.stackexchange.com/a/2260/7097">answer</a>. But the problem here is: the trajectory has a PD controller with it. My quadrotor should take just a parametric curve as input.</li>
+<li><a href="http://ompl.kavrakilab.org/OMPL_Primer.pdf" rel="nofollow noreferrer"><strong>OMPL</strong></a>: this library seems very powerful and interesting. It let the user to define a planner which many different algorithms. The problem is that it is not well documented, good examples and explanations are missing and till now I could'nt find anything related to quadrotors, which does use that library. There is an example for a quadrotor, which doesn't find my expectations and I cannot figure out, how to implement it in my package. I don't want just copy and paste code that I don't understand.</li>
+<li><strong>B-Spline and Bezier Curve</strong>...and the whole family of parametric curves. I found very interesting libraries in internet that implement those algorithm directly C++. The problem here is: I can define some points in space, generate a spline that contains them and interpolate points for the PID controller in the quadrotor. The basic idea is like a dog chasing a rabbit. A point is generated from the start point of the spline and regularly sent to the quadrotor. The latter flies behind the point, trying to reach it until a goal point has been reached. What is the problem here?!? In this case I can only generate a curve based on geometric properties and not considering the <strong>dynamic</strong> and the <strong>kinematic</strong> of the quadrotor (which I would consider for a future project). The rabbit runs and has a tighter curve radius than the dog, which could result in a strange behavior of the quadrotor.</li>
+</ol>
+
+<p>I'd like same good tips to point to the right direction.</p>
+
+<p>Which kind of trajectory planner are usually developed fr such an application?</p>
+
+<p>Thanks!
+Regards</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-5149" data-toggle = "popover">
+				<p>user name : Dave</p>
+				<p> user reputation : 294</p>
+				<p class = "tagcontent" id = "usertaginfo-5149">{'control': 10, 'quadcopter': 11, 'None': 6, 'pid': 13, 'uav': 3, 'matlab': 0, 'mobile-robot': 0, 'ros': 2, 'movement': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-5149">Load Comments</button></br>
+			<div id = "commentsection-5149" class = 'collapse'>
+			<div id = "comment-7987" class = "comment">
+				<p>Shouldn't a good controller free you from dynamics concerns when specifying a trajectory?</p>
+			</div>
+			<div id = "comment-7988" class = "comment">
+				<p>Could you be more specific Daniel?</p>
+			</div>
+			<div id = "comment-7989" class = "comment">
+				<p>A controller needs anyway a sort of a path or trajectory to follow</p>
+			</div>
+			<div id = "comment-7991" class = "comment">
+				<p>What I mean: If you already have an acceleration-based controller, you can pretty much go ahead with defining a trajectory with B-splines or whatever you like. Note, however, the difference between a trajectory and a path: the former defines *positions and velocities*, the latter *just positions*, without any velocity information.</p>
+			</div>
+			<div id = "comment-7992" class = "comment">
+				<p>I still don't understand what do you mean specifically. I wrote a controller using a backstepping integrator technique [link](http://etd.lib.metu.edu.tr/upload/12617592/index.pdf) pp.39. I acts on position, velocity. Acceleration is feedforwarded (in my code I put it simply to zero).</p>
+			</div>
+			<div id = "comment-7993" class = "comment">
+				<p>About the trajectory: I want to be able to generate (given some 3D control points) a spline which connect them. For every interpolation point (between the 3D control points) I need to define position, velocity, aceleration. I put wrongly path in my previous comment</p>
+			</div>
+			<div id = "comment-7994" class = "comment">
+				<p>Ah, I see. I'm not very well versed in trajectory planning, but perhaps libraries like www.roboticslibrary.org/ or MRPT ( http://www.mrpt.org/ ) provide something helpful.</p>
+			</div>
+			<div id = "comment-10431" class = "comment">
+				<p>@Dave, may I ask you how did you implement the position control in the paper you mentioned? In my code, `arcsin()` yields undefined number due to the fact that `Ux*sin(psi) + Uy*cos(psi)` is out of `arcsin` domain.</p>
+			</div>
+			<div id = "comment-10434" class = "comment">
+				<p>@CroCo Yes: the problem is that in your case - somehow - the variables Ux and Uy are > than 1.
+Be sure that you use the right equations (3.39 and 3.40) (the multiplication with the term (m/U1) is for this reason very important). If everything is nice then you should check your parameter coefficients ($\alpha_{7}, \alpha_{8}$ and so on....AND the computatioon of U1 must be bone BEFORE any other calculations: Otherwise m/U1 gives...infinity as a result. Keep us informed</p>
+			</div>
+			<div id = "comment-10446" class = "comment">
+				<p>@Dave, I have two questions, how did you tune  parameter coefficients? Second, which ODE solver did you use? I'm using Euler method because it is a fixed size step.</p>
+			</div>
+			<div id = "comment-10448" class = "comment">
+				<p>Ok: 1- with try&error. I started with some coefficients found in a paper and than I tried with small adjustments;
+2- Since I ve programmed in C++, I was not constrained to use an integrator provided by matlab or simulink. In C++ you have to write yours. I personally used the Runge-Kutta 4th Order to integrate from acceleration to position. I suggest to read this [link](http://gafferongames.com/game-physics/integration-basics/) which explains the difference very well</p>
+			</div>
+			<div id = "comment-10451" class = "comment">
+				<p>@Dave, thank you again for being patient and informative. Actually I'm using `Runge-Kutta` in boost library. In your code, is there any constrain on the generated angles? In my code, `DesiredPsi = atan2( Yd - x[2], Xd - x[0] );
+
+  DesiredPhi = asin(  Ux*sin( DesiredPsi ) - Uy*cos( DesiredPsi )  );
+    
+  DesiredTheta = asin(   (Ux*cos(DesiredPsi) + Uy*sin(DesiredPsi))  / cos(DesiredPhi)   );` with no constrains.</p>
+			</div>
+			<div id = "comment-10452" class = "comment">
+				<p>Also, are there any constrains on the range of `asin` in your code? Or you simply chose the parameters in such a way that the value that is passed to `asin` in the proper range of `asin`.</p>
+			</div>
+			<div id = "comment-10453" class = "comment">
+				<p>For attitude control, backstepping is working with me.</p>
+			</div>
+			<div id = "comment-10454" class = "comment">
+				<p>Yes, I did a saturation function. The resulting angle may not be > than 89 deg. BUT the problem in your code is the way you are calculating Ux and Uy.</p>
+			</div>
+			<div id = "comment-10455" class = "comment">
+				<p>Here a piece of my code with the backstepping integrator: [link](http://pastebin.com/LWCtWNQm) The terms $Kx_, Ky_$ are for aerodynamics effects so you can put them = 0</p>
+			</div>
+			<div id = "comment-10459" class = "comment">
+				<p>@Dave, thank you so much. It is now working. great. It seems the problem with parameters' values. This causes $U_{x}, U_{y}$ to be high. Can you share `a saturation function` how did you implemented? Thank you again for being informative and helpful. I really appreciate your kindness</p>
+			</div>
+			</div>
+				<textarea id = "speech-5149" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-5149">
+					<img id="start_img-5149" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-5149">Comment</button>
+
+<h1>Answers</h1>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,174 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to compute the error function in graph SLAM for 3D poses?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9129" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9129" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 374</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to compute the error function in graph SLAM for 3D poses?</h2>
+<p>Given a pose $x_i = (t_i, q_i)$ with translation vector $t_i$ and rotation quaternion $q_i$ and a transform between poses $x_i$ and $x_j$ as $z_{ij} = (t_{ij}, q_{ij})$ I want to compute the error function $e(x_i, x_j) = e_{ij}$, which has to be minimized like this to yield the optimal poses $X^* = \{ x_i \}$:</p>
+
+<p>$$X^* = argmin_X \sum_{ij} e_{ij}^T \Sigma^{-1}_{ij} e_{ij}$$</p>
+
+<p>A naive approach would look like this:</p>
+
+<p>$$ e_{ij} = z_{ij} - f(x_i,x_j) $$</p>
+
+<p>where $z_{ij}$ is the current measurement of the transform between $x_i$ and $x_j$ and $f$ calculates an estimate for the same transform. Thus, $e_{ij}$ simply computes the difference of translations and difference of turning angles:</p>
+
+<p>$$ e_{ij} = \begin{pmatrix} t_{ij} - t_j - t_i \\\ q_{ij} (q_j q_i^{-1})^{-1} \end{pmatrix} $$</p>
+
+<p>Is there anything wrong with this naive approach? Am I missing something?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9129" data-toggle = "popover">
+				<p>user name : morph</p>
+				<p> user reputation : 37</p>
+				<p class = "tagcontent" id = "usertaginfo-9129">{'None': 0, 'errors': 0, 'ekf': 3, 'pose': 3, 'data-association': 0, 'slam': 6, 'imu': 0, 'jacobian': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-9129" class = 'collapse'>
+			</div>
+				<textarea id = "speech-9129" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9129">
+					<img id="start_img-9129" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9129">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9137"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9137" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Yes, you have an issue, and it has to do with the parameterization of rotations. As you have it, your $e_{ij}$ will be a $7\times 1$ column, but your pose has only six degrees of freedom (three for translation, three for rotation). There is actually a constraint that isn't properly represented in your optimization function (the norm of a unit quaternion must be one). This means that when you try to do the optimization, it will not "know" about this redundancy and solving for $X^*$ will actually optimize a degree of freedom that doesn't exist.</p>
+
+<p>So how do we deal with this? It's a <em>good</em> idea to use unit quaternions because they avoid the singularities present in all minimal parameterizations (i.e., three parameter representations) of rotations. A good approach to this problem is using a <em>dual</em> parameterization of rotations. First, we use a singularity-free parameterization of the rotation in the state (e.g., your use of unit quaternions is fine), but we represent rotation <em>errors</em> using a <em>minimal parameterization</em>. If the differences between your measurements $z_{ij}$ and predicted measurements $f$ are relatively small, you can safely convert the error rotation to a minimal parameterization without fear of it encountering a singularity (depending on your choice of minimal parameterization).</p>
+
+<p>For example, let's use a <em>rotation vector</em> $\mathbf{r} = \theta\mathbf{a}$ for the minimal parameterization (where $\theta$ is the angle of rotation and $\mathbf{a}$ is the axis of rotation). Your new error vector is</p>
+
+<p>$$
+e_{ij} = \begin{bmatrix} t_{ij} - t_j - t_i \\ \log\left(q_{ij}(q_jq_i^{-1})^{-1}\right) \end{bmatrix}
+$$</p>
+
+<p>where $\log(q)$ converts a quaternion to a rotation vector. Note that you should also be representing the uncertainty of your rotation measurement using a minimal parameterization (i.e., $\Sigma_{ij}$  is a $6\times 6$ matrix).</p>
+
+<p>After you solve for the optimal $6 \times 1$ perturbation of the state $\Delta\mathbf{x}^*$, you need to apply it to your state by converting the rotation vector back to a unit quaternion; i.e.,</p>
+
+<p>$$
+q \gets q\, \exp(\Delta \mathbf{r}^*)
+$$</p>
+
+<p>where $\Delta \mathbf{r}^*$ is the optimal perturbation of one of the state's quaternions (i.e., it's part of $\Delta\mathbf{x}^*$), and $\exp$ converts a rotation vector to a unit quaternion.</p>
+
+<p>I didn't really go into too much detail here, and skipped some mathematical rigour for the sake of keeping things brief. For more information on this approach, see the below references. This approach is not limited to rotations.</p>
+
+<p>C. Hertzberg, R. Wagner, U. Frese, and L. Schr der,  Integrating generic sensor fusion algorithms with sound state representations through encapsulation of manifolds,  Information Fusion, vol. 14, no. 1, pp. 57 77, Jan. 2013.</p>
+
+<p>G. Grisetti, R. K mmerle, C. Stachniss, and W. Burgard,  A tutorial on
+graph-based SLAM,  IEEE Intelligent Transportation Systems Maga- zine, vol. 2, no. 4, pp. 31 43, 2010.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9137" data-toggle = "popover">
+				<p>user name : kamek</p>
+				<p> user reputation : 775</p>
+				<p class = "tagcontent" id = "usertaginfo-9137">{'None': 48}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9137">Load Comments</button></br>
+			<div id = "commentsection-9137" class = 'collapse'>
+			<div id = "comment-16293" class = "comment">
+				<p>a big thank you! It helps me a lot to see everything explained in a little different way. I actually came up with the question when reading your second reference but didn't really understand the motion composition operator and thought about an easier solution.</p>
+			</div>
+			<div id = "comment-17619" class = "comment">
+				<p>when I calculate $\Sigma_{ij}$ this leads to mismatching matrix dimensions:$$\Sigma_{ij}^{t}=J_{iterate} \Sigma_{ij}^{t-1} J_{iterate}^T + J_{process} \Sigma_{sensor} J_{process}^T$$ where $J_{iterate}=\frac{\partial x^{t}}{\partial x^{t-1}}$, $J_{process}=\frac{\partial x^{t}}{\partial \xi^{t}}$ and $\xi^{t} = [a,\omega]$. my process model is $x^{t} = f(x^{t-1},a,\omega)$ where $a$ and $\omega$ are acceleration and rotational velocity both measured by an IMU and $f$ integrates the acceleration twice and the rotational velocity once to obtain position and orientation.</p>
+			</div>
+			<div id = "comment-17620" class = "comment">
+				<p>$\Sigma_{sensor}$ is a matrix with the acceleration and rotational velocity variances on its diagonal which makes a 6x6 matrix. But since $x$ has the dimension 7x1 the calculation finally yields a $\Sigma_{ij}^{t}$ of dimension 7x7 so I guess I'd somehow have to replace $x$ by its minimal parametrization $\log{x}$ which is 6x1. But how do I adapt the process model then?</p>
+			</div>
+			<div id = "comment-17637" class = "comment">
+				<p>@morph In the original question, you were asking about graph-based SLAM. However, your new question seems like it asking about a Kalman filter. If this is the case, perhaps you should ask it as a new question because it is related but not directly a follow up to the original question.</p>
+			</div>
+			<div id = "comment-17638" class = "comment">
+				<p>Is that true? I thought that I am talking about the SLAM-frontend, while graph-based SLAM relates to the SLAM-backend, doesn't it? I also think that my question in the comment is also strongly related to the manifold topic, that's why I asked it here.</p>
+			</div>
+			<div id = "comment-17639" class = "comment">
+				<p>take a look [here](http://robotics.stackexchange.com/questions/9926/calculate-the-uncertainty-of-a-6-dof-pose-for-graph-based-slam), where I have created a new question for it</p>
+			</div>
+			</div>
+				<textarea id = "speech-9137" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9137">
+					<img id="start_img-9137" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9137">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,153 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Covariance analysis
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11854" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11854" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 51</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Covariance analysis</h2>
+<p>I am a SLAM newbie here. </p>
+
+<p>The thing i want to do is to perform a covaraince analysis, to ensure whether the estimation of the covariance is done correctly or not.</p>
+
+<p>The localization output creates a log file which includes localization and mapping information also the covariance of the localization. </p>
+
+<p>I extracted the covariance matrices, acquired the diagonal elements and tried to plot the elements: Vslam estimation, GPS(ground truth), Vslam+  and Vslam- . </p>
+
+<p>What i was expecting was that the ground truth should lie within the Vslam+  and Vslam- , but the result i am getting is really weird. </p>
+
+<p>According to me the uncertainity should grow over time.  </p>
+
+<p>I am providing a link to the folder which contains the generated output files, the expected result visualization and the actual plot that i am getting. </p>
+
+<p><a href="https://1drv.ms/f/s!Ao6DTJtCEQbIggC_gZNv68pjXZTq" rel="nofollow noreferrer">DATA</a></p>
+
+<p>The covariance is calculated from intersecting the object covariances i.e the covariance intersection method.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11854" data-toggle = "popover">
+				<p>user name : Rohit Dhakate</p>
+				<p> user reputation : 11</p>
+				<p class = "tagcontent" id = "usertaginfo-11854">{'visualization': 2, 'None': 0, 'slam': 2, 'uav': 0, 'localization': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11854">Load Comments</button></br>
+			<div id = "commentsection-11854" class = 'collapse'>
+			<div id = "comment-21092" class = "comment">
+				<p>"According to me the uncertainity should grow over time." this is true if you don't have measurements. If the filter receives measurements, then the uncertainty should be reduced. In other words, the ellipse of covariance matrix will shrink.</p>
+			</div>
+			<div id = "comment-21093" class = "comment">
+				<p>Well i also had the understanding that the more and more observations you make the uncertainty will shrink. 
+
+But my supervisor insisted that the uncertainty should grow here. 
+
+I tried adding the sigma values over time and plotted against the estimate and ground truth, and the results are just what was expected by my supervisor. But i dont know whether it is correct or not. 
+
+Please have a look at the plots.
+https://1drv.ms/f/s!Ao6DTJtCEQbIgga9XK8H8PrhFSwR</p>
+			</div>
+			<div id = "comment-21094" class = "comment">
+				<p>Providing results are of course beneficial but more details are needed. Is the model linear or nonlinear? Are you utilizing Kalman filter or other filters? What kind of sensors you are using? Is the measurement model  linear or nonlinear? How much noise in your system and sensors? Did you tune the filter properly? Isn't simulation or real scenario? ... etc.</p>
+			</div>
+			<div id = "comment-21109" class = "comment">
+				<p>Its a uav navigation. So, the model is non-linear. A variant of EKF SLAM is used which is combination of MonoSLAM and PTAM. The sensors being used are IMU, GPS and camera. I am doing the post-processing of the collected flight data on simulation software.</p>
+			</div>
+			<div id = "comment-21137" class = "comment">
+				<p>I assume the predict stages are both the visual odometry and the IMU and the update is the GPS. The uncertainty should stabilise if your update and predict rates are consistent, and motion is not too fast with respect to the update rates. If the update stops then the uncertainty will increase without bounds due to the continued prediction, but the moment an update comes it will shrink. Your results seem to have converged to an incorrect solution, (I think) this happens with EKFs when the system covariance is not matched to the filter or motion is very nonlinear. UKF performs a bit better.</p>
+			</div>
+			<div id = "comment-21143" class = "comment">
+				<p>@Gouda
+So i had a discussion with my supervisor regarding this, and what he said was that the uncertainty should definitely grow.   
+http://imgur.com/7Ek0Efl  
+
+Consider the image,   
+at Timestep 1: the robot has some uncertainty, and it makes observations with that uncertainty in its position also as the true location of the landmarks are unknown, the observations also has uncertainty.</p>
+			</div>
+			<div id = "comment-21144" class = "comment">
+				<p>now at Timestep 2: With the previous uncertainty the robot makes 2 more observations (which also has uncertainty in their position), but these new observations are made while we still had uncertainty of robot location, even though the robot re-observes the previous landmarks, we have remember that these (older landmarks) are observed with the robot uncertainty..... this process continues and hence the uncertainty in robots position should definitely grow over time , unless we know the true position of the landmarks.</p>
+			</div>
+			<div id = "comment-21145" class = "comment">
+				<p>I tried to plot the standard deviation (from the covariance matrix), to check if the ground truth lies in it or not, but the result is not what have been expected. Perhaps i might be doing something wrong. 
+I already provided the data (Truth_log, Estim_log; Output_containing the covariances), if someone helps me solving this problem, i would be really grateful.</p>
+			</div>
+			<div id = "comment-21147" class = "comment">
+				<p>For this dataset the initialization is done through triangulation, but gps is available for correction (only till 150 frames)
+So after 150 frames the uncertainty should grow over time</p>
+			</div>
+			</div>
+				<textarea id = "speech-11854" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11854">
+					<img id="start_img-11854" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11854">Comment</button>
+
+<h1>Answers</h1>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,171 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>ROS Joy node with Arduino
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11042" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11042" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 253</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>ROS Joy node with Arduino</h2>
+<p>I'm working with ROS Indigo under Ubuntu 14.04, most the time following the tutorials. </p>
+
+<p>My purpose: read the ROS node Joy in Arduino Uno and do things when button are pressed (turn some led on). </p>
+
+<p>When I was able to have a working arduino sketch publishing/subscribing with ros (rosserial, USB port is correct and always the same), to have the joy node working (checked with rostopic echo joy) and to have all the electric parts in the right place on the breadboard, I made this sketch</p>
+
+<pre><code>#include &lt;stdint.h&gt;
+#include &lt;stdlib.h&gt;  
+#include &lt;ros.h&gt;
+#include &lt;std_msgs/Float32.h&gt;
+#include &lt;sensor_msgs/Joy.h&gt;
+
+void joydata ( const sensor_msgs::Joy&amp; joy){
+
+  if ((joy.axes[14]) &gt;= 0.5){
+    digitalWrite(3,HIGH); 
+
+     }     
+}
+
+ros::NodeHandle  nh;
+ros::Subscriber&lt;sensor_msgs::Joy&gt; sub1("joy", joydata);    
+
+void setup()
+{
+    pinMode(3, OUTPUT); //set up the LED
+    nh.initNode();
+    nh.subscribe(sub1);
+}
+
+void loop()   {
+ nh.spinOnce();
+ delay(1);
+}
+</code></pre>
+
+<p>And even if the Arduino subscriber seems to be right checked with rqt_graph (see the image)
+ <a href="https://i.stack.imgur.com/Iky5L.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/Iky5L.png" alt="rqt_graph "></a></p>
+
+<p>the thing doesn't work. But with the <code>rostopic pub</code> command for simple numeric inputs the same techniques work. </p>
+
+<p>Then I tried to mirror the signal from Joy to a publisher through Arduino: 
+What I read with <code>rostopic echo joy</code></p>
+
+<pre><code>header: 
+  seq: 163
+  stamp: 
+    secs: 1478877490
+    nsecs: 840985264
+  frame_id: ''
+axes: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0, 0.08682194352149963, 0.0]
+buttons: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+</code></pre>
+
+<p>And what I read if I publish with arduino a variable <code>x = joy</code> (copied and pasted in different moments, but all stamps are empty) <code>rostopic echo publisher</code></p>
+
+<pre><code>header: 
+  seq: 3744
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: ''
+axes: []
+buttons: []
+</code></pre>
+
+<p>What I am doing wrong? Is only a problem of bandwidth or something like that (too much data for the rosserial communication) ?
+Thank you all in advance. </p>
+
+<p>PS I made the same question on ROSanswers before finding this community from Stack Overflow. I hope that at least 1 community will help me with issue. </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11042" data-toggle = "popover">
+				<p>user name : marcoresk</p>
+				<p> user reputation : 101</p>
+				<p class = "tagcontent" id = "usertaginfo-11042">{'None': 0, 'ros': 0, 'arduino': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11042">Load Comments</button></br>
+			<div id = "commentsection-11042" class = 'collapse'>
+			<div id = "comment-19902" class = "comment">
+				<p>Just an observation, you only set the LED to on but never turn it off.</p>
+			</div>
+			<div id = "comment-19904" class = "comment">
+				<p>@hammer It is obvious that my final purpose is not to turn on and off the leds, but only to understand how to give the joy signal to arduino. Since my led has never turned on yet, I have no need to turn if off for now. Do you know where I'm wrong in this script?</p>
+			</div>
+			</div>
+				<textarea id = "speech-11042" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11042">
+					<img id="start_img-11042" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11042">Comment</button>
+
+<h1>Answers</h1>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

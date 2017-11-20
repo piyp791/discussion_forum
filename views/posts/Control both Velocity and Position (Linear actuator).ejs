@@ -1,0 +1,440 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Control both Velocity and Position (Linear actuator)
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7502" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7502" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 5902</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Control both Velocity and Position (Linear actuator)</h2>
+<p>I am trying to control the velocity+position of a linear actuator.</p>
+
+<p>At this moment I am able to control the position or the velocity. But I'm trying to control both. What the control has to do: Let the linear actuator drive to a position i.e. 0 to 100 cm with a constant velocity of 1cm/s.</p>
+
+<p>I control the actuator using a PWM signal. And I measure the velocity and position using a position sensor on the shaft.</p>
+
+<p>What kind of control is preferred, PID in cascade?
+If so,what would the code look like.
+Any other kind of control would function better?</p>
+
+<p>Thanks in advance!</p>
+
+<p>EDIT:
+A more describing picture.
+<img src="https://i.stack.imgur.com/jwmYH.png" alt="enter image description here"></p>
+
+<p>I want a Velocity controlled Position controller.
+Hopefully this will make it clear</p>
+
+<p>EDIT</p>
+
+<p>My first try is with a trapezoid wave. Maybe there is an easy way without to much calculation power to change it a s-curbe. Then the accelartion/jerk will be alot smoother.
+        I let the microcontroller calculate 3 different formulas afterwards it will calculate it using loop iteration. This way I can use one PID for the position. The parameters in the following code will fictional:</p>
+
+<pre><code>    AccelerationLoops: 5                            //[Loops]
+Velocity:      100                          //[mm/s]
+DeltaPosition:     7.5                          //[mm]
+Looptime:      5                            //[ms]
+Loopfactor:        1000 / Looptime                  //[-]
+VelocityLoop:      Velocity  /Loopfactor                //[mm/loop]
+VelocityFactor:    VelocityLoop * .5 / AccelerationLoops        //[mm/loop]  (.5 found by integration)
+Loops:         DeltaPosition / VelocityLoop / AccelartionLoops  //[Loops]
+
+----Formula---
+Formula1:      VelocityFactor * x^2
+LastF1:        Last value of Formula1 Formula1(5)
+
+Formula2:      VelocityLoop * x - LastF1
+
+Formula3:      VelocityFactor * (Loops - x)^2 + DeltaPosition)
+
+Using the parameters of above it will generate the following setpoint :
+0   0,00
+1   0,05
+2   0,20
+3   0,45
+4   0,80
+5   1,25
+6   1,75
+7   2,25
+8   2,75
+9   3,25
+10  3,75
+11  4,25
+12  4,75
+13  5,25
+14  5,75
+15  6,25
+16  6,70
+17  7,05
+18  7,30
+19  7,45
+20  7,50
+</code></pre>
+
+<p>A big problem with the code above is that the amount of accelartion loops is a constant. It can not be changed except when you already know the amount of loops it will take.</p>
+
+<p>I will be using two separate arduinos, they will be connected using a CAN-bus connection. Anyway, they won't communicate through it unless the load becomes too high. This will make Master/Slave impossible. Also the system has to be modular: adding another actuator to circuit won't be a problem. The actuator is speed controlled by using a PWM signal. The linear sensor will deliver a 0-10v signal which i will reduce to 0-5v by a simple voltage divider. The loop will be around 5 to 10 ms, will depend on the maximum looptime.</p>
+
+<p>Arduino has a 10-bit(1023) ADC but use of oversampling I will probably try to increase it to 12-bit. To not decrease the reading speed I will decrease the prescaler of the ADC.</p>
+
+<p>The PWM output is 8-bit(255), I am trying to find a way to further increase. Because I think 255 steps are too low for my application.</p>
+
+<p>Because the Arduino has limit internal memory, pre calculating all the positions is impossible.</p>
+
+<p>Thank you all for the help so far!</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7502" data-toggle = "popover">
+				<p>user name : KoenR</p>
+				<p> user reputation : 26</p>
+				<p class = "tagcontent" id = "usertaginfo-7502">{'None': 0, 'microcontroller': 5, 'pid': 5, 'arduino': 5}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7502">Load Comments</button></br>
+			<div id = "commentsection-7502" class = 'collapse'>
+			<div id = "comment-10778" class = "comment">
+				<p>Have you looked at feedforward and what do you know about the system/perturbations?</p>
+			</div>
+			<div id = "comment-10797" class = "comment">
+				<p>Welcome to Robotics stack exchange KoenR. You could improve your question if you edited it to provide all of the information you added in comments to answers. That way people don't have to read every answer and every comment on those answers to see the details of what you are trying to do.</p>
+			</div>
+			<div id = "comment-10802" class = "comment">
+				<p>What does your PWM control? My assumption would be torque (current to the motor), but it would be useful to know if your PWM is connected to a speed or even position control input.</p>
+			</div>
+			<div id = "comment-10806" class = "comment">
+				<p>Also, to give us an idea of the constraints on your system, you may want to briefly mention the expected resolution of the encoders, the cycle time of your controller, the range of speeds you want to achieve, & the position/velocity errors which are acceptable. Precise details aren't needed, but ballpark figures will give us an idea of what you mean when you say you 'want both the position and the velocity to be exact'. They can never be 'exact' and you hit the encoder resolution limit long before the [uncertainty principle](https://en.wikipedia.org/wiki/Uncertainty_principle) kicks in. *8')</p>
+			</div>
+			<div id = "comment-10818" class = "comment">
+				<p>Thank you for you help. I updated my question to what I think is more clear.</p>
+			</div>
+			<div id = "comment-10821" class = "comment">
+				<p>I've expanded the answer including the formula for the s-curve.</p>
+			</div>
+			<div id = "comment-10822" class = "comment">
+				<p>How can I implement this code?</p>
+			</div>
+			<div id = "comment-18442" class = "comment">
+				<p>What linear actuator are you using? Also, what does the PWM input get translated into (motor torque, velocity, etc.)? If we know the dynamics, then we can develop an efficient controller--perhaps taking nonlinearities into account!</p>
+			</div>
+			</div>
+				<textarea id = "speech-7502" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7502">
+					<img id="start_img-7502" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7502">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7503"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7503" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I'd say this problem is very much similar to <a href="https://robotics.stackexchange.com/questions/5260/the-aerial-refueling-problem-sketch-of-a-feedback-controller">The aerial refueling problem: sketch of a feedback controller</a> whose one possible solution is then explained in <a href="https://robotics.stackexchange.com/a/5263/6941">https://robotics.stackexchange.com/a/5263/6941</a>.</p>
+
+<h3>EDIT</h3>
+
+<p>The minimum-jerk position profile (i.e. the s-curve) that lets the system go from the initial position $x_0$ to the desired position $x_d$ in $T$ seconds is:</p>
+
+<p>$$
+x\left(t\right)=x_0+\left(x_d-x_0\right) \cdot \left(10\left(\frac{t}{T}\right)^3 - 15\left(\frac{t}{T}\right)^4 + 6\left(\frac{t}{T}\right)^5\right),
+$$</p>
+
+<p>where $t \in \left[0,T\right]$ specifies the time granularity, thus the number of set-points.</p>
+
+<p>Finally, $x\left(t\right)$ will be the reference for the position PID.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7503" data-toggle = "popover">
+				<p>user name : Ugo</p>
+				<p> user reputation : 1482</p>
+				<p class = "tagcontent" id = "usertaginfo-7503">{'None': 99}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7503">Load Comments</button></br>
+			<div id = "commentsection-7503" class = 'collapse'>
+			<div id = "comment-10770" class = "comment">
+				<p>I think I have something else in mind, could you check my edit? Thanks in advance</p>
+			</div>
+			<div id = "comment-10775" class = "comment">
+				<p>Try to answer yourself the following question: what if you're provided with one PID controller that makes the system track the position very precisely? How does the derivative of the position feedback look like?</p>
+			</div>
+			<div id = "comment-10783" class = "comment">
+				<p>So your idea is to calculate all the different positions over time. Then to control it's position over this course? Thank you  for your answer</p>
+			</div>
+			<div id = "comment-10784" class = "comment">
+				<p>This is a somewhat standard technique that goes under the umbrella of **Input Shaping**.
+You have to provide a varying reference anyhow, also if you imagine to control only the velocity (e.g. the trapezoidal waveform you depicted).</p>
+			</div>
+			<div id = "comment-10785" class = "comment">
+				<p>To be more clear, there exists plenty of blocks filtering a step-wise input into a smoothly varying reference, therefore you are not required to compute the reference trajectory point by point.</p>
+			</div>
+			<div id = "comment-10786" class = "comment">
+				<p>This will take very much space in my microcontroller. Building an array over the whole course. Do you have another suggestion to this problem? Probably this would take a lot of computing power too.</p>
+			</div>
+			<div id = "comment-10787" class = "comment">
+				<p>Didn't see your last answer. Like divide into three segments? 5% acceleration 90 % controlling speed 5% controlling position?</p>
+			</div>
+			<div id = "comment-10788" class = "comment">
+				<p>I'll just rephrase the approach of input-shaping. Imagine you're given the nice velocity profile you want to follow. Then, integrate it (with correct initial conditions) and you'll have the corresponding reference position profile. Feed the latter profile to the position PID. The integration is very fast and will occupy only a tiny portion of the memory on your microcontroller.</p>
+			</div>
+			<div id = "comment-10800" class = "comment">
+				<p>The acceleration profile depicted in the question is usually referred to as an s-curve profile, since the acceleration is an s (it limits jolt/jerk), whereas a trapezoidal motion profile has an instantaneous change in acceleration. From what I understand [input shaping](https://en.wikipedia.org/wiki/Input_shaping) is the name given to a specific technique intended to reduce vibrations, rather than a generic term for velocity profile planning.</p>
+			</div>
+			<div id = "comment-10812" class = "comment">
+				<p>The profiles above are not concerned with the acceleration, though - of course - both the position and the velocity do intrinsically contain such an information, as the second and the first derivatives, respectively. The central point is to avoid providing two profiles separately to the system, since they are intimately related, i.e. they are the same thing. Well, then, the aim of input shaping is to design a feed-forward block that shapes the reference such that while going from A to B we achieve a specified task, which might be either the cancellation of vibrations or the jerk minimization.</p>
+			</div>
+			<div id = "comment-10813" class = "comment">
+				<p>We should take this to [chat] rather than clutter up the comments with a discussion which doesn't help improve your answer.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7503" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7503">
+					<img id="start_img-7503" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7503">Comment</button>
+			<br><div id = "ans-7504"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7504" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">-2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I don't think you can control speed and position at the same time - what happens if you don't change the position reference but you have some non-zero speed reference? Did you want the output to stay still or go to the command speed? </p>
+
+<p>I think what you are looking for is a software-imposed actuator authority limit. In this case you can just limit the output of the controller. I don't know what your actuator inputs are, but for the controller I would try something like:</p>
+
+<pre><code>dT = sampleTime;
+input = positionRef;
+feedback = positionFbk;
+outputLimit = actuatorSpeedLimit;
+
+errorP = input - feedback;
+errorI = errorI + errorP;
+errorD = (errorP - prevError)/dT;
+prevError = errorP;
+
+output = kP * errorP + kI * errorI + kD * errorD;
+
+if abs(output) &gt; outputLimit
+  output = sign(output) * outputLimit;
+end
+</code></pre>
+
+<p>Now, as I mentioned, I don't know what your inputs to the actuator are. The model above assumes the output of the PID controller is a reference speed that you pass to the actuator. You cap the speed reference you pass to the actuator giving an electronic form of actuator saturation. The controller will continue to command higher and higher velocities until you reach a position close to the reference position, at which point it will begin to back off. It will back off below the <code>outputLimit</code> at which point the electronic saturation eases and control resumes like normal. </p>
+
+<p>If your actuator uses a position input and it determines its  own speed response, then the actuator probably uses a proportional controller, where the actuator speed it utilizes is given by:</p>
+
+<p>vActuator = $(1/\tau)$(positionRef - positionFbk);</p>
+
+<p>where here $\tau$ is the actuator's <a href="https://en.wikipedia.org/wiki/Time_constant" rel="nofollow">time constant</a>. In this case you can estimate the actuator speed and throttle your position that you pass to the actuator, provided you can <a href="http://www.facstaff.bucknell.edu/mastascu/eLessonsHTML/SysDyn/SysDyn3TCBasic.htm" rel="nofollow">measure or estimate the time constant</a>. Resuming the above code:</p>
+
+<pre><code>output = kP * errorP + kI * errorI + kD * errorD;
+
+estVelocity = (1/\tau)*(output - feedback);
+
+if abs(estVelocity) &gt; actuatorSpeedLimit
+  output = (\tau) * actuatorSpeedLimit + feedback;
+  output = sign(estVelocity) * output;
+end
+</code></pre>
+
+<p>Where again, in this example, your controller output is a position you pass to the actuator instead of a speed you pass to the actuator. You can do the same if you provide an acceleration to the actuator, but I don't think I've ever seen a linear actuator accept an acceleration as an input. </p>
+
+<p><strong>:EDIT:</strong></p>
+
+<p>Despite the fact that this question has been marked as answered (and I've been downvoted!), I would add that you could split the controls.</p>
+
+<p>You are going for synchronized actuators, so have one actuator use PID to get to a command setpoint and the other actuator use PID to adjust its speed based on the first one. This sets up a master/slave or leader/follower, where the master follows the position reference and the slave follows the master. </p>
+
+<p>As with any other PID controller, you can tune the slave to whatever threshold you want to achieve your desired speed difference tolerance. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7504" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-7504">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7504">Load Comments</button></br>
+			<div id = "commentsection-7504" class = 'collapse'>
+			<div id = "comment-10781" class = "comment">
+				<p>Thank you very much for you detailed answer. 
+I also looked at cutting of the maximum speed.
+Though this delivers some problems. [plus next comment]</p>
+			</div>
+			<div id = "comment-10782" class = "comment">
+				<p>I want both the position and the velocity to be exact. 
+Why: I am trying to synchronize two linear actuators between each other.
+Therefore both the velocity and position should be controlled
+
+The velocity is the most important to control. But when I control the velocity with a standard PID as described in your answer. The actuator won t stop at his given end position. Would a PID for the velocity + a hysterese on the position work better? Thus exponentially reducing the velocity when the end position becomes closer.</p>
+			</div>
+			<div id = "comment-10799" class = "comment">
+				<p>It would be very helpful if this information in particular were edited into your question @KoenR.</p>
+			</div>
+			<div id = "comment-10803" class = "comment">
+				<p>Limiting pwm output to a fixed value won't work. If one motor is running at the desired speed, but the other one isn't, the follower will never be able to catch up & the following error will only increase. That's why the PID controller for each actuator need to be independent - if one falls behind, it needs to be allowed to work harder to catch up. Also, you will get much better response by feeding the same waypoint demand position into two independent control loops than if you slave one off the other (where the slave will effectively have double the time constant!).</p>
+			</div>
+			<div id = "comment-10807" class = "comment">
+				<p>Yes, I understand that now. My original response was based on his original question, "I am trying to control the velocity+position of $a$ linear actuator." (emphasis added). I had read "a" to mean "one" - meaning, I thought he was trying to do PID position control on one actuator while limiting the speed of the same actuator. I didn't realize he was trying to synch two actuators until his comment above earlier this morning.</p>
+			</div>
+			<div id = "comment-10814" class = "comment">
+				<p>Yup, hindsight is very useful. *8')</p>
+			</div>
+			<div id = "comment-20550" class = "comment">
+				<p>When you calculate the D you usually take the difference in your quantity, not the difference in the error.</p>
+			</div>
+			<div id = "comment-20555" class = "comment">
+				<p>@Martin - What exactly are you saying? The difference in what quantity? Can you give a formula? Derivative error is the derivative of the (proportional) error.</p>
+			</div>
+			<div id = "comment-20557" class = "comment">
+				<p>Doing D on difference of PV (process variable) eliminates the jerk caused by change in control signal, which you would otherwise get if you use diff off error for the D term. Also another detail is that you have to put a minus before the D term if you use dPV as quantity for D term. [See this formula](http://controlguru.com/wp-content/uploads/2015/08/pideqindidealpv.jpg)</p>
+			</div>
+			</div>
+				<textarea id = "speech-7504" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7504">
+					<img id="start_img-7504" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7504">Comment</button>
+			<br><div id = "ans-7512"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7512" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">6</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The first thing to realise is that this is not a <em>control</em> problem, this is a <em>planning</em> problem. If you conflate the two, you are making life much more complex than it needs to be.</p>
+
+<h2>Solution - Motion planning</h2>
+
+<p>The traditional way to achieve what you want is to have two loops. The outer planning/supervisory loop generates <strong>way-points</strong> for specific points in time, while the lower level PID loop generates the appropriate PWM signals to keep the motor as close as possible to those way-points.</p>
+
+<p>The more way-points you generate, the more closely you can track both velocity and position. Older systems often ran their floating point planning loop at a much lower rate than their integer PID loop, but these days even modest micro-controllers have more than enough compute power to do full trajectory planning of multiple axes at the PID control rate.</p>
+
+<h2>Simple example</h2>
+
+<p>While the example you drew is an <a href="http://www.roboticsys.com/support/Content/Topics/SCurveMotionProfile.htm" rel="nofollow">s-curve trajectory profile</a>, it is easier to explain the principles by looking at a simple <a href="http://www.edn.com/design/integrated-circuit-design/4363569/Implement-trapezoidal-velocity-profiles-in-software" rel="nofollow">trapezoidal profile</a>.</p>
+
+<p>Let's say you want to move from 0 to 36mm in 9 seconds with cruise  velocity (feed rate) of 6mm/s and an acceleration of 2mm/s/s. You might plan a move in 9 steps as follows:</p>
+
+<p>\begin{array} {|r|r|}
+\hline
+time        &amp; t &amp; 0 &amp; 1 &amp; 2 &amp; 3 &amp; 4 &amp; 5 &amp; 6 &amp; 7 &amp; 8 &amp; 9\\
+\hline
+acceleration&amp; a &amp; 0 &amp; 2 &amp; 2 &amp; 2 &amp; 0 &amp; 0 &amp; 0 &amp; -2 &amp; -2 &amp; -2\\
+velocity    &amp; v &amp; 0 &amp; 2 &amp; 4 &amp; 6 &amp; 6 &amp; 6 &amp; 6 &amp; 4 &amp; 2 &amp; 0\\
+position    &amp; d &amp; 0 &amp; 1 &amp; 4 &amp; 9 &amp; 15 &amp; 21 &amp; 27 &amp; 32 &amp; 35 &amp; 36\\
+\hline
+\end{array}</p>
+
+<p>In this case, at time $t=0$ you would inject position $d=1$ into your PID (plus acceleration $a=2$ and velocity $v=1$ if your PID loop has acceleration and velocity feed forward). At $t=1$ you would inject $d=4$ into your PID and so on until at $t=8$ you command the PID to move to the final position $d=36$, then at $t=9$ the system should have stopped moving.</p>
+
+<h2>Implementation</h2>
+
+<p>The limitations of your system will limit your implementation.</p>
+
+<ul>
+<li>If you are CPU limited on your micro-controller but have plenty of memory to store path profiles, you may want to pre-calculate the way-points.</li>
+<li>If you have plenty of CPU, you may want to calculate way-points on the fly.</li>
+<li>If you are limited in both CPU and memory, you may need to either lower your way-point generation frequency or use <a href="https://en.wikipedia.org/wiki/Interval_arithmetic" rel="nofollow">integer interval arithmetic</a> to calculate approximation more quickly.</li>
+</ul>
+
+<h2>Complications</h2>
+
+<p>If you find that your actuator jumps between way-points rather than moving smoothly, then you need to either reduce the time between way-points or optimise (tune) your PID loop for your motion (for example, reduce the proportional gain, increase derivative gain and/or increase the velocity/acceleration feed-forward gains). The moment you start using your PID loop to tune for expected motion however, you are making the motion worse for other kinds of move.</p>
+
+<p>I see from comments that you want two linear actuators to match each other. </p>
+
+<p>In this case, while the PID loops for each actuator will need to be run independently, the way-point inputs into those PID loops can be shared.</p>
+
+<p>How closely each servo loop follow each other will be determined by how closely they follow the idealised trajectory as defined by the way-points.</p>
+
+<p>If your individual PID loops are tuned well enough, and you set sensible limits on <a href="http://www.newport.com/Control-Theory-Terminology/178319/1033/content.aspx" rel="nofollow">following error</a>, the overall error between the two actuators should be at most the sum of their following errors, and is likely to be much less on average.</p>
+
+<p><sub>By the way, my experience on this comes from writing the control software for a 2x2m dual gantry cartesian robot. Even though we were accelerating the gantries up to 1m/s at 1g, we rarely had a following error of more than a few hundred microns, &amp; the error between the two ends of the gantry was usually an order of magnitude lower. If we had used s-curve rather than trapezoidal move profiles, our errors would probably have been an order of magnitude lower still, but this was the 90's and micro-controllers had much lower floating point performance, so we went for simple &amp; fast over complex &amp; slow.</sub></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7512" data-toggle = "popover">
+				<p>user name : Mark Booth</p>
+				<p> user reputation : 3037</p>
+				<p class = "tagcontent" id = "usertaginfo-7512">{'control': 7, 'quadcopter': 2, 'None': 258, 'tuning': 7, 'uav': 2, 'design': 2, 'stepper-motor': 7}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7512" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7512" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7512">
+					<img id="start_img-7512" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7512">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

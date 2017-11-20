@@ -1,0 +1,178 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Arduino output SPWM using Matlab
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11545" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11545" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 154</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Arduino output SPWM using Matlab</h2>
+<p>I have Arduino and Matlab which has hardware support package for Arduino.
+I want to create SPWM signal (sinusoidal pulse width modulation) to be the output of the Arduino board.
+I could generate the signal required in Matlab using this code</p>
+
+<pre><code>function spwm = SinWave(frequency)
+nsamples = 1250 * frequency;
+t = linspace(0,1,nsamples);
+sn = sin(2*pi*frequency*t);
+st = sawtooth(2*pi*frequency*10*t);
+spwm = abs(sn) &gt; abs(st);
+plot(t, sn);
+hold on;
+plot(t, st);
+plot(t,spwm);
+axis([0,1,-1.2,1.2]);
+</code></pre>
+
+<p>Now SPWM has the samples for the signal, I tried sending it on pin 13 using the following function</p>
+
+<pre><code>function writeSPWM(arduino, spwm)
+for k=1:length(spwm)
+    writeDigitalPin(arduino, 'D13' ,spwm(k))
+end
+</code></pre>
+
+<p>Then I used the following two lines in command window</p>
+
+<pre><code>a = arduino()
+writeSPWM(a, SinWave(5))
+</code></pre>
+
+<p>I getting my signal shape with very low frequency(it is really much bigger)
+Is there a better way to achieve my goal? using Matlab is necessary but I have no problem if I have to combine coding throw Matlab and Arduino C.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11545" data-toggle = "popover">
+				<p>user name : Ammar Atef</p>
+				<p> user reputation : 44</p>
+				<p class = "tagcontent" id = "usertaginfo-11545">{'control': 1, 'None': 2, 'arduino': 0, 'torque': 1, 'servomotor': 1, 'matlab': 1, 'pwm': 0, 'cnc': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11545" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11545" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11545">
+					<img id="start_img-11545" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11545">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-11546"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11546" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>It seems that all the code you wrote is in Matlab, and at each cycle it should communicate via the USB port with arduino to turn the pin on or off. This take a lot of time. </p>
+
+<p>The fastest solution would be to write the whole algorithm as an Arduino sketch, and only get the current desired frequency via the Serial (USB) connection from Matlab. Matlab would set the desired frequency, send it via serial to the arduino. From there the latency of the USB (Serial) connection would not intervene. </p>
+
+<p>When you do the Arduino programming, make sure to use the PWM pins in PWM mode and not as a simple digital output turned on or off. </p>
+
+<p>EDIT:</p>
+
+<p><a href="https://www.arduino.cc/en/Tutorial/PWM" rel="nofollow noreferrer">Here</a> is a PWM tutorial for the arduino. </p>
+
+<p>for SPWM the duty cycle has to be changed frequently. You will not be able to change it for each cycle, but maybe for every 10 cycles. It will be still ok. </p>
+
+<p>You could start by calculating a sinus on the arduino using an interrupt that is set for maybe every 2 milliseconds. That interrupt should increment your time variable (make sure that it does not overflow, or it overlfows in a controlled manner and make sure to use some sort of scaling to get seconds). </p>
+
+<p>This will be the t from the sinus time signal equation:
+$SPWM(t) = A\sin (\omega t + \phi)$</p>
+
+<p>A (amplitude) I think in this case is irrelevant. probably the phase shift ($\phi$) is also irrelevant. $\omega$ you can calculate form your frequency. </p>
+
+<p>$\omega = 2 \pi f$, where $f$ is the frequency.
+You set to constant value at first, afterwards you make function that gets it form the serial port form Matlab (make sure NOT to include this in the interrupt, because it is slow)</p>
+
+<p>At the end of the interrupt you update the PWM duty cycle basted on the SPWM(t) value the interrupt calculated.</p>
+
+<p>I am sure there are many other approaches, but for me this seems the simplest one which delivers acceptable performance. Also, please make sure that the cycle time of the interrupt is longer than the runtime of the code in the interrupt. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11546" data-toggle = "popover">
+				<p>user name : 50k4</p>
+				<p> user reputation : 2800</p>
+				<p class = "tagcontent" id = "usertaginfo-11546">{'geometry': 0, 'None': 193, 'kinematics': 0, 'robotic-arm': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11546">Load Comments</button></br>
+			<div id = "commentsection-11546" class = 'collapse'>
+			<div id = "comment-21797" class = "comment">
+				<p>Welcome to *Robotics* @AmmarAtef. Comments are for helping to improve questions and answers, and are distracting, so we try to keep them to a minimum. While it may seem nice to thank people for their questions or answers, *thanks* and *me too* comments are just noise. A better way to show your thanks would be to vote up the question or answer, which rewards the poster with a reputation boost. Comments should be considered ephemeral, any comment which no longer actively helps to improve a question or answer may be deleted at any time to *tidy up* a post.</p>
+			</div>
+			</div>
+				<textarea id = "speech-11546" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11546">
+					<img id="start_img-11546" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11546">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

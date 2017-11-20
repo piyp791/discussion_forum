@@ -1,0 +1,282 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>differential drive PID controller
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2768" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2768" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 2297</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>differential drive PID controller</h2>
+<p>I have a differential drive robot that works fine (good PD parameters) driving at say 1 m/s. Now, if it speeds up (to 1.2 m/s) it starts wobbling again. What would be a good strategy for a controller that is able to cope with the whole speed range of 0 - 4 m/s?</p>
+
+<p>edit 14th of April:</p>
+
+<p>The robot is a line follow robot but I do not see how this would be related to my question since a robot following a trajectory would have the same problem. </p>
+
+<p>I recently talked to other developers of differential drive robots and they are facing similar issues e.g. they told me that they need to adjust PID parameters once the battery is not fully charged hence the robot drives at a different speed.</p>
+
+<p>I do not know if you guys are into youtube, but if your are really interested in my robot this link would be helpful: <a href="https://www.youtube.com/watch?v=vMedNPhXlEo" rel="nofollow">https://www.youtube.com/watch?v=vMedNPhXlEo</a></p>
+
+<p>PID parameters are: P 0.31, D 0.59, I 0.00</p>
+
+<p>PID controller programmed using C:</p>
+
+<pre><code>  // note: the inner wheel turns backwards for narrow curves
+  // cte is -128..128 depending on the robots position
+  // relative to a trajectory / black line 
+  /** Execute the PID controller and update motor speeds */
+  void PID()
+  {
+    int32_t steer;
+    int32_t cte;
+    cte = 128 - get_segment_center(0);
+    // Compute PID equation
+    steer = (int)(
+      -P * (float)cte 
+      -D * (float)(cte - diff_cte) / (float)PERIOD_MS
+      -I * (float)int_cte
+    );
+    if (steer &lt; -5)
+    {
+      // turn left
+      turn = -1;
+      uXbot_move(MAX_SPEED + steer, MAX_SPEED);
+    } 
+    else if (steer &gt; 5)
+    {
+      // turn right
+      turn = 1;
+      uXbot_move(MAX_SPEED, MAX_SPEED - steer);
+    }
+    else
+    {
+      // go straight
+      turn = 0;
+      uXbot_move(MAX_SPEED, MAX_SPEED);
+    }
+    diff_cte = cte;
+    int_cte += cte;
+  }
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2768" data-toggle = "popover">
+				<p>user name : mark</p>
+				<p> user reputation : 143</p>
+				<p class = "tagcontent" id = "usertaginfo-2768">{'None': 0, 'localization': 5, 'microcontroller': 0, 'pid': 3, 'embedded-systems': 0, 'differential-drive': 3, 'imu': 5, 'sensor-fusion': 5, 'arm': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2768">Load Comments</button></br>
+			<div id = "commentsection-2768" class = 'collapse'>
+			<div id = "comment-5155" class = "comment">
+				<p>Why the +5/-5 threshold?  What happens if you remove that?  You should not need to introduce this sort of non-linearity.  Try D=0, I=0 and ramp up P gradually.</p>
+			</div>
+			<div id = "comment-5158" class = "comment">
+				<p>+5/-5 is from another feature. To disable the feature I can set it to 0 and I tried this already. I tried different PID values for the last two days (I have a simulator for this that tired thousands of different values over the last weeks).</p>
+			</div>
+			</div>
+				<textarea id = "speech-2768" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2768">
+					<img id="start_img-2768" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2768">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-2770"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2770" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Nice robot.</p>
+
+<p>The +/- 5 threshold in your code is a red flag to me.  This introduces a non-linearity/discontinuity which shouldn't be needed.  What is the rationale for that?</p>
+
+<p>If you have enough memory to capture some real-time data try logging your <code>cte</code> and <code>steer</code> and then review them as you tune.  </p>
+
+<p>Speed is going to have an impact because of the way you've set up your steering and the vehicle dynamics.  As the speed increases your steering command is going to cause a different turning radius.  Also as speed increases it becomes hard to steer the vehicle.  This isn't a trivial system.  When your battery voltage goes down and assuming that voltage is your motor power tail and that you're not actually closing a velocity loop the effect of the lower voltage would be lower speed and therefore the effect of your PID coefficients will be reduced linearly to that.  Note that going at a lower speed with a full battery and going at a low speed due to a low battery will behave differently (the impact of your steer command will be different).</p>
+
+<p>Here's what I would suggest as a first go:</p>
+
+<ol>
+<li>Get rid of that +5/-5 threshold.</li>
+<li>Add some data logging in and review while tuning.</li>
+<li>Start with I=0, D=0 and pick a fixed velocity.  Start on the slow end.</li>
+<li>Ramp up P, keep doubling it until the system becomes unstable.  Back off (e.g. take half or 1/4 of the unstable P.)</li>
+<li>Experiment with adding a little I or D and see if they improve performance.  If not leave at 0.</li>
+<li>Repeat tuning at a few speeds and plot your tuned variables vs. speed.</li>
+<li>Try fitting linear or 2nd order segments to that graph to determine the coefficients at different speeds if needed.</li>
+</ol>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2770" data-toggle = "popover">
+				<p>user name : Guy Sirton</p>
+				<p> user reputation : 970</p>
+				<p class = "tagcontent" id = "usertaginfo-2770">{'None': 75}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2770">Load Comments</button></br>
+			<div id = "commentsection-2770" class = 'collapse'>
+			<div id = "comment-5152" class = "comment">
+				<p>I could explain what a "differential drive" robot is but I assumed that people here would know. I think my problem is very common to these kind of robots e.g. needing to change PID parameters when the battery power goes down...</p>
+			</div>
+			<div id = "comment-5153" class = "comment">
+				<p>@mark: in your question you talk about speed, in this comment you talk about battery power.  We can't read your mind.  You could get more and better answers if you take the time to provide all the necessary information. It's up to you.  You don't need to explain what a differential drive is but you do need to give details about your specific setup which is having your specific issues.</p>
+			</div>
+			</div>
+				<textarea id = "speech-2770" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2770">
+					<img id="start_img-2770" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2770">Comment</button>
+			<br><div id = "ans-2773"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2773" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You aren't properly mapping your steering value to the wheel speeds.  In fact, I don't think you're applying the PID correctly at all.  </p>
+
+<p>From your code, my guess is that you're using <code>get_segment_center</code> to determine the adjustment that you need to make.  My assumption is that this describes a distance measurement of how far the line sensor is off of the center of the line.  If that's the case, you are lacking the necessary calculations.</p>
+
+<p>The output of a PID takes an <em>error</em> and gives you a <em>correction</em>, so if your error is in inches then your correction will be in inches; if the error is in degrees, your correction will be in degrees, and so on.  You need to pick either of those and stick with it.  As written, you're taking a distance error and plugging it directly into a speed correction &ndash; no wonder it only works at one speed!</p>
+
+<p>My recommendation would be to calculate the steering error as an angle, which you can get by measuring (1) the distance over which your sensor can pick up the line and (2) the distance between the axle and the sensor.  With the tangent function, you can map sensor readings to angle error.  Then, you can implement the function I wrote about in <a href="https://robotics.stackexchange.com/a/2016/350">this post</a> to convert the steering angle to wheel velocities.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2773" data-toggle = "popover">
+				<p>user name : Ian</p>
+				<p> user reputation : 9640</p>
+				<p class = "tagcontent" id = "usertaginfo-2773">{'planning': 10, 'None': 809, 'power': 1, 'algorithm': 10, 'battery': 1, 'slam': 7, 'coverage': 10, 'mobile-robot': 9, 'sensors': 9}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2773">Load Comments</button></br>
+			<div id = "commentsection-2773" class = 'collapse'>
+			<div id = "comment-5159" class = "comment">
+				<p>great! That is a really interesting observation. The approach taken in my code is similar to code I studied in other peoples line followers and I never really questioned it like you did. I thought the P factor would take care of the conversion. But this would only work if the conversion is linear. I will study this further during the Easter break and report back. If you do not mind I will keep the question open until then.</p>
+			</div>
+			<div id = "comment-5181" class = "comment">
+				<p>I followed your advice and factored in (1) and (2) cte = 104.0 * atan((float)(128 - get_segment_center(0)) * 0.003); the reference to to the other post (nice visualizations) was not so helpful since it has some features I do not need (turning on the spot etc.). It also does NOT work with velocities as advertised. My new PID (using the above formula) works a little bit better but it still does not solve the problem. I currently can not send robot telemetry (I miss a tiny sprintf library). But as soon as this is resolved I will provide some data and graphs.</p>
+			</div>
+			<div id = "comment-5182" class = "comment">
+				<p>How are you mapping your desired vehicle steering angle (+ velocity) to individual wheel velocities?  What problems did you run into when you say that the other algorithm "does not work with velocities as advertised"?</p>
+			</div>
+			<div id = "comment-5186" class = "comment">
+				<p>Your post works on "joystick-position" instead of velocity. I am not able to see wheel-velocity you are talking about:(</p>
+			</div>
+			<div id = "comment-5191" class = "comment">
+				<p>Aah, in that post it was assumed that the left-right joystick position would be used to indicate the desired steering angle (-90 to +90), and the up-down joystick position would indicate the desired vehicle speed (-100% to +100%).  What does your abbreviation "cte" stand for?</p>
+			</div>
+			<div id = "comment-5203" class = "comment">
+				<p>v_a = r * (45 - theta % 90) / 45 you say this computes steering angle to wheel velocity? At least it does not compute with me?! Cross-track error (CTE), is defined as the distance between the
+reference trajectory and the robot.</p>
+			</div>
+			<div id = "comment-5207" class = "comment">
+				<p>It converts a desired steering angle $\theta$ (in degrees) and a desired thrust ratio $r$ (in percent) to a pair of thrust ratios (percentages) for the left and right wheels.  The line you posted is only valid between $0 \leq \theta \leq 90$, so if you're just using that one line from the function then it won't work.  The 4 return statements at the bottom of the function I posted are what map that formula onto the entire 360 degree circle.  We should move the discussion to that answer if you have more questions on it, I'll still get the notifications.</p>
+			</div>
+			</div>
+				<textarea id = "speech-2773" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2773">
+					<img id="start_img-2773" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2773">Comment</button>
+			<br><div id = "ans-2835"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2835" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>After thinking about this problem a little more I had an important insight: </p>
+
+<p><strong>For the robots differential drive PID controller to be operational at different speeds, the turning angle <em>R</em> used for steering must be consistent over the whole speed range.</strong></p>
+
+<p>This post inspired my thinking and explains the turning angle of a differential drive robot:
+<a href="https://robotics.stackexchange.com/questions/1653/calculate-position-of-differential-drive-robot">Calculate position of differential drive robot</a></p>
+
+<p>Thanks to Guy Sirton and Ian for discussing my PID controller and providing useful debugging tips.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2835" data-toggle = "popover">
+				<p>user name : mark</p>
+				<p> user reputation : 143</p>
+				<p class = "tagcontent" id = "usertaginfo-2835">{'None': 0, 'localization': 5, 'microcontroller': 0, 'pid': 3, 'embedded-systems': 0, 'differential-drive': 3, 'imu': 5, 'sensor-fusion': 5, 'arm': 0}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2835" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2835" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2835">
+					<img id="start_img-2835" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2835">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

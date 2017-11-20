@@ -1,0 +1,188 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Dynamic model of a robot lifted by a balloon (Multibody system)
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9355" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9355" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 271</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Dynamic model of a robot lifted by a balloon (Multibody system)</h2>
+<p>I'm having a hard time trying to understand how to obtain the dynamic model for a system similar to the image.  </p>
+
+<p>The balloon is a simple helium balloon, however the box is actually an aerial differential drive platform (using rotors). Now there's basically a model for the balloon and another for the actuated box. However I'm lost to how to combine both. </p>
+
+<p>The connection between both is not rigid since it is a string.
+How should I do it? Is there any documentation you could point me to, in order to help me develop the dynamics model for this system? </p>
+
+<p>Since I'm so lost, any help will be useful. Thanks in advance!  </p>
+
+<p><a href="https://i.stack.imgur.com/A3ANA.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/A3ANA.png" alt="System: Balloon suporting a box"></a></p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9355" data-toggle = "popover">
+				<p>user name : nVolteX</p>
+				<p> user reputation : 50</p>
+				<p class = "tagcontent" id = "usertaginfo-9355">{'None': 0, 'computer-vision': 3, 'algorithm': 3, 'localization': 3, 'uav': 3, 'slam': 3, 'kinematics': 3, 'mobile-robot': 6, 'dynamics': 3, 'ros': 6, 'software': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9355">Load Comments</button></br>
+			<div id = "commentsection-9355" class = 'collapse'>
+			<div id = "comment-16574" class = "comment">
+				<p>I think [Archimedes' Principle](https://en.wikipedia.org/wiki/Archimedes%27_principle) would be a good starting point.</p>
+			</div>
+			<div id = "comment-16597" class = "comment">
+				<p>Thanks for the tip. The model for the balloon is not that hard to get, however my problem is connected with modeling the whole system.</p>
+			</div>
+			</div>
+				<textarea id = "speech-9355" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9355">
+					<img id="start_img-9355" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9355">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9358"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9358" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>It's just another force, so you would treat it pretty much the same as you would treat gravity, a propeller, or any other force. There are a few points I'll make to help clarify for you:</p>
+
+<ol>
+<li>The string binds the two systems together, meaning that each is now an input to the other (hopefully I'll clarify this with points below).</li>
+<li>A string in tension <strong>is effectively rigid</strong>. A string in compression doesn't transmit force. So you'll need case statements such that the force is only applied across the systems when the string is in tension and that there is no effect when the string is in compression. </li>
+<li>The location of the force is wherever the string is tied to the box (call that position_box or p_box for short). Similarly, for the balloon, the location of the force is wherever the string is tied to the balloon (p_bln). </li>
+<li>The force is a vector that acts along [p_bln-p_box].</li>
+<li>Relating to point (2) above, the force is only transmitted when norm([p_bln-p_box]) >= L_string. Technically the norm shouldn't ever exceed the length of the string, but resolving that length back to L_string could be the force that is applied to each body. </li>
+</ol>
+
+<p>So, this would differ a little from gravity where gravity is always a vector pointing down and always acts on the center of mass, the string is a vector force of variable direction, that always acts at the point of attachment, that may not exist (if the box is closer to the balloon than the length of the string). </p>
+
+<p>Gravity acts through the center of mass, so, provided there are no other reaction forces (not hinged/pivoting, negligible air resistance), there's no torque applied to the body. What you'll find is that, by acting on a point <em>not</em> the center of mass, the string <em>will</em> apply a torque to both bodies, in addition to pulling them. </p>
+
+<p>As I mentioned, the actual distance between the two points may exceed the length of the string; this has to deal with joint stability and how you choose to solve and resolve forces across joints. </p>
+
+<p>FYI, I'm not sure what your background is, but you're entering a pretty complex field by allowing force transmission across a flexible joint. I'm a fan of <a href="http://www.springer.com/us/book/9780387743141" rel="nofollow noreferrer">Rigid Body Dynamics Algorithms</a> by Roy Featherstone, but there are certainly a number of other algorithms that you can use to solve this dynamic system. It looks to me like Featherstone's algorithm is at the heart of Matlab's SimMechanics toolbox, but that's just an educated guess; it could of course be something else. </p>
+
+<p>If you <em>were</em> going to model this in SimMechanics, you would look for two spherical joints, one on each body, with a telescoping joint that allows for motion from 0 to L_string. At lengths &lt; 0, the objects collide, at lengths > L_string the string is taut. Please comment if you would like more guidance, but I think this is about what you were looking for.</p>
+
+<p>:EDIT:</p>
+
+<p>I found <a href="http://www.mathworks.com/matlabcentral/fileexchange/37636-simscape-multibody-3d---1d-interface-examples" rel="nofollow noreferrer">this group of examples</a> on the Matlab FileExchange to be very useful when developing models in SimMechanics. The <em>most</em> useful thing I found there was a model (screenshots below) that shows how to interface a SimMechanics block to a SimScape block. This allows a SimMechanics "Prismatic Joint" to be used with a SimScape "Translational Hard Stop" block. Using this setup, you can set the limits on the prismatic joint to start at L_String, the limits on the translational hard stop to be 0 to L_String, and then you can adjust the end stop spring constants and damping until you get a reasonable reaction. </p>
+
+<p>The spring/damping constants will adjust the "snap" applied to each body when the string pulls taut (or when the two collide). You can adjust the upper/lower end stop constants such that a collision (L = 0) is different than the string pulling tight (L = L_String). Again, this should be a prismatic joint inserted between your two spherical joints. </p>
+
+<p>Here's the screenshots! First, create a translational interface between SimScape and SimMechanics: (Provided in the FileExchange package I linked above). </p>
+
+<p><a href="https://i.stack.imgur.com/G7QSb.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/G7QSb.png" alt="SimMechanics-SimScape Translational Interface"></a></p>
+
+<p>Then, add that interface to a prismatic joint:</p>
+
+<p><a href="https://i.stack.imgur.com/ZNyIq.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/ZNyIq.png" alt="SimMechanics Constrained Prismatic Joint"></a></p>
+
+<p>Configure the prismatic joint to start at L=L_String. Ensure that there's no internal mechanics set and that motion is automatically computed with force provided by input (this is required to work with the translational interface). </p>
+
+<p><a href="https://i.stack.imgur.com/UecYm.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/UecYm.png" alt="SimMechanics Prismatic Joint Setup"></a></p>
+
+<p>Then, configure the translational hard stop such that the limits are from 0 to L_String. At this point I would accept the default stiffness and damping and run the simulation to see how you think it works. My defaults are because I work with some colossal industrial equipment that uses tensioners bigger than I am. I think the stock defaults are somewhere ~100.</p>
+
+<p><a href="https://i.stack.imgur.com/idV9F.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/idV9F.png" alt="SimMechanics Translational Hard Stop Setup"></a></p>
+
+<p>Finally, I would suggest you save that configuration as a custom library block so you can have it in the future. You can do more complex things, like mask the L_String parameters such that you can customize the default lengths, etc. from the custom library block, but a how-to for that is beyond the scope of what I'm covering here. Anyways, once you've set everything up, I would suggest you just link a block to your string and run a quick simulation. Edit the parameters as you see fit until you get the desired response or it matches your experimental data. </p>
+
+<p><a href="https://i.stack.imgur.com/w1zso.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/w1zso.png" alt="SimMechanics Demo"></a></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9358" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-9358">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9358">Load Comments</button></br>
+			<div id = "commentsection-9358" class = 'collapse'>
+			<div id = "comment-16596" class = "comment">
+				<p>In the first place, thanks for your answer. I'm still in doubt on how to translate some of the things you said to the mathmatical dynamics model, however since I posted the question I had little time to look into it. I will look for the "Rigid Body Dynamics Algorithms" in order to get some more guidance. I have actually modeled this system in SimMechanics, however I assumed that since the string was short it could be modeled by a rigid component with spherical joints.</p>
+			</div>
+			<div id = "comment-16599" class = "comment">
+				<p>@nVolteX - The problem you'll have with modeling the string as a rigid arm is that it will transmit a "push" as well as a "pull". The stuff I'll link for you is useful enough that I'll edit my answer to include it. Please see the edit above.</p>
+			</div>
+			<div id = "comment-16600" class = "comment">
+				<p>Thanks for the input. From the tests I did with the rigid arm, everything worked fine since the force applied on the balloon payload is horizontal and its weight is supported by the lift force from the balloon, which makes that the "push" caused for having a rigid arm to be unnoticeable. However, with the tips you provided I can obviously do an even better approach. That being said, for now, I find it more important to obtain the mathematical dynamics model itself, before going into simulation once again. I apologize if I misguided you with my previous comment.</p>
+			</div>
+			</div>
+				<textarea id = "speech-9358" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9358">
+					<img id="start_img-9358" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9358">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

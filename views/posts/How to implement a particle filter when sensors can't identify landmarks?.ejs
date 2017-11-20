@@ -1,0 +1,133 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to implement a particle filter when sensors can't identify landmarks?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11003" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11003" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 172</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to implement a particle filter when sensors can't identify landmarks?</h2>
+<p>I'm attempting to build a robot that leverages a particle filter to identify where it is relative to a map that is known. The robot only has IR sensors, so while it is able to determine its distance from landmarks, it does not know what landmark it is "looking" at.</p>
+
+<p>I'm following <a href="http://nbviewer.jupyter.org/github/rlabbe/Kalman-and-Bayesian-Filters-in-Python/blob/master/12-Particle-Filters.ipynb#Update-Step" rel="nofollow noreferrer">this very helpful book</a> to build my particle filter. In incorporating the sensor measurements, it is assumed that you know both the distance to a landmark and which specific landmark you are looking at. What would need to be done if you know the map and distance measurements, but not the specific landmark that you're observing? Would this require SLAM? Or could you simply increase the probability for particles that are about that distance from a landmark?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11003" data-toggle = "popover">
+				<p>user name : kmm</p>
+				<p> user reputation : 1</p>
+				<p class = "tagcontent" id = "usertaginfo-11003">{'None': 0, 'two-wheeled': 0, 'wheeled-robot': 0, 'particle-filter': 0, 'slam': 0, 'kalman-filter': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11003">Load Comments</button></br>
+			<div id = "commentsection-11003" class = 'collapse'>
+			<div id = "comment-19828" class = "comment">
+				<p>This is a data association problem. You need SLAM only if you don't know the map a priori, therefore, the answer is no. You don't need SLAM.</p>
+			</div>
+			<div id = "comment-19977" class = "comment">
+				<p>As @edwinem suggested you don't need landmarks in your localization algorithm, since no discreete landmarks exist in the environment. Just have your map in an occupandcy grid representation.</p>
+			</div>
+			</div>
+				<textarea id = "speech-11003" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11003">
+					<img id="start_img-11003" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11003">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-11038"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11038" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>SLAM is only needed when you are also building a map. You already have a map so the problem is localization. To be exact the problem you want to research is Monte Carlo localization or particle filter localization. A fantastic book on it is Probabilistic Robotics if you can get your hands on it.</p>
+
+<p>Some slides describing the resources in the book can be found <a href="http://ais.informatik.uni-freiburg.de/teaching/ws12/mapping/pdf/slam09-particle-filter-4.pdf" rel="nofollow noreferrer">here</a>. </p>
+
+<p>Instead of a landmark map you need an occupancy grid. With your sensor setup you are able to get bearing and range. For the weights calculation of your particles you are going to calculate it via this formula p(z|x,m) where z is you measurement, x is your robot position and m is your stored map. </p>
+
+<p>To actual implement this there are two different measurement models you can use to calculate this probability. One is called the beam range finder model and the other is likelihood fields. So just adjust your particle filter to use that and everything else should be the same.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11038" data-toggle = "popover">
+				<p>user name : edwinem</p>
+				<p> user reputation : 21</p>
+				<p class = "tagcontent" id = "usertaginfo-11038">{'geometry': 2, 'None': 1, 'computer-vision': 2, 'monocular': 2, 'visual-odometry': 2}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11038" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11038" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11038">
+					<img id="start_img-11038" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11038">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

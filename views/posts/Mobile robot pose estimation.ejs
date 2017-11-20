@@ -1,0 +1,390 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Mobile robot pose estimation
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-12795" class = "post">
+			<h2>Question</h2>
+			<div id="vote-12795" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 123</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Mobile robot pose estimation</h2>
+<p>I want to plot the path of a vehicle via the estimation of egomotion based on essential matrix.</p>
+
+<p>Everything was fine with openCV and the following function.</p>
+
+<pre><code>function [ xnow] = estimate_pose_test( points1, points2, K,xLast )
+
+
+%%%%OpenCV%%%%%
+
+  E = cv.findEssentialMat(points1, points2, 'CameraMatrix',K, 'Method','Ransac');
+ [R, t] = cv.recoverPose(E, points1, points2,'CameraMatrix',K);
+ ry= asin(R(1,3));
+ u=[t(1,1);t(3,1);ry];
+
+%%%%%%%%%Opengv%%%%%%
+% for i=1:size(points1,2)
+%     I1(:,i)=points1{i}';
+%     I2(:,i)=points2{i}';
+% end
+%  temp = K \ [I1; ones(1,size(I1,2))];
+%  I1_norms = sqrt(sum(temp.*temp));
+%  I1n = temp ./ repmat(I1_norms,3,1);
+%  
+%  temp = K \ [I2; ones(1,size(I2,2))];
+%  I2_norms = sqrt(sum(temp.*temp));
+%  I2n = temp ./ repmat(I2_norms,3,1);
+%  
+%  X = opengv('fivept_nister_ransac',I1n,I2n);
+%  R = X(:,1:3);
+%  t = X(:,4);
+%  ry= asin(R(1,3));
+%  u=[t(1,1);t(3,1);ry];
+%  
+
+
+ theta=xLast(3)+u(3);
+
+ if(theta&gt;pi)
+    theta=theta-2*pi;
+elseif(theta&lt;-pi)
+    theta = theta+2*pi;
+ end
+
+s = sin(xLast(3));
+c = cos(xLast(3));
+% actual value added with the new control vector
+
+xnow=[xLast(1:2)+[c s; -s c]*u(1:2);theta];
+
+
+
+
+end
+</code></pre>
+
+<p>points1 and points2 are corresponding SURF features.
+  K is internal calibration matrix.</p>
+
+<p>However, I want to use <a href="https://i.stack.imgur.com/jgXz9.png" rel="nofollow noreferrer">OpenGV</a> librairy. OpenGV expects normalized coordinates on the unit sphere, so I started by transforming the measurements as recommended in the previous link and shown in the commented part in the above function.</p>
+
+<p>The plotted path was totally wrong and the results between Opencv and Opengv are different.</p>
+
+<p>For example for the same two consecutive frames, from opencv, I obtained the following rotation and translation:</p>
+
+<pre><code>R1 =
+
+    0.9999    0.0016   -0.0153
+   -0.0017    1.0000   -0.0054
+    0.0153    0.0055    0.9999
+
+t1 =
+
+    0.1159
+    0.1042
+   -0.9878
+</code></pre>
+
+<p>And with OpenGv,</p>
+
+<pre><code>R2 =
+
+    0.9998   -0.0059   -0.0167
+    0.0060    1.0000    0.0050
+    0.0166   -0.0051    0.9998
+
+t2 =
+
+    0.2776
+   -0.0771
+    0.6458
+</code></pre>
+
+<p>There is not even a constant scale factor between t2 and t1.
+Where is the problem? in plotting the resuts or in the estimation itself?</p>
+
+<p><strong>Edit</strong>
+I know that the function I wrote dosen't really make sense but it is just a test function to illustrate the problem I faced with OpenGV.
+First, what I want to do is to track the state of a vehicle defined by a reduced state vector $q_k=(x,z,\theta)$ in order to estimate, afterwards, the uncertainty on the position, because I'm working with a probabilistic approach where:
+$q_{k|k-1}=f(q_{k|k-1},u_{k-1})$ 
+So, I need the values of control vector $u$ that's why I'm deriving $dx$, $dz$ and $d\theta$ from the outputted $R$ and $t$. Then, I'm plotting the path from the control vector values just to verify that i'm deriving them correctly by comparing the plotted path to the ground truth.
+Regarding the coordinate reference system, I'm using the following definition:
+<a href="https://i.stack.imgur.com/jgXz9.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/jgXz9.png" alt="Coordinate system"></a> so the vehicle is moving in the $XZ$ plane and the rotation is around the $Y$ axis that's why I'm using $t(1), t(3)$ as position and $ry$ as rotation in the the control vector.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12795" data-toggle = "popover">
+				<p>user name : user7281779</p>
+				<p> user reputation : 13</p>
+				<p class = "tagcontent" id = "usertaginfo-12795">{'None': 0, 'computer-vision': 2, 'monocular': 1, 'visual-odometry': 0, 'opencv': 2, 'matlab': 1, 'mobile-robot': 1, 'gps': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-12795">Load Comments</button></br>
+			<div id = "commentsection-12795" class = 'collapse'>
+			<div id = "comment-22486" class = "comment">
+				<p>Welcome to *Robotics*, user7281779. Can you please edit your question to include more detail? How is your system arranged? What *should* the results have been? What are you using for the `K` matrix? How are you getting `points1` and `points2`? I'm not seeing the kind of documentation I would expect offhand (function X takes Y inputs of type A and gives Z outputs of type B), so it's hard to really troubleshoot what you're doing. It looks like you're updating your pose continuously for the OpenCV method but not OpenGV; is this true? *Can you please post the data set and exact code you're using?*</p>
+			</div>
+			<div id = "comment-22487" class = "comment">
+				<p>I want to estimate the pose of a robot defined by (x,y,theta). x, y and theta are continously updated from visual inputs by estimating the essential matrix then from it we measure translation and rotation increments. When I use Opencv, everything is Ok. However, I want to use OpenGV. This latter contains like Opencv a function to estimate the essential matrix according to Nister's method and then recover rotation and translation. However, the result given by opengv is totally different from opencv for the same inputs.. There is not even a constant scale factor between translations</p>
+			</div>
+			<div id = "comment-22488" class = "comment">
+				<p>I haven't provided points1, points2 and K because Opengv has to be installed to test it. I just provided example of outputs R and t for the same  inputs.</p>
+			</div>
+			</div>
+				<textarea id = "speech-12795" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12795">
+					<img id="start_img-12795" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12795">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-12813"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-12813" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I'm having a really hard time understanding what you're doing or why, so I'm going to try to break down your code as I understand it, pointing out along the way why I think what you're doing doesn't make sense. This isn't meant to be demeaning or anything, it's <em>my</em> problem in that I haven't done enough (any) CV work to make sense of it. </p>
+
+<p>Here goes: </p>
+
+<blockquote>
+<pre><code>%%%%OpenCV%%%%%`
+
+E = cv.findEssentialMat(points1, points2, 'CameraMatrix',K, 'Method','Ransac');
+[R, t] = cv.recoverPose(E, points1, points2,'CameraMatrix',K);
+</code></pre>
+</blockquote>
+
+<p>Okay, great - give some key points between two frames and see how they shift, then estimate your (change in) position given those points and the camera matrix. I understand this. </p>
+
+<blockquote>
+<pre><code>ry= asin(R(1,3));
+u=[t(1,1);t(3,1);ry];
+</code></pre>
+</blockquote>
+
+<p>Okay you lost me. You are given a perfectly good rotation matrix <code>R</code>, and then... what? You're trying to find the rotation about the <em>y-axis</em>? It looks like you're trying to use the definition of a rotation matrix, given on the <a href="https://en.wikipedia.org/wiki/Rotation_matrix#Basic_rotations" rel="nofollow noreferrer">Wikipedia page</a> as:</p>
+
+<p>$$
+R_y(\theta) = \left[\begin{array}{ccc}
+\cos\theta &amp; 0 &amp; \sin\theta \\
+0 &amp; 1 &amp; 0 \\
+-\sin\theta &amp; 0 &amp; \cos\theta \\
+\end{array}\right]
+$$</p>
+
+<p>But, the problem here is those zeros - you don't have them in your output $R$ matrix. You <em>do not have</em> a matrix that is strictly a rotation about the $y$ axis. What's more is the fact that <a href="https://robotics.stackexchange.com/questions/12795/mobile-robot-pose-estimation?noredirect=1#comment22487_12795">you said</a>,</p>
+
+<blockquote>
+  <p>I want to estimate the pose of a robot defined by (x,y,theta).</p>
+</blockquote>
+
+<p>So, what rotation are you expecting? If you rotate about the $y$ axis, then what you're saying is that you want to rotate points <strong>in the x-z plane</strong>. But, if you don't have any z-axis points, then all you're doing is rotating the x-axis points <em>and you're not rotating the y-axis points at all.</em> Verify this by looking at the second row of that matrix definition: 
+$\left[\begin{array}{ccc}
+0&amp;1&amp;0 \\
+\end{array}\right]$ - it exactly preserves the second row (y-values) of your points matrix. </p>
+
+<p>Maybe this is what you want though, because the points you keep from the translation vector are the first and third, the $x$ and $z$ values. But again, you <em>said</em> you want to keep the $x$ and $y$ values, and this is where my lack of understanding of your inputs is hurting me. Maybe you <em>are</em> providing the inputs <code>points1</code> and <code>points2</code> as a 3xn matrix of points, [x;0;z], and everything is processing correctly. However, I <em>did</em> note that you can also pass a 2xn matrix of points, so again I'm not sure what your data set is or how you're expecting the output to look. </p>
+
+<p>But beyond that, I'll skip the OpenGV section as it's commented out and go to:</p>
+
+<blockquote>
+<pre><code>theta=xLast(3)+u(3);
+</code></pre>
+</blockquote>
+
+<p>So here it looks like you're attempting a successive rotation by adding the previous rotation angle <code>ry</code>, from <code>xLast</code>, to the current value of rotation, <code>ry</code>. </p>
+
+<p><em>(Side note here - I would call the rotation something like <code>dTheta</code> to show it's a difference value, like dx/dt, for example, but that's a nit-picky kind of point.)</em> </p>
+
+<blockquote>
+<pre><code>if(theta&gt;pi)
+  theta=theta-2*pi;
+elseif(theta&lt;-pi)
+  theta = theta+2*pi;
+end
+</code></pre>
+</blockquote>
+
+<p>Bounds checking, okay. </p>
+
+<blockquote>
+<pre><code>s = sin(xLast(3));
+c = cos(xLast(3));
+</code></pre>
+</blockquote>
+
+<p>Setting up for... a rotation matrix??</p>
+
+<blockquote>
+<pre><code>% actual value added with the new control vector
+xnow=[xLast(1:2)+[c s; -s c]*u(1:2);theta];
+</code></pre>
+</blockquote>
+
+<p>And now mashing up the new rotation matrix with the previous information. </p>
+
+<p>I mentioned the term "successive rotations" a bit ago, but you should <a href="http://www.springer.com/cda/content/document/cda_downloaddocument/9789048137756-c2.pdf?SGWID=0-0-45-1123955-p173940737" rel="nofollow noreferrer">read more about the homogeneous transform</a> (PDF). Basically, you're allowed to do successive transforms just by multiplying the two together. </p>
+
+<p>First, compose the matrix:</p>
+
+<p>$$
+H = \left[\begin{array}{ccc}
+R &amp; t \\
+\left[\begin{array}{ccc}
+0 &amp; 0 &amp; 0 \\
+\end{array}\right] &amp; 1 \\
+\end{array}\right]
+$$
+Any time you get a new update, just post-multiply the new matrix. So, for example, on your first iteration, you'll get the pose of the second frame relative to the first:</p>
+
+<p>$$
+^1H_2 = \left[\begin{array}{ccc}
+^1R_2 &amp; ^1t_2 \\
+\left[\begin{array}{ccc}
+0 &amp; 0 &amp; 0 \\
+\end{array}\right] &amp; 1 \\
+\end{array}\right]
+$$</p>
+
+<p>Your second iteration will give you the third frame relative to the second:</p>
+
+<p>$$
+^2H_3 = \left[\begin{array}{ccc}
+^2R_3 &amp; ^2t_3 \\
+\left[\begin{array}{ccc}
+0 &amp; 0 &amp; 0 \\
+\end{array}\right] &amp; 1 \\
+\end{array}\right]
+$$</p>
+
+<p>BUT, what you really care about is the third frame relative to the first, so just multiply the two transforms together:</p>
+
+<p>$$
+^1H_3 = (^1H_2)(^2H_3) \\
+$$</p>
+
+<p>Want to get the fourth frame relative to the first? Easy - </p>
+
+<p>$$
+^1H_4 = (^1H_3)(^3H_4) \\
+$$</p>
+
+<p>And so on. You'll get:</p>
+
+<p>$$
+^1H_n = (^1H_{n-1})(^{n-1}H_n) \\
+$$</p>
+
+<p>The incremental adjustment, $^{n-1}H_n$, is the output of each iteration because you get $^{n-1}R_n$, the incremental rotation, and $^{n-1}t_n$, the incremental translation. </p>
+
+<p><strong>All this is to say</strong> that (I think) you should stop re-inventing the wheel. You dissolve a rotation matrix into an angle just to re-create a rotation matrix later. If you want to get the rotation matrix and translation vector at the end, just pull the appropriate parts: <code>R = H(1:3,1:3);</code> and <code>t = H(1:3,4);</code>. If you want, you can pull the individual components <code>dX = t(1);</code>, <code>dY = t(2);</code>, and <code>dZ = t(3);</code>. I use the delta variable names <code>dX</code>, etc. as a reminder that these are all <em>relative</em> translations from the first frame. </p>
+
+<p>Regarding orientation, you should really be looking at a more proper conversion of the rotation matrix. You could use Euler angles or quaternions, but you really should <strong>not</strong> be trying to pull a single rotation angle from a single value in a matrix.</p>
+
+<p>So, if I had your code to write again, I would probably go:</p>
+
+<pre><code>function [ xnow] = estimate_pose_test( points1, points2, K,xLast )
+%%%%OpenCV%%%%%
+
+E = cv.findEssentialMat(points1, points2, 'CameraMatrix',K, 'Method','Ransac');
+[R, t] = cv.recoverPose(E, points1, points2,'CameraMatrix',K);
+xnow = xLast*[R,t; zeros(1,3),1];
+</code></pre>
+
+<p>This keeps <code>xnow</code> and <code>xLast</code> as the 4x4 transform, but again if you really wanted the x/y/z values they're just the 3x1 vector starting at (1,4) in the homogeneous transform. Also, as mentioned, you should really be using a different method of displaying the rotation angle. You can keep the rotation matrix for internal stuff, but maybe Euler angles or Tait-Bryan angles would be the best for displaying a value to a user.</p>
+
+<p>PS - I would guess the <code>X</code> you get from the OpenGV code is actually the full homogeneous transform matrix, so you save a step by not needing to make it yourself (not that it's hard). </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12813" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-12813">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-12813">Load Comments</button></br>
+			<div id = "commentsection-12813" class = 'collapse'>
+			<div id = "comment-22495" class = "comment">
+				<p>Thank you for the answer but could you please see my edit to make what I did clearer. Regarding OpenGV, the output X is a $3\times4$ matrix and I still can't get a correct path using it.</p>
+			</div>
+			<div id = "comment-22498" class = "comment">
+				<p>@user7281779 - Just add a fourth row to X then, [0,0,0,1]. I'm not seeing an edit to your post that was made after I submitted this answer. Last edit and my answer were both about 16 hours ago now.</p>
+			</div>
+			<div id = "comment-22499" class = "comment">
+				<p>I'm sorry. The edit is now visible</p>
+			</div>
+			</div>
+				<textarea id = "speech-12813" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12813">
+					<img id="start_img-12813" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12813">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

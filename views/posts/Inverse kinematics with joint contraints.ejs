@@ -1,0 +1,195 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Inverse kinematics with joint contraints
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-583" class = "post">
+			<h2>Question</h2>
+			<div id="vote-583" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 1353</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Inverse kinematics with joint contraints</h2>
+<p>I have a manipulator having 4 revolute joints with some movement limitations. So, when I apply inverse kinematics, I'm getting results which are out of limits. Please provide me an algorithm that implements inverse kinematics considering joint limitations.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-583" data-toggle = "popover">
+				<p>user name : Sharath</p>
+				<p> user reputation : 26</p>
+				<p class = "tagcontent" id = "usertaginfo-583">{'None': 0, 'inverse-kinematics': 5}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-583" class = 'collapse'>
+			</div>
+				<textarea id = "speech-583" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-583">
+					<img id="start_img-583" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-583">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-584"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-584" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>4 joints gives you 4 degrees of freedom only. Therefore, if you use inverse kinematics on the full 6 degrees of freedom, not all positions have a solution, and if it does, it there is generally only one unique solution.</p>
+
+<p>I am therefore assuming that you are only trying to fix some of the positions, for example, x, y and z coordinates, but not the orientation (the 3 rotation axes) of the end effector.</p>
+
+<p>It is a non-linear system, however, at any point, you can linearise it. It is likely that the inverse kinematics applied already repeatedly linearises the problem and performs some type of gradient descent.</p>
+
+<p>To alter a solution, you can find the null-space of the linearised system of equations, and use that vector to modify your solution towards the joint limits.</p>
+
+<p>To do this, you simply differentiate your system of equations to obtain a linearisation, so for example, you get:</p>
+
+<p>$\Delta \alpha \vec{a}+\Delta \beta\vec{b}+\Delta \gamma\vec{c}+\Delta \delta\vec{d}=
+\left[\begin{matrix}\vec{a}&amp;\vec{b}&amp;\vec{c}&amp;\vec{d}\end{matrix}\right]
+\left[\begin{matrix}\Delta \alpha \\\Delta \beta\\\Delta \gamma\\\Delta \delta\end{matrix}\right]
+=
+\left[\begin{matrix}\Delta x\\\Delta y\\\Delta z\end{matrix}\right]$, where $\alpha$, $\beta$, $\gamma$, $\delta$ are the angles of the revolute joints, with appropriate coefficients.</p>
+
+<p>Finding the null-space means finding the $\Delta \alpha$, $\Delta \beta$, $\Delta \gamma$, $\Delta \delta$ such that $\Delta x, \Delta y, \Delta z = 0$. You can do this easily (choose from gaussian elimination, matrix divide etc.)</p>
+
+<p>If you modify the angles by a small multiple of the null-space vector over many iterations, you should eventually get within the joint constraints (if it is possible). You just need to decide on the direction (check each angle, and if it is not within range, it should provide the appropriate angle).</p>
+
+<p>If your inverse kinematics algorithm/code takes initial joint angles to start it off, you can put the new joint angles back in here so that the x, y and z positions don't drift away from the desired positions. This also allows you to take larger steps with the null-space vector (which otherwise tends to make the position tracked start to become less inaccurate).</p>
+
+<p>In some cases, the null-space may contain more than one vector. This would occur if you only wanted to fix two of the degrees of freedom. In this case, in each iteration, you can modify using only one or both of the vectors. Similar logic can be applied to get the angles within the constraints - just decide on the direction in which to apply each vector by checking if each revolute joint angle is within the constraints, and if not, it will give you a direction to apply the vector.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-584" data-toggle = "popover">
+				<p>user name : ronalchn</p>
+				<p> user reputation : 2449</p>
+				<p class = "tagcontent" id = "usertaginfo-584">{'None': 187, 'two-wheeled': 20, 'inverse-kinematics': 15, 'interrupts': 5, 'microcontroller': 13, 'wiring': 7, 'c': 8, 'avr': 5, 'brushless-motor': 2, 'joint': 15, 'kinematics': 15, 'hall-sensor': 2, 'mobile-robot': 20, 'arm': 15}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-584" class = 'collapse'>
+			</div>
+				<textarea id = "speech-584" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-584">
+					<img id="start_img-584" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-584">Comment</button>
+			<br><div id = "ans-621"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-621" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>An iterative IK solver is capable of dealing with many kinds of constraints. I have already talked about this kind of solver in a <a href="https://robotics.stackexchange.com/a/308/40">previous answer</a>. </p>
+
+<p>The basic algorithm would look something like this:</p>
+
+<pre><code>Move each joint to it's halfway position
+
+loop while arm is far from target
+{
+    calculate gradient vector
+    add gradient vector to arm position vector
+    if any joints are beyond their range, move them back into their range.
+}
+</code></pre>
+
+<p>The nice thing about the iterative solver is that it can also handle 'soft' constraints. For example, you might want a humanoid arm to maintain a comfortable looking posture where possible. Or you might prefer to keep joints away from their end stops. In that case, you can simply add those constraints into the loop</p>
+
+<pre><code>Move each joint to it's halfway position
+
+loop while arm is far from target
+{
+    calculate gradient vector
+    add gradient vector to arm position vector
+
+    calculate comfort vector
+    add comfort vector to arm position vector
+
+    if any joints are beyond their range, move them back into their range.
+}
+</code></pre>
+
+<p>In this case, the comfort vector is the direction in which to move all of the joints so that the arm appears more comfortable.</p>
+
+<p>A fuller explanation of this can be found on my old web site: <a href="http://freespace.virgin.net/hugo.elias/models/m_ik2.htm" rel="nofollow noreferrer">The good-looking textured light-sourced bouncy fun smart and stretchy page</a>.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-621" data-toggle = "popover">
+				<p>user name : Rocketmagnet</p>
+				<p> user reputation : 4235</p>
+				<p class = "tagcontent" id = "usertaginfo-621">{'control': 31, 'force': 8, 'multi-agent': 5, 'pid': 29, 'air-muscle': 6, 'uav': 52, 'stepper-driver': 3, 'reliability': 5, 'motor': 12, 'esc': 1, 'mobile-robot': 6, 'ros': 35, 'stepper-motor': 3, 'tuning': 12, 'swarm': 10, 'research': 5, 'platform': 17, 'imu': 4, 'kalman-filter': 49, 'hri': 4, 'None': 266, 'raspberry-pi': 24, 'localization': 7, 'python': 7, 'torque': 3, 'brushless-motor': 28, 'failure': 5, 'force-sensor': 15, 'sensors': 20, 'pwm': 10, 'wireless': 10, 'servos': 7, 'wifi': 24, 'simulation': 6, 'servomotor': 11, 'particle-filter': 0, 'sensor-fusion': 4, 'automatic': 12, 'software': 17}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-621" class = 'collapse'>
+			</div>
+				<textarea id = "speech-621" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-621">
+					<img id="start_img-621" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-621">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

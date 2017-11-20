@@ -1,0 +1,148 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Real-time GY-85 IMU sensor interfacing with Simulink
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8902" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8902" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 611</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Real-time GY-85 IMU sensor interfacing with Simulink</h2>
+<p>How do I read real time values from the GY-85 IMU sensor at Simulink connected via Arduino? Also, I intend to interact with the Virtual Reality environment at Simulink using this GY-85 IMU sensor.
+Is this possible?
+How do I make MATLAB read real time values from this GY-85 IMU sensor connected to Arduino via I2C communication ?
+Please help!</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8902" data-toggle = "popover">
+				<p>user name : Ajinkya Padwad</p>
+				<p> user reputation : 6</p>
+				<p class = "tagcontent" id = "usertaginfo-8902">{'None': 0, 'imu': 1, 'matlab': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8902" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8902" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8902">
+					<img id="start_img-8902" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8902">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8904"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8904" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Interfacing with Simulink has sometimes been a pain, I've developed a method to simplify it by putting a middle-man app between the arduino and Simulink:</p>
+
+<ul>
+<li>Read the IMU data from the Arduino and print it in comma delimited
+ASCII
+
+<ul>
+<li><a href="https://github.com/sqrtmo/GY-85-arduino" rel="nofollow">This Arduino library</a> can help you with reading the IMU from the Arduino.</li>
+<li>Your Arduino application would simply read from the IMU, and send the data over serial or TCP/IP.</li>
+</ul></li>
+<li>Read the ASCII string, convert it to a known binary structure and publish it on a TCP/IP port.
+
+<ul>
+<li>An excellent utility to do this is 'csv-to-bin' and 'io-publish' from the <a href="https://github.com/acfr/comma" rel="nofollow">comma library</a>.</li>
+<li>An example command-line would be "cat /dev/ttyACM0 | csv-to-bin 9f | io-publish tcp:9000", which would read from the serial device /dev/ttyACM0 (assuming you're on linux) then convert the comma-delimited string to a binary struct consisting of 9 floats, then publish it on TCP port 9000.</li>
+</ul></li>
+<li>In Simulink, use the TCP read block with the binary structure you selected.
+
+<ul>
+<li>In your Simulink model you can use blocks from the Instruments Control Toolbox to read the data. You must set the data types and sizes in the structure being read.</li>
+</ul></li>
+</ul>
+
+<p>The advantage of using ASCII in step 1 is that you don't have to worry about the binary representation of the data when reading from the IMU or Arduino, and you can then explicitly convert that data into your selected binary structure for reading with Simulink.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8904" data-toggle = "popover">
+				<p>user name : Gouda</p>
+				<p> user reputation : 632</p>
+				<p class = "tagcontent" id = "usertaginfo-8904">{'control': 0, 'None': 39, 'computer-vision': 1, 'calibration': 1, 'cameras': 1, 'kalman-filter': 0, 'jacobian': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8904">Load Comments</button></br>
+			<div id = "commentsection-8904" class = 'collapse'>
+			<div id = "comment-14686" class = "comment">
+				<p>This is an interesting way to do it. Is there any other way which does not involve use of TCP / IP ?</p>
+			</div>
+			</div>
+				<textarea id = "speech-8904" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8904">
+					<img id="start_img-8904" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8904">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

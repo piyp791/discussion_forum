@@ -1,0 +1,151 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>HMMs vs. CRFs to model time-series force data of robots interacting with environment?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-178" class = "post">
+			<h2>Question</h2>
+			<div id="vote-178" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">7</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 450</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>HMMs vs. CRFs to model time-series force data of robots interacting with environment?</h2>
+<p>I have a time-series of force data of robots interacting with environment objects with various textures. I would like to develop models of various textures using the time-series data to classify textures into smooth, rough, moderate, etc. categories. For this purpose, will Hidden Markov Models be sufficient or should i use Conditional Random Fields? If I decide to classify into more categories and the distinction between each of are categories are very subtle, in that case what would be a good choice? Will force-data be sufficient to capture all the information I need to classify textures into these categories?</p>
+
+<p>Thanks for your replies :)</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-178" data-toggle = "popover">
+				<p>user name : Gilmour</p>
+				<p> user reputation : 36</p>
+				<p class = "tagcontent" id = "usertaginfo-178">{'None': 0, 'artificial-intelligence': 7}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-178" class = 'collapse'>
+			</div>
+				<textarea id = "speech-178" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-178">
+					<img id="start_img-178" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-178">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-219"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-219" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Based on your problem description, both HMM (generative model) and CRF (discriminative model) will work. See this discussion for a more in-depth explanation of the two approaches:</p>
+
+<p><a href="https://stackoverflow.com/questions/879432/what-is-the-difference-between-a-generative-and-discriminative-algorithm">What is the difference between a Generative and Discriminative Algorithm?</a></p>
+
+<p>A suggestion: before choosing an algorithm, start by carefully looking at your numerical data, with MATLAB plots or similar. If the information is multi-dimensional (e.g. force values from multiple sensors), it might be the case that some dimensions (e.g. sensor reads) do not contain useful discriminative information; in this case, compress the data with Principal Component Analysis so that you will have more compact features during training and classification.</p>
+
+<p>Now, with regard to your question:</p>
+
+<p>The difference is that HMMs can represent each of your texture classes with several hidden variables/states, thus capturing the internal temporal evolution of each contact. We can say that HMM better model the "low-level" (intra-class) dynamics of your data. For example, in your case HMMs will permit you to explicitly model three different phases of each data acquisition: (1) start of contact between robot and object; (2) stable part of the contact; (3) end of contact and release. These phases could have different values in time, even for the same object texture, and it could make sense to separate them to improve classification results.</p>
+
+<p>On the other hand, CRFs are more suited for capturing the "high-level" (inter-class) relations of your data distribution, which are sometimes important when the spatio-temporal variability is high, or when the observation features are very similar between two samples belonging to different classes.</p>
+
+<p>Personally I find HMMs easier to use and I would start with those, but your mileage may vary.</p>
+
+<blockquote>
+  <p>If I decide to classify into more categories and the distinction between each of are categories are very subtle, in that case what would be a good choice?</p>
+</blockquote>
+
+<p>In that case, CRFs can be a more robust choice (see above).</p>
+
+<blockquote>
+  <p>Will force-data be sufficient to capture all the information I need to classify textures into these categories?</p>
+</blockquote>
+
+<p>Adding visual features (object appearance), especially if captured with high-resolution cameras, could help determine if the object has a rough texture or not.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-219" data-toggle = "popover">
+				<p>user name : Giovanni Saponaro</p>
+				<p> user reputation : 33</p>
+				<p class = "tagcontent" id = "usertaginfo-219">{'None': 3}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-219">Load Comments</button></br>
+			<div id = "commentsection-219" class = 'collapse'>
+			<div id = "comment-3945" class = "comment">
+				<p>Sorry, for late reply. Your comments have been very helpful. I already implemented HMMs and they seem to work well. I did not convert the data into its low-dimensional representation using PCA, rather used HMMs which can take in continuous data / distributions to avoid losing any information. But since I am anyway using it for classification, I think using discriminative approaches might give better results (yet to see and confirm).</p>
+			</div>
+			<div id = "comment-4489" class = "comment">
+				<p>Glad to know that HMMs are working well for modeling your force sensor data. I'd be interested to know more about it.</p>
+			</div>
+			</div>
+				<textarea id = "speech-219" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-219">
+					<img id="start_img-219" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-219">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

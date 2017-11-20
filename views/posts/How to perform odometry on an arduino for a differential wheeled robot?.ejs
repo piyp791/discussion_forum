@@ -1,0 +1,179 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to perform odometry on an arduino for a differential wheeled robot?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8693" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8693" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 2146</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to perform odometry on an arduino for a differential wheeled robot?</h2>
+<p>I am using a differential wheel robot for my project. I need to know the current coordinates of the robot with respect to it's initial position taken as the origin. I m doing the computation on an Arduino UNO and the only sensory input that I get is from the two encoders. I have the function updateOdomenty() called in the loop() and this is it's corresponding code:</p>
+
+<pre><code>void updateOdometry()
+{
+
+  static int encoderRPosPrev = 0;
+  static int encoderLPosPrev = 0;
+
+
+  float SR = distancePerCount * (encoderRPos - encoderRPosPrev);
+  float SL = distancePerCount * (encoderLPos - encoderLPosPrev);
+
+  encoderRPosPrev = encoderRPos;
+  encoderLPosPrev = encoderLPos;
+
+
+  x += SR * cos(theta);           
+  y += SL * sin(theta);
+  theta += (SR - SL) / wheelDistance;
+
+  if(theta &gt; 6.28)
+    theta -= 6.28;
+  else if(theta &lt; -6.28)
+    theta += 6.28;
+}
+</code></pre>
+
+<p>This is the code that me and my team mates made after reading <a href="http://rossum.sourceforge.net/papers/DiffSteer/" rel="nofollow">this</a> paper. I am wondering if this is the best possible way to solve this problem with an Arduino. If not, how is odometry done in differential wheeled systems?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8693" data-toggle = "popover">
+				<p>user name : daltonfury42</p>
+				<p> user reputation : 162</p>
+				<p class = "tagcontent" id = "usertaginfo-8693">{'underwater': 7, 'None': 0, 'usb': 3, 'arduino': 4, 'communication': 4, 'localization': 6, 'operating-systems': 1, 'c++': 2, 'odometry': 1, 'kinematics': 1, 'sensor-fusion': 6, 'sensors': 6, 'ros': 1, 'differential-drive': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8693">Load Comments</button></br>
+			<div id = "commentsection-8693" class = 'collapse'>
+			<div id = "comment-14227" class = "comment">
+				<p>Oh just a quick comment - instead of using "6.28" I think you can use "2*PI" instead in Arduino language. If you don't do this you **might** have a bug if the heading angle falls between these vaues.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8693" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8693">
+					<img id="start_img-8693" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8693">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8695"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8695" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I would add a few lines after you check that theta is between +/- 2pi:</p>
+
+<pre><code>meanDistance = (SL + SR)/2;
+posX = posX + meanDistance*cos (theta);
+posY = posY + meanDistance*sin(theta);
+</code></pre>
+
+<p>This of course assumes theta is positive CCW starting from the +x-axis.  This is similar but not the same as your code for X and Y, but your code appears to put the X origin on the right wheel and Y origin on the left, and I'm not sure why you would do that. </p>
+
+<p>Additionally, your code for theta uses a small angle sine approximation, sin(theta) = theta = dy/dL. You could use a true asin for this instead.</p>
+
+<p>Otherwise, taking my comments above into account, this is how I would do differential-drive dead reckoning. Your next, least-expensive upgrade would be a compass or magnetometer, but that would probably come with a decent IMU, which would be your second upgrade, with GPS being the last. But, as I said, if all you need is dead reckoning, you've basically got it. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8695" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-8695">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8695">Load Comments</button></br>
+			<div id = "commentsection-8695" class = 'collapse'>
+			<div id = "comment-14196" class = "comment">
+				<p>I am analyzing what you said. For one thing, the previous encoder values are initialized to zero only at the first function call as they are `static`.</p>
+			</div>
+			<div id = "comment-14200" class = "comment">
+				<p>@daltonfury42 - You are correct about the `static` function call and I am not a C programmer. Regarding my comment about your choice of origins, consider a zero point turn, such that SL = - SR. In this case, my code,  (SL + SR)/2, gives a distance traveled of zero,  which then updates X and Y with no change. Your code would actually move X a distance of SRcos(theta) and actually move Y a distance of SLsin(theta), as there *are* non-zero distances traveled by each wheel.</p>
+			</div>
+			<div id = "comment-14205" class = "comment">
+				<p>You said "all you need is dead reckoning", my aim is to navigate to a certain coordinate from the current coordinate. So this dead reconing function would be a first step. Am I going in the right direction?</p>
+			</div>
+			<div id = "comment-14207" class = "comment">
+				<p>"Am I going in the right direction?" (literally!) - yes, dead reckoning is the general phrase for keeping track of position relative to the start, by accounting for known velocity and direction.  "Odometry" is just one way of doing this. Adding in compass/IMU, etc. as Chuck says allows more refined dead reckoning. What you've got so far looks basically correct to me.</p>
+			</div>
+			<div id = "comment-14209" class = "comment">
+				<p>@daltonfury42 - Yes, you are doing fine. [Dead reckoning](https://en.wikipedia.org/wiki/Dead_reckoning), as Andy mentions, is trying to estimate your position by *relative* means - how much time elapsed at a particular speed, how many wheel encoder counts did you go, etc. The other alternative would be to navigate with *absolute* means, with a range finder, GPS, or some other device. With *relative* measurements, you're only as good as your sensors, so if you have wheel slip (most commonly), then you have no means to account for the slip. But, for your project, I'm sure it's good enough.</p>
+			</div>
+			<div id = "comment-17582" class = "comment">
+				<p>I started with coded very similar to that of @daltonfury42. Where exactly does the `asin` function go? Would it be `theta += asin((SR - SL) / wheelDistance);`?</p>
+			</div>
+			</div>
+				<textarea id = "speech-8695" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8695">
+					<img id="start_img-8695" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8695">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

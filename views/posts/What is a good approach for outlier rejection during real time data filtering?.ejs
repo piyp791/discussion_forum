@@ -1,0 +1,167 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>What is a good approach for outlier rejection during real time data filtering?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-10720" class = "post">
+			<h2>Question</h2>
+			<div id="vote-10720" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 196</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>What is a good approach for outlier rejection during real time data filtering?</h2>
+<p>I'm trying to finish up a localization pipeline, and the last module I need is a filtering framework for my pose estimates. While a Kalman filter is probably the most popular option, I'm using cameras for my sensing and I wouldn't be able to ensure the kinds of noise profiles KF is good for, I doubt it would work as well with suddenly appearing outliers in my poses: so I am looking for other options which can work with real time data and be immune to outliers.</p>
+
+<p>One thing I came across is a Kalman filter with a threshold based update rejection, something like Mahalanobis distance: but I don't know if this is completely applicable because the localization would be performed in real time, and it's not like I have a large set of 'good poses' to start with. The end result I'm expecting is something like smoothing, but without access to a full set of values. Another option I found is from a <a href="http://acds-lab.gatech.edu/papers/IROS2007_RobustKF.pdf" rel="nofollow">paper</a> that proposes a 'robust Bayesian weighted Kalman filter' that's good for real time outlier rejection, but I still need to read through it: and I don't have much experience with filtering/smoothing, so any suggestions would be very helpful, perhaps about a decent go-to mechanism for this?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10720" data-toggle = "popover">
+				<p>user name : HighVoltage</p>
+				<p> user reputation : 398</p>
+				<p class = "tagcontent" id = "usertaginfo-10720">{'stereo-vision': 2, 'probability': 10, 'multi-agent': 4, 'planning': 10, 'manipulator': 2, 'cameras': 1, 'matlab': 1, 'kalman-filter': 7, 'None': 19, 'noise': 3, 'inverse-kinematics': 2, 'localization': 8, 'pose': 4, 'mapping': 0, 'rotation': 1, '3d-reconstruction': 0, 'computer-vision': 8, 'algorithm': 3, 'c++': 3, 'slam': 2, 'exploration': 0, 'path-planning': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-10720" class = 'collapse'>
+			</div>
+				<textarea id = "speech-10720" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10720">
+					<img id="start_img-10720" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10720">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-10724"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10724" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>It is both acceptable and standard to use camera observations with a  Kalman filter if you are talking about landmark positions in pixel or real-world space. Pixel space observations are usually randomly <a href="https://en.wikipedia.org/wiki/Cauchy_distribution" rel="noreferrer">Caushy</a> distributed but it turns out the Gaussian Kalman filter works pretty well in this case.</p>
+
+<p>The method you're describing using the Mahalonobis distance to reject updates is $\chi^2$ gating, where you use the "running" covariance of the estimated mean in order to determine if the candidate observation is not within a given confidence interval.</p>
+
+<p>$$\chi^2 = (z - \hat{z})^\top S^{-1}(z - \hat{z})$$</p>
+
+<p>You then substitute $\chi^2$ with your chosen confidence interval, which is usually chosen from <a href="https://people.richland.edu/james/lecture/m170/tbl-chi.html" rel="noreferrer">a table</a> or graph given the degrees of freedom of the system (rank of $S$).</p>
+
+<p>For example $\chi^2_{0.01} = 16.812$ for 6 degrees of freedom, which means if $\chi^2 \ge 16.812$ then there is a $99\%$ chance it is an outlier and you should reject it.
+In order to do this you need to track the covariance $S$, the easiest way of which is to use a Kalman Filter.</p>
+
+<p>A more simple method is to threshold on the <a href="https://en.wikipedia.org/wiki/Median_absolute_deviation" rel="noreferrer">Median Absolute Deviation</a> metric.</p>
+
+<p>The KF and MAD methods involves logging a small dataset and characterising variance.</p>
+
+<p>NOTE:
+The downside to any rejection method is that if you start on an invalid pose and you have no mechanism by which to "reset", you will always be locked on an invalid pose. A simple mechanism to circumvent this to count how many consecutive rejections are made, and if it's above say 2 sec worth of data then force the filter to update (ignore the rejection) and reset your $P$ matrix.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10724" data-toggle = "popover">
+				<p>user name : Gouda</p>
+				<p> user reputation : 632</p>
+				<p class = "tagcontent" id = "usertaginfo-10724">{'control': 0, 'None': 39, 'computer-vision': 1, 'calibration': 1, 'cameras': 1, 'kalman-filter': 0, 'jacobian': 0}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-10724" class = 'collapse'>
+			</div>
+				<textarea id = "speech-10724" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10724">
+					<img id="start_img-10724" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10724">Comment</button>
+			<br><div id = "ans-12444"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-12444" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I really like the answer of Gouda. 
+One question though, you state "Pixel space observations are usually randomly Caushy distributed" how does this come about? Could you point me to some references or give an intuitive explanation? Thanks!</p>
+
+<p>Regarding outlier robust Kalman filtering there are two similar approaches to the paper High-Voltage included. 
+One is based on L1-regularization, see <a href="https://www.dtc.umn.edu/s/resources/tsp2011oct_drs.pdf" rel="nofollow noreferrer">Doubly Robust Smoothing of Dynamical Processes via Outlier Sparsity Constraints</a>, and the other is based on sparse Bayesian learning, see <a href="http://www.isiweb.ee.ethz.ch/papers/docu/fewa-lubr-jdau-aloe-2016.pdf" rel="nofollow noreferrer">Outlier-insensitive Kalman Smoothing and Marginal Message Passing</a>. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12444" data-toggle = "popover">
+				<p>user name : Effesian</p>
+				<p> user reputation : 1</p>
+				<p class = "tagcontent" id = "usertaginfo-12444">{'None': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-12444">Load Comments</button></br>
+			<div id = "commentsection-12444" class = 'collapse'>
+			<div id = "comment-21920" class = "comment">
+				<p>Welcome to *Robotics* Effesian. On Stack exchange *answers* should only answer the question. If you have a related question, it should be asked as a new question (ideally referencing this one). If you wish to discuss a question or answer you can use [chat], when you have [chat privileges](https://robotics.stackexchange.com/help/privileges/chat). If you have an idea for how a question or answer can be improved, you can comment when you have [comment privileges](https://robotics.stackexchange.com/help/privileges/comment). Please review [ask] and [about] for more information.</p>
+			</div>
+			</div>
+				<textarea id = "speech-12444" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12444">
+					<img id="start_img-12444" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12444">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

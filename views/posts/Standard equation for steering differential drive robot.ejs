@@ -1,0 +1,337 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Standard equation for steering differential drive robot
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8990" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8990" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 208</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Standard equation for steering differential drive robot</h2>
+<p>I am writing a code in Arduino IDE for NodeMCU Board to control a differential drive 2 wheeled robot.</p>
+
+<p>I am able to steer only one direction for some reason and the steering response time is a little awkward.</p>
+
+<p>Is there perhaps a better strategy for the code that I am using?` </p>
+
+<p>I am using an app called Blynk that has a virtual joystick that controls that feeds the data through Virtual Pins. V1 param 0 and 1 are x and y. x would be left to right on the joystick and y would be forward and back. </p>
+
+<p>Information about the App is available here: <a href="http://www.blynk.cc/" rel="nofollow">http://www.blynk.cc/</a>. I have it working for the most part, but there is some latency since it is through a cloud service.</p>
+
+<p>The main problem I am stuck on is steering while driving forward and backward. </p>
+
+<pre><code>    //#define BLYNK_DEBUG
+//#define BLYNK_PRINT Serial    // Comment this out to disable prints and save space
+#define BLYNK_PRINT Serial    // Comment this out to disable prints and save space
+#include &lt;ESP8266WiFi.h&gt;
+#include &lt;BlynkSimpleEsp8266.h&gt;
+
+
+int motorA ;
+int motorB ;
+int X=0;
+int Y=0;
+int Steer=0;
+int maximo=0;
+
+// You should get Auth Token in the Blynk App.
+// Go to the Project Settings (nut icon).
+char auth[] = "b41ff7f1659b4badb694be4c59601c2c";
+
+void setup()
+{
+  // Set console baud rate
+  Serial.begin(9600);
+
+
+ Blynk.begin(auth,"100Grand","Mob4life");
+
+ pinMode(motorA, OUTPUT); 
+ pinMode(motorB, OUTPUT);
+ pinMode(0,OUTPUT);
+ pinMode(2,OUTPUT);
+ pinMode(4,OUTPUT);
+ pinMode(5,OUTPUT);
+
+}
+
+ BLYNK_WRITE(V1) 
+{
+  int X1 = param[0].asInt();
+  X=X1;
+  int Y1 = param[1].asInt();
+ Y=Y1;
+
+}
+
+ BLYNK_WRITE(V0)//      slider  de 100 a 255!!!!
+{
+ int vel = param.asInt(); 
+ maximo=vel;
+}
+
+void loop()
+{
+
+  if(X == 128  &amp;&amp;  Y == 128)  //  Stop
+  {
+   motorA = 0;
+   motorB = 0;
+   analogWrite(5, motorA);  
+   analogWrite(4, motorA);
+   analogWrite(0, motorB);  
+   analogWrite(2, motorB);
+   } 
+
+   if(Y &gt; 130 &amp;&amp; X &gt; 127 &amp;&amp; X &lt; 129)   //Forward
+  {
+    motorA = Y;
+    motorB = Y;
+
+    motorA = map(motorA, 450,maximo,130, 255);
+    analogWrite(5, motorA);
+    digitalWrite(0,LOW);
+    motorB = map(motorA, 450,maximo,130, 255);
+    analogWrite(4, motorB);
+    digitalWrite(2,HIGH);
+  }
+
+  else if(Y &lt; 126 &amp;&amp; X &gt; 127 &amp;&amp; X &lt; 129)   //Reverse
+  {
+    motorA = Y;
+    motorB = Y;
+
+    motorA = map(motorA, 450,maximo,126, 0);
+    analogWrite(5, motorA);
+    digitalWrite(0,HIGH);
+    motorB = map(motorA, 450,maximo,126, 0);//something is wrong with HIGH signal
+    analogWrite(4, motorB);
+    digitalWrite(2,LOW);
+  }
+
+   if(Y &gt; 130 &amp;&amp; X &lt; 126)   //Steer Left
+  {
+    motorA = Y;
+    motorB = Y;
+    Steer = map(X, 450,maximo, 126,0);
+     Steer = X / maximo;
+
+    motorA = map(motorA, 450,maximo,130, 255);
+    analogWrite(5, motorA * (1 + Steer));
+    digitalWrite(0,LOW);
+   motorB = map(motorA, 450,maximo,130, 255);
+    analogWrite(4, motorB * (1 - Steer));
+    digitalWrite(2,HIGH);
+  }
+
+   if(Y &gt; 130 &amp;&amp; X &gt; 130)   //Steer Right
+  {
+    motorA = Y;
+    motorB = Y;
+    Steer = map(X, 450,maximo, 126,0);
+    Steer = X / maximo;
+
+    motorA = map(motorA, 450,maximo,130, 255);
+    analogWrite(5, motorA * (1 - Steer));
+    digitalWrite(0,LOW);
+    motorB = map(motorA, 450,maximo,130, 255);
+    analogWrite(4, motorB * (1 + Steer));
+    digitalWrite(2,HIGH);
+  }
+
+  Blynk.run();
+}
+</code></pre>
+
+<p>Any help would be appreciated. Thanks!`</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8990" data-toggle = "popover">
+				<p>user name : Demetrius Norman</p>
+				<p> user reputation : 16</p>
+				<p class = "tagcontent" id = "usertaginfo-8990">{'None': 0, 'differential-drive': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8990">Load Comments</button></br>
+			<div id = "commentsection-8990" class = 'collapse'>
+			<div id = "comment-15033" class = "comment">
+				<p>Where do X and Y get updated? What range of values do you expect for X, Y, and maximo?  Did you realize you map `motorA` based on the original motorA (`Y`), but then you map `motorB` based on the *modified* motorA? *Can you post a line-by-line explanation of what you* think *the steering code is doing?*</p>
+			</div>
+			</div>
+				<textarea id = "speech-8990" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8990">
+					<img id="start_img-8990" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8990">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9000"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9000" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>What is Y? What is X? What is maximo? What are the digitalWrite commands supposed to be doing? Did you notice they are the same for both turns?</p>
+
+<p>Possible problems:</p>
+
+<ol>
+<li>Your <code>map</code> command is changing motorA and motorB from a range of 126-0 to a range of 450-maximo. (or from 130-255 to 450-maximo). </li>
+<li>You set motorA and motorB to Y, and you only call these turns if Y is greater than 130. </li>
+<li>Combine #2 with #1 above, and the output of the function looks like it will set motorA and motorB to some value higher than 450. This is problematic because <a href="https://www.arduino.cc/en/Reference/AnalogWrite" rel="nofollow">analogWrite only goes from 0-255</a>.</li>
+<li>You try to modulate the motorA and motorB values with some +/- Steer, but again not knowing what X, Y, or maximo is it's not clear what Steer is, but that doesn't matter because motorA and motorB are way over the limit for what you should be feeding to analogWrite. </li>
+</ol>
+
+<p>Coul you revise your question to include a brief summary of what you think your code is doing? Please also include how it's called - i.e., what the inputs are (X,Y,maximo, and every other variable that's not defined in the code you explicitly post). </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9000" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-9000">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9000">Load Comments</button></br>
+			<div id = "commentsection-9000" class = 'collapse'>
+			<div id = "comment-15032" class = "comment">
+				<p>Thank you! I have edited the question. I am also looking at your suggestions in my code.</p>
+			</div>
+			</div>
+				<textarea id = "speech-9000" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9000">
+					<img id="start_img-9000" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9000">Comment</button>
+			<br><div id = "ans-9567"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9567" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You named a question "Standard equation for steering differential drive robot", so instead of going deep into your code, I'll try to give you a simple example, how can you steer a differential drive robot. </p>
+
+<p>Assumption: joystick steering - two input variables, throttle (forward speed) and steering. It would be easiest if they change from -255 (full revesre/left) to 255 (full ahead/right). </p>
+
+<p>Here is a code that I wrote for motor controller based on DRV8833 drivers:</p>
+
+<pre><code>void runMotor(int channel, int _pwm) {
+    // make sure PWM is within boundaries
+    constr(_pwm, -255,255);
+    if(channel &lt;=4) {
+        // spin the motors forward...
+        if(_pwm &gt;= 0) {
+            //and write the PWM     
+            //in1Pin and in2Pin are arrays of pin numbers   
+            analogWrite(in1Pin[channel], 255 - _pwm);
+            analogWrite(in2Pin[channel], 255);          
+
+        }
+        // ...or backward
+        else {          
+            analogWrite(in1Pin[channel], 255);
+            analogWrite(in2Pin[channel], 255 + (_pwm));         
+        }
+    }
+
+}
+void loop() {
+    int throttle = getThrottle(); //get new throttle value
+    int steering = getSteering(); //get new steering value
+
+    /* here is the essential part:
+    * if both values will be 0, the robot will stop
+    * if throttle is positive, the robot will go forward, if negative - backward
+    * if throttle is 0, but there is some steering, robot will turn in place
+    int leftSpeed = throttle + steering; 
+    int rightSpeed = throttle - steering; 
+
+    runMotor(1, leftSpeed);
+    runMotor(2, rightSpeed);
+}
+</code></pre>
+
+<p>You will need to adjust the code for your drivers, but the essentials are the same: for one motor you add steering to throttle, for the another you subtract. This should give you very nice control over your robot.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9567" data-toggle = "popover">
+				<p>user name : mactro</p>
+				<p> user reputation : 925</p>
+				<p class = "tagcontent" id = "usertaginfo-9567">{'control': 1, 'None': 59, 'radio-control': 1, 'pid': 1, 'wifi': 1, 'wheeled-robot': 1, 'mechanism': 1, 'automation': 1, 'wireless': 1, 'industrial-robot': 2, 'design': 1, 'cnc': 2, 'actuator': 2, 'mobile-robot': 2}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-9567" class = 'collapse'>
+			</div>
+				<textarea id = "speech-9567" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9567">
+					<img id="start_img-9567" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9567">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,206 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>GraphSLAM: why are constraints imposed twice in the information matrix?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-6659" class = "post">
+			<h2>Question</h2>
+			<div id="vote-6659" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 341</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>GraphSLAM: why are constraints imposed twice in the information matrix?</h2>
+<p>I was watching Sebastian Thrun's video course on AI for robotics (freely available on udacity.com).  In his final chapter on <a href="http://youtu.be/nLEbJZFm5-E" rel="nofollow">GraphSLAM</a>, he illustrates how to setup the system of equations for the mean path locations $x_i$ and landmark locations $L_j$.</p>
+
+<p><a href="http://youtu.be/V41eTlGU0gw" rel="nofollow">To setup the matrix system</a>, he imposes each robot motion and landmark measurement constraint twice.  For example, if a robot motion command is to move from x1 by 5 units to the right (reaching x2), i understand this constraint as</p>
+
+<p>$$-x_2+x_1= -5$$</p>
+
+<p>However, he also imposes the negative of this equation 
+$$x_2-x_1=5$$
+as a constraint and superimposes it onto a different equation and i'm not sure why.  In his video course, he briefly mentions that the matrix we're assembling is known as the <a href="http://youtu.be/U8iFMhtJyek" rel="nofollow">"information matrix"</a>, but i have no why the information matrix is assembled in this specific way.</p>
+
+<p>So, I tried to read his book Probabilistic Robotics, and all i can gather is that these equations come from obtaining the minimizer of the negative log posterior probability incorporating the motion commands, measurements, and map correspondences, which results in a quadratic function of the unknown variables $L_j$ and $x_i$.  Since it is quadratic (and the motion / measurement models are also linear), the minimum is obviously obtained by solving a linear system of equations.</p>
+
+<p>But why are each of the constraints imposed twice, with once as a positive quantity and again as the negative of the same equation?  Its not immediately obvious to me from the form of the negative log posterior probability (i.e. the quadratic function) that the constraints must be imposed twice.  Why is the "information matrix assembled this way?  Does it also hold true when the motion and measurement models are nonlinear?</p>
+
+<p>Any help would be greatly appreciated.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6659" data-toggle = "popover">
+				<p>user name : Paul</p>
+				<p> user reputation : 704</p>
+				<p class = "tagcontent" id = "usertaginfo-6659">{'control': 6, 'occupancygrid': 1, 'pid': 3, 'slam': 14, 'design': 0, 'motor': 5, 'dynamics': 11, 'probability': 1, 'accelerometer': 4, 'mechanism': 3, 'differential-drive': 1, 'kalman-filter': 6, 'actuator': 1, 'reference-request': 8, 'None': 30, 'inverse-kinematics': 3, 'mapping': 1, 'sensors': 10, 'quadcopter': 4, 'motion': 3, 'particle-filter': 4, 'sonar': 4, 'balance': 12, 'automatic': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-6659">Load Comments</button></br>
+			<div id = "commentsection-6659" class = 'collapse'>
+			<div id = "comment-9608" class = "comment">
+				<p>Ummm, isn't a quadratic solved with .... + or - the square root of ... - just a wild guess.</p>
+			</div>
+			<div id = "comment-9612" class = "comment">
+				<p>The answer to your question is explained in sections 5.3 and 5.4 of [this paper](http://robots.stanford.edu/papers/thrun.graphslam.pdf). You can see that it does hold true for linearized systems. I suspect he didn't include it in the video because it is beyond the scope of the course to do the derivation. I'd like to note that GraphSLAM is just one approach to graph-based SLAM algorithms. The "generic" approach is explained in "A Tutorial on Graph-Based SLAM" by Grisetti _et al._.</p>
+			</div>
+			<div id = "comment-9613" class = "comment">
+				<p>@kamek:  thanks for the link.  Judging by the linked paper, it seems that the video also makes an unstated assumption that the covariances are all 1 in magnitude... Otherwise the terms in the equations would be scaled...  Does this make sense to you as well?</p>
+			</div>
+			<div id = "comment-9618" class = "comment">
+				<p>@Paul Yes, the terms added to the information matrix are scaled by the covariance of the measurement. The reason why the constraints are "added twice" is because you can think of the information matrix as being a table where each row and each column is an entry in the state. Obviously when there is a measurement that links two entries (e.g., a motion measurement between pose a and pose b), it is added "twice" to the information matrix, once at (pose a, pose b), and another at (pose b, pose a). Hope this helps.</p>
+			</div>
+			<div id = "comment-9624" class = "comment">
+				<p>@kamek:  That sounds plausible, but i'd really like to see how it comes to this from minimizing the quadratic.  Filling in the gap between the obtaining the minimizer of the quadratic function and assembly of the information matrix is what I'm really interested in.</p>
+			</div>
+			</div>
+				<textarea id = "speech-6659" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6659">
+					<img id="start_img-6659" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6659">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7842"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7842" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>After painstakingly trying to find someone on the internet with more experience on this subject to help me out (to no avail), I finally gave up and decided to take matters into my own hands and figure it out myself!   As it turns out, the constraints are imposed twice as a direct result of applying the chain rule for derivatives when obtaining the gradient of the negative log posterior belief function equal to zero (which is equivalent to finding the maximum of the belief).  </p>
+
+<p>Unfortunately, there's no easy way to demonstrate this other than going through the math one step at a time.</p>
+
+<p><strong>Problem Setup</strong></p>
+
+<p>To help explain, let me setup an example to work with.  For simplicity, lets assume that the robot moves in only on direction (in this case, the x-direction).  In one dimension, the covariance matrices for motion and sensor data are simply the variances $\sigma^2_{motion}$ and $\sigma^2_{sensor}$.  Again, for simplicity, let's assume that $\sigma^2_{motion}=\sigma^2_{sensor}=1$.  </p>
+
+<p>Now, let's assume that the robot starts at the point $x_0=0$ and then executes two motion commands in this following order:</p>
+
+<ol>
+<li>Move forward by 10 units ($x_1 = x_0 + 10$)</li>
+<li>Move forward by 14 units ($x_2 = x_1 + 14$)</li>
+</ol>
+
+<p>Let's also assume that the robot world only contains one landmark $L_0$ which lies somewhere in the 1D world of the robot's motion.  Suppose that the robot senses the following distances to the landmark from each of the three positions $x_0, x_1, x_2$:</p>
+
+<ol>
+<li>At $x_0$:  The robot sensed Landmark $L_0$ at a distance of 9 units ($L_0-x_0=9$)</li>
+<li>At $x_1$:  The robot sensed Landmark $L_0$ at a distance of 8 units ($L_0-x_1=8$)</li>
+<li>At $x_2$:  The robot sensed Landmark $L_0$ at a distance of 21 units ($L_0-x_1=8$)</li>
+</ol>
+
+<p>(These numbers may look a little strange, but just take them as a given for this exercise).</p>
+
+<p><strong>Belief Function</strong>  </p>
+
+<p>So, each of the relative motion and measurement constraints contributes a Gaussian function to the "posterior belief" function.  So, with the information assumed above, we can write the belief function as the product of gaussians as follows:</p>
+
+<p>$$Belief = C e^{-\frac{(x_0-0)^2}{2\sigma^2}}e^{-\frac{(x_1-x_0-10)^2}{2\sigma^2}}e^{-\frac{(x_2-x_1-14)^2}{2\sigma^2}} * e^{-\frac{(L_0-x_0-9)^2}{2\sigma^2}}e^{-\frac{(L_0-x_1-8)^2}{2\sigma^2}}e^{-\frac{(L_0-x_2-21)^2}{2\sigma^2}}$$</p>
+
+<p>Note that $C$ is a constant, but we won't really need to know the exact value of $C$.  Recall that we assume all the variances $\sigma^2=1$, so we obtain</p>
+
+<p>$$Belief = C e^{-\frac{(x_0-0)^2}{2}}e^{-\frac{(x_1-x_0-10)^2}{2}}e^{-\frac{(x_2-x_1-14)^2}{2}} * e^{-\frac{(L_0-x_0-9)^2}{2}}e^{-\frac{(L_0-x_1-8)^2}{2}}e^{-\frac{(L_0-x_2-21)^2}{2}}$$</p>
+
+<p><strong>Negative Log Posterior</strong>  </p>
+
+<p>Our main goal is to find the values of $x_0,x_1,x_2,L_0$ that maximize this function.  However, we can make some transformations to the "belief" function that enable us to find the maximum very easily.  First, finding the maximum of the $Belief$ is equivalent to finding the maximum of $log(Belief)$, which allows us to exploit the properties of logarithms which gives us:</p>
+
+<p>$$log(Belief)= log(C) - \frac{1}{2}(x_0-0)^2-\frac{1}{2}(x_1-x_0-10)^2-\frac{1}{2}(x_2-x_1-14)^2 -\frac{1}{2}(L_0-x_0-9)^2-\frac{1}{2}(L_0-x_1-8)^2-\frac{1}{2}(L_0-x_2-21)^2$$</p>
+
+<p>Also, finding the maximum of a function $f(x)$ is equivalent to finding the minimum of the function $-f(x)$.  So we can restate this problem as finding the minimum of </p>
+
+<p>$$F\equiv-log(Belief)= -log(C) + \frac{1}{2}(x_0-0)^2+\frac{1}{2}(x_1-x_0-10)^2+\frac{1}{2}(x_2-x_1-14)^2 +\frac{1}{2}(L_0-x_0-9)^2+\frac{1}{2}(L_0-x_1-8)^2+\frac{1}{2}(L_0-x_2-21)^2$$</p>
+
+<p><strong>Optimization</strong></p>
+
+<p>To find the minimum, we take the partial derivative of the $F$ function with respect to each of the variables: $x_0, x_1, x_2,$ and $L_0$:  </p>
+
+<p>$F_{x_0}= (x_0 - 0) - (x_1 - x_0 - 10) - (L_0-x_0-9) = 0$<br>
+$F_{x_1}= (x_1 - x_0 - 10) - (x_2-x_1-14)- (L_0-x_1-8) = 0$
+$F_{x_2}= (x_2 - x_1 - 14) - (L_0-x_2-21) = 0$<br>
+$F_{L_0}= (L_0-x_0-9) + (L_0-x_1-8)+ (L_0-x_2-21) = 0$  </p>
+
+<p>Notice that the 1st and second equations impose the first relative motion constraint $x_1=x_0+10$ twice: the first equation with a negative sign as a result of the chain rule for derivatives and the second equation with a positive sign (also as a result of the chain rule).  Similarly, the second and third equation contain the second relative motion constraint, with opposite signs as a result of applying the chain rule for derivatives.  A similar argument can be said for the measurement constraints in their corresponding equations.  There's no inherent explanation for why it MUST necessarily work out this way... It just happens to have this structure in the end after working out the math.  You may notice that only the initial position constraint $(x_0-0)$ is imposed only once because its quadratic term $\frac{1}{2}(x_0-0)^2$ only features a single variable inside the parentheses, so it is impossible for this term to appear in the gradient of $F$ with respect to any other variable other than $x_0$.</p>
+
+<p><strong>Conclusion</strong></p>
+
+<p>It was not apparent to me just by looking at the structure of the belief function that the gradient takes on this form without working through the details explicitly.  Of course, I've made a number of simplifying assumptions along the way, including avoiding the problem of "data association" and assuming linear expressions for the motion constraints and measurement constraints.  In the more general version of GraphSLAM, we do not necessarily assume this and the algorithm becomes more complicated.  But in the linear case (that is, with linear motion and measurement constraints), the gradients of the negative log posterior belief function leads to imposing the motion and measurement constraints twice (once with a positive sign, once with a negative sign), each of which is also weighted by the corresponding covariance.  There appears to be no inherent or more fundamental reason why it must necessarily work out this way based upon higher principles... It's just a bunch of trivial calculus that happens to work out this structured way.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7842" data-toggle = "popover">
+				<p>user name : Paul</p>
+				<p> user reputation : 704</p>
+				<p class = "tagcontent" id = "usertaginfo-7842">{'control': 6, 'occupancygrid': 1, 'pid': 3, 'slam': 14, 'design': 0, 'motor': 5, 'dynamics': 11, 'probability': 1, 'accelerometer': 4, 'mechanism': 3, 'differential-drive': 1, 'kalman-filter': 6, 'actuator': 1, 'reference-request': 8, 'None': 30, 'inverse-kinematics': 3, 'mapping': 1, 'sensors': 10, 'quadcopter': 4, 'motion': 3, 'particle-filter': 4, 'sonar': 4, 'balance': 12, 'automatic': 2}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7842" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7842" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7842">
+					<img id="start_img-7842" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7842">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,417 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How can I control fast real time sensor (250Hz) with slow system display(60Hz)
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8096" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8096" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 65</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How can I control fast real time sensor (250Hz) with slow system display(60Hz)</h2>
+<p>We do some experiments of real time representation of sensor position on TV. In this experiments, we used sensors for collect real time position in 3D at 250Hz and TV for Display the sensor position at 60Hz. Also, we used MATLAB and C++ for programming with OpenGL platform.</p>
+
+<p>In programming, Every iteration dat display on the TV, erase and draw the circle (Object, which is represent real time position on the display). In this program I collect to only 60 points and loose other 190 points in every second, becuase, I think that refresh rate of TV is 60Hz.</p>
+
+<p>I have gone through the thread "How can I control a fast (200Hz) realtime system with a slow (30Hz) system?"(<a href="https://robotics.stackexchange.com/questions/807/how-can-i-control-a-fast-200hz-realtime-system-with-a-slow-30hz-system">How can I control a fast (200Hz) realtime system with a slow (30Hz) system?</a>), but i don't understand, How to implement two loop on 200Hz and 30Hz.</p>
+
+<p>My Question is, How can we implement in MATLAB/C++? So I can store 250 data of sensors as well as 60 points for real time display on the TV.</p>
+
+<p>If you help me through pseudo code, I appreciate your help.</p>
+
+<p>Thank You in advance.</p>
+
+<p>Please help me.</p>
+
+<p>P.S. Code</p>
+
+<pre><code>%Display main window using Psychtoolbox
+
+win=Screen(2,'OpenWindow',[1 1 1])
+
+while (1)
+  % Setup for data collection at 250Hz
+  Error   = calllib('ATC3DG64', 'GetSynchronousRecord',  hex2dec('ffff'), pRecord, 4*numBoards*64);
+  errorHandler(Error);
+  Record = get(pRecord, 'Value');
+
+  %sensor number
+  count=2;
+
+  evalc(['tempPos(1, count) ='  'Record.x' num2str(count - 1)]);
+  evalc(['tempPos(2, count) ='  'Record.y' num2str(count - 1)]);
+  evalc(['tempPos(3, count) ='  'Record.z' num2str(count - 1)]);
+
+  % Record X and Y position of  sensor 2
+
+  if SensorNumAttached(count)
+    % Real time position and minus world origin so that real
+    % time position display on the TV
+    table1(count,1)=(2.54*tempPos(2,count))-X_world_origin;
+    table1(count,2)=(2.54*tempPos(3,count))-Y_world_origin;
+  end 
+
+  % Some conversion for the Pixel to centimeter ratio
+  x_center_new = x_center - (x_ratio * table1(2,1));
+  y_center_new = y_center - (y_ratio * table1(2,2));
+
+  % conversiorn for display circle on the TV, is represent the real time poistion of the sensor
+  x1  =round(x_center_new - R_num_data);
+  y1 = round(y_center_new - R_num_data);
+
+  x2 = round(x1 + 2*R_num_data);
+  y2 = round(y1 + 2*R_num_data);
+
+
+  % Display command for TV.      
+  Screen('FrameOval',win,[255 0 0], [x1 y1 x2 y2]);
+  Screen('Flip',win);
+end
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8096" data-toggle = "popover">
+				<p>user name : Rushik Thumar</p>
+				<p> user reputation : 1</p>
+				<p class = "tagcontent" id = "usertaginfo-8096">{'communication': 0, 'None': 0, 'design': 0, 'matlab': 0, 'c++': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8096" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8096" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8096">
+					<img id="start_img-8096" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8096">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8097"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8097" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I didnt see what is your processing unit (preocessor/ADC/DAC etc.) speed?. If your processor speed less than sensors speed you can try "sampling" or "quantization" techniques. you can look to any signal processing book for further readings. If you have fast processor and slow display unit this is not a problem. Just collect/ buffer your sensor readings for a second (or you can use 1/60 sec for fast display) than show all of them in display unit. </p>
+
+<p>This is like controlling analogus systems with digital systems.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8097" data-toggle = "popover">
+				<p>user name : acs</p>
+				<p> user reputation : 838</p>
+				<p class = "tagcontent" id = "usertaginfo-8097">{'stereo-vision': 4, 'control': 1, '3d-printing': 2, 'simulator': 8, 'multi-agent': 0, 'pid': 1, 'slam': 2, 'robotic-arm': 1, 'mobile-robot': 10, 'ros': 8, 'battery': 0, 'swarm': 2, 'cameras': 4, 'lidar': 4, '3d-model': 2, 'imu': 3, 'kalman-filter': 3, 'gazebo': 1, 'gps': 2, 'None': 34, 'localization': 4, 'sensors': 7, '3d-reconstruction': 2, 'quadcopter': 0, 'computer-vision': 2, 'algorithm': 1, 'sensor-fusion': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8097">Load Comments</button></br>
+			<div id = "commentsection-8097" class = 'collapse'>
+			<div id = "comment-12920" class = "comment">
+				<p>Thanks acs, for your answer. I have used Ascention trakstar Sensor. I have implemented a buffer, but not worth it in my case. because after 1/3, real time movement is dragging. So, If you suggest any other option, than it is good for me. I have fast processor and slow display unit. I think that implementation two control loop simultaneously,which is mentioned in above mentioned thread. Can you suggest me some implementation. Really, I appreciate your help.</p>
+			</div>
+			<div id = "comment-12922" class = "comment">
+				<p>I need your code or pseudocode for implementation.</p>
+			</div>
+			<div id = "comment-12923" class = "comment">
+				<p>can you share your email ID? My email ID is thumar.rushik@gmail.com</p>
+			</div>
+			</div>
+				<textarea id = "speech-8097" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8097">
+					<img id="start_img-8097" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8097">Comment</button>
+			<br><div id = "ans-8099"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8099" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I'm not entirely sure what you're asking for because your question
+title mentions control but your question body seems to all be about display. You said,</p>
+
+<blockquote>
+  <p>My Question is, How can we implement in MATLAB/C++? So I can store 250 data of sensors as well as 60 points for real time display on the TV.</p>
+</blockquote>
+
+<p>If you want to store samples for display at some particular interval, try the following:</p>
+
+<pre><code>sensorPeriod = 1/250;
+displayPeriod = 1/60;
+displayInterval = floor (displayPeriod/sensorPeriod);
+sensorData = &lt;read sensor&gt;
+sensorHistory(end+1) = sensorData;
+displayData = sensorHistory(1:displayInterval:end);
+</code></pre>
+
+<p>You can use any integer to select indices of an array in Matlab. The value is optional and if you don't specify it then it defaults to 1. So, for instance, where</p>
+
+<pre><code>displayData = data(1:end);
+</code></pre>
+
+<p>would put every data point into <code>displayData</code>, the following:</p>
+
+<pre><code>displayData = data(1:N:end);
+</code></pre>
+
+<p>would take every Nth point and put that into <code>displayData</code>. Dividing display period by the sample period gives the number of samples that occur between each displayed frame. Take the floor of that to get an integer because Matlab can only handle integer indexing of arrays. </p>
+
+<h2>:EDIT:</h2>
+
+<p>As I go through your code, here are things that I notice:</p>
+
+<pre><code>% Display main window using Psychtoolbox
+
+win=Screen(2,'OpenWindow',[1 1 1])
+
+while (1)
+  % Setup for data collection at 250Hz
+  Error   = calllib('ATC3DG64', 'GetSynchronousRecord',  hex2dec('ffff'), pRecord, 4*numBoards*64);
+  errorHandler(Error);
+  Record = get(pRecord, 'Value');
+</code></pre>
+
+<p>This section all appears to look okay, and it appears to me that <code>Record</code> is the data point you are interested in storing. There is no reference to 'ATC3DG64' or 'pRecord', but there is also no complaint about <em>retrieving</em> data, so I can only assume this works okay. However, I would like to note that the <a href="http://www.mathworks.com/help/matlab/ref/calllib.html" rel="nofollow">calllib()</a> function accepts <em>arguments</em> inside the parenthesis, not <em>outputs</em>, so I don't see where/how <code>pRecord</code> ever gets updated. </p>
+
+<pre><code>  %sensor number
+  count=2;
+
+  evalc(['tempPos(1, count) ='  'Record.x' num2str(count - 1)]);
+  evalc(['tempPos(2, count) ='  'Record.y' num2str(count - 1)]);
+  evalc(['tempPos(3, count) ='  'Record.z' num2str(count - 1)]);
+</code></pre>
+
+<p>I do not know why you are using <a href="http://www.mathworks.com/help/matlab/ref/evalc.html" rel="nofollow">evalc</a> to do this. That function evaluates an argument and copies the output to a variable, but you don't make an output assignment. Instead you're just converting everything to a string to make Matlab parse the string, when you could just leave everything off and call the functions directly. Also, your string conversion doesn't leave you with a proper indexing for the <code>Record.x</code> functions. You wind up calling:</p>
+
+<pre><code>tempPos(1, count) =Record.x 0
+</code></pre>
+
+<p>when you probably should be calling</p>
+
+<pre><code>tempPos(1, count) =Record.x(0)
+</code></pre>
+
+<p>If you are using <code>evalc()</code> to suppress the output, you can always do that with a semicolon at the end of the line. I think you should probably re-write this section of code to the following:</p>
+
+<pre><code>tempPos(1, count) = Record.x(count-1);
+tempPos(2, count) = Record.y(count-1);
+tempPos(3, count) = Record.z(count-1);
+</code></pre>
+
+<p>Moving on...</p>
+
+<pre><code>  % Record X and Y position of  sensor 2
+
+  if SensorNumAttached(count)
+    % Real time position and minus world origin so that real
+    % time position display on the TV
+    table1(count,1)=(2.54*tempPos(2,count))-X_world_origin;
+    table1(count,2)=(2.54*tempPos(3,count))-Y_world_origin;
+  end 
+</code></pre>
+
+<p>The function <code>SensorNumAttached()</code> is not a Matlab function, so I don't know what that is checking for. That said, this portion of the code is a little confusing because you switch between indexing the data to the sensor on the columns to indexing on the rows, but otherwise this looks okay. </p>
+
+<pre><code>  % Some conversion for the Pixel to centimeter ratio
+  x_center_new = x_center - (x_ratio * table1(2,1));
+  y_center_new = y_center - (y_ratio * table1(2,2));
+</code></pre>
+
+<p>This section of code will not do what you want it to do. This looks like you are trying to update coordinates, but you are combining a relative position with an absolute position. It looks like you are trying to go for:</p>
+
+<pre><code>  x_center_new = &lt;old center&gt; + &lt;difference between old center and new center&gt;;
+</code></pre>
+
+<p>When in actuality you have:</p>
+
+<pre><code>  x_center_new = &lt;old center&gt; + &lt;difference between origin and new center&gt;
+</code></pre>
+
+<p>I may be wrong here, because you never set <code>x_center = x_center_new</code>, which is either a mistake or it <em>could</em> be that <code>x_center</code> is some offset information. I don't think this is the case, though, because there is no <code>x_center(count)</code>, which means you don't have a distinct <code>x_center</code> for both sensors. Also of note - you don't reference <code>count</code> in this code at all, so you're updating both sensor displays with only one (#2's) position information. I would suggest you change this code to be:</p>
+
+<pre><code>  x_center_new = x_ratio * table(count,1);
+  y_center_new = y_ratio * table(count,2);
+</code></pre>
+
+<p>Moving on. . . </p>
+
+<pre><code>  % conversion for display circle on the TV, is represent the real time position of the sensor
+  x1  =round(x_center_new - R_num_data);
+  y1 = round(y_center_new - R_num_data);
+
+  x2 = round(x1 + 2*R_num_data);
+  y2 = round(y1 + 2*R_num_data);
+
+
+  % Display command for TV.      
+  Screen('FrameOval',win,[255 0 0], [x1 y1 x2 y2]);
+  Screen('Flip',win);
+end
+</code></pre>
+
+<p>For this section, <code>Screen</code> is also not a Matlab function, so I'm not sure what it does, and <code>R_num_data</code> is not defined in the code snippet you provided, so I don't know what that does, either. I would like to reiterate that, by your code, the display here never showed anything for sensor 1 because your <code>x_center_new</code> used a hard-coded '2' instead of 'count'. </p>
+
+<p>Regarding display, there are two ways that you can go about showing data:</p>
+
+<ol>
+<li>Collect the data in real time, then show the video after the fact. </li>
+<li>Collect the data and display in real time. </li>
+</ol>
+
+<p>If you attempt to display in real time, Matlab rendering will almost certainly hamper your data collection as I've found it seems to be generally about 100ms for Matlab to draw a basic scene. Also, if you collect data and display in real time with no bounds on time, you can't pre-allocate the memory for data storage, which can cause the program to run slower. That said, here's some sample code you can throw into your script for display:</p>
+
+<h2>Method 1</h2>
+
+<pre><code>nSensors = 2;       % Number of sensors
+nOutputs = 3;       % How many outputs each sensor gives you
+sampleDuration = 1; % Sample time in [s]
+samplePeriod = 1/250; % Sampling period in [s]
+displayPeriod = 1/60; % Display period in [s]
+
+nDataPoints = floor(sampleDuration/samplePeriod);
+
+sensorData = zeros(nOutputs,nSensors,nDataPoints);
+
+count = 2;          % Whatever method you want to select the sensor
+for i = 1:nDataPoints
+  &lt;whatever method you need to get the data&gt;
+  Record = get(pRecord, 'Value');
+  sensorData(1,count,i) = Record.x(count-1);
+  sensorData(2,count,i) = Record.y(count-1);
+  sensorData(3,count,i) = Record.z(count-1);
+
+  &lt;any other things you want to do with the data&gt;
+end
+
+sampleInterval = floor(displayFreq/sampleFreq);
+displayData = nDataPoints(:,:,1:sampleInterval:end);
+
+for i = 1:size(displayData,3)
+   &lt;display 'displayData(:,:,i)'&gt;
+end
+</code></pre>
+
+<h2>Method 2</h2>
+
+<pre><code>nSensors = 2;       % Number of sensors
+nOutputs = 3;       % How many outputs each sensor gives you
+samplePeriod = 1/250; % Sampling period in [s]
+displayPeriod = 1/60; % Display period in [s]
+
+sensorData = zeros(nOutputs,nSensors,0);
+displayData = zeros(nOutputs,nSensors,0);
+
+frameAdjustment = 0;
+tic;                 % Start a timer
+while 1
+    &lt;whatever method you need to get the data&gt;
+  Record = get(pRecord, 'Value');
+  sensorData(1,count,end+1) = Record.x(count-1);
+  sensorData(2,count,end+1) = Record.y(count-1);
+  sensorData(3,count,end+1) = Record.z(count-1);
+
+  elapsedTime = toc;
+  if elapsedTime + frameAdjustment &gt; displayPeriod
+    frameAdjustment = elapsedTime - displayPeriod;
+    tic;
+    displayData(:,:,end+1) = nDataPoints(:,:,end);
+
+    &lt;display 'displayData(:,:,end)'&gt;
+  end
+end
+</code></pre>
+
+<p>Note in the above code that there is a variable, <code>frameAdjustment</code>. This term can account for the fact that your elapsedTime probably isn't going to sync exactly with your desired frame rate. It remembers how much time you were past the desired display call and calls the next display that much sooner. If the time it takes to display your data is longer than your <code>displayPeriod</code> then you'll wind up displaying every loop iteration. As mentioned earlier, this could mean that you don't build your <code>sensorData</code> history at the correct rate. </p>
+
+<p>It looks like maybe the <code>Screen</code> command could let you bypass the time it takes for Matlab to draw a scene, but I haven't used any third-party Matlab tools so I can't comment on it. Your best bet would be to gather the data first and then display it, but as the designer, it's always up to you. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8099" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-8099">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8099">Load Comments</button></br>
+			<div id = "commentsection-8099" class = 'collapse'>
+			<div id = "comment-12925" class = "comment">
+				<p>Still my problem. For example, we record for every one second. In this time, I faced dragging problem. I not able to understood. How can store 250 data in one second as well as 60 data represent in this second.</p>
+			</div>
+			<div id = "comment-12929" class = "comment">
+				<p>@RushikThumar - I'm sorry I don't understand what you need help with. Can you post the code you are having issues with?</p>
+			</div>
+			<div id = "comment-12931" class = "comment">
+				<p>I shared the code</p>
+			</div>
+			</div>
+				<textarea id = "speech-8099" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8099">
+					<img id="start_img-8099" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8099">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

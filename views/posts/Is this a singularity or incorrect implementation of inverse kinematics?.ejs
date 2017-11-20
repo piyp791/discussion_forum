@@ -1,0 +1,551 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Is this a singularity or incorrect implementation of inverse kinematics?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9772" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9772" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 168</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Is this a singularity or incorrect implementation of inverse kinematics?</h2>
+<p>I at moment trying to compute the Q configuration that moves my robot from it current state described by this transformation matrix.
+with rotation</p>
+
+<pre><code>0.00549713  0.842013  -0.539429  
+0.999983 -0.00362229 0.00453632 
+0.00186567 -0.539445 -0.842019
+</code></pre>
+
+<p>and position as this:</p>
+
+<pre><code>-0.0882761
+-0.255069
+ 0.183645
+</code></pre>
+
+<p>To this rotatation </p>
+
+<pre><code>    0  0.942755 -0.333487
+    1         0         0
+    0 -0.333487 -0.942755
+</code></pre>
+
+<p>and this position</p>
+
+<pre><code>8.66654
+19.809
+115.771
+</code></pre>
+
+<p>Due to the drastic change in the Z direction, I thought i could split the path between start and end into small chunks by creating data inbetween by interpolating, and compute the inverse kinematics for each of these small position.  Problem is that the output i am getting is pretty large.. Which making me suspect that some of the output might be wrong. The simulation i am using constrains the rotation to 360 degrees.. I think something goes wrong.. </p>
+
+<p>The only reason I could think would do this, would be if the jacobian i am was using had singularities... Which why i assumed that i was running into singualarity issue.. </p>
+
+<pre><code>setQ{22.395444, 319.402231, 90.548314, -228.989836, -295.921218, -336.808799}
+setQ{8.209388, 362.472468, 108.618073, -232.346755, -299.935844, -334.929518}
+setQ{8.479842, 399.892521, 127.432982, -234.017882, -303.852583, -335.063821}
+setQ{8.224516, 362.232497, 108.666778, -232.319554, -299.899932, -334.928688}
+setQ{7.718908, 286.832458, 71.150606, -228.913831, -291.982659, -334.658147}
+setQ{7.468625, 249.092444, 52.400638, -227.206436, -288.018036, -334.522738}
+setQ{7.220023, 211.325766, 33.656081, -225.496018, -284.049424, -334.387237}
+setQ{-6.134091, -2538.260148, -1283.375216, -96.331289, 7.920957, -324.531125}
+setQ{-6.261661, -2577.946595, -1301.730132, -94.403263, 12.176863, -324.388990}
+setQ{-6.634286, -2697.165915, -1356.762411, -88.601053, 24.968521, -323.962029}
+setQ{-6.991781, -2816.625206, -1411.745985, -82.771641, 37.796090, -323.534239}
+setQ{-7.334148, -2936.324468, -1466.680853, -76.915029, 50.659572, -323.105620}
+setQ{-7.661386, -3056.263702, -1521.567017, -71.031215, 63.558965, -322.676171}
+setQ{-8.642914, -3457.794271, -1704.169136, -51.222052, 106.816303, -321.238686}
+setQ{-8.988457, -3619.153075, -1777.058457, -43.213761, 124.230964, -320.661112}
+setQ{-9.382564, -3821.451508, -1868.048346, -33.135395, 146.089069, -319.937071}
+setQ{-9.528439, -3902.557525, -1904.406419, -29.082892, 154.860242, -319.646810}
+setQ{-9.667591, -3983.770196, -1940.742846, -25.018300, 163.647376, -319.356179}
+setQ{-9.734645, -4024.416527, -1958.902942, -22.981471, 168.046928, -319.210726}
+setQ{-9.986053, -4187.268484, -2031.489209, -14.803929, 185.685040, -318.627992}
+setQ{-10.210564, -4350.547057, -2103.988889, -6.578030, 203.386994, -318.043783}
+setQ{-10.312734, -4432.346324, -2140.206259, -2.446947, 212.261912, -317.751125}
+setQ{-10.453381, -4555.245201, -2194.491727, 3.772345, 225.604215, -317.311448}
+setQ{-10.496902, -4596.264820, -2212.576060, 5.851488, 230.059630, -317.164705}
+setQ{-10.538741, -4637.311102, -2230.654980, 7.933652, 234.519035, -317.017869}
+setQ{-10.617377, -4719.483658, -2266.796587, 12.107048, 243.449816, -316.723922}
+setQ{-10.812941, -4966.641247, -2375.091527, 24.699772, 270.337923, -315.839868}
+setQ{-10.839651, -5007.927501, -2393.121742, 26.809138, 274.833240, -315.692203}
+setQ{-10.888029, -5090.579998, -2429.165939, 31.036936, 283.835844, -315.396596}
+</code></pre>
+
+<p><code>setQ</code> is just a function for my simulation, the numbers are the actual Q values starting from 0 - 5. (I am using a 6 jointed robot (UR5))</p>
+
+<p><strong>Update</strong></p>
+
+<p>I am using a sphere to compute my desired transformation matrix.. The idea is that i want my arm be on this sphere, point inward to the center. </p>
+
+<pre class="lang-cpp prettyprint-override"><code>std::vector&lt;Transform3D&lt;&gt;&gt; pathPlanning::sphere(double dx, double dy, double dz)
+{
+    double r = 5.0; // Radius of the sphere -  set to 5.0 cm (TODO: has to be checked if that also is accurate)
+    cout &lt;&lt; "Create a sphere" &lt;&lt; endl;
+
+    double current_x = this-&gt;device-&gt;baseTframe(this-&gt;toolFrame,this-&gt;state).P()[0];
+    double current_y = this-&gt;device-&gt;baseTframe(this-&gt;toolFrame,this-&gt;state).P()[1];
+    double current_z = this-&gt;device-&gt;baseTframe(this-&gt;toolFrame,this-&gt;state).P()[2];
+
+
+    // Formula for sphere (x-x0) +(y-y0) +(z-z0) =r 
+    // x: x = x_0 + rcos(theta)sin(phi)
+    // y: y = y_0 + rsin(theta)sin(phi)
+    // z: z = z_0 + rcos(phi)
+    // Angle range: 0 &lt;= theta &lt;= 2M_PI ; 0 &lt;= phi &lt;= M_PI
+
+    double obj_x = current_x + dx;
+    double obj_y = current_y + dy;
+    double obj_z = current_z + dz;
+
+    std::vector&lt;Transform3D&lt;&gt;&gt; out;
+
+    int count = 32;
+
+    for(double azimuthal = 0; azimuthal &lt;= M_PI ; azimuthal+=0.01 )
+    {
+
+        for(double polar = 0.35; polar &lt;= M_PI-0.35 ; polar+=0.01 )
+        {
+
+            double sphere_x = obj_x + r*cos(azimuthal)*sin(polar);
+            double sphere_y = obj_y + r*sin(azimuthal)*sin(polar);
+            double sphere_z = obj_z + + r*cos(polar);
+
+            //string text = to_string(sphere_x) + " , " + to_string(sphere_y)+ " , " + to_string(sphere_z);
+            //positions &lt;&lt; text &lt;&lt; endl;
+
+            Transform3D&lt;&gt; transformation_matrix = transform(obj_x,obj_y,obj_z,sphere_x,sphere_y,sphere_z);
+
+            if(0.1&lt;(transformation_matrix.P()[0] - current_x) || 0.1&lt;(transformation_matrix.P()[1] - current_y) || 0.1&lt;(transformation_matrix.P()[2] - current_z))
+            {
+                cout &lt;&lt; "Interpolate: " &lt;&lt; endl;
+
+                std::vector&lt;Transform3D&lt;&gt;&gt; transformation_i = invKin_LargeDisplacement(transformation_matrix);
+                out.insert(out.end(),transformation_i.begin(),transformation_i.end());
+                cout &lt;&lt; out.size() &lt;&lt; endl;
+                cout &lt;&lt; "only returning one interpolation onto the sphere!" &lt;&lt; endl;
+
+                return transformation_i;
+            }
+            else
+            {
+                cout &lt;&lt; "OK" &lt;&lt; endl;
+                out.push_back(transformation_matrix);
+
+            }
+
+
+            if(count == 32) //TODO: Why...... is this occuring?
+            {
+                //cout &lt;&lt; "Theta: " &lt;&lt; theta &lt;&lt; " Phi: " &lt;&lt; phi &lt;&lt; endl;
+                //cout &lt;&lt; sphere_x &lt;&lt; " , " &lt;&lt; sphere_y &lt;&lt;" , "&lt;&lt; sphere_z &lt;&lt; endl;
+                count = 0;
+            }
+            else
+            {
+                count++;
+            }
+        }
+    }
+
+    return out;
+}
+</code></pre>
+
+<p>This function provides me with the point on the sphere, which is use to create my rotation matrix using <code>transform</code>.</p>
+
+<pre><code>Transform3D&lt;&gt; pathPlanning::transform(double obj_x, double obj_y, double obj_z, double sphere_x, double sphere_y ,double sphere_z)
+{
+    // Z-axis should be oriented towards the object.
+    // Rot consist of 3 direction vector [x,y,z] which describes how the axis should be oriented in the world space.
+    // Looking at the simulation the z-axis is the camera out. X, and Y describes the orientation of the camera.
+    // The vector are only for direction purposes, so they have to be normalized....
+    // TODO: case [0  0 -1]... Why is it happening at what can be done to undo it?
+    cout &lt;&lt; "inside Transform" &lt;&lt; endl;
+    cout &lt;&lt; obj_x &lt;&lt; "," &lt;&lt; sphere_x &lt;&lt; " ; "  &lt;&lt; obj_y &lt;&lt; " , " &lt;&lt; sphere_y  &lt;&lt;" ; "&lt;&lt; obj_z &lt;&lt; " , " &lt;&lt; sphere_z  &lt;&lt; endl;
+    Vector3D&lt;&gt; dir_z((obj_x - sphere_x), (obj_y - sphere_y), (obj_z - sphere_z));
+    //Vector3D&lt;&gt; dir_z((sphere_x-obj_x), (sphere_y - obj_y), (sphere_z-obj_z));
+    dir_z = normalize(dir_z);
+    Vector3D&lt;&gt; downPlane(0.0,0.0,-1.0);
+    Vector3D&lt;&gt; dir_x = cross(downPlane,dir_z);
+    dir_x = normalize(dir_x);
+    Vector3D&lt;&gt; dir_y = cross(dir_z,dir_x);
+    dir_y = normalize(dir_y);
+    Rotation3D&lt;&gt; rot_out (dir_x,dir_y,dir_z);  // [x y z]
+
+    Vector3D&lt;&gt; pos_out(sphere_x,sphere_y,sphere_z);
+
+    Transform3D&lt;&gt; out(pos_out,rot_out);
+    cout &lt;&lt; "desired: " &lt;&lt; out &lt;&lt; endl;
+
+    return out;
+}
+</code></pre>
+
+<p>The transform basically computes the rotation matrix. The math is based on the on this <a href="https://robotics.stackexchange.com/questions/9691/generate-transformation-matrices-for-rotating-around-a-object">post</a> by @Ben, which is an answer to a similar problem i am having..      </p>
+
+<p><strong>Update</strong></p>
+
+<p>Error with the rotation matrix was due to the polar coordinate being 0 => sin(0) = 0. </p>
+
+<p>I made this plot displaying the determinant of the jacobian, while i compute the inverse kinematics for the large displacement. For each inverse kinematics iteration, I set the robot to the new q_i and use that as current and continue computing until i reach the end configuration. </p>
+
+<p><a href="https://i.stack.imgur.com/DBLWm.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/DBLWm.jpg" alt="Determinant of the different jacobians"></a></p>
+
+<p>It seems that alot of them goes toward a singularity or in general a pretty low number..</p>
+
+<p><strong>Update</strong></p>
+
+<p>Again i think the singularities might be the culprit here.. </p>
+
+<pre><code>determinant: 0.0424284
+Q{13.0099, -46.6613, -18.9411, 2.38865, 5.39454, -4.53456}
+determinant: -0.0150253
+Q{47.1089, -0.790356, 6.89939, -2.725, -1.66168, 11.2271}
+determinant: -0.0368926
+Q{15.7475, 8.89658, 7.78122, -2.74134, -5.32446, 1.11023}
+determinant: -0.0596228
+Q{180.884, 66.3786, 17.5729, 9.21228, -14.9721, -12.9577}
+determinant: -0.000910399
+Q{5426.74, 5568.04, -524.078, 283.581, -316.499, -67.3459}
+determinant: -0.0897656
+Q{16.6649, -37.4239, -34.0747, -16.5337, -3.95636, -7.31064}
+determinant: -0.00719097
+Q{-1377.14, 167.281, -125.883, -10.4689, 179.78, 56.3877}
+determinant: 0.0432689
+Q{22.2983, -10.1491, -15.0894, -4.41318, -2.07675, -3.48763}
+determinant: -0.0430843
+Q{82.6984, -39.02, -24.5518, 13.6317, 4.17851, -14.0956}
+determinant: -0.0137243
+Q{425.189, -9.65443, 20.9752, 7.63067, 25.4944, -52.4964}
+</code></pre>
+
+<p>Everytime i compute a new Q I set the robot in that state, and perform inverse kinematics from that state.. Q is the joint angles for the 6 joints. </p>
+
+<p><strong>Update</strong></p>
+
+<p>Interpolation is done by lineary dividing the path from start to end into a specified amount of of data points.  </p>
+
+<p><a href="https://i.stack.imgur.com/gnHbZ.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/gnHbZ.jpg" alt="enter image description here"></a></p>
+
+<p>This plot shows  each tranformation matrices generated from the interpolation and with their the position part plotted. The red dots is the path (every 1000th position). The blue ball is the object in want to track, and green dots represents the sphere.. As I am only doing this for the first point on the sphere, it only hits one point on the sphere, which is the top point, which the plot also shows. </p>
+
+<p>Rotation doesn't show that much change, which also makes sense based difference between the current and desired rotations. </p>
+
+<p><strong>Update</strong></p>
+
+<p>My InvKin Implementation for LargeDisplacements:</p>
+
+<pre><code>std::vector&lt;Q&gt; pathPlanning::invKin_largeDisplacement(std::vector&lt;Transform3D&lt;&gt;&gt; t_tool_base_desired_i)
+{
+
+     Device::Ptr device_backup = this-&gt;device;  //Read in device parameter
+     WorkCell::Ptr workcell_backup = this-&gt;workcell; //Read in workcell parameter
+     State state_backup = this-&gt;state;
+     std::vector&lt;Q&gt; output;
+
+     for(unsigned int i = 0; i&lt;t_tool_base_desired_i.size();  ++i)
+     {
+         Transform3D&lt;&gt; T_tool_base_current_i = device_backup-&gt;baseTframe(this-&gt;toolFrame,state_backup); //Read in Current transformation matrix
+
+         Eigen::MatrixXd jq(device_backup-&gt;baseJframe(this-&gt;toolFrame,state_backup).e().cols(), this-&gt;device.get()-&gt;baseJframe(this-&gt;toolFrame,state_backup).e().rows());
+
+         jq =  this-&gt;device.get()-&gt;baseJframe(this-&gt;toolFrame,state_backup).e(); // Get the jacobian for current_configuration
+
+         //Least square solver - dq = [j(q)]T (j(q)[j(q)]T) 1 du  &lt;=&gt; dq = A*du
+         Eigen::MatrixXd A (6,6);
+
+         //A = jq.transpose()*(jq*jq.transpose()).inverse();
+         A = (jq*jq.transpose()).inverse()*jq.transpose();
+
+         Vector3D&lt;&gt; dif_p = t_tool_base_desired_i[i].P()-T_tool_base_current_i.P();  //Difference in position
+
+         Eigen::Matrix3d dif = t_tool_base_desired_i[i].R().e()- T_tool_base_current_i.R().e(); //Differene in rotation
+         Rotation3D&lt;&gt; dif_r(dif); //Making a rotation matrix the the difference of rotation
+         RPY&lt;&gt; dif_rot(dif_r);    //RPY of the rotation matrix. 
+
+         Eigen::VectorXd du(6); //Creating du
+         du(0) = dif_p[0];
+         du(1) = dif_p[1];
+         du(2) = dif_p[2];
+
+         du(3) = dif_rot[0];
+         du(4) = dif_rot[1];
+         du(5) = dif_rot[2];
+
+         Eigen::VectorXd q(6);
+         q = A*du; // computing dq
+
+         Q q_current;
+         q_current = this-&gt;device-&gt;getQ(this-&gt;state);
+         Q dq(q); 
+         Q q_new = q_current+ dq; // computing the new Q angles
+         output.push_back(q_new); store it in the output vector
+         device_backup-&gt;setQ(q_new,state_backup); //Set the robot to the calculated state. 
+     }
+     return output;
+}
+</code></pre>
+
+<p>I am pretty sure that my interpolation works, as the plot shows.  My inverse kinematics on the other hand not so sure..</p>
+
+<p><strong>Update</strong></p>
+
+<p>@Chuck mentions in his answer that it would be a good idea to check the core functionality, which might shed some light on what could be going wrong. </p>
+
+<p>I tried it with an inv.kin function i know would work, which didn't return any result, which make me doubt whether my transformation function i create is accurate?</p>
+
+<p>The robot simulation is the one shown above..  The  <code>Transform</code> function shown above, is the function which i use to compute my desired, and provide my inverse kinematics..  Is something incorrectly setup?
+<a href="https://i.stack.imgur.com/UOYcL.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/UOYcL.png" alt="enter image description here"></a></p>
+
+<p><strong>Update</strong></p>
+
+<p>@Chuck came up with an different approach to my problem, which only has 3 DOF, being the position.  I choose change track, and peform a simple inverse kinematics given a distance dx,dy,dz.. Which for some reason isn't working quite good for me? even for small differences... </p>
+
+<p>Here is my code:</p>
+
+<pre><code>    std::vector&lt;Q&gt;pathPlanning::invKin(double dx, double dy , double dz)
+{
+
+    kinematics::State state =  this-&gt;state;
+    Transform3D&lt;&gt; t_tool_base_current =  this-&gt;device.get()-&gt;baseTframe(this-&gt;toolFrame,state);
+
+    cout &lt;&lt;"Current: "&lt;&lt; t_tool_base_current.P().e()&lt;&lt; endl;
+
+    Vector3D&lt;&gt; P_desired(0.000001+t_tool_base_current.P().e()[0],t_tool_base_current.P().e()[1],t_tool_base_current.P().e()[2]);
+    cout &lt;&lt;"Desired: " &lt;&lt;P_desired &lt;&lt; endl;
+
+    Transform3D&lt;&gt; t_tool_base_desired(P_desired,t_tool_base_current.R());
+    Eigen::MatrixXd jq(this-&gt;device.get()-&gt;baseJframe(this-&gt;toolFrame,state).e().cols(), this-&gt;device.get()-&gt;baseJframe(this-&gt;toolFrame,state).e().rows());
+    jq =  this-&gt;device.get()-&gt;baseJframe(this-&gt;toolFrame,state).e();
+
+
+    //Least square solver - dq = [j(q)]T (j(q)[j(q)]T) 1 du  &lt;=&gt; dq = A*du
+    Eigen::MatrixXd A (6,6);
+
+    //A = jq.transpose()*(jq*jq.transpose()).inverse();
+    A = (jq*jq.transpose()).inverse()*jq.transpose();
+
+    Vector3D&lt;&gt; dif_p = t_tool_base_desired.P()-t_tool_base_current.P();
+    cout &lt;&lt;"difference: " &lt;&lt;dif_p &lt;&lt; endl;
+
+    Eigen::VectorXd du(6);
+    du(0) = dif_p[0];
+    du(1) = dif_p[1];
+    du(2) = dif_p[2];
+
+    du(3) = 0;
+    du(4) = 0;
+    du(5) = 0;
+
+    Eigen::VectorXd q(6);
+    q = A*du;
+
+    Q q_current;
+    q_current = this-&gt;device-&gt;getQ(this-&gt;state);
+    Q dq(q);
+    Q q_new = q_current+ dq;
+    std::vector&lt;rw::math::Q&gt; output;
+    if(!collision(q_new))
+    {
+        output.push_back(q_new);
+    }
+    else
+    {
+        cout &lt;&lt; endl;      
+        cout &lt;&lt; q_new &lt;&lt; endl;
+    }
+
+    return output;
+}
+</code></pre>
+
+<p>which outputs this</p>
+
+<pre><code>Current: -0.000799058
+-0.282
+0.99963
+Desired: Vector3D(-0.000789058, -0.282, 0.99963)
+difference: Vector3D(1e-05, 0, 0)
+setQ{1.559142, 110474925659325248.000000, -1834.776226, 55426871347211368.000000, 0.068436, 88275880260745.328125}
+</code></pre>
+
+<p><code>setQ</code> is the state which moves the robot to the desires state.. 
+Either is something wrong with my implementation, or it is a singularity..</p>
+
+<p>Especially because i am not moving it that much (0.00001)!!!</p>
+
+<p><strong>Updates</strong></p>
+
+<p>I think I have solved the mystery.. It must be the sphere function which creates points that outside the reach of the robot.!! </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9772" data-toggle = "popover">
+				<p>user name : Carlton Banks</p>
+				<p> user reputation : 102</p>
+				<p class = "tagcontent" id = "usertaginfo-9772">{'control': 1, 'None': 0, 'inverse-kinematics': 11, 'frame': 2, 'joint': 1, 'visual-servoing': 1, 'kinematics': 2, 'robotic-arm': 5, 'jacobian': 5, 'rotation': 0, 'motion-planning': 2, 'forward-kinematics': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9772">Load Comments</button></br>
+			<div id = "commentsection-9772" class = 'collapse'>
+			<div id = "comment-17380" class = "comment">
+				<p>Are you sure this is a singularity? It does not seem like it... Could you plot your robot in the pose in question to see if it in deed singular? If you have used any trigonometric function (atan2() would be best, all other can also work) there is no reason why your angles would be outside the (0...360] or (-180,+180] ranges</p>
+			</div>
+			<div id = "comment-17381" class = "comment">
+				<p>I honestly don't have any idea what I'm looking at. What is `setQ`? What are these numbers? Are they degrees? I can see that it looks like columns 2 and 3 have a pretty dramatic shift at the end, but with no diagram or description as to what these numbers are I don't know that anyone can really tell you what you've got. What are you interpolating? Waypoints along the trajectory? How are you calculating those? Why interpolate at all?</p>
+			</div>
+			<div id = "comment-17384" class = "comment">
+				<p>I hope it make a bit more sense now..</p>
+			</div>
+			<div id = "comment-17385" class = "comment">
+				<p>I could add the code for the interpolation and invKin if it would make it more understandable..</p>
+			</div>
+			<div id = "comment-17387" class = "comment">
+				<p>Your final rotation makes no sense, as it should be orthonormal.   The first two rows and columns must also have a norm of 1.</p>
+			</div>
+			<div id = "comment-17388" class = "comment">
+				<p>hmm... Now you are mention it is weird.. I compute the desired transformation matrix based on a sphere ...</p>
+			</div>
+			<div id = "comment-17389" class = "comment">
+				<p>Would it be ok to add the code?..  More would you be interested in debugging the issue on a codelevel with me?.. it max 100 lines of code</p>
+			</div>
+			<div id = "comment-17390" class = "comment">
+				<p>Are your azimuthal and polar angles in degrees or radians?  It looks like you are looping through them as they increment by about 60 degrees (1 and 1.05 radians).</p>
+			</div>
+			<div id = "comment-17391" class = "comment">
+				<p>The angles is in radians..  I am only calculating for a half sphere.. which is why the `azimuthal` is limited from `0 - M_PI`, and the step is because calculating for a full half sphere while testing the system took computationwise a long time, which is why i decided to incremet the step size...</p>
+			</div>
+			<div id = "comment-17392" class = "comment">
+				<p>So the incorrect rotation matrix,  is due to me performing interpolation on the  first coordinate  coordinate (sin(~0) = 0) which provides me with the incorrect rotation matrix.. I fixed that, but the Q are still large, and moves the robot incorrectly..</p>
+			</div>
+			</div>
+				<textarea id = "speech-9772" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9772">
+					<img id="start_img-9772" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9772">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9777"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9777" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You still haven't described:</p>
+
+<ol>
+<li>How you are doing interpolation, and</li>
+<li>What the Q values are. </li>
+</ol>
+
+<p>Are the Q values angles? Are they distances? What do they mean? Can you post a picture of your arm and label the axes of motion and describe how the drawing relates to the Q values?</p>
+
+<p>I post this as an answer because I hope I have a lead on your problem. You state, "The idea is that i want my arm be on this sphere, point inward to the center," but, while your <code>pathPlanning::sphere</code> function sets a radius of 5, neither your start nor end positions are a distance of 5 from the origin. They are also greater than 10 from each other (the end radius from origin is 117!!), meaning that this is not a sphere at the origin but it is <em>also</em> not a sphere anywhere else in space. </p>
+
+<p>My suggestion would be to fix the start and end coordinates at a value such that $\sqrt{x^2 + y^2 + z^2} = r_{\mbox{sphere}}$ and see if that makes anything better. </p>
+
+<p>Current it appears that you're starting off of the sphere, and you're trying to get to somewhere else (really far) off the sphere, but you're trying to do path planning to keep the end effector on the sphere. This means that you're trying to generate an impossible path, which could explain the results you're getting. </p>
+
+<p>:EDIT:</p>
+
+<p>I was going to add this as a comment, but there's enough content that I figured I'd alter the answer. </p>
+
+<p>If you start at a point on a sphere, and you end at a point on a sphere, and you <em>linearly increment</em> the start path to the end path, then you will traverse a trajectory of a <em>line through the sphere</em>. You need to be "smarter" about interpolating by choosing points that all fall on the surface of the sphere.</p>
+
+<p>The way I would attempt to do this is to find the angle between the two vectors that describe the start and end points (via a dot or cross product), then interpolate the <em>angle</em>. Find the plane that contains the two vectors, apply the interpolated angle and constrain the interpolated points to that plane. </p>
+
+<p>It's a little involved, but not fantastically complicated. <strong>That said</strong>, you need to make sure that your core functionality is working correctly to begin with. To that end, I would probably hand-pick some points first, to ensure that your problem isn't with interpolating, and try your inverse kinematics with those. </p>
+
+<p>Then, once you've got the inverse kinematics working correctly, then write the interpolate function. <em>If you try to solve all of your problems at the same time it becomes impossible to tell what is working and what isn't.</em></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9777" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-9777">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9777">Load Comments</button></br>
+			<div id = "commentsection-9777" class = 'collapse'>
+			<div id = "comment-17401" class = "comment">
+				<p>I think might be right about checking the core functionality..  I tested it with a inverse kinematics I know for certain works, but it didn't return any result.. Maybe transformation matrices are wrong?</p>
+			</div>
+			<div id = "comment-17409" class = "comment">
+				<p>Let us [continue this discussion in chat](http://chat.stackexchange.com/rooms/39341/discussion-between-carlton-banks-and-chuck).</p>
+			</div>
+			</div>
+				<textarea id = "speech-9777" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9777">
+					<img id="start_img-9777" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9777">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

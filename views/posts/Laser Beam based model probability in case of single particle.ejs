@@ -1,0 +1,144 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Laser Beam based model probability in case of single particle
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-4573" class = "post">
+			<h2>Question</h2>
+			<div id="vote-4573" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 77</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Laser Beam based model probability in case of single particle</h2>
+<p>I am trying to calculate likelihood of laser scan($Z$) at give pose($x$) with known map ($m$) using beam based model</p>
+
+<p>$P\left(z_t|x_t,m \right)=\prod_{i=1}^{n}P'\left(z_i|x_t,m \right)$    </p>
+
+<p>My scan has 360 rays i.e $n=360$, When i calculate $P\left(z_t|x_t,m \right)$ it becomes zero as multiplication all propabilities $&lt;1.$ </p>
+
+<p>In <a href="https://github.com/ros-planning/navigation/blob/b384cac812381a9313d7cdc9be9eb272c4fccb38/amcl/src/amcl/sensors/amcl_laser.cpp#L168" rel="nofollow">ROS amcl</a> they are using ad-hoc which works better like</p>
+
+<p>$P\left(z_t|x_t,m \right)+=\sum_{i=1}^{n}P'\left(z_i|x_t,m \right)*P'\left(z_i|x_t,m \right)*P'\left(z_i|x_t,m \right)$</p>
+
+<p>later they normalise it with number of particle to get weight of each particle.</p>
+
+<p>My query is how to get probability normalised and not zero with <em>single calculation</em> <em>(i.e image in case of single particle)</em></p>
+
+<p>Thanks.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4573" data-toggle = "popover">
+				<p>user name : nayab</p>
+				<p> user reputation : 224</p>
+				<p class = "tagcontent" id = "usertaginfo-4573">{'odometry': 4, 'None': 4, 'laser': 3, 'probability': 2, 'occupancygrid': 1, 'localization': 10, 'mapping': 1, 'particle-filter': 4, 'slam': 8, 'mobile-robot': 12}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-4573" class = 'collapse'>
+			</div>
+				<textarea id = "speech-4573" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4573">
+					<img id="start_img-4573" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4573">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-4622"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4622" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>When you have to multiply so many (often low) probability values or in this case probability densities, you are bound to get in trouble because of limited floating-point accuracy. It is advisable to instead sum up their logarithms, since this will give you a more accurate result.</p>
+
+<p>$\log p\left(z_t|x_t,m \right)=\sum_{i=1}^{n} \log p'\left(z_i|x_t,m \right)$</p>
+
+<p>If you try to compute the probability $p\left(z_t|x_t,m \right)$ by exponentiating its logarithm above, you will most likely still get 0. But in a particle filter, you can arbitrarily scale the measurement model likelihoods (weights are later normalized anyway), which corresponds to adding the same constant to the logarithms above for each particle.</p>
+
+<p>What amcl does is a dirty hack that seems to work well but has no probabilistic foundation as far as I can tell.</p>
+
+<blockquote>
+  <p>My query is how to get probability normalised and not zero with single calculation (i.e image in case of single particle)</p>
+</blockquote>
+
+<p>Use logarithms as shown above, but check whether you really need the actual probability (density), since it will be dangerously close to 0.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4622" data-toggle = "popover">
+				<p>user name : sebsch</p>
+				<p> user reputation : 404</p>
+				<p class = "tagcontent" id = "usertaginfo-4622">{'control': 6, 'quadcopter': 2, 'None': 15, 'sensor-error': 4, 'sensor-fusion': 4, 'localization': 16, 'ekf': 9, 'pose': 1, 'errors': 8, 'kalman-filter': 17, 'mobile-robot': 8, 'sensors': 4, 'navigation': 8}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-4622" class = 'collapse'>
+			</div>
+				<textarea id = "speech-4622" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4622">
+					<img id="start_img-4622" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4622">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

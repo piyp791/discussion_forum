@@ -1,0 +1,136 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>laser scanner distance
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-1435" class = "post">
+			<h2>Question</h2>
+			<div id="vote-1435" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">6</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 260</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>laser scanner distance</h2>
+<p>I'm looking at laser scanners and I see a huge range of detection distances.  The furthest I've see are 30m if you exclude the very expensive ones that claim up to 150m.  My question is what is the reason for the huge difference in range/price.  I would think that with a laser it wouldn't be that difficult to detect something at distances greater than 30m.  What's the physical limitation that makes it so much more expensive to go above 30m for a laser scanner or is there one?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1435" data-toggle = "popover">
+				<p>user name : JDD</p>
+				<p> user reputation : 130</p>
+				<p class = "tagcontent" id = "usertaginfo-1435">{'control': 8, 'None': 0, 'roomba': 9, 'localization': 6, 'pid': 2, 'mobile-robot': 8, 'dynamics': 8, 'ros': 9, 'irobot-create': 9}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-1435" class = 'collapse'>
+			</div>
+				<textarea id = "speech-1435" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1435">
+					<img id="start_img-1435" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1435">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-1436"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1436" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">9</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>It may be worthwhile to consider how laser scanners work. We know that it is possible to send a beam of light at an object, and detect how long it takes to be reflected back to the sensor to measure its distance.</p>
+
+<p>First of all, we use lasers because reflection of the light from the object is so important. lasers keep the light concentrated in a narrow beam, with minimal refraction. We'll come back to that later.</p>
+
+<p>There are several ways to measure distance. The first is triangulation. This typically depends on good placement of optics, and the CCD sensor the return beam shines onto. You can easily see the problem with a large distance - the angle detected gets increasingly close to $0^\circ$, so that we need sensor components which are very accurate at small scales. We would also like a beam width which is narrow for accurate detection of where the beam is, but there is greater diffraction at narrow beam widths, meaning the return beam of light is not that narrow. Over long distances, the beam gets increasingly wider, because of the small amount of diffraction.</p>
+
+<p>The second way is to measure the round-trip time. Light travels very fast at $3\times 10^8  \textrm{m/s}$. This means that even detecting something at $150 \textrm{m}$ will take $1 \textrm{ s}$. Embedded computers typically have a clock rate of only several megahertz, so even at this large distance, a system would struggle to provide an accuracy of 10%, and that is assuming the data acquisition is as fast - often the peripheral features have a slower clock rate.</p>
+
+<p>The data acquisition is typically much slower, allowing cheaper systems to be built. As to how they can get away with this - an interesting phenomenon is used. If a sinusoidal signal is embedded into the light (via the intensity), the return signal will also be a sinusoidal signal. However, depending on the distance, the signal will have a phase shift. That is, at $0 \textrm m$, there is no phase shift, and if the wavelength is $20 \textrm m$, then an object at $5 \textrm m$ will mean that the light travels $10 \textrm m$, creating a phase shift of $180^\circ$. If the signals are normalized to the same amplitude, taking the difference between the outbound signal, and the return signal, we get another analog sinusoidal signal (note: this is only one method). The amplitude of this depends on the phase shift. At $180^\circ$, we get the maximum amplitude - double of the original outbound signal. We can easily detect the amplitude of this signal even with slow digital circuitry.</p>
+
+<p>The main problem is that the choice of wavelength limits the maximum range. For example, the wavelength of $20 \textrm m$ limits the detection range to only $5\textrm m$. If we simply chose a much longer wavelength, we would get the same percentage accuracy. In many cases, if we want greater absolute accuracy, the system will have a greater cost, since we must more accurately measure amplitude in the face of environmental noise. This may involve a number of changes - for example, a larger laser beam, greater light intensity, and more accurate electronic components, more shielding of noise, and more power to run the system. If any one of these is not good enough, accuracy is affected.</p>
+
+<p>The other problem which affects all methods is the intensity of the return beam. As the distance increases, the intensity decreases. There is not that much scatter of light in air, so attenuation is not so much caused by this. However, even though a laser light is used, there is a very small amount of diffraction. It is not possible to remove this diffraction completely, although it can be decreased with a wider beam width. Diffraction reduces the amount of the returning light beam incident on the sensor. Because the beam width gradually increases, the sensor only receives a small proportion of the returning light. This affects the accuracy of measurements. Using a larger sensor can also increase noise. Therefore, here we also see another limit on the distance. We can increase the distance by increasing light intensity, or increasing beam width. However, increasing light intensity increases power consumption and heat, while increasing beam width requires larger optic lenses, and larger distances between optic components.</p>
+
+<p>Essentially, there is a balance between cost, accuracy, power consumption, and size of the system, and longer distances often requires better components to maintain accuracy.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1436" data-toggle = "popover">
+				<p>user name : ronalchn</p>
+				<p> user reputation : 2449</p>
+				<p class = "tagcontent" id = "usertaginfo-1436">{'None': 187, 'two-wheeled': 20, 'inverse-kinematics': 15, 'interrupts': 5, 'microcontroller': 13, 'wiring': 7, 'c': 8, 'avr': 5, 'brushless-motor': 2, 'joint': 15, 'kinematics': 15, 'hall-sensor': 2, 'mobile-robot': 20, 'arm': 15}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1436">Load Comments</button></br>
+			<div id = "commentsection-1436" class = 'collapse'>
+			<div id = "comment-3075" class = "comment">
+				<p>thanks for such a detailed response!  That answered all my questions.  The sinusoidal signal was new to me.  That's a really neat way to solve that problem.</p>
+			</div>
+			</div>
+				<textarea id = "speech-1436" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1436">
+					<img id="start_img-1436" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1436">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

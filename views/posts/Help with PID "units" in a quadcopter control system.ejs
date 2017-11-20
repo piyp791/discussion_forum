@@ -1,0 +1,265 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Help with PID "units" in a quadcopter control system
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-1695" class = "post">
+			<h2>Question</h2>
+			<div id="vote-1695" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 2421</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Help with PID "units" in a quadcopter control system</h2>
+<p>I'm in the process of writing my own simple quadcopter controller for experimental use, and I'm having trouble getting my head around how to convert from the degrees which my PID controller demands to an appropriate 1k-2k range for PWM output. For example, take the roll axis on a '+' configured 'copter (pseudo-code):</p>
+
+<pre><code>setpoint = scaleToRange(receiver.rollValue, -30, 30); //scale the command (1000-2000) to between -30 and 30 degrees, as that's the maximum roll permitted.
+demandedRoll = rollPID.calculate(setpoint, imu.currentRoll, PID_params);
+
+/// the part I'm having trouble with
+
+motorLeft_command = receiver.throttle - rollPWM;
+motorRight_command = receiver.throttle + rollPWM;
+</code></pre>
+
+<p>How do I take the roll demanded by my PID controller and convert it to a value useful to the motors, that is to say, where does <code>rollPWM</code> come from? My first instinct is to use a simple linear relationship, i.e.:</p>
+
+<pre><code>rollPWM = scaleToRange(demandedRoll, MinValue=receiver.throttle/2, MaxValue=2000-receiver.throttle);
+//don't let it go beyond 50% of throttle on low end, and the ESC's max on the high end. 
+</code></pre>
+
+<p>However this seems far too simplistic to work.</p>
+
+<p>Or should I be doing more calculations before everything goes through PID control? Any help would be great. </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1695" data-toggle = "popover">
+				<p>user name : Chris</p>
+				<p> user reputation : 562</p>
+				<p class = "tagcontent" id = "usertaginfo-1695">{'quadcopter': 44, 'None': 15, 'accelerometer': 8, 'power': 29, 'localization': 15, 'battery': 29, 'multi-rotor': 2, 'pid': 2, 'uav': 8, 'motion': 2, 'imu': 8, 'cnc': 6, 'gyroscope': 8, 'gps': 15}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1695">Load Comments</button></br>
+			<div id = "commentsection-1695" class = 'collapse'>
+			<div id = "comment-3546" class = "comment">
+				<p>(And before anyone asks, I'm also designing a servo driven test stand to develop this thing on; I'm more of a hardware guy than a software guy and I'd prefer to have my code bulletproof before I hand it the keys to 10" spinning knives).</p>
+			</div>
+			<div id = "comment-3550" class = "comment">
+				<p>You should try your idea on your test stand before dismissing it as too simple.  It sounds like you may have one missing value in your calculation though, which would be the desired *total* vertical thrust (left motor + right motor).</p>
+			</div>
+			</div>
+				<textarea id = "speech-1695" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1695">
+					<img id="start_img-1695" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1695">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-1698"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1698" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Wrapping your head around unit conversions in controllers is a pretty common problem, so don't think you're alone.</p>
+
+<p>If you're implementing your PID controller using floating point math, then you really don't have to worry: the gains that you assign for the proportional, integral, and derivative action will take care of the differing ranges for the inputs and outputs.</p>
+
+<p>If you're implementing your PID controller using integer math or fixed-point math, then you don't have to worry for the reasons you're worrying.  Instead, you have to worry about keeping the calculations in the right range so that you neither lose precision nor overflow any calculations.</p>
+
+<p>As an example for a floating-point calculation, a plausible proportional gain would be 500 output counts per degree of input error.  In floating point, you'd just assign 500.0 to the proportional gain.</p>
+
+<p>So have fun.  Don't forget the integrator anti-windup.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1698" data-toggle = "popover">
+				<p>user name : TimWescott</p>
+				<p> user reputation : 1336</p>
+				<p class = "tagcontent" id = "usertaginfo-1698">{'None': 107}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1698">Load Comments</button></br>
+			<div id = "commentsection-1698" class = 'collapse'>
+			<div id = "comment-3567" class = "comment">
+				<p>Thank you! I am indeed working on a floating point-enabled ARM processor; horray for 32 bits of precision! This makes so much more sense than the way I was thinking about it; my mistake obviously thinking that a PID controller must output the same units it takes in.</p>
+			</div>
+			<div id = "comment-3569" class = "comment">
+				<p>Uh -- beware that single-precision floating point only gives you around 24 to 25 bits of real "precision".  The rest goes into an exponent that lets the answer have a huge range.</p>
+			</div>
+			</div>
+				<textarea id = "speech-1698" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1698">
+					<img id="start_img-1698" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1698">Comment</button>
+			<br><div id = "ans-1703"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1703" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Tim Wescot is one of the most experienced experts ever in this forum especially in the PID controllers field.</p>
+
+<p>I recommend you to read his brilliant article <a href="http://www.embedded.com/design/prototyping-and-development/4211211/PID-without-a-PhD" rel="nofollow">here</a>.</p>
+
+<p>We used discrete PID for our quadrotor control system. We are building a quadrotor right now and tested both continuous PID controller(What you are usually find in wikipedia or web searches) and discrete PID controller, and for quadrotor systems which has a digitized system, we find discrete PID far better than continuous one.</p>
+
+<p>In this method, you should use 2 separate PID for each motor, but PID gains is equal except Kp of one of them should be -Kp of another one. Here is the sample code( in C# ):</p>
+
+<pre><code>    class PIDController
+    {
+        float[] _u = new float[3];
+        float[] _e = new float[3];
+        float[] _ef = new float[3];
+        float _Tf;
+
+        float _Kp;
+        float _Ti;
+        float _Td;
+        float _h; //delta_t
+        float MaxValue; // min value for motors output
+        float MinValue; // max value for motors output       
+        float _Alfa; //mostly 0.1
+        public PIDController(float SamplingPeriod,float Alfa)
+        {
+            _Alfa = Alfa;
+            _h = SamplingPeriod;
+            MinValue = 0;
+            MaxValue = 100;
+
+        }
+        public void SetCoefficient(float Kp,float Ti,float Td)
+        {
+            _Kp = Kp;
+            _Ti = Ti;
+            _Td = Td;
+        }
+        public void SetRenge(float Min,float Max)
+        {
+            MinValue = Min;
+            MaxValue = Max;
+        }
+
+
+        public float GetOutputSignal(float y, float r)
+        {
+
+            _Tf = _Alfa * _Td;
+            float a = _h / (_Tf + _h);
+            _u[1] = _u[0];
+            _ef[2] = _ef[1];
+            _ef[1] = _ef[0];
+            _e[2] = _e[1];
+            _e[1] = _e[0];
+            _e[0] = r - y;
+            _ef[0] = (1 - a) * _ef[1] + a * _e[0];
+            if ((_Ti != 0) &amp;&amp; (_h &gt; 0))
+                _u[0] = _u[1] + _Kp * (_e[0] - _e[1]) + (_Kp * _h / _Ti) * _e[0] + ((_Kp * _Td) / _h) * (_ef[0] - 2 * _ef[1] + _ef[2]);
+            else
+                _u[0] = 0;
+            //System.Diagnostics.Debug.WriteLine(string.Format("y = {0} , r = {1} , e = {2} u={3}",y,r,_e[0],_u[0]));
+            //System.Diagnostics.Debug.WriteLine(string.Format("Ti = {0} , Td = {1} , Kp = {2}", _Ti, _Td, _Kp));
+            //System.Diagnostics.Debug.WriteLine("");
+            if ((_u[0] &gt; MaxValue) || (_u[0] &lt; MinValue))
+            {
+                if (_u[0] &gt; MaxValue) { _u[0] = MaxValue; };
+                if (_u[0] &lt; MinValue) { _u[0] = MinValue; };
+            }            
+
+            return _u[0];
+        }
+
+    }
+</code></pre>
+
+<p>Test it, you will find this solution far better than continious one. We also used genetic algorithm for auto-tuning this PID. I should mention this type of PID controller won't work without an integral gain. I also should mention that, we didn't currently fully tune our quadrotor, but we got far far better results than continuous one.</p>
+
+<p><a href="http://www.4shared.com/office/F4_cfogP/tidsdiskret_pid_reg.html" rel="nofollow">Here</a> is the mathematical explanation of this method for more info.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1703" data-toggle = "popover">
+				<p>user name : Michel Gokan</p>
+				<p> user reputation : 211</p>
+				<p class = "tagcontent" id = "usertaginfo-1703">{'quadcopter': 10, 'None': 6, 'noise': 2, 'arduino': 9, 'pid': 7, 'ardupilot': 2, 'imu': 7, 'esc': 1}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1703">Load Comments</button></br>
+			<div id = "commentsection-1703" class = 'collapse'>
+			<div id = "comment-3554" class = "comment">
+				<p>Expert in control systems yes, and maybe somewhat with motors and drives in general.  But I've never done any specific work with robots, or the current popular hobbyist hardware like the Arduino, so when it comes to that stuff take what I say with the appropriate grain of salt.</p>
+			</div>
+			<div id = "comment-3568" class = "comment">
+				<p>Thanks for the link! The main reason I'm doing this project (other than to move my quadcopters away from that HORRIBLE Arduino platform) is to gain a better understanding about exactly whats going on onboard, this article definitely clears things up in the PID department. Thanks!</p>
+			</div>
+			</div>
+				<textarea id = "speech-1703" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1703">
+					<img id="start_img-1703" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1703">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,217 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Creating MAVLink commands from python
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11721" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11721" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 474</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Creating MAVLink commands from python</h2>
+<p>I am struggling to find any clear documentation on how to create MAVlink commands using python.</p>
+
+<p>I am looking to create an autonomous glider and require some of the basic functions</p>
+
+<ul>
+<li>Retrieve GPS Data and store into a file</li>
+<li>Import GPS data in Python function</li>
+<li>Send waypoint lat, long, alt to the autopilot (APM)</li>
+</ul>
+
+<p>I am currently using MAVProxy as my GCS and the ErleBrain 3 as my autopilot hardware but the aim is to not require a GCS and just have a python script to automatically add and remove waypoints based on the received GPS data</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11721" data-toggle = "popover">
+				<p>user name : car12398</p>
+				<p> user reputation : 8</p>
+				<p class = "tagcontent" id = "usertaginfo-11721">{'python': 1, 'None': 0, 'ardupilot': 1, 'mavlink': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11721" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11721" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11721">
+					<img id="start_img-11721" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11721">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-11731"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11731" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>There are a couple libraries for doing what you want to to, the first is <a href="https://github.com/ArduPilot/pymavlink" rel="nofollow noreferrer">pyMAVlink</a> and the second is <a href="https://github.com/dronekit/dronekit-python" rel="nofollow noreferrer">dronekit-python</a> it is going to be easiest to use dronekit as it handles a lot of the lower level stuff like processing incoming packets and connecting over your preferred interface for you automatically. I assume you want to  load waypoints from a file and have your UAV fly them? In that case you probably want to set your UAV into Guided mode (for a description of modes on Ardupilot see the docs <a href="http://ardupilot.org/copter/docs/flight-modes.html" rel="nofollow noreferrer">here</a>) this will tell Ardupilot that you are going to command it step by step what to do.</p>
+
+<p>Here is some example code form there wiki that does what you want to do you'll just have to load your files and transform the coordinates to lat lon points:</p>
+
+<pre><code>def arm_and_takeoff(aTargetAltitude):
+    while not vehicle.is_armable:
+        print " Waiting for vehicle to initialise..."
+        time.sleep(1)
+    vehicle.mode = VehicleMode("GUIDED")
+    vehicle.armed = True
+
+    while not vehicle.armed:      
+        print " Waiting for arming..."
+        time.sleep(1)
+
+    print "Taking off!"
+    vehicle.simple_takeoff(aTargetAltitude)
+    # Wait for takeoff to finish
+    while True:
+        print " Altitude: ", vehicle.location.global_relative_frame.alt      
+        if vehicle.location.global_relative_frame.alt&gt;=aTargetAltitude*0.95: #Trigger just below target alt.
+            print "Reached target altitude"
+            break
+        time.sleep(1)
+
+def get_distance_metres(aLocation1, aLocation2):
+    dlat = aLocation2.lat - aLocation1.lat
+    dlong = aLocation2.lon - aLocation1.lon
+    return math.sqrt((dlat*dlat) + (dlong*dlong)) * 1.113195e5
+
+# define connection method 
+# see all the methods at http://python.dronekit.io/guide/connecting_vehicle.html
+connection_string = "127.0.0.1:14550"
+
+# Connect
+vehicle = connect(connection_string, wait_ready=True)
+# arm and takeooff to 10m
+arm_and_takeoff(10)
+# set airspeed to 3 m/s
+vehicle.airspeed = 3
+
+point1 = LocationGlobalRelative(-35.361354, 149.165218, 20)
+vehicle.simple_goto(point1)
+
+while vehicle.mode.name=="GUIDED": #Stop action if we are no longer in guided mode.
+        remainingDistance=get_distance_metres(vehicle.location.global_frame, point1)
+        print "Distance to target: ", remainingDistance
+        if remainingDistance&lt;=targetDistance*0.01: #Just below target, in case of undershoot.
+            print "Reached target"
+            break;
+        time.sleep(2)
+</code></pre>
+
+<p>Per request I have some example pymavlink code, you can see some more examples <a href="https://github.com/ArduPilot/pymavlink/tree/master/examples" rel="nofollow noreferrer">here</a>, sending messages is a pain, you need to identify what type of packet you need to send, and fill it's paramaters acording to <a href="http://mavlink.org/messages/common" rel="nofollow noreferrer">the standard</a></p>
+
+<pre><code>from pymavlink import mavutil
+
+data = mavutil.mavlink_connection('udp:localhost:14551', planner_format=False,
+                                  notimestamps=True,
+                                  robust_parsing=True)
+
+while True:
+    msg = data.recv_match();
+    #If we have a valid message
+    if msg is not None:
+        #print msg.get_type()
+        if msg.get_type() is "HEARTBEAT":
+            print msg.autopilot
+        elif msg.get_type() is "NAV_CONTROLLER_OUTPUT":
+            print msg
+</code></pre>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11731" data-toggle = "popover">
+				<p>user name : Mark Omo</p>
+				<p> user reputation : 1786</p>
+				<p class = "tagcontent" id = "usertaginfo-11731">{'None': 119}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11731">Load Comments</button></br>
+			<div id = "commentsection-11731" class = 'collapse'>
+			<div id = "comment-20952" class = "comment">
+				<p>Hi Mark, Thanks for your reply. Unfortunately I have to use pymavlink. Is there any example code to help me have some sense of direction.</p>
+			</div>
+			<div id = "comment-20953" class = "comment">
+				<p>Why do you have to use pymavlink? I can post some examples in a minute but you will have to extract the data in real time that you need, knowing what packets it's in, ect... I would strongly recommend DroneKit if you can use it.</p>
+			</div>
+			<div id = "comment-20955" class = "comment">
+				<p>I am using an Erle-brain and that apparently is not compatible with Dronekit according one of the developers. Do you know of any tutorial based websites that guide you through it?</p>
+			</div>
+			<div id = "comment-20956" class = "comment">
+				<p>that is false, Erle-brain runs ardupilot which uses mavlink and both Dronekit and pymavlink are both just mavlink interfaces, that can be used for any platform from the Navio2 to the Erle-brain to the Parrot bebop</p>
+			</div>
+			<div id = "comment-21041" class = "comment">
+				<p>Thank you for your help Mark, it would have been a lot easier if this was made clearer by Erle Brain!</p>
+			</div>
+			<div id = "comment-21042" class = "comment">
+				<p>If you found my answer helpful, you can [accept it](http://stackoverflow.com/help/accepted-answer)</p>
+			</div>
+			</div>
+				<textarea id = "speech-11731" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11731">
+					<img id="start_img-11731" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11731">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

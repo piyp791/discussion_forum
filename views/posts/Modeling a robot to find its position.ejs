@@ -1,0 +1,169 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Modeling a robot to find its position
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7774" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7774" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 135</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Modeling a robot to find its position</h2>
+<p>The task of the robot is as follows.
+My robot should catch another robot in the arena, which is trying to escape. The exact position of that robot is sent to my robot at 5Hz. Other than that I can use sonsor to identify that robot.
+Is that possible to estimate the next position of other robot using a mathematical model. If so, can anyone recommend tutorials or books to refer..?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7774" data-toggle = "popover">
+				<p>user name : Ramesh-X</p>
+				<p> user reputation : 157</p>
+				<p class = "tagcontent" id = "usertaginfo-7774">{'None': 1, 'kalman-filter': 3, 'probability': 3, 'arduino': 5, 'line-following': 2, 'pid': 2, 'motor': 2, 'pwm': 0, 'automatic': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7774">Load Comments</button></br>
+			<div id = "commentsection-7774" class = 'collapse'>
+			<div id = "comment-11274" class = "comment">
+				<p>Kalman filter is your choice since it exploits the motion model of the target. See Tracking and Data Association book</p>
+			</div>
+			</div>
+				<textarea id = "speech-7774" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7774">
+					<img id="start_img-7774" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7774">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7775"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7775" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">6</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Assuming a constant update of 5Hz, your sample time is (1/5) = 0.2s. </p>
+
+<p>Get one position of the target, p1. 
+Get a second position of the target, p2. </p>
+
+<p>Target speed is the difference in position divided by difference in time:
+$$
+v = (p_2 - p_1)/dT \\
+v = (p_2 - p_1)/0.2
+$$</p>
+
+<p>Now predict where they will be in the future, where future is $x$ seconds from now:</p>
+
+<p>$$
+p_{\mbox{future}} = p_2 + v*x
+$$
+where again, $p_2$ is the current point of the target, $v$ is the target's calculated speed, and $x$ is how far in the future you want to predict, in seconds.</p>
+
+<p>You can do a number of things from here such as filtering a number of samples in the past, you could try curve fitting, etc., but this is a simple method of predicting future location based on known position updates. </p>
+
+<p>If you knew more about the path or potential paths your target could take you could optimize the prediction or provide a series of cases, but assuming relatively linear motion this model should hold. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7775" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-7775">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7775">Load Comments</button></br>
+			<div id = "commentsection-7775" class = 'collapse'>
+			<div id = "comment-11275" class = "comment">
+				<p>Kalman filter is more efficient for this kind of projects. I'm surprised you mentioned nothing about it.</p>
+			</div>
+			<div id = "comment-11276" class = "comment">
+				<p>No, a Kalman filter is useful for filtering a noisy signal. OP stated the target reports its "exact location" at 5Hz. No noise, no need for a Kalman filter.</p>
+			</div>
+			<div id = "comment-11306" class = "comment">
+				<p>Assuming that it's speed is not truly constant and that it is attempting to evade, it would make sense that the variance of the vehicle's speed could be interpretted as noise, and so a Kalman filter could actually have a beneficial effect in this case.</p>
+			</div>
+			<div id = "comment-11307" class = "comment">
+				<p>This would also require advance knowledge of the evasion/heading variance, in which instance you would probably be better off with curve fitting because the heading changes are unlikely to be well modeled by the [white noise assumption required for the Kalman filter](http://biorobotics.ri.cmu.edu/papers/sbp_papers/integrated3/kleeman_kalman_basics.pdf) (slides 3 & 4). You could also try a particle filter, but again, the course the fleeing target is likely to take would be zig-zag, circle, etc.- maybe changing direction at random times, but otherwise a straight or circular and *not noisy* path.</p>
+			</div>
+			<div id = "comment-11364" class = "comment">
+				<p>In reality, there is no  exact position, therefore filtering data is inevitable. Moreover, if there is no noise, Kalman still exploits the motion model to predict the future. In addition, if there is even no observations, Kalman filter will rely solely on the motion model of a target to predict its behavior.</p>
+			</div>
+			<div id = "comment-11365" class = "comment">
+				<p>Yes, positions can be exact, and again, Kalman filters are only optimal if the noise is Gaussian.</p>
+			</div>
+			<div id = "comment-13895" class = "comment">
+				<p>@Chuck Thanks for your help, we won 1st place!</p>
+			</div>
+			<div id = "comment-13903" class = "comment">
+				<p>@Ramesh-X Awesome! Always feels good to win. I hope I helped a little!</p>
+			</div>
+			</div>
+				<textarea id = "speech-7775" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7775">
+					<img id="start_img-7775" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7775">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

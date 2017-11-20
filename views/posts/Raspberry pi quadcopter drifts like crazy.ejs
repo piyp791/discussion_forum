@@ -1,0 +1,699 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Raspberry pi quadcopter drifts like crazy
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8038" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8038" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 147</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Raspberry pi quadcopter drifts like crazy</h2>
+<p>I have recently built a raspberry pi based quadcopter that communicates with my tablet over wifi. The problem is that it drifts a lot. At first I thought that the problem was vibration, so I mounted the MPU-6050 more securely to the frame. That seemed to help a bit, but it still drifts. I have tried tuning the PID, tuning the complementary filter, and installing a real time OS. Nothing seems to help very much. Below is my code written completely in java. Any suggestions are appreciated.</p>
+
+<p>QuadServer.java:</p>
+
+<pre><code>package com.zachary.quadserver;
+
+import java.net.*;
+import java.io.*;
+import java.util.*;
+
+import com.pi4j.io.i2c.I2CBus;
+import com.pi4j.io.i2c.I2CDevice;
+import com.pi4j.io.i2c.I2CFactory;
+
+import se.hirt.pi.adafruit.pwm.PWMDevice;
+import se.hirt.pi.adafruit.pwm.PWMDevice.PWMChannel;
+
+public class QuadServer {
+    private final static int FREQUENCY = 490; 
+
+    private static final int MIN = 740;
+    private static final int MAX = 2029;
+
+    private static Sensor sensor = new Sensor();
+
+    private static double PX = 0;
+    private static double PY = 0;
+    private static double PZ = 0;
+
+    private static double IX = 0;
+    private static double IY = 0;
+    private static double IZ = 0;
+
+    private static double DX = 0;
+    private static double DY = 0;
+    private static double DZ = 0;
+
+    private static double kP = 1.95; //2.0
+    private static double kI = 10.8; //8.5
+    private static double kD = 0.15; //0.14
+
+    private static long time = System.currentTimeMillis();
+
+    private static double last_errorX = 0;
+    private static double last_errorY = 0;
+    private static double last_errorZ = 0;
+
+    private static double outputX;
+    private static double outputY;
+    private static double outputZ;
+
+    private static int val[] = new int[4];
+
+    private static int throttle;
+
+    static double setpointX = 0;
+    static double setpointY = 0;
+    static double setpointZ = 0;
+
+    static double errorX;
+    static double errorY;
+    static double errorZ;
+
+    static long receivedTime = System.currentTimeMillis();
+
+    private static String data;
+
+    static int trimX = -70;
+    static int trimY = 70;
+
+    public static void main(String[] args) throws IOException, NullPointerException {
+        DatagramSocket serverSocket = new DatagramSocket(40002);
+
+        PWMDevice device = new PWMDevice();
+
+        device.setPWMFreqency(FREQUENCY);
+
+        PWMChannel esc0 = device.getChannel(0);
+        PWMChannel esc1 = device.getChannel(1);
+        PWMChannel esc2 = device.getChannel(2);
+        PWMChannel esc3 = device.getChannel(3);
+
+        /*Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+                public void run() {
+                    System.out.println("terminating");
+                    try {
+                        esc0.setPWM(0, calculatePulseWidth(MIN/1000.0, FREQUENCY));
+                    esc1.setPWM(0, calculatePulseWidth(MIN/1000.0, FREQUENCY));
+                    esc2.setPWM(0, calculatePulseWidth(MIN/1000.0, FREQUENCY));
+                    esc3.setPWM(0, calculatePulseWidth(MIN/1000.0, FREQUENCY));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                }
+            }));
+            System.out.println("running");*/
+
+
+        Thread read = new Thread(){
+                public void run(){
+                    while(true) {
+                    try {
+                            byte receiveData[] = new byte[1024];
+                            DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+                            serverSocket.receive(receivePacket);
+                            String message = new String(receivePacket.getData());
+
+                            data = ""+IX;
+                        addData(IY);
+
+                        addData(sensor.readAccelAngle(0));
+                        addData(sensor.readAccelAngle(1));
+
+                        byte[] sendData = new byte[1024];
+                            sendData = data.getBytes();
+                                InetAddress IPAddress = InetAddress.getByName("192.168.1.9");
+                                DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 1025);
+                                serverSocket.send(sendPacket);
+
+                            setpointX = Double.parseDouble(message.split("\\s+")[0])*0.7;
+                        setpointY = Double.parseDouble(message.split("\\s+")[1])*0.7;
+
+                            throttle = (int)(Integer.parseInt((message.split("\\s+")[3]))*12.67)+MIN;
+
+                            kP = Math.round((Integer.parseInt(message.split("\\s+")[4])*0.05)*1000.0)/1000.0;
+                            kI = Math.round((Integer.parseInt(message.split("\\s+")[5])*0.2)*1000.0)/1000.0;
+                            kD = Math.round((Integer.parseInt(message.split("\\s+")[6])*0.01)*1000.0)/1000.0;
+
+                            trimX = (Integer.parseInt(message.split("\\s+")[7])-50)*2;
+                            trimY = (Integer.parseInt(message.split("\\s+")[8])-50)*2;
+
+                            double accelSmoothing = 0.02;//(Integer.parseInt(message.split("\\s+")[8])*0.05)+1;
+                            double gyroSmoothing = 0.04;//(Integer.parseInt(message.split("\\s+")[7])*0.01);
+
+                            sensor.setSmoothing(gyroSmoothing, accelSmoothing);
+
+                            //System.out.println("trimX: "+trimX+" trimY: "+trimY);
+
+                            System.out.println("kP: "+kP+", kI: "+kI+", kD: "+kD+", trimX: "+trimX+", trimY: "+trimY);
+
+                        receivedTime = System.currentTimeMillis();
+
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+        };
+        read.start();
+
+        while(true)
+        {
+            Arrays.fill(val, throttle);
+
+            errorX = sensor.readGyro(0)-setpointX;
+            errorY = -sensor.readGyro(1)-setpointY;
+            errorZ = sensor.readGyro(2)-setpointZ;
+
+            double dt = (double)(System.currentTimeMillis()-time)/1000;
+
+            double accelAngleX = sensor.readAccelAngle(0);
+            double accelAngleY = sensor.readAccelAngle(1);
+
+            if(dt &gt; 0.005)
+            {
+
+                PX = errorX;
+                PY = errorY;
+                PZ = errorZ;
+
+                IX += (errorX)*dt;
+                IY += (errorY)*dt;
+                //IZ += errorZ*dt;
+
+                IX = 0.98*IX+0.02*accelAngleX;
+                IY = 0.98*IY+0.02*accelAngleY;
+
+                DX = (errorX - last_errorX)/dt;
+                DY = (errorY - last_errorY)/dt;
+                //DZ = (errorZ - last_errorZ)/dt;
+
+                last_errorX = errorX;
+                last_errorY = errorY;
+                last_errorZ = errorZ;
+
+                outputX = kP*PX+kI*IX+kD*DX;
+                outputY = kP*PY+kI*IY+kD*DY;
+                outputZ = kP*PZ+kI*IZ+kD*DZ;
+
+                time = System.currentTimeMillis();
+            }
+
+            //System.out.println(IX+", "+IY+", "+throttle);
+
+            add(-outputX-outputY-outputZ-trimX+trimY, 0);       //clockwise
+            add(-outputX+outputY+outputZ-trimX-trimY, 1);   //counterClockwise
+            add(outputX+outputY-outputZ+trimX-trimY, 2);    //clockwise
+            add(outputX-outputY+outputZ+trimX+trimY, 3);        //counterclockwise
+
+            //System.out.println(val[0]+", "+val[1]+", "+val[2]+", "+val[3]);
+
+            try {
+                if(System.currentTimeMillis()-receivedTime &lt; 1000)
+                {
+                    esc0.setPWM(0, calculatePulseWidth(val[0]/1000.0, FREQUENCY));
+                    esc1.setPWM(0, calculatePulseWidth(val[1]/1000.0, FREQUENCY));
+                    esc2.setPWM(0, calculatePulseWidth(val[2]/1000.0, FREQUENCY));
+                    esc3.setPWM(0, calculatePulseWidth(val[3]/1000.0, FREQUENCY));
+                } else 
+                {
+                    esc0.setPWM(0, calculatePulseWidth(800/1000.0, FREQUENCY));
+                    esc1.setPWM(0, calculatePulseWidth(800/1000.0, FREQUENCY));
+                    esc2.setPWM(0, calculatePulseWidth(800/1000.0, FREQUENCY));
+                    esc3.setPWM(0, calculatePulseWidth(800/1000.0, FREQUENCY));
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+    private static void add(double value, int i)
+    {
+        if(val[i]+value &gt; MIN &amp;&amp; val[i]+value &lt; MAX)
+        {
+            val[i] += value;
+        }else if(val[i]+value &lt; MIN)
+        {
+            //System.out.println("low");
+            val[i] = MIN;
+        }else if(val[i]+value &gt; MAX)
+        {
+            //System.out.println("low");
+            val[i] = MAX;
+        }
+    }
+
+    static void addData(double value)
+    {
+        data += " "+value;
+    }
+
+    private static int calculatePulseWidth(double millis, int frequency) {
+        return (int) (Math.round(4096 * millis * frequency/1000));
+    }
+}
+</code></pre>
+
+<p>Sensor.java:</p>
+
+<pre><code>package com.zachary.quadserver;
+
+import com.pi4j.io.gpio.GpioController;
+import com.pi4j.io.gpio.GpioFactory;
+import com.pi4j.io.gpio.GpioPinDigitalOutput;
+import com.pi4j.io.gpio.PinState;
+import com.pi4j.io.gpio.RaspiPin;
+import com.pi4j.io.i2c.*;
+
+import java.net.*;
+import java.io.*;
+
+public class Sensor {
+    static I2CDevice sensor;
+    static I2CBus bus;
+    static byte[] accelData, gyroData;
+    static long accelCalib[] = {0, 0, 0};
+    static long gyroCalib[] = {0, 0, 0};
+
+    static double gyroX;
+    static double gyroY;
+    static double gyroZ;
+
+    static double smoothedGyroX;
+    static double smoothedGyroY;
+    static double smoothedGyroZ;
+
+    static double accelX;
+    static double accelY;
+    static double accelZ;
+
+    static double accelAngleX;
+    static double accelAngleY;
+
+    static double smoothedAccelAngleX;
+    static double smoothedAccelAngleY;
+
+    static double angleX;
+    static double angleY;
+    static double angleZ;
+
+    static boolean init = true;
+
+    static double accelSmoothing = 1;
+    static double gyroSmoothing = 1;
+
+    public Sensor() {
+        try {
+            bus = I2CFactory.getInstance(I2CBus.BUS_1);
+
+            sensor = bus.getDevice(0x68);
+
+            sensor.write(0x6B, (byte) 0x0);
+            sensor.write(0x6C, (byte) 0x0);
+            System.out.println("Calibrating...");
+
+            calibrate();
+
+            Thread sensors = new Thread(){
+                    public void run(){
+                        try {
+                            readSensors();
+                        } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    }
+            };
+            sensors.start();
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private static void readSensors() throws IOException {
+        long time = System.currentTimeMillis();
+        long sendTime = System.currentTimeMillis();
+
+        while (true) {
+            accelData = new byte[6];
+            gyroData = new byte[6];
+
+            int r = sensor.read(0x3B, accelData, 0, 6);
+
+            accelX = (((accelData[0] &lt;&lt; 8)+accelData[1]-accelCalib[0])/16384.0)*9.8;
+            accelY = (((accelData[2] &lt;&lt; 8)+accelData[3]-accelCalib[1])/16384.0)*9.8;
+            accelZ = ((((accelData[4] &lt;&lt; 8)+accelData[5]-accelCalib[2])/16384.0)*9.8)+9.8;
+            accelZ = 9.8-Math.abs(accelZ-9.8);
+
+
+            double hypotX = Math.sqrt(Math.pow(accelX, 2)+Math.pow(accelZ, 2));
+            double hypotY = Math.sqrt(Math.pow(accelY, 2)+Math.pow(accelZ, 2));
+
+            accelAngleX = Math.toDegrees(Math.asin(accelY/hypotY));
+            accelAngleY = Math.toDegrees(Math.asin(accelX/hypotX));
+
+            //System.out.println(accelAngleX[0]+" "+accelAngleX[1]+" "+accelAngleX[2]+" "+accelAngleX[3]);
+
+            //System.out.println("accelX: " + accelX+" accelY: " + accelY+" accelZ: " + accelZ);
+
+            r = sensor.read(0x43, gyroData, 0, 6);
+
+            gyroX = (((gyroData[0] &lt;&lt; 8)+gyroData[1]-gyroCalib[0])/131.0);
+            gyroY = (((gyroData[2] &lt;&lt; 8)+gyroData[3]-gyroCalib[1])/131.0);
+            gyroZ = (((gyroData[4] &lt;&lt; 8)+gyroData[5]-gyroCalib[2])/131.0);
+
+            if(init)
+            {
+                smoothedAccelAngleX = accelAngleX;
+                smoothedAccelAngleY = accelAngleY;
+
+                smoothedGyroX = gyroX;
+                smoothedGyroY = gyroY;
+                smoothedGyroZ = gyroZ;
+
+                init = false;
+            } else {
+                smoothedAccelAngleX = smoothedAccelAngleX+(accelSmoothing*(accelAngleX-smoothedAccelAngleX));
+                smoothedAccelAngleY = smoothedAccelAngleY+(accelSmoothing*(accelAngleY-smoothedAccelAngleY));
+
+                smoothedGyroX = smoothedGyroX+(gyroSmoothing*(gyroX-smoothedGyroX));
+                smoothedGyroY = smoothedGyroY+(gyroSmoothing*(gyroY-smoothedGyroY));
+                smoothedGyroZ = smoothedGyroZ+(gyroSmoothing*(gyroZ-smoothedGyroZ));
+
+                /*smoothedAccelAngleX = accelAngleX;
+                smoothedAccelAngleY = accelAngleY;
+
+                smoothedGyroX = gyroX;
+                smoothedGyroY = gyroY;
+                smoothedGyroY = gyroY;*/
+
+
+                /*smoothedAccelAngleX += (accelAngleX-smoothedAccelAngleX)/accelSmoothing;
+                smoothedAccelAngleY += (accelAngleY-smoothedAccelAngleY)/accelSmoothing;
+
+                smoothedGyroX += (gyroX-smoothedGyroX)/gyroSmoothing;
+                smoothedGyroY += (gyroY-smoothedGyroY)/gyroSmoothing;
+                smoothedGyroZ += (gyroZ-smoothedGyroZ)/gyroSmoothing;*/
+
+            }
+
+            angleX += smoothedGyroX*(System.currentTimeMillis()-time)/1000;
+            angleY += smoothedGyroY*(System.currentTimeMillis()-time)/1000;
+            angleZ += smoothedGyroZ;
+
+            angleX = 0.95*angleX + 0.05*smoothedAccelAngleX;
+            angleY = 0.95*angleY + 0.05*smoothedAccelAngleY;
+
+            time = System.currentTimeMillis();
+
+            //System.out.println((int)angleX+"  "+(int)angleY);
+            //System.out.println((int)accelAngleX+", "+(int)accelAngleY);
+        }
+    }
+
+    public static void calibrate() throws IOException {
+        int i;
+        for(i = 0; i &lt; 100; i++)
+        {
+            accelData = new byte[6];
+            gyroData = new byte[6];
+            int r = sensor.read(0x3B, accelData, 0, 6);
+            accelCalib[0] += (accelData[0] &lt;&lt; 8)+accelData[1];
+            accelCalib[1] += (accelData[2] &lt;&lt; 8)+accelData[3];
+            accelCalib[2] += (accelData[4] &lt;&lt; 8)+accelData[5];
+
+            r = sensor.read(0x43, gyroData, 0, 6);
+            gyroCalib[0] += (gyroData[0] &lt;&lt; 8)+gyroData[1];
+            gyroCalib[1] += (gyroData[2] &lt;&lt; 8)+gyroData[3];
+            gyroCalib[2] += (gyroData[4] &lt;&lt; 8)+gyroData[5];
+            try {
+                Thread.sleep(1);
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        gyroCalib[0] /= i;
+        gyroCalib[1] /= i;
+        gyroCalib[2] /= i;
+
+        accelCalib[0] /= i;
+        accelCalib[1] /= i;
+        accelCalib[2] /= i;
+
+        System.out.println(gyroCalib[0]+", "+gyroCalib[1]+", "+gyroCalib[2]);
+        System.out.println(accelCalib[0]+", "+accelCalib[1]+", "+accelCalib[2]);
+    }
+
+    public double readAngle(int axis)
+    {
+        switch (axis)
+        {
+            case 0:
+                return angleX;
+            case 1:
+                return angleY;
+            case 2:
+                return angleZ;
+        }
+
+        return 0;
+    }
+
+    public double readGyro(int axis)
+    {
+        switch (axis)
+        {
+            case 0:
+                return smoothedGyroX;
+            case 1:
+                return smoothedGyroY;
+            case 2:
+                return smoothedGyroZ;
+        }
+
+        return 0;
+    }
+
+    public double readAccel(int axis)
+    {
+        switch (axis)
+        {
+            case 0:
+                return accelX;
+            case 1:
+                return accelY;
+            case 2:
+                return accelZ;
+        }
+
+        return 0;
+    }
+
+    public double readAccelAngle(int axis)
+    {
+        switch (axis)
+        {
+            case 0:
+                return smoothedAccelAngleX;
+            case 1:
+                return smoothedAccelAngleY;
+
+        }
+
+        return 0;
+    }
+
+    public void setSmoothing(double gyro, double accel)
+    {
+        gyroSmoothing = gyro;
+        accelSmoothing = accel;
+    }
+}
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8038" data-toggle = "popover">
+				<p>user name : Zachary Schroeder</p>
+				<p> user reputation : 46</p>
+				<p class = "tagcontent" id = "usertaginfo-8038">{'quadcopter': 1, 'None': 4, 'pid': 1, 'raspberry-pi': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8038">Load Comments</button></br>
+			<div id = "commentsection-8038" class = 'collapse'>
+			<div id = "comment-12808" class = "comment">
+				<p>"Drifts a lot" - drifts how? Only on one axis? Multiple axes? Only translational drift or rotational drift as well?</p>
+			</div>
+			<div id = "comment-12809" class = "comment">
+				<p>gyroscope miscalibrated?</p>
+			</div>
+			<div id = "comment-12810" class = "comment">
+				<p>Also, you must realise that with an IMU alone, there is no way for your quad to know it's actually drifting in the XY plane, so you need something else like a camera to detect drift (although doesn't work well outside in featureless environment). With an IMU only, you're only chance is to actually improve the platform itself, i.e. making sure it's well balanced and the PID is well tuned (a badly tuned PID will make things worse)</p>
+			</div>
+			<div id = "comment-12830" class = "comment">
+				<p>The quad drifts in all directions indiscriminately. It also drifts some around the Z axis, but I am not too worried about that right now. The gyro calibrates its self every time I start the program, so I don't think that that is the problem.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8038" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8038">
+					<img id="start_img-8038" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8038">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8040"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8040" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><h2>From your sensor code,</h2>
+
+<p>I'm not sure I understand what your <code>gyroSmoothing</code> is doing. For one, it's set =1, so it's not doing anything at all currently, but I don't know what it would do at other values either. </p>
+
+<p>Further, in looking at the section featuring <code>gyroSmoothing</code>, you have:</p>
+
+<pre><code>smoothedGyroN = gyroN;
+smoothedGyroN = smoothedGyroN + (gyroN - smoothedGyroN)/gyroSmoothing;
+</code></pre>
+
+<p>But, you just set <code>smoothedGyroN = gyroN;</code>, so you have:</p>
+
+<pre><code>smoothedGyroN = gyroN;
+smoothedGyroN = smoothedGyroN + &lt;zero&gt;
+</code></pre>
+
+<p>So, I don't know what the point of writing all of that is. It looks <em>almost</em> like you're trying to write a <a href="http://my.execpc.com/~steidl/robotics/first_order_lag_filter.html" rel="nofollow">lag filter</a>, but that's not quite the right form for a lag filter either. </p>
+
+<p>Also, later you integrate gyro speeds to get angles, except you fail to multiply the z-axis gyro by the sample time:</p>
+
+<pre><code>angleX += smoothedGyroX*(System.currentTimeMillis()-time)/1000;
+angleY += smoothedGyroY*(System.currentTimeMillis()-time)/1000;
+angleZ += smoothedGyroZ;
+</code></pre>
+
+<p>Just after that you actually <em>do</em> implement a lag filter on the X- and Y-axis angles. </p>
+
+<h2>From your control code,</h2>
+
+<p>You <em>should</em> calculate errors as <code>desired - actual</code>, but instead you have:</p>
+
+<pre><code>errorX = sensor.readGyro(0)-setpointX;
+errorY = -sensor.readGyro(1)-setpointY;
+errorZ = sensor.readGyro(2)-setpointZ;
+</code></pre>
+
+<p>So the sign is flipped on your errorX and errorZ - I'm assuming maybe this is why you have <code>-sensor.readGyro(1)</code> for your errorY? Just flipping signs until it works? Not harassing - I've done it, too. </p>
+
+<p>Just after you calculate integral error, you have a complimentary filter between integral error and. . . angular position?? I have no idea why you would do this:</p>
+
+<pre><code>IX = 0.98*IX+0.02*accelAngleX;
+IY = 0.98*IY+0.02*accelAngleY;
+</code></pre>
+
+<p>The integral error term should be just the integral error term - don't add anything, don't smooth it, nothing. If you find it's jumping all over the place (which, if your system has mass, it shouldn't jump around), but if you find it does jump, then you should filter your sensor feedback. <a href="https://www.youtube.com/watch?v=kHmvkRoEowc" rel="nofollow">Leave the error terms alone</a>!</p>
+
+<p>Also, FYI, you have disabled I/D gains on the Z-axis. </p>
+
+<p>I don't like that you've got an <code>if</code> statement around your PID controller - I don't know why you would want this, it seems like this would intermittently provide a control signal. I would suggest either adding a <code>delay</code> at the end of the PID calculations if you want it to run slower (not sure why) or just let it run all the time. You're calculating sample time correctly so I really have no idea what this is for. </p>
+
+<p>When you set the motor speed outputs, it looks like you might be adding trim terms incorrectly. I'm not familiar with adding trim terms like this - if I were going to add trim I would do it by adding the trim term to the angle setpoint, not to the motor speed command. That said, you have:</p>
+
+<pre><code>add(-outputX-outputY-outputZ-trimX+trimY, 0);       //clockwise
+add(-outputX+outputY+outputZ-trimX-trimY, 1);   //counterClockwise
+add( outputX+outputY-outputZ+trimX-trimY, 2);    //clockwise
+add( outputX-outputY+outputZ+trimX+trimY, 3);        //counterclockwise
+</code></pre>
+
+<p>In all cases, the sign of <code>trimX</code> matches <code>outputX</code>, but <code>trimY</code> is always the opposite of <code>outputY</code>. Also, this is probably just my ignorance of Java, but I don't see a variable assignment for your <code>add</code> statements. You reference <code>var[N]</code> just below, but I don't see where the add terms get assigned to <code>var</code>. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8040" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-8040">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8040">Load Comments</button></br>
+			<div id = "commentsection-8040" class = 'collapse'>
+			<div id = "comment-12829" class = "comment">
+				<p>The complementary filter is to keep the gyro readings from drifting. I will try it without this, but I think that doing that will probably make it worse.</p>
+			</div>
+			<div id = "comment-12836" class = "comment">
+				<p>@ZacharySchroeder - [gyroscopes drift](http://www.phidgets.com/docs/Gyroscope_Primer#Drift), which is unavoidable, but the place to correct the drift is *not* with the integral error term of a PID controller. You could try increasing the time constant on your lag filter or switching to a Kalman filter for the X/Y axis angles, and you could start filtering the Z axis angle and calibrate it against a magnetometer.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8040" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8040">
+					<img id="start_img-8040" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8040">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

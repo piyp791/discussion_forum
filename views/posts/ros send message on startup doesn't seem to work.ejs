@@ -1,0 +1,315 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>ros send message on startup doesn't seem to work
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-6374" class = "post">
+			<h2>Question</h2>
+			<div id="vote-6374" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 821</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>ros send message on startup doesn't seem to work</h2>
+<p>I have the following code: </p>
+
+<pre><code>void NewCore::spin(){
+    ros::Rate rate(10);
+
+    int first =1;
+    while(ros::ok()){
+
+        if (first){         
+            askMath();first=0;}
+        ros::spinOnce();
+        rate.sleep();
+    }
+}
+
+int main(int argc, char **argv){
+
+    ros::init(argc, argv, "newCore");
+    NewCore nc;
+    nc.init();
+
+    nc.spin();
+}
+
+void NewCore::init(){
+
+    mngrSub = handle.subscribe&lt;std_msgs::String&gt;("/tawi/core/launch", 10, &amp;NewCore::launchCallback, this);
+    mngrPub = handle.advertise&lt;std_msgs::String&gt;("/tawi/core/launch", 100);
+
+    mathSub = handle.subscribe&lt;std_msgs::String&gt;("/display", 10, &amp;NewCore::launchCallback, this);
+    serSub = handle.subscribe&lt;std_msgs::String&gt;("/tawi/arduino/serial", 100,&amp;NewCore::serialCallback,this);
+    mathPub = handle.advertise&lt;std_msgs::String&gt;("/questions", 100);
+
+    ballPub = handle.advertise&lt;std_msgs::Int16&gt;("/tawi/core/ballcount", 100);
+    nmbrPub = handle.advertise&lt;std_msgs::Int16&gt;("/tawi/core/number", 100);
+}
+
+void NewCore::askMath(){
+    ROS_INFO("addition1d&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;");
+    std_msgs::String question;
+    question.data = "1digitAddition";
+    mathPub.publish(question);
+}
+</code></pre>
+
+<p>(code that isn't interesting has been removed)</p>
+
+<p>Running this causes the following output to appear: </p>
+
+<pre><code>$ rosrun glados newCore 
+[ INFO] [1421236273.617723131]: addition1d&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+</code></pre>
+
+<p>However if I have the following code on during launch:</p>
+
+<pre><code>$ rostopic echo /questions 
+</code></pre>
+
+<p>then it does not show me an initial message being sent.</p>
+
+<p>Changing</p>
+
+<pre><code>        if (first){         
+            askMath();first=0;}
+</code></pre>
+
+<p>into </p>
+
+<pre><code>            askMath();first=0;
+</code></pre>
+
+<p>does appear to work but it then sends a message every cycle rather then just the one at the start. </p>
+
+<p>Does anybody know what is wrong here? </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6374" data-toggle = "popover">
+				<p>user name : Thijser</p>
+				<p> user reputation : 203</p>
+				<p class = "tagcontent" id = "usertaginfo-6374">{'control': 1, 'None': 1, 'manipulator': 0, 'usb': 7, 'power': 6, 'simulator': 0, 'communication': 1, 'arduino': 3, 'c++': 4, 'simulation': 0, 'servomotor': 1, 'kinematics': 0, 'servos': 1, 'beagle-bone': 13, 'linux': 4, 'serial': 2, 'ros': 3, 'gazebo': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-6374">Load Comments</button></br>
+			<div id = "commentsection-6374" class = 'collapse'>
+			<div id = "comment-9192" class = "comment">
+				<p>Don't you get a warning when you say `rostopic echo /questions` that _WARNING: topic [/questions] does not appear to be published yet_?</p>
+			</div>
+			<div id = "comment-9193" class = "comment">
+				<p>No I don't and in fact if I publish a lot of warnings (by removing the if(first)) then they do publish messages.</p>
+			</div>
+			<div id = "comment-9194" class = "comment">
+				<p>If you don't see such a warning, then it looks like that topic already exists. Are you sure you are running `rostopic echo /questions` **before** running your node?</p>
+			</div>
+			<div id = "comment-9195" class = "comment">
+				<p>I work by activating my code running rostopic echo /questions shutting down my code and then restarting it. If I don't run my code first it does indeed give me a warning that /questions have not been published yet.</p>
+			</div>
+			<div id = "comment-9196" class = "comment">
+				<p>What happens if you just run `rostopic` first and then your code?</p>
+			</div>
+			<div id = "comment-9197" class = "comment">
+				<p>ERROR: Unable to communicate with master! or if I manually activate roscore first warning topic [/questions] does nto appear to be published yet</p>
+			</div>
+			</div>
+				<textarea id = "speech-6374" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6374">
+					<img id="start_img-6374" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6374">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-6376"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6376" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I experimented a bit and here's what I think happens.</p>
+
+<p>When you run</p>
+
+<pre><code>$ rostopic echo /questions
+</code></pre>
+
+<p>The <code>/questions</code> topic doesn't exist before you run the program. Maybe you cheat it by first running your programming, running this command and then running your program again, but this assertion is still true. So at the point when you run your program, <code>rostopic</code> is not subscribed to any topic.</p>
+
+<p>I don't know internally how this is handled by <code>roscore</code> and <code>rostopic</code>, but somewhere along the line, this is what's happening as the observed behavior of <code>rostopic</code>:</p>
+
+<pre><code>forever
+
+    /* establish connection */
+    while not subscribed to topic
+        try to subscribe
+        if failed
+            sleep a bit
+
+    /* intercept messages */
+    while topic still exists
+        wait for message
+        print message
+</code></pre>
+
+<p>This means that <code>rostopic</code> (or more likely <code>roscore</code> on its behalf) waits for a topic to become available and subscribes to it.  It then proceeds to print incoming messages.  If the topic becomes unavailable, <code>rostopic</code> (or again more likely <code>roscore</code> on its behalf) goes back to waiting for the topic to become available again.</p>
+
+<p>That said, here's what happens when this runs in parallel with your code:</p>
+
+<pre><code>    rostopic                       you
+
+  wait for topic
+      sleep
+
+
+
+
+
+
+
+  wait for topic
+      sleep
+
+                                  start
+                                ros::init
+                             advertise topic
+                          publish first message
+
+
+subscribe to topic
+ wait for message
+      sleep
+</code></pre>
+
+<p>As you can see, your program publishes its first message immediately after advertising the topic. The unsuspecting <code>rostopic</code> program is not yet aware of this advertisement so is not actually subscribed to the topic yet. You publish the first message before <code>rostopic</code> gets a chance to subscribe to the topic.</p>
+
+<p>You can verify this simply by putting a relatively large sleep after you advertise the topics and before you publish to them, i.e. between <code>nc.init()</code> and <code>nc.spin()</code>.</p>
+
+<hr>
+
+<p>To address your real problem (as stated and responded in the comments), which is to understand when the node has started up and use this as a trigger for further actions, I'd advise to consider another strategy.</p>
+
+<p>Generally, you would want to make sure a node is up to make sure the other nodes that depend on it can run correctly. However, this doesn't mean that the original node has to be run just before the depending nodes. It could in theory be run long before them, or since ROS doesn't run in real-time and as you have observed, the timing between when topics are advertised, subscribed and the messages going around are quite unpredictable. Add network to this and they are really unpredictable.</p>
+
+<p>So instead, you could devise a mechanism to query whether your node is available or not. This is simply done with a ROS service. You would essentially do all the necessary startup and then put up a service that always returns true. Any node that needs to ensure this node is available before proceeding can poll this service and as soon as a call to this service succeeds, you know the node is running.</p>
+
+<p>As an added bonus, this means that you don't have to take this node down (and all depending nodes) just because you need to restart one of the depending nodes.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6376" data-toggle = "popover">
+				<p>user name : Shahbaz</p>
+				<p> user reputation : 2615</p>
+				<p class = "tagcontent" id = "usertaginfo-6376">{'None': 193, 'usb': 12, 'distributed-systems': 7, 'microcontroller': 1, 'embedded-systems': 7, 'servomotor': 1, 'platform': 18, 'can': 1, 'machine-learning': 12, 'real-time': 18, 'mobile-robot': 1, 'rs232': 12, 'software': 20}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-6376">Load Comments</button></br>
+			<div id = "commentsection-6376" class = 'collapse'>
+			<div id = "comment-9198" class = "comment">
+				<p>Makes sense but does that mean it's also not possible to use launch files and catch a startup message(in effect I want to use this initial message to start a bunch of processes in other nodes and everything is launched by launch files)?</p>
+			</div>
+			<div id = "comment-9199" class = "comment">
+				<p>@Thijser, apparently not. Depending on how you plan on catching this initial message, there may be other options. What I recommend is to use a service. Try to poll a service which is provided by this node, effectively saying "I'm up". Once you detect the node is up, you carry on with spawning your other nodes. This is good, because the node could even be up from before, where you didn't care to check for an initial message.</p>
+			</div>
+			<div id = "comment-9203" class = "comment">
+				<p>You can get start up messages from nodes by introducing a delay after all topics are initialized and before publication starts. This allows all communication links to settle. It's even better if you can spin once or twice.</p>
+			</div>
+			<div id = "comment-9204" class = "comment">
+				<p>But yes this does appear to be the fix(maybe include it in the main post for future users?) and it does appear to be the answer thank you!</p>
+			</div>
+			</div>
+				<textarea id = "speech-6376" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6376">
+					<img id="start_img-6376" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6376">Comment</button>
+			<br><div id = "ans-6379"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6379" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>This thread might also be helpful:
+<a href="http://answers.ros.org/question/9665/test-for-when-a-rospy-publisher-become-available/" rel="nofollow">http://answers.ros.org/question/9665/test-for-when-a-rospy-publisher-become-available/</a></p>
+
+<p>The question is specifically about python, but i think the root cause is ROS specific, not language specific.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6379" data-toggle = "popover">
+				<p>user name : Ben</p>
+				<p> user reputation : 3608</p>
+				<p class = "tagcontent" id = "usertaginfo-6379">{'None': 277, 'inverse-kinematics': 3, 'accelerometer': 5, 'calibration': 10, 'kinematics': 14, 'robotic-arm': 8, 'jacobian': 6, 'dh-parameters': 8, 'imu': 5, 'sensors': 5}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-6379" class = 'collapse'>
+			</div>
+				<textarea id = "speech-6379" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6379">
+					<img id="start_img-6379" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6379">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

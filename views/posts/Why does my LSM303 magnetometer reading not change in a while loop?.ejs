@@ -1,0 +1,183 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Why does my LSM303 magnetometer reading not change in a while loop?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-1392" class = "post">
+			<h2>Question</h2>
+			<div id="vote-1392" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 553</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Why does my LSM303 magnetometer reading not change in a while loop?</h2>
+<p>I am using a LSM303 sensor to compute a heading and I want to turn my robot to a heading.</p>
+
+<p>I have the simple code here:</p>
+
+<pre><code>int mag;
+mag = compass.heading((LSM303::vector){0,-1,0});;   //read the angle of the robot
+
+Serial.println(mag);
+while (mag != angle){   
+    //while it isn't the desired angle turn and continue to update the robot angle      
+    trex.write(0xE9);
+    trex.write(90);
+    trex.write(90);
+    mag = compass.heading((LSM303::vector){0,-1,0});;   //read the angle of the robot
+
+
+}
+</code></pre>
+
+<p>In a function called with a speed and angle (heading), the trex part tells the motor controller to turn on a point and the while loop should test for when the desired heading is reached. However, testing using a couple of instances of <code>Serial.println(mag);</code> I have determined that once inside the while loop, mag never changes which just means the robot turns indefinitely. </p>
+
+<p>I have no idea why this would happen. Perhaps someone here does?</p>
+
+<p>Thanks.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1392" data-toggle = "popover">
+				<p>user name : None</p>
+				<p> user reputation : NA</p>
+				<p class = "tagcontent" id = "usertaginfo-1392">{'control': 0, 'force': 3, 'encoding': 1, 'wheeled-robot': 1, 'legged': 5, 'embedded-systems': 0, 'stability': 5, 'design': 15, 'motor': 3, 'mobile-robot': 3, 'connector': 1, 'h-bridge': 1, 'mrds': 0, 'arduino': 1, 'current': 1, 'kinematics': 0, 'kalman-filter': 8, 'imu': 18, 'irobot-create': 0, 'gyroscope': 1, 'micromouse': 3, 'None': 35, 'power': 16, 'artificial-intelligence': 8, 'driver': 1, 'industrial-robot': 19, 'sensors': 11, 'quadcopter': 7, 'c': 1, 'motion': 1, 'balance': 7, 'servos': 15}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1392">Load Comments</button></br>
+			<div id = "commentsection-1392" class = 'collapse'>
+			<div id = "comment-2998" class = "comment">
+				<p>if mag is not changing, then compass.heading(...) should be investigated to see if your i2c implementation is correct. Did you test the compass for working condition at any time?</p>
+			</div>
+			<div id = "comment-2999" class = "comment">
+				<p>Yes - sorry probably should have mentioned, if I run `mag = compass.heading((LSM303::vector){0,-1,0});;` by itself and then move the compass and run it again it performs correctly and the heading changes as expected.</p>
+			</div>
+			<div id = "comment-3000" class = "comment">
+				<p>I am confused here, if mag changes when robot turns, it should change inside the while loop since the robot is rotating constantly? question: is angle the desired angle and mag the actual angle? Have you had a print inside the while loop?</p>
+			</div>
+			<div id = "comment-3001" class = "comment">
+				<p>Another thought... Do you need some time delay between readings? I am not familiar with your compass, but the documentation should indicate any constraints that you need to pay attention to.</p>
+			</div>
+			<div id = "comment-3002" class = "comment">
+				<p>"I am confused here, if mag changes when robot turns, it should change inside the while loop since the robot is rotating constantly?" That's what I thought, I doubted myself and thought perhaps I really didn't understand the fundamentals of while loops as much as I thought.</p>
+			</div>
+			<div id = "comment-3003" class = "comment">
+				<p>Angle is the desired angle and mag is the actual angle yes. And I must look into if it perhaps needs a delay that may be the problem. thanks.</p>
+			</div>
+			<div id = "comment-3004" class = "comment">
+				<p>Did you solve your problem?</p>
+			</div>
+			<div id = "comment-3005" class = "comment">
+				<p>Yes, can I mark this as solved? or close it? There is no answer for me to mark as correct</p>
+			</div>
+			<div id = "comment-3006" class = "comment">
+				<p>Post your solution, it may help other people.</p>
+			</div>
+			<div id = "comment-3139" class = "comment">
+				<p>You could always debug this in 2 parts: First, write the compass.heading value directly to the serial port and verify that it changes.  Second, set the value of mag based on a timer: desired heading for 1 second, 90 degrees offset for the following second, then repeat.  The first test will validate the compass, the second test will validate that the compiler is handling variables in the way that you expect.</p>
+			</div>
+			<div id = "comment-3185" class = "comment">
+				<p>You CAN (and are actually encouraged) to post your own answer.  You can also accept it.  See http://blog.stackoverflow.com/2009/01/accept-your-own-answers/</p>
+			</div>
+			</div>
+				<textarea id = "speech-1392" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1392">
+					<img id="start_img-1392" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1392">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-1482"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1482" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I don't know Arduino from Aardvark, so this comment is based purely on how a modern C++ compiler would behave:</p>
+
+<p>Were you asking about a plain ol' C++ problem, I would ask you if compass is declared volatile, or if the 'heading' method of compass's class is declared volatile, or if your system is based on cooperative multitasking.</p>
+
+<p>In the first two cases (lack of things being tagged as volatile) the compiler will optimize the call to compass.heading to just outside the loop (to save you time -- isn't that nice?).</p>
+
+<p>In the third case, whatever the code is that actually acquires the values for the compass structure will never get a chance to run (because your code is stuck in the while loop) and you'll never see results.</p>
+
+<p>I hope this makes sense to the Arduino environment...</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1482" data-toggle = "popover">
+				<p>user name : TimWescott</p>
+				<p> user reputation : 1336</p>
+				<p class = "tagcontent" id = "usertaginfo-1482">{'None': 107}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-1482" class = 'collapse'>
+			</div>
+				<textarea id = "speech-1482" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1482">
+					<img id="start_img-1482" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1482">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

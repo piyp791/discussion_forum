@@ -1,0 +1,173 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Arduino robot to move spirally
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11703" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11703" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 152</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Arduino robot to move spirally</h2>
+<p>I am planning to build robot like irobot Roomba. So cleaning in a spiral pattern is required like the image shown starting from the center:</p>
+
+<p><a href="https://i.stack.imgur.com/yUkB1.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/yUkB1.jpg" alt="Spiral"></a></p>
+
+<p>This code is part of my full code which doesn't give me spiral pattern:</p>
+
+<pre><code>void spiralling() {
+  for(int i=0;i&lt;=2;i++) {
+    digitalWrite(motor1,HIGH);
+    digitalWrite(motor2,LOW);
+    digitalWrite(motor3,HIGH);
+    digitalWrite(motor4,LOW);
+    analogWrite(pwm1,180);
+    analogWrite(pwm2,80);
+    delay(300);
+    p=1;
+  }
+  analogWrite(pwm2,250); 
+  delay(150); 
+}
+</code></pre>
+
+<p>So my question is how can I make my bot trace <strong>spiral pattern</strong> (algorithm?,Logic? to use), as the only way to change the direction is with two wheels on sides.</p>
+
+<p>Is there any code which constantly increases the radius of bot movement from center to radially outwards?</p>
+
+<p>My robot has arduino uno ,l293d motordriver,two geared motors on either sides as shown in image and castor wheel in front:</p>
+
+<p><a href="https://i.stack.imgur.com/yWwLz.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/yWwLz.jpg" alt="My robot has arduino uno ,l293d motordriver,two geared motors on either sides as shown in image and castor wheel in front"></a></p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11703" data-toggle = "popover">
+				<p>user name : Adithya Pai</p>
+				<p> user reputation : 11</p>
+				<p class = "tagcontent" id = "usertaginfo-11703">{'None': 0, 'wheeled-robot': 2, 'arduino': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11703">Load Comments</button></br>
+			<div id = "commentsection-11703" class = 'collapse'>
+			<div id = "comment-20900" class = "comment">
+				<p>Let's assume that your wheels don't slip and that you just want the bot to _move_ in a spiral (rather than trace a pattern on the ground). If you want to trace a pattern on the ground, there are very many on-line resources for building a line-following robot. I think the basic approach would be: 1. set the speed of one wheel to a fixed value (call this maximum speed), and the other to zero.  2. while the speed of the "inside" wheel is smaller than the maximum speed, increase it by a small amount, pause, and repeat.  Try that out and see how that goes!</p>
+			</div>
+			</div>
+				<textarea id = "speech-11703" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11703">
+					<img id="start_img-11703" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11703">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-11755"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11755" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>the code should be like this:</p>
+
+<pre><code>int tourtime=1000; // circle tourtime. it is about intersection areas between each spiral. it should be less than circle time
+int increasetime=10; // time for next tour, larger spiral needs more time
+int numberofspiral=10; // number of circle
+int minspeed=50; // initial speed for spiral. 
+int maxspeed=200;// max speed 
+void spiralling() {
+  digitalWrite(motor1,HIGH);
+  digitalWrite(motor2,LOW);
+  digitalWrite(motor3,HIGH);
+  digitalWrite(motor4,LOW);
+
+  for(int i=0;i&lt;=numberofspiral;i++) {
+    analogWrite(pwm1,maxspeed);
+    analogWrite(pwm2,minspeed);
+    minspeed=minspeed+1;// increase the speed to increase radius
+    delay(tourtime);
+    tourtime=tourtime+increasetime;// increase the time for scan optimum area
+  }
+  analogWrite(pwm2,250); 
+  delay(150); 
+}
+</code></pre>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11755" data-toggle = "popover">
+				<p>user name : acs</p>
+				<p> user reputation : 838</p>
+				<p class = "tagcontent" id = "usertaginfo-11755">{'stereo-vision': 4, 'control': 1, '3d-printing': 2, 'simulator': 8, 'multi-agent': 0, 'pid': 1, 'slam': 2, 'robotic-arm': 1, 'mobile-robot': 10, 'ros': 8, 'battery': 0, 'swarm': 2, 'cameras': 4, 'lidar': 4, '3d-model': 2, 'imu': 3, 'kalman-filter': 3, 'gazebo': 1, 'gps': 2, 'None': 34, 'localization': 4, 'sensors': 7, '3d-reconstruction': 2, 'quadcopter': 0, 'computer-vision': 2, 'algorithm': 1, 'sensor-fusion': 0}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11755" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11755" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11755">
+					<img id="start_img-11755" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11755">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

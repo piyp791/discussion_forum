@@ -1,0 +1,769 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to apply A bang-bang signal of amplitude 1 N and 1 s width as an input force to reproduce certain results in Matlab?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9724" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9724" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 315</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to apply A bang-bang signal of amplitude 1 N and 1 s width as an input force to reproduce certain results in Matlab?</h2>
+<p>I working on dynamic modeling and simulation of a mechanical system (overhead crane), after I obtained the equation of motion, in the form: $$ M(q)\ddot{q}+C(q,\dot{q})\dot{q}+G(q)=Q $$</p>
+
+<p>All the matrices are know inertia, $ M(q)$, Coriolis-Centrifugal matrix $ C(q,\dot{q})$, and gravity $ G(q)$ as functions of the generalized coordinates $q$, and their derivatives $\dot{q}$.</p>
+
+<p>I want to solve for $q$, using Matlab <em>ODE</em> (in m-file), I got the response for some initial conditions and zero input, but, I want to find the response, for the aforementioned control signal (<strong>A bang-bang signal of amplitude 1 N and 1 s width</strong>), I'm trying to regenerate some results from the literature, and what the authors of that work said, regrading the input signal is the following: "A bang-bang signal of amplitude 1 N and 1 s width is used as an input force, applied at the cart of the gantry crane. A bang-bang force has a positive (acceleration) and negative (deceleration) period allowing the cart to, initially, accelerate and then decelerate and eventually stop at a target location." I didn't grasp what do they mean by bang-bang signal, I know in Matlab we could have step input, impulse, ...etc. But bang-bang signal, I'm not familiar with. According to <a href="https://en.wikipedia.org/wiki/Bang%E2%80%93bang_control" rel="nofollow noreferrer">this site</a> and <a href="http://www.brown.edu/Departments/Engineering/Courses/En123/Lectures/FdbkBasic.html" rel="nofollow noreferrer">this</a> bang bang is a controller rather.</p>
+
+<p>Could anyone suggest to me how to figure out this issue and implement this input signal? preferably in m-file.</p>
+
+<p>The code I'm using is given bellows, two parts:</p>
+
+<pre><code>function xdot = AlFagera(t,x,spec)
+% xdot = zeros(8,1);
+xdot = zeros(12,1); % to include the input torque
+
+% % Crane Specifications
+mp = spec(1);
+mc = spec(2);
+mr = spec(3);
+L = spec(4);
+J = spec(5);
+
+g = 9.80;               % accelatrion of gravity (m/s^)
+
+% % matix equations 
+M11 = mr+mc+mp; M12 = 0; M13 = mp*L*cos(x(3))*sin(x(4)); M14 = mp*L*sin(x(3))*cos(x(4));
+M21 = 0; M22 = mp+mc; M23 = mp*L*cos(x(3))*cos(x(4)); M24 = -mp*L*sin(x(3))*sin(x(4));
+M31  = M13; M32 = M23; M33 = mp*L^2+J; M34 = 0;
+M41 = M14; M42 = M24; M43 = 0; M44 = mp*L^2*(sin(x(3)))^2+J;
+M = [M11 M12 M13 M14; M21 M22 M23 M24; M31 M32 M33 M34; M41 M42 M43 M44];
+
+C11 = 0; C12 = 0; C13 = -mp*L*sin(x(3))*sin(x(4))*x(7)+mp*L*cos(x(3))*cos(x(4))*x(8);
+C14 = mp*L*cos(x(3))*cos(x(4))*x(7)-mp*L*sin(x(3))*sin(x(4))*x(8);
+C21 = 0; C22 = 0; C23 = -mp*L*sin(x(3))*cos(x(4))*x(7)-mp*L*cos(x(3))*sin(x(4))*x(8);
+C24 = -mp*L*cos(x(3))*sin(x(4))*x(7)-mp*L*sin(x(3))*cos(x(4))*x(8); 
+C31 = 0; C32 = 0; C33 = 0; C34 = -mp*L^2*sin(x(3))*cos(x(3))*x(8);
+C41 = 0; C42 = 0; C43 = -C34; C44 = mp*L^2*sin(x(3))*cos(x(4))*x(7);
+
+C = [C11 C12 C13 C14; C21 C22 C23 C24; C31 C32 C33 C34; C41 C42 C43 C44];
+Cf = C*[x(5); x(6); x(7); x(8)];
+
+G = [0; 0; mp*g*L*sin(x(3)); 0];
+
+fx = 0; 
+
+if t &gt;=1 &amp;&amp; t&lt;=2
+fy = 1.*square(t*pi*2);
+else fy = 0;
+end
+
+F =[fx; fy; 0; 0];     % input torque vector, 
+
+xdot(1:4,1)= x(5:8);
+xdot(5:8,1)= M\(F-G-Cf);
+xdot(9:12,1) = F;
+</code></pre>
+
+<p>And:</p>
+
+<pre><code>clear all; close all; clc;
+
+t0 = 0;tf = 20;
+
+x0 = [0.12 0.5 0 0, 0 0 0 0,0 0 0 0];  % initional conditions
+
+% % spectifications
+Mp = [0.1 0.5 1];      % variable mass for the payload
+figure
+plotStyle = {'b-','k','r'};
+for i = 1:3
+mp = Mp(i);
+mc = 1.06; mr = 6.4;           % each mass in kg
+L = 0.7; J = 0.005;            % m, kg-m^2 respe.
+spec = [mp mc mr L J];
+% % Call the the function
+[t,x] = ode45(@(t,x)AlFagera(t,x,spec),[t0 :0.001: tf],x0);
+
+legendInfo{i} = ['mp=',num2str(Mp(i)),'kg'];
+
+
+fx = diff(x(:,9))./diff(t);
+fy = diff(x(:,10))./diff(t);
+tt=0:(t(end)/(length(fx)-1)):t(end); % this time vector
+
+% to plot the cart positions in x and y direcitons
+subplot(1,2,1)
+plot(t,x(:,1),plotStyle{i})
+axis([0 20 0 0.18]);
+grid
+xlabel('time (s)');
+ylabel('cart position in x direction (m)');
+hold on
+legend(legendInfo,'Location','northeast')
+
+subplot(1,2,2)
+plot(t,x(:,2),plotStyle{i})
+axis([0 20 0 1.1]);
+grid
+xlabel('time (s)');
+ylabel('cart position in y direction (m)');
+hold on
+legend(legendInfo,'Location','northeast')
+
+end
+
+% to plot the input torque, (bagn-bang signal), just one sample
+figure
+plot(tt,fy)
+grid
+set(gca,'XTick',[0:20])
+xlabel('time (s)');
+ylabel('input signal, f_y (N)');
+</code></pre>
+
+<p>Furthermore, the results I'm getting and what I supposed to get are shown:
+<a href="https://i.stack.imgur.com/ha31n.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/ha31n.jpg" alt="This my output, for the give code"></a>
+<a href="https://i.stack.imgur.com/TTJH6.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/TTJH6.jpg" alt="This what I supposed to get"></a></p>
+
+<p><strong>Major difficulties, initial conditions are not clearly stated in the paper, the input force direction, is only in y (which it should be), or it has different direction. I appreciate any help.</strong></p>
+
+<blockquote>
+  <p>the paper I'm trying to recreate is:
+  R. M. T. Raja Ismail, M. A. Ahmad, M. S. Ramli, and F. R. M. Rashidi,  Nonlinear Dynamic Modelling and Analysis of a 3-D Overhead Gantry Crane System with System Parameters Variation.,  International Journal of Simulation Systems, Science &amp; Technology, vol. 11, no. 2, 2010.
+  <a href="http://ijssst.info/Vol-11/No-2/paper2.pdf" rel="nofollow noreferrer">http://ijssst.info/Vol-11/No-2/paper2.pdf</a></p>
+</blockquote>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9724" data-toggle = "popover">
+				<p>user name : AlFagera</p>
+				<p> user reputation : 99</p>
+				<p class = "tagcontent" id = "usertaginfo-9724">{'control': 5, 'product-of-exponentials': 3, 'None': 4, 'manipulator': 0, 'inverse-kinematics': 0, 'torque': 1, 'pid': 2, 'simulation': 1, 'servomotor': 1, 'industrial-robot': 6, 'dh-parameters': 2, 'matlab': 2, 'robotic-arm': 10, 'jacobian': 0, 'kinematics': 2, 'dynamics': 5, 'forward-kinematics': 1, 'robotc': 1, 'input': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9724">Load Comments</button></br>
+			<div id = "commentsection-9724" class = 'collapse'>
+			<div id = "comment-17325" class = "comment">
+				<p>Comments are not for extended discussion; this conversation has been [moved to chat](http://chat.stackexchange.com/rooms/39177/discussion-on-question-by-alfagera-how-to-apply-a-bang-bang-signal-of-amplitude).</p>
+			</div>
+			<div id = "comment-17326" class = "comment">
+				<p>On stack exchange, it is better to edit your question to add information requested in comments, rather than adding more comments. Comments are for helping to improve questions and answers, and are distracting, so we try to keep them to a minimum. If all of the information needed to answer the question is contained within it, the comments can be tidied up (deleted).</p>
+			</div>
+			<div id = "comment-17373" class = "comment">
+				<p>Can you add a reference to the paper(s) whose work you are trying to recreate?</p>
+			</div>
+			<div id = "comment-17378" class = "comment">
+				<p>I've updated the question and added the reference.</p>
+			</div>
+			<div id = "comment-17465" class = "comment">
+				<p>Unfortunately no, as in many published papers authors forethought not to provide all the information, that is why reproducing some results from the literature is **not an easy task at all**, for me, I started using [0.12 0.5 0 0] and all other initial conditions zeros, though it is show in the results that, 0.12 m, and 0.5 m correspond to to desired cart position in x, and y-directions respectively. One might use zero initial conditions and take the desired final points from the results, but, in this case, **I don's think Matlab ODE will be sufficient** one may need to go to Simulink.</p>
+			</div>
+			<div id = "comment-17479" class = "comment">
+				<p>@AlFagera, it seems from the figures the initial values are set to zero.</p>
+			</div>
+			<div id = "comment-17480" class = "comment">
+				<p>@CroCo, you're right, this what I realized later, but, the question now, how to set the desired final values, is that visible to set the desired (set) points, in the m file?, I think one must move to Simulink to do so, which I don't really prefer :)</p>
+			</div>
+			<div id = "comment-17485" class = "comment">
+				<p>@AlFagera, from the paper, fx is not zero. Also, I don't know why you've chosen `-1.0*sign(sin(t*pi));`. Nothing in the paper regarding this function. In my C++ code, choosing the aforementioned input yields the right plots. It  seems this function nailed the problem.</p>
+			</div>
+			</div>
+				<textarea id = "speech-9724" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9724">
+					<img id="start_img-9724" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9724">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9768"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9768" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>In bang-bang control, control inputs can only be activated similar to a switch: when they are engaged they are fully on positive, or fully on negative.   Some bang-bang control studies (not many that I can recall) account for a slew rate of the controller's output, so the outputs are not modelled as square waves, but rather as trapezoids.   I think this is the "bang-bang signal" you need to generate.  The phrasing is odd.  </p>
+
+<p>It sounds as if you need to add a control force to your model that is just a trapezoid (acceleration period, constant full-on period, and deceleration period).  In m-code it would be something like the following.  Here I am assuming your step size is 1 msec, with a 10% slew time.  You may want different slew parameters.  I've written it so you can change step size and slew percents in one place.</p>
+
+<pre><code>max_F = 1.0;
+steps_per_sec = 1000;
+slew_up = 0.1;
+slew_down = 0.1;
+accel_steps = floor(steps_per_sec * slew_up);
+decel_steps = floor(steps_per_sec * slew_down);
+full_on_steps = steps_per_sec - accel_steps - decel_steps;
+
+loops = 1;
+// acceleration period
+for i = 1:accel_steps
+    F(i) = i * max_F / accel_steps;
+    loops = loops + 1;
+end
+// full-on period
+for i = loops : accel_steps + full_on_steps
+    F(loops) = max_F;
+    loops = loops + 1;
+end
+// deceleration period
+for i = loops : accel_steps + full_on_steps + decel_steps
+    F(loops) = max_F - (i - accel_steps - full_on_steps) * max_F / decel_steps;
+    loops = loops + 1;
+end
+// after input is back to zero
+for i = loops : 10 * steps_per_sec
+    F(i) = 0.0;
+end
+
+// now apply F to your simulation
+</code></pre>
+
+<p>@AlFagera, Thanks for posting a reference to the actual paper.  Following the references and re-searching led me to this paper:  M. S. Alam, M. A. Hossain, and M. O. Tokhi, <em>Design of Command Shaper Using Gain-Delay Units and Particle Swarm Optimisation for Vibration Control of a Flexible System,</em> 14th International Congress on Sound &amp; Vibration, Cairns, Australia 2007 (<a href="https://www.acoustics.asn.au/conference_proceedings/ICSV14/papers/p197.pdf" rel="nofollow">https://www.acoustics.asn.au/conference_proceedings/ICSV14/papers/p197.pdf</a>).  In that paper they describe a bang-bang signal as I've done above, except their acceleration and deceleration periods are quite short.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9768" data-toggle = "popover">
+				<p>user name : SteveO</p>
+				<p> user reputation : 2960</p>
+				<p class = "tagcontent" id = "usertaginfo-9768">{'None': 222}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9768">Load Comments</button></br>
+			<div id = "commentsection-9768" class = 'collapse'>
+			<div id = "comment-17416" class = "comment">
+				<p>I looked at the paper, but still it's not much that clear how to implement</p>
+			</div>
+			<div id = "comment-17451" class = "comment">
+				<p>@AlFagera, the actual implementation is provided by **SteveO**. Please be more specific about your issue.</p>
+			</div>
+			</div>
+				<textarea id = "speech-9768" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9768">
+					<img id="start_img-9768" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9768">Comment</button>
+			<br><div id = "ans-9807"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9807" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">-1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The 'bang' refers to a step transition. Bang-Bang means that one applies maximum positive effort, then maximum negative effort, with step transitions in between. </p>
+
+<p>Technically we starting at 0 velocity and returning to 0 velocity so it should be bang-bang-bang control; but it sounds strange to say that.</p>
+
+<p>For theoretical analysis involving bang-bang inputs, I would use the dirac delta. I don't use matlab that much but it looks like they have it for <a href="http://mathworks.com/help/symbolic/dirac.html" rel="nofollow">symbolic analysis</a> and <a href="http://mathworks.com/help/control/ref/impulse.html" rel="nofollow">numerical analysis</a>. It sounds like you already know this though.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9807" data-toggle = "popover">
+				<p>user name : hauptmech</p>
+				<p> user reputation : 2621</p>
+				<p class = "tagcontent" id = "usertaginfo-9807">{'battery': 2, 'None': 220, 'lithium-polymer': 2}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9807">Load Comments</button></br>
+			<div id = "commentsection-9807" class = 'collapse'>
+			<div id = "comment-17461" class = "comment">
+				<p>in bang-bang control the term *bang* doesn't refer to each step change for the controller's output, but rather to the way the controller slams its output to/from either the positive or negative rails (which you nicely describe as maximum effort).  So it wouldn't be bang bang bang, it would still just be bang bang.</p>
+			</div>
+			<div id = "comment-17482" class = "comment">
+				<p>Interesting how different people focus on different parts of the same info. I control robots so there is always a final return to zero. Anyway, I was guessing that the OP was simply looking for a sanity check on some English language weirdness.</p>
+			</div>
+			<div id = "comment-17483" class = "comment">
+				<p>Understood.   Your interpretation made me think differently about it too.   I did not give you that downvote.</p>
+			</div>
+			</div>
+				<textarea id = "speech-9807" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9807">
+					<img id="start_img-9807" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9807">Comment</button>
+			<br><div id = "ans-9812"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9812" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>This is how I would go about simulating a nonlinear ODE in Matlab. As I mentioned in a (now-deleted) comment on your question, I typically work with <em>linear</em> ODE's in my line of work, which means that I usually use the (awesome) functions in the Control System Toolbox. </p>
+
+<p>Now, I'll start by saying that you haven't given any definitions of what the matrices are in your equation, so I can't give you a concrete example of how to solve your specific example. If you <em>update your question</em> to give numbers for everything then I can modify this answer to solve your problem. That said, you give:</p>
+
+<p>$$
+M(q)\ddot{q}+C(q,\dot{q})\dot{q}+G(q)=Q
+$$</p>
+
+<p>First I would say that this can be re-written as:</p>
+
+<p>$$
+\ddot{q} = \frac{1}{M(q)}\left(Q-C(q,\dot{q})\dot{q} -G(q)\right) \\
+$$</p>
+
+<p>So, for an example for you, I chose an RLC circuit, which takes the form:</p>
+
+<p>$$
+\begin{array}
+.\dot{I} = \frac{1}{L}\left(V_{\mbox{in}} - V_C - IR\right) \\
+\dot{V} = \frac{1}{C}I
+\end{array}
+$$</p>
+
+<p>Typically your input signal would be a smooth function of time. Here you're looking for a bang-bang signal, which is akin to a light switch. At some time, the input signal goes from nothing <em>immediately</em> to some value, then later from that value <em>immediately</em> back to nothing. </p>
+
+<p>So, where typically you would use an <code>interpolate</code> command to get values defined sample time increments, here you <strong>don't</strong> want those commands interpolated. You don't want a ramp, you want the signal to immediately shift. </p>
+
+<p>So this question really is two parts:</p>
+
+<ol>
+<li>How do I pass parameters to an ODE45 (or 23 or whatever else) function in Matlab, and </li>
+<li>How do I define a step change in an input signal for an ODE45 function?</li>
+</ol>
+
+<p>The answers are (examples to follow)</p>
+
+<ol>
+<li>Define your ODE function as a function in its own script, such that the first line of the script is something like <code>function [dq] = AlFageraODE(t,x,parameter1,parameter2,...,parameterN)</code>. Then, when you want to solve the ODE, call Matlab's built-in ODE solver as follows: <code>[t,y] = ode45(@AlFageraODE,[t0,t1],[y0,y1],</code><strong>[ ]</strong><code>,parameter1,parameter2,...,parameterN);</code>. The square brackets in bold there need to be included because that is where you can pass specific options to the ODE solver. If you don't want to pass anything specific and are okay with the default settings, you still need to put something, so put an empty array - this is done with an empty array <code>[]</code>. After that you can put in parameters that will be passed to your custom function. </li>
+<li>To get a true step function, you need to split the simulation into three distinct sets - before the step, during the step, and after the step. Anything else will result in the need to interpolate the input command. The last entry in the outputs will be the initial conditions for the next segment of the simulation. </li>
+</ol>
+
+<p>Below, I've written the custom ODE function, and then below that is the script used to solve the custom ODE. Note that the R, L, and C values are set in the calling script, not in the custom ODE. This is because those values are <em>passed</em> in to the custom ODE, along with what the applied voltage should be during that particular segment.</p>
+
+<p>The examples:</p>
+
+<ol>
+<li>The custom ODE function (again, this simulates an RLC circuit, but you can modify it for any custom ODE needing parameters passed in.)</li>
+</ol>
+
+<p>.</p>
+
+<pre><code>function dx = RoboticsODE(t,x,Vin,R,L,C)
+dx = zeros(2,1);
+
+I = x(1);
+V = x(2);
+
+di_dt = (1/L)*(Vin - V - I*R);
+dv_dt = (1/C)*I;
+
+dx(1) = di_dt;
+dx(2) = dv_dt;
+</code></pre>
+
+<ol start="2">
+<li>The script that solves that ODE for a bang-bang signal. </li>
+</ol>
+
+<p>.</p>
+
+<pre><code>%% Clear/close everything
+clear;
+close all;
+clc;
+
+%% Simulation Configuration
+v0 = 0;             % Initial *output* voltage
+i0 = 0;             % Initial circuit current
+C = 47*(1/1000);    % Capacitance, F
+R = 0.1;            % Resistance, Ohm
+L = 22*(1/1000);    % Inductance, H
+
+appliedVoltages = [0,1,0]; % The applied voltages at t0, bangOn, bangOff
+tStart = 0;         % t0
+bangStart = 1;      % bangOn time
+bangWidth = 1;      % bangOff time = bangOn time + bangWindow
+endWindow = 5;      % endWindow is how long to "watch" the simulation after 
+                    %   the bang-bang signal goes "off".
+
+%% Output Initialization
+outputTime = zeros(0,1);
+outputVoltage = zeros(0,1);
+outputCurrent = zeros(0,1);
+inputVoltage = zeros(0,1);
+
+%% Dependent Configuration
+currentValues = [i0;v0];
+samplePoints = cumsum([tStart,bangStart,bangWidth,endWindow]);
+% A note on the above - I use the cumulative sum (cumsum) because I defined
+% each point as the number of seconds *after* the previous event. If you
+% defined absolute time points then you'd just use those time points
+% directly with no cumulative sum.
+nSegments = numel(samplePoints)-1;
+
+%% Simulation
+for currentSegment = 1:nSegments
+    % Setup the simulation by getting the current time window and "intial"
+    % conditions.
+    Vt = appliedVoltages(currentSegment);
+    t0 = samplePoints(currentSegment);
+    t1 = samplePoints(currentSegment+1);
+    sampleTime = [t0;t1];
+
+    % Run the simulation by solving the ODE for this particular segment.
+    [intermediateTime,intermediateOutput] = ...
+        ode45(@RoboticsODE,sampleTime,currentValues,[],Vt,R,L,C);
+
+    % Assign outputs
+    nOutputPoints = numel(intermediateTime);
+    outputTime(end+1:end+nOutputPoints) = intermediateTime;
+    outputCurrent(end+1:end+nOutputPoints) = intermediateOutput(:,1);
+    outputVoltage(end+1:end+nOutputPoints) = intermediateOutput(:,2);
+    inputVoltage(end+1:end+nOutputPoints) = Vt*ones(nOutputPoints,1);
+
+    % Setup the next simulation by setting the "initial" conditions for
+    % that simulation equal to the ending conditions for the current
+    % simulation.
+    currentValues(1) = outputCurrent(end);
+    currentValues(2) = outputVoltage(end);
+end
+
+%% Output Plot
+plot(outputTime,inputVoltage);
+hold on;
+plot(outputTime,outputVoltage);
+title('RLC Circuit with Step Input to ODE45');
+xlabel('Time (s)');
+ylabel('Voltage (V)');
+legend('Input Voltage','Output Voltage');
+</code></pre>
+
+<ol start="3">
+<li>The plot of the output.</li>
+</ol>
+
+<p><a href="https://i.stack.imgur.com/IhuDv.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/IhuDv.png" alt="ODE45 Example Output"></a></p>
+
+<p>Finally, as I mentioned, if you would be willing to give concrete numbers for your equation then I could tailor this to solve your particular problem. As it stands, I can't provide any solution to a symbolic nonlinear ODE so this example is the best I can give you.</p>
+
+<h2>:EDIT:</h2>
+
+<p>I've got the problem solved for you. The code is attached below. I'll say this, though: It's important, for a step input (bang-bang, etc.) to <em>segment</em> the ODE solver process, as I described above. This is because Matlab tries to optimize solving the ODE and may not take process time in exactly the way you would expect.</p>
+
+<p>The segmenting method is again, as described above, where you split the solving process at every discontinuity. The initial conditions for the following step is equal to the ending conditions of the current step. </p>
+
+<p>The images below are the solutions I got with the segmented method and the "all-in-one" method. The all-in-one is the way you had it setup, where the force function was determined by an <code>if</code> statement in the ODE function. Because Matlab chooses the sample time increments, the positive and negative segments aren't guaranteed to have exactly the same number of samples. I think this is the reason for the drift in the output of the all-in-one solution. </p>
+
+<p>I found several problems with your method. When I corrected them, I got a plot that looked (to me) to exactly duplicate the plots from the paper you linked. </p>
+
+<ol>
+<li>The biggest problem - fx and fy should be the same. </li>
+<li>Also a problem, the pulse width should be 1s. You used a square wave of <em>period</em> 1s, meaning that there was a 0.5s "positive" and 0.5s "negative" signal. I halved the frequency and got the proper 1s signal width. </li>
+<li>Your initial conditions for x and y were not zero. They are zero in the paper, so I set them to zero in the simulation to replicate the figures in the paper. </li>
+</ol>
+
+<p><a href="https://i.stack.imgur.com/iYba1.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/iYba1.png" alt="ODE Solver Comparison"></a></p>
+
+<p>Here's the code! First, the ODE script:</p>
+
+<p>.</p>
+
+<pre><code>function varDot = AlFagera(t,var,spec,F)
+% In general, I did a lot of cleanup with this function to make things
+% easier for me to read.
+
+%% Misc Declarations
+% varDot = zeros(8,1);
+varDot = zeros(12,1); % to include the input torque
+g = 9.80;               % Acceleration of gravity (m/s^2)
+
+%% Define Forces if Undefined
+% If the segmentSolution is being used, then the force is supplied to the
+% function. If it's not being used (the "all-in-one" solution), then the
+% force is determined by the simulation time. 
+if isempty(F)
+    if t &gt;=1 &amp;&amp; t&lt;=3
+        fy = -1.*sign(sin(t*pi));
+    else
+        fy = 0;
+    end
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % I'll highlight this, because I think this was the key problem     %
+    % you were having. The force for fx and fy should be the same. You  %
+    % had fx = 0 for all cases.                                         %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %fx = 0;
+    fx = fy;
+    F = [fx;fy;0;0];
+end
+%% Crane Specifications
+mp = spec(1);
+mc = spec(2);
+mr = spec(3);
+L = spec(4);
+J = spec(5);
+
+%% Breakout the Input Variable
+x        = var(1);
+y        = var(2);
+theta    = var(3);
+phi      = var(4);
+
+xDot     = var(5);
+yDot     = var(6);
+thetaDot = var(7);
+phiDot   = var(8);
+
+%% Repackage the Inputs into Useful Form
+q = [...
+    x; ...
+    y; ...
+    theta; ...
+    phi];
+
+qDot = [...
+    xDot; ...
+    yDot; ...
+    thetaDot; ...
+    phiDot];
+
+%% Simplified expressions for (extensive) use later
+mpL  = mp*L;
+cosT = cos(theta);
+sinT = sin(theta);
+cosP = cos(phi);
+sinP = sin(phi);
+
+%% Matrix Expressions
+M = [...
+    mr+mc+mp      , 0              , mpL*cosT*sinP , mpL*sinT*cosP; ...
+    0             , mp+mc          , mpL*cosT*cosP , -mpL*sinT*sinP; ...
+    mpL*cosT*sinP , mpL*cosT*cosP  , mpL*L+J       , 0; ...
+    mpL*sinT*cosP , -mpL*sinT*sinP , 0             , mp*(L*sinT)^2+J];
+C = [...
+    0 , 0 , -mpL*sinT*sinP*thetaDot+mpL*cosT*cosP*phiDot , mpL*cosT*cosP*thetaDot-mpL*sinT*sinP*phiDot; ...
+    0 , 0 , -mpL*sinT*cosP*thetaDot-mpL*cosT*sinP*phiDot , -mpL*cosT*sinP*thetaDot-mpL*sinT*cosP*phiDot; ...
+    0 , 0 , 0                                            , -mpL*L*sinT*cosT*phiDot; ...
+    0 , 0 , mpL*L*sinT*cosT*phiDot                       , mpL*L*sinT*cosT*thetaDot];
+G = [...
+    0; ...
+    0; ...
+    mpL*g*sinT; ....
+    0];
+
+%% Assign Outputs
+qDdot = M\(-C*qDot-G+F);
+varDot = [...
+    qDot; ...
+    qDdot; ...
+    F];
+</code></pre>
+
+<p>Then, the script that solves the ODE:</p>
+
+<p>. </p>
+
+<pre><code>clear all; 
+close all; 
+clc;
+
+% Compare the all-in-one method of solving the problem with the segmented
+% method of solving the problem by setting the variable below equal to
+% "true" or "false". 
+segmentSolution = true;
+
+t0 = 0;tf = 20;
+
+% Your initial conditions here for x- and y-positions were not zero, so I
+% set them to zero to reproduce Figure 2 and Figure 3 in the paper you
+% linked. 
+% Also - you don't ever use the last 4 values of this except as a way to
+% output the force. This isn't used in the segmentSolution because there
+% the input force is supplied to the function. 
+
+x0 = [0 0 0 0, 0 0 0 0,0 0 0 0];  % Initial Conditions
+
+%% Specifications
+Mp = [0.1 0.5 1];      % Variable mass for the payload
+figure
+plotStyle = {'b-','k','r'};
+
+%% SegmentSolution Settings
+fx = [0,1,-1,0];
+fy = [0,1,-1,0];
+tStart = 0;
+tOn = 1;
+bangWidth = 1;
+tEndWindow = 17;
+sampleTime = cumsum([tStart,tOn,bangWidth,bangWidth,tEndWindow]);
+nSegments = numel(sampleTime)-1;
+%% Simulation
+for i = 1:3
+    mp = Mp(i);
+    mc = 1.06; mr = 6.4;           % each mass in kg
+    L = 0.7; J = 0.005;            % m, kg-m^2 respe.
+    spec = [mp mc mr L J];
+    %% Call the the function
+    initialConditions = x0;
+
+    if segmentSolution
+        t = zeros(0,1);
+        x = zeros(0,numel(x0));
+        outputFx = zeros(0,1);
+        outputFy = zeros(0,1);
+        for currentSegment = 1:nSegments
+            inputForce = [fx(currentSegment),fy(currentSegment),0,0].';
+            t0 = sampleTime(currentSegment);
+            t1 = sampleTime(currentSegment+1);
+            [intermediateT,intermediateX] = ode45(@AlFagera,[t0 :0.001: t1],initialConditions,[],spec,inputForce);
+            nOutputSamples = numel(intermediateT);
+            index1 = size(t,1)+1;
+            index2 = size(t,1)+nOutputSamples;
+            t(index1:index2) = intermediateT;
+            x(index1:index2,:) = intermediateX;
+            initialConditions = x(end,:).';
+            outputFx(index1:index2) = inputForce(1)*ones(nOutputSamples,1);
+            outputFy(index1:index2) = inputForce(2)*ones(nOutputSamples,1);
+        end
+        tt = t;
+    else
+        inputForce = []; % Leave this empty for the all-in-one solver. 
+                         % There's a check in the code to setup the force
+                         % when it's not defined. 
+        [t,x] = ode45(@AlFagera,[t0:0.001:tf],initialConditions,[],spec,inputForce);
+        outputFx = diff(x(:,9))./diff(t);
+        outputFy = diff(x(:,10))./diff(t);
+        tt=0:(t(end)/(length(outputFx)-1)):t(end);
+    end
+    legendInfo{i} = ['mp=',num2str(Mp(i)),'kg'];
+
+
+    %fx = diff(x(:,9))./diff(t);
+    %fy = diff(x(:,10))./diff(t);
+    %tt=0:(t(end)/(length(fx)-1)):t(end); % this time vector
+
+    % to plot the cart positions in x and y direcitons
+    subplot(1,2,1)
+    plot(t,x(:,1),plotStyle{i})
+    axis([0 20 0 0.18]);
+    grid
+    xlabel('time (s)');
+    ylabel('cart position in x direction (m)');
+    hold on
+    legend(legendInfo,'Location','northeast')
+
+    subplot(1,2,2)
+    plot(t,x(:,2),plotStyle{i})
+    axis([0 20 0 1.1]);
+    grid
+    xlabel('time (s)');
+    ylabel('cart position in y direction (m)');
+    hold on
+    legend(legendInfo,'Location','northeast')
+end
+
+% to plot the input torque, (bang-bang signal), just one sample
+figure
+plot(tt,outputFy);
+grid
+set(gca,'XTick',[0:20])
+xlabel('time (s)');
+ylabel('input signal, f_y (N)');
+</code></pre>
+
+<p>I took the liberty of cleaning up the code in the ODE function, I hope you don't mind. </p>
+
+<p>So, to summarize, the solution to your problem is:</p>
+
+<ol>
+<li>Pass inputs to the ODE function (such as parameters and applied forces), and</li>
+<li>Segment the ODE solution at each discontinuity.</li>
+</ol>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9812" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-9812">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9812">Load Comments</button></br>
+			<div id = "commentsection-9812" class = 'collapse'>
+			<div id = "comment-17466" class = "comment">
+				<p>You know that in my current situation those matrices are not just numbers, but rather they function of the system states, and their derivatives, as mentioned in the question, ($C(q,\dot{q}), M(q), G(q)$), if you check the paper I mention you'll find all of them. Implementing them in Matlab will take some time, however, I already did that, but how to manipulate the input and the initial conditions to find the same results is a kind of trouble, if you like, I may send you my m file to see, if you can help me to figure out this, but, I don't want to take even more of you're time.</p>
+			</div>
+			<div id = "comment-17473" class = "comment">
+				<p>@AlFagera - You can just edit your question and paste in the m file. Just be sure to highlight the code and hit the { } button in the text editor to get the code formatted correctly. I don't mind looking at your code at all, but I'd rather not follow links to get there (because links can be broken) or use private email. The answer you get should be able to help people with similar problems in the future, so please feel free to post as much information as you can!</p>
+			</div>
+			<div id = "comment-17478" class = "comment">
+				<p>I have just update the question and add the code, check out, kindly</p>
+			</div>
+			<div id = "comment-17481" class = "comment">
+				<p>@AlFagera - Got the solution. See the edit above.</p>
+			</div>
+			<div id = "comment-17484" class = "comment">
+				<p>it's really difficult to describe my feelings, but anyway, I need to master this  segmenting method, I don't know if there would be some reference elaborating even more on that. If I had a higher reputation, I could really award more for this answer. Many Thanks,</p>
+			</div>
+			<div id = "comment-17491" class = "comment">
+				<p>@AlFagera - Glad I could help! Check the documentation on ode45. I think there is some information there. Mathworks forums are really good for Matlab questions, as is StackOverflow.</p>
+			</div>
+			</div>
+				<textarea id = "speech-9812" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9812">
+					<img id="start_img-9812" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9812">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,392 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Quadcopter refuses to fly when the Yaw PID component is added
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9629" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9629" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 198</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Quadcopter refuses to fly when the Yaw PID component is added</h2>
+<p>Good day,</p>
+
+<p>I would like to ask why is it that when I add the Yaw control to my PID controller for each motor. The quadcopter refuses to take off or maintain its altitude. I am curently using a Cascaded PID controller for attitude hold using an Accelerometer, a Magnetometer and a Gyroscope, and a 40Hz Ultrasonic Sensor for Altitude Hold. Since the scope is indoor I have done away with the barometer due to its +-12m error. </p>
+
+<p><strong>Resulting Response</strong></p>
+
+<p>Without Yaw Control, the plot below shows the response of the quadrotor.
+<a href="https://i.stack.imgur.com/4WSGy.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/4WSGy.png" alt="enter image description here"></a></p>
+
+<p>With Yaw Control, the plot below shows the response of the quadrotor.
+<a href="https://i.stack.imgur.com/ow2tB.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/ow2tB.png" alt="enter image description here"></a></p>
+
+<p><strong>Debugging</strong></p>
+
+<p>I found out that each of the outputs from each PID's give a too high of a value such that when summed together goes way over the PWM limit of 205 or Full Throttle.</p>
+
+<ol>
+<li><p>Without yawPID contribution
+The limiter kicks in without damaging the desired response of the system thus is still able to fly albeit with oscillatory motion along the z axis or height
+<a href="https://i.stack.imgur.com/6w8rv.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/6w8rv.png" alt="enter image description here"></a>
+<a href="https://i.stack.imgur.com/xaSx3.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/xaSx3.png" alt="enter image description here"></a></p>
+
+<ol start="2">
+<li>With yawPID contribution
+The added yaw components increases the sum of the PID's way above the limit thus the limiter compesates the excess too much resulting in an over all lower PWM output for all motors thus the quad never leaves the ground.
+<a href="https://i.stack.imgur.com/fli5D.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/fli5D.png" alt="enter image description here"></a>
+<a href="https://i.stack.imgur.com/9GvBM.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/9GvBM.png" alt="enter image description here"></a></li>
+</ol>
+
+<p>//Motor Front Left (1)
+float motorPwm1 =  pitchPID + rollPID + yawPID + baseThrottle + baseCompensation;</p>
+
+<p>//Motor Front Right (2)
+float motorPwm2 =  pitchPID - rollPID - yawPID + baseThrottle + baseCompensation; </p>
+
+<p>//Motor Back Left (3)
+float motorPwm3 = -pitchPID + rollPID - yawPID + baseThrottle + baseCompensation; </p>
+
+<p>//Motor Back Right (4)
+float motorPwm4 = -pitchPID - rollPID + yawPID + baseThrottle + baseCompensation;</p></li>
+</ol>
+
+<p><strong>Background</strong></p>
+
+<p>The PID parameters for the Pitch, Yaw and Roll were tuned individually meaning, the base throttle was set to a minimum value required for the quadcopter to be able to lift itself.</p>
+
+<p>The PID parameters for the Altitude Sensor is tuned with the other controllers active (Pitch and Roll).</p>
+
+<p><strong>Possible Problem</strong></p>
+
+<ol>
+<li>Limiter algorithm</li>
+</ol>
+
+<p>A possible problem is that the algorithm I used to limit the maximum and the minimum throttle value may have caused the problem. The following code is used to maintain the ratio of the motor values instead of limiting them. The code is used as a two stage limiter. In the 1st stage, if one motorPWM is less than the set baseThrottle, the algorithm increases each motor PWM value until none of them are below that. In the 2nd stage, if one motorPWM is more than the set maxThrottle, the algorithm decreases each motor PWM value until none of them are above that. </p>
+
+<pre><code>//Check if PWM is Saturating - This method is used to fill then trim the outputs of the pwm that gets fed into the gpioPWM() function to avoid exceeding the earlier set maximum throttle while maintaining the ratios of the 4 motor throttles. 
+
+float motorPWM[4] = {motorPwm1, motorPwm2, motorPwm3, motorPwm4};
+float minPWM = motorPWM[0];
+int i;
+for(i=0; i&lt;4; i++){ // Get minimum PWM for filling
+    if(motorPWM[i]&lt;minPWM){
+        minPWM=motorPWM[i];
+    }
+}
+
+cout &lt;&lt; " MinPWM = " &lt;&lt; minPWM &lt;&lt; endl;
+
+if(minPWM&lt;baseThrottle){
+    float fillPwm=baseThrottle-minPWM; //Get deficiency and use this to fill all 4 motors
+    cout &lt;&lt; " Fill = " &lt;&lt; fillPwm &lt;&lt; endl;
+    motorPwm1=motorPwm1+fillPwm;
+    motorPwm2=motorPwm2+fillPwm;
+    motorPwm3=motorPwm3+fillPwm;
+    motorPwm4=motorPwm4+fillPwm;
+}
+
+float motorPWM2[4] = {motorPwm1, motorPwm2, motorPwm3, motorPwm4};
+float maxPWM = motorPWM2[0];
+for(i=0; i&lt;4; i++){ // Get max PWM for trimming
+    if(motorPWM2[i]&gt;maxPWM){
+        maxPWM=motorPWM2[i];
+    }
+}
+
+cout &lt;&lt; " MaxPWM = " &lt;&lt; maxPWM &lt;&lt; endl;
+
+if(maxPWM&gt;maxThrottle){
+    float trimPwm=maxPWM-maxThrottle; //Get excess and use this to trim all 4 motors
+    cout &lt;&lt; " Trim = " &lt;&lt; trimPwm &lt;&lt; endl;
+    motorPwm1=motorPwm1-trimPwm;
+    motorPwm2=motorPwm2-trimPwm;
+    motorPwm3=motorPwm3-trimPwm;
+    motorPwm4=motorPwm4-trimPwm;
+}
+</code></pre>
+
+<p>This was obtained from pixhawk. However the difference is that they employ only upper bound compensation limiting, while mine also performs lower bound compensation limiting which may cause more saturation once it reaches the second stage.</p>
+
+<p><a href="https://i.stack.imgur.com/Rt7rZ.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/Rt7rZ.png" alt="enter image description here"></a>
+From:<a href="https://pixhawk.org/dev/mixing" rel="nofollow noreferrer">https://pixhawk.org/dev/mixing</a></p>
+
+<ol start="2">
+<li>Gains are set too high.</li>
+</ol>
+
+<p>It is also possible that I've set my P gains too high thus exceeding the max RPM limit of the motors causing the Limiter algorithm to overcompensate.</p>
+
+<p><strong>Current PID Settings:</strong></p>
+
+<p>The minimum motor value for the quad to lift itself is 160 while the maximum limit is 200 from the PWM time high of 2000ms </p>
+
+<ol>
+<li>Pitch (Cascaded P-PID controller)
+Rate P = 0.07
+Rate I = 0.03
+Rate D = 0.0001
+Stabilize P = 2</li>
+<li>Roll (Cascaded P-PID controller)
+Rate P = 0.09
+Rate I = 0.03
+Rate D = 0.0001
+Stabilize P = 2</li>
+<li>Yaw (Cascaded P-PID controller)
+Rate P = 0.09
+Rate I = 0.03
+Rate D = 0.0001
+Stabilize P = 2</li>
+<li>Hover (Single loop PD controller)
+P = 0.7
+D = 35</li>
+</ol>
+
+<p><strong>Possible Solution</strong></p>
+
+<p>I think I have set the PID parameters particularly the P or D gain too high that the computed sum of the outputs of the controller is beyond the limit. Maybe retuning them would help.</p>
+
+<blockquote>
+  <p>I would just like to ask if anyone has encountered this problem or if you have any suggestions. Thank you :) </p>
+</blockquote>
+
+<h2><strong>EDIT</strong></h2>
+
+<p>I have added the plots of the response when the control loop is fast (500Hz) and Slow (300Hz)</p>
+
+<blockquote>
+  <p>500Hz: Does not fly
+  <a href="https://i.stack.imgur.com/OzU9n.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/OzU9n.png" alt="enter image description here"></a></p>
+  
+  <p>300Hz: Flies
+  <a href="https://i.stack.imgur.com/5MZ6j.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/5MZ6j.png" alt="enter image description here"></a></p>
+</blockquote>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9629" data-toggle = "popover">
+				<p>user name : user123456098</p>
+				<p> user reputation : 415</p>
+				<p class = "tagcontent" id = "usertaginfo-9629">{'control': 16, 'stereo-vision': 2, 'communication': 0, 'pid': 19, 'uav': 0, 'stability': 13, 'mobile-robot': 2, 'sensor-error': 0, 'tuning': 2, 'cameras': 0, 'integration': 0, 'opencv': 2, 'differential-drive': 0, 'motion-planning': 0, 'None': 13, 'raspberry-pi': 14, 'localization': 0, 'microcontroller': 0, 'mapping': 0, 'path-planning': 0, 'real-time': 1, 'sensors': 0, 'quadcopter': 19, 'computer-vision': 2, 'vfh': 0, 'c++': 2, 'filter': 0, 'dead-reckoning': 0, 'sensor-fusion': 5, 'sonar': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9629">Load Comments</button></br>
+			<div id = "commentsection-9629" class = 'collapse'>
+			<div id = "comment-17062" class = "comment">
+				<p>How are you adding the yaw controller output to the motors? Are you assigning the values to the correct motors?</p>
+			</div>
+			<div id = "comment-17064" class = "comment">
+				<p>@Chuck yup I have checked the response with the yaw controller only given a setpoint. It goes to the setpoint even when inflicting rotational disturbances along the yaw. I also checked the rotation of the propellers given a direction of rotation I want to go (CCW/CW). I am debugging my controller right now. I am checking the contributions of each component (motorPWM2 = pitchPID + yawPID - rollPID + basethrottle + altitudePID;) to see if it is going over the limit and overcompensating</p>
+			</div>
+			<div id = "comment-17083" class = "comment">
+				<p>I'm no expert at this. There's not much between 160 min value and 200 max. In either case, you are constantly hitting the limit as I see it in your diagram. The more often you limit the controller value, the more it is actually limiter acting as a (nonlinear!) controller and not the controller itself. A limiter should kick in occasionally and not all the time. Strap a belt tightly around your breast and run a marathon. I'd try to use stronger motors so that your controller has enough air to do its job and not hit the limit so often. Only then try to control multiple variables.</p>
+			</div>
+			<div id = "comment-17091" class = "comment">
+				<p>@Chuck May I ask what happens to the P gain contribution to the output if the speed of the control loop is decreased (dT increased). Does it have any significant effect like on the I and D gain which is time dependent (D decreases I increases).</p>
+			</div>
+			<div id = "comment-17092" class = "comment">
+				<p>@BendingUnit22 I have tried to run the control loop at a slower rate and noticed that there is a drastic change in each of the PID components such that it is not exceeding the limit too much and now its flying again. May I also ask the question above?</p>
+			</div>
+			<div id = "comment-17093" class = "comment">
+				<p>Could you add the plots for that? What was the old rate and what did you change it to?</p>
+			</div>
+			<div id = "comment-17094" class = "comment">
+				<p>@BendingUnit22 I have added the plots above. I also included at the first part a similar implementation of the limiter algorithm I used from Pixhawk's Ratio Clamping however they only use a single stage upperbound compensation while I use both the lower first then the upper bound. This may be the problem as it shifts the response curves upwards increasing the saturation thus making the quad unable to fly. Should I just use a normal limiting algorithm: if (motorPWM<minThrottle) {motorPWM = minthrottle;} to keep the motor on and then just apply the compensation algorthim at the upperbound limit?</p>
+			</div>
+			<div id = "comment-17105" class = "comment">
+				<p>@user123456098 - If you're 15 meters from your target, how does that change if you measure it for an hour or a minute? It doesn't - time isn't a factor in a distance measurement. Similarly, time isn't a factor in a proportional measurement. You're not measuring the any *rates* when you're getting proportional error, so sample time doesn't matter *for proportional error*.</p>
+			</div>
+			<div id = "comment-17106" class = "comment">
+				<p>@Chuck Thank you :)</p>
+			</div>
+			</div>
+				<textarea id = "speech-9629" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9629">
+					<img id="start_img-9629" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9629">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9648"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9648" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><blockquote>
+  <p><strong>disclaimer</strong>: This is more of a longer comment than an answer. I'm not sure what the problem is. There is a lot going on here (thankfully a lot of information is provided, too) and my attention shifted around from one thing to others.</p>
+</blockquote>
+
+<h2>my original thought</h2>
+
+<p>from the comments</p>
+
+<blockquote>
+  <p>There's not much between 160 min value and 200 max. 
+  In either case (with or without the yaw controller), you are constantly hitting the limit as I see it in your diagram. 
+  The more often you limit the controller value, the more it is actually the limiter acting as a (nonlinear!) controller and not the controller itself.
+  A limiter should kick in occasionally and not all the time. </p>
+</blockquote>
+
+<p>This is mostly based on how clearly the limit cuts down the PWM:</p>
+
+<p><a href="https://i.stack.imgur.com/nxKuW.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/nxKuW.png" alt="limited PWM"></a></p>
+
+<p>hence the following analogy came to my mind:</p>
+
+<blockquote>
+  <p>Strap a belt tightly around your breast and run a marathon. </p>
+</blockquote>
+
+<p>And I concluded that:</p>
+
+<blockquote>
+  <p>I'd try to use stronger motors so that your controller has enough air to do its job and not hit the limit so often.</p>
+</blockquote>
+
+<p>A stronger motor would not have run at full power and would not hit the limit so often. Hitting the limit is not bad in of itself. Imagine your PWM would be either at the upper or the lower limit. You'd have a (nonlinear) bang-bang controller. Such a controller isn't bad in of itself either, but it somewhat overrides the PID controller.</p>
+
+<p>It can happen that you can manipulate the PID parameters at will and nothing changes. One reason for that can be a limit that makes your changes irrelevant. New parameters might change the output from 260 to 280 or to 220, which will have to effect if they are all going to be limited to 200.
+This is why constantly hitting the limit can be a bad thing.</p>
+
+<p>With the yaw part, the phenomenon seems to be more pronounced, but not by much. I guess this is something to be aware of especially when summing up controller values, but not the actual problem.</p>
+
+<p>Anyway, from the given diagrams I cannot tell why one would fly and the other would not.</p>
+
+<h2>500Hz -> 300Hz</h2>
+
+<p>Then another attempt was made and again one configuration works and the other does not.</p>
+
+<blockquote>
+  <p>I have tried to run the control loop at a slower rate and noticed that there is a drastic change in each of the PID components such that it is not exceeding the limit too much and now its flying again.</p>
+</blockquote>
+
+<p>I tried to find differences between both diagrams. You are right, the limit is not exceeded as often as before in the flying operation. But what else is different?</p>
+
+<blockquote>
+  <p>May I ask what happens to the P gain contribution to the output if the speed of the control loop is decreased (dT increased). Does it have any significant effect like on the I and D gain which is time dependent (D decreases I increases)</p>
+</blockquote>
+
+<p>Now I had a look at the separate controller error values. I combined them into the following image for comparison:</p>
+
+<p><a href="https://i.stack.imgur.com/Wk12g.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/Wk12g.png" alt="error values"></a></p>
+
+<p>The first thing that I notice is that there's a steady state error and thus $I_{error}$ constantly grows aka the red is the integral of blue and blue is bigger than zero all the time. This is not a good thing.</p>
+
+<p>If there's a steady state error that the P gain cannot compensate, the integral part should grow and compensate the constant offset error.</p>
+
+<p><strong>The integral part should converge to some value.</strong> At least if it's compensating for a constant offset. I don't know what integral error from what controller this is, but an error that keeps growing is undesirable.</p>
+
+<p>But maybe there is something inherently different between fly and nofly?
+The diagrams are a <em>little</em> hard to read because the axis are of different scale. </p>
+
+<p>I tried to scale the images in gimp to fit and this is the result:</p>
+
+<p><a href="https://i.stack.imgur.com/sJSie.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/sJSie.png" alt="flynoflynofly"></a></p>
+
+<p>The pixelated plots are those two when it did not fly.
+Their overall $P_{error}$ is bigger and thus the $I_{error}$ is steeper.</p>
+
+<p>But I don't think this is the problem. Look at the difference between the two $I_{error}$ of the cases when it flew. (the non-pixelated ones)</p>
+
+<p>I'd say there's no other significant difference between the two cases.</p>
+
+<h2>conclusion</h2>
+
+<p>There's a constant error in the system. The controller cannot reduce that error. It looks as if the control loop is not closed properly.</p>
+
+<p>Take a step back.
+Even in your first image, the height value oscillates and $I_{error}$ increases constantly. Inspect what's going on there.</p>
+
+<p>Then create the angle controller separately. Put the quadcopter onto a pivot point or pole and see if it can maintain its angle. The height controller should be turned off.</p>
+
+<p>When both controllers work on their own, try to combine both controllers in a weighted sum. $PID_{total} = 0.5 PID_{yaw} + 0.5PID_{height}$ Change the ratio as you see fit. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9648" data-toggle = "popover">
+				<p>user name : Bending Unit 22</p>
+				<p> user reputation : 1335</p>
+				<p class = "tagcontent" id = "usertaginfo-9648">{'None': 93}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9648">Load Comments</button></br>
+			<div id = "commentsection-9648" class = 'collapse'>
+			<div id = "comment-17220" class = "comment">
+				<p>I changed my limiting algorithm to a threshold based one and retuned the PID's now it is flying again :) Thank you so much for you help.</p>
+			</div>
+			<div id = "comment-17318" class = "comment">
+				<p>I found the culprit, it was the mounting of my sensor. When I screwed the sensor in place, the noise was minimized, the PID output was cleaner and no longer saturates. Now it flies beautifully with lateral drift which I plan to fix using X-Y position integration on the accelerometer and an optical flow sensor. The mounting was previously relying on a very soft foam which turns out introduces more vibrations as it was too soft (gels are more preferrable or orange foams from 3M).</p>
+			</div>
+			</div>
+				<textarea id = "speech-9648" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9648">
+					<img id="start_img-9648" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9648">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

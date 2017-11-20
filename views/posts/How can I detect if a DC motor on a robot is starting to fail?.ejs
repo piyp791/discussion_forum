@@ -1,0 +1,161 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How can I detect if a DC motor on a robot is starting to fail?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-57" class = "post">
+			<h2>Question</h2>
+			<div id="vote-57" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">11</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 276</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How can I detect if a DC motor on a robot is starting to fail?</h2>
+<p>What characteristics can I look for which could be reliable early warning signs that a DC motor on my robot, say one used for the drive, could be failing? I'm looking for an answer that deals in terms of sensors rather than manual inspection, so a circuit could be constructed to warn of a potential failure before it happens.</p>
+
+<p>I have a few ideas such as an increase in current draw or decrease in rotation speed / voltage, but I want to guard against false warnings caused by reasonable wear and tear, or just the robot struggling on tough terrain.</p>
+
+<p>Obviously such a system will never be foolproof, but are there any points I can look out for?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-57" data-toggle = "popover">
+				<p>user name : berry120</p>
+				<p> user reputation : 640</p>
+				<p class = "tagcontent" id = "usertaginfo-57">{'control': 22, 'battery': 16, 'slam': 7, 'design': 8, 'motor': 11, 'underwater': 24, 'kinect': 4, 'auv': 24, 'input': 4, 'electronics': 10, 'gyroscope': 22, 'gps': 17, 'wheel': 9, 'None': 3, 'localization': 17, 'mapping': 7, 'failure': 11, 'protection': 10, 'sensors': 11, 'two-wheeled': 22, 'balance': 22, 'acoustic-rangefinder': 7}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-57" class = 'collapse'>
+			</div>
+				<textarea id = "speech-57" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-57">
+					<img id="start_img-57" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-57">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-64"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-64" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">9</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>There are two key things to look for from a control system point of view. The first is the root mean square of the torque applied and the second is the following error on moves.</p>
+
+<p>As motors degrade over time they require more torque to be applied for the same acceleration, so if you have tuned your PID loop for a new, low loss motor then as it ages and the losses increase the motor will drift out of tune. At some point the motor will become worn enough that you will be unable to tune the PID parameters to give you the performance you need.Before this happens though you may already have started tripping a torque limit in your motion controller (it may not allow 100% toque for more than n ms for instance).</p>
+
+<p>The problem with looking just at torque is that it can be difficult to keep track of, just looking at the max value will tell you nothing because many situations can cause 100% torque for short periods, especially with an aggressively tuned PID controller.</p>
+
+<p>As it is constantly changing, setting up monitoring could easily be too lenient (resulting in <a href="http://en.wikipedia.org/wiki/Type_I_and_type_II_errors#False_negative_error">false negatives</a>) or too strict (resulting in <a href="http://en.wikipedia.org/wiki/Type_I_and_type_II_errors#False_positive_error">false positives</a>). This is why you probably want something closer to an <a href="http://en.wikipedia.org/wiki/Root_mean_square">RMS</a> of the torque which you monitor over a long period and look at the trends.</p>
+
+<p>Another tool to look for failing motors is somewhat easier to use and that's the maximum <a href="http://www.newport.com/Control-Theory-Terminology/178319/1033/content.aspx">following error</a> over a move. This is the maximum difference between where the motor was supposed to be and where it actually was at any point during the move. It is a single value for the whole move and is something that many motion controllers keep track of for their own use. In fact, many have soft limits on maximum following error and error if you exceed them.</p>
+
+<p>Again, tripping a max follow error can just be an indication that you just need to retune your PID loop, but the frequency with which you need to retune your PID and the difficulty you have in achieving your desired performance can be valuable tools in determining when a motor is getting to the end of it's life.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-64" data-toggle = "popover">
+				<p>user name : Mark Booth</p>
+				<p> user reputation : 3037</p>
+				<p class = "tagcontent" id = "usertaginfo-64">{'control': 7, 'quadcopter': 2, 'None': 258, 'tuning': 7, 'uav': 2, 'design': 2, 'stepper-motor': 7}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-64" class = 'collapse'>
+			</div>
+				<textarea id = "speech-64" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-64">
+					<img id="start_img-64" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-64">Comment</button>
+			<br><div id = "ans-126"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-126" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">6</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Temperature is a very simple number to measure and is a good aggregation of all the other factors since a weakening motor will be driven harder.</p>
+
+<p>Generally a motor that is about to fail will be significantly hotter than the rest of the motors.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-126" data-toggle = "popover">
+				<p>user name : user65</p>
+				<p> user reputation : 2041</p>
+				<p class = "tagcontent" id = "usertaginfo-126">{'None': 174, 'localization': 16}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-126">Load Comments</button></br>
+			<div id = "commentsection-126" class = 'collapse'>
+			<div id = "comment-20766" class = "comment">
+				<p>If in a temperature controlled environment, motor temperature is a pretty good approximation of RMS power usage over a long time constant.</p>
+			</div>
+			</div>
+				<textarea id = "speech-126" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-126">
+					<img id="start_img-126" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-126">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

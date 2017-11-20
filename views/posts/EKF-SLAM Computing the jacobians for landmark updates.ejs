@@ -1,0 +1,165 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>EKF-SLAM Computing the jacobians for landmark updates
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-6909" class = "post">
+			<h2>Question</h2>
+			<div id="vote-6909" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 452</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>EKF-SLAM Computing the jacobians for landmark updates</h2>
+<p>I've been working through <a href="http://ocw.mit.edu/courses/aeronautics-and-astronautics/16-412j-cognitive-robotics-spring-2005/projects/1aslam_blas_repo.pdf" rel="nofollow">this informative guide</a> on EKF-SLAM but I'm having difficulty understanding the jacobians required for the 'landmark update', on page 35.</p>
+
+<p>What exactly is Jxr and Jz taking as input? Is it taking the the current rotation of the robot, plus the addition of the odometry update? IE, the rotation that is now stored in the 'X' state vector. Or are they taking the angle from the Inverse Sensor Model, and if so, what's the 'delta' angle from?</p>
+
+<p>Thanks.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6909" data-toggle = "popover">
+				<p>user name : jabz</p>
+				<p> user reputation : 17</p>
+				<p class = "tagcontent" id = "usertaginfo-6909">{'python': 2, 'ekf': 2, 'None': 0, 'slam': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-6909" class = 'collapse'>
+			</div>
+				<textarea id = "speech-6909" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6909">
+					<img id="start_img-6909" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6909">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-6912"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6912" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><h3>The answer</h3>
+
+<p>Specifically, the arguments to this jacobian are the state of the robot.</p>
+
+<h3>The reason</h3>
+
+<p>It is the jacobian of the measurement function with respect to the landmark state. </p>
+
+<p>If you knew the state of the robot and landmark, what function would you use to predict what the measurement would be? If you have a range sensor, it would be the distance between the landmark and robot positions. Take the <a href="https://en.wikipedia.org/wiki/Jacobian_matrix_and_determinant" rel="nofollow">jacobian</a> of this function, with respect to each of the state variables (robot x, robot y, robot theta, landmark x, landmark y)</p>
+
+<p>In their first example, we're measuring the difference in x and y.</p>
+
+<p>So the predicted position of the landmark equals the position of the robot plus the $x$ and $y$ difference (rotated a little by the robot rotations).</p>
+
+<p>So the jacobian is $$\begin{bmatrix}
+\frac{d h_1}{dx_r}, \frac{d h1}{dy_r}, \frac{d h1}{d\theta_r}\\
+\frac{d h_2}{dx_r}, \frac{d h2}{dy_r}, \frac{d h2}{d\theta_r}\\
+\end{bmatrix}$$</p>
+
+<p>Here, $h1$ is the function which gives the $x$ coordinate of the landmark, and $h2$ is the function which gives the $y$ coordinate of the landmark. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6912" data-toggle = "popover">
+				<p>user name : Josh Vander Hook</p>
+				<p> user reputation : 3960</p>
+				<p class = "tagcontent" id = "usertaginfo-6912">{'None': 345}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-6912">Load Comments</button></br>
+			<div id = "commentsection-6912" class = 'collapse'>
+			<div id = "comment-9875" class = "comment">
+				<p>Thanks for the informative reply. If I understand correctly, whenever the robot moves, jacobians A, Jxr and Jz must be updated to reflect the 'delta' position? 
+
+And jacobian H must be updated to reflect the difference between the robot and select landmark?
+
+This is how I am now initializing my jacobians: http://pastebin.com/HQDWHxrp
+
+
+
+And H jacobians: http://pastebin.com/zF7H7YCn</p>
+			</div>
+			<div id = "comment-9877" class = "comment">
+				<p>I haven't checked your code, but yes, it must be updated to reflect the new expected measurement, and the new "rate of measurement change as robot state changes". I will try to check your code when I am off work.</p>
+			</div>
+			<div id = "comment-9878" class = "comment">
+				<p>That'd be super helpful, as I've already noticed a few notation errors in the guide. Thanks again.</p>
+			</div>
+			<div id = "comment-9920" class = "comment">
+				<p>I'm still having trouble understanding your explanation. I understand I need two jacobians, one with respect to robot state, and one landmark state. In order to associate landmarks, I transform their x & y (computed from the measured range & bearing) into world space. These transformed values are then passed into my EKF. How does the delta X and Y of the robot factor into any of this, like in their first example JXR? Thanks in advance.</p>
+			</div>
+			<div id = "comment-9921" class = "comment">
+				<p>Just to make the above clear, the polar conversion function is: http://pastebin.com/GgzfKdEg And the world transform function is: http://pastebin.com/UGNzri98 Is this what my jacobians need to be based off?</p>
+			</div>
+			</div>
+				<textarea id = "speech-6912" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6912">
+					<img id="start_img-6912" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6912">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,203 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Model Predictive Control (MPC) horizon and constraints
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11604" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11604" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 63</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Model Predictive Control (MPC) horizon and constraints</h2>
+<p>I am new to the MPC idea and I am trying to understand the key concepts but there are two things which I found confusing and I didn't find answers regarding to them.</p>
+
+<p>The first one is about the optimized control signal sequence which can be computed from the cost function. If we want to predict, say five steps further, then we will have 5 control signals. After the calculation is done, we will apply only the first signal from the sequence to our system, and them remaining four will be "wasted" (I read that it can be used as an initial guess for the next optimization but thats not my point here). My first question is why don't we just predict one step further, and instead of optimizing five signals, we restrict our optimization to just one, which makes the computation faster?</p>
+
+<p>The second question is about constraints. Lets say that I have some restriction on my input signal, say $0 &lt; u &lt; 5$. With some math, we can include these constraints to the optimization task but it takes more time to solve. Why don't we just do an unconstrainted optimization and after our input signals are ready we apply our contraints on them? Obviously this can not be done for state contraints, but i am interested about input constraints.</p>
+
+<p>Thanks for your answers in advance.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11604" data-toggle = "popover">
+				<p>user name : C. Bence</p>
+				<p> user reputation : 3</p>
+				<p class = "tagcontent" id = "usertaginfo-11604">{'control': 0, 'None': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11604" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11604" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11604">
+					<img id="start_img-11604" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11604">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-11605"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11605" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>To your first question: That is because you optimize with those next steps in mind. Intuitively, you don't have to apply a "ridiculous amount" of input if you know that you are also fine if you keep on applying a "normal amount" of input for a while. You apply only the first control, but the rest is part of the calculation.</p>
+
+<p>To your second question: You calculate specific inputs, if you cut them off after the calculation, then why would your controller still work? </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11605" data-toggle = "popover">
+				<p>user name : WalterJ</p>
+				<p> user reputation : 156</p>
+				<p class = "tagcontent" id = "usertaginfo-11605">{'None': 4}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11605" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11605" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11605">
+					<img id="start_img-11605" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11605">Comment</button>
+			<br><div id = "ans-11692"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11692" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Both questions come down to stability. However the a long finite horizon does still not guarantee stability, so often a base policy is assumed afterwards, which is not computationally expensive and can be calculated for an infinite horizon.</p>
+
+<hr>
+
+<p>For example if you have a mass (of 1 kg) on a fiction less finite surface to which you can apply a force $u$ (in Newtons), so the system can be simply modeled as,</p>
+
+<p>$$
+\begin{bmatrix}
+\dot{x} \\ \ddot{x}
+\end{bmatrix} = 
+\begin{bmatrix}
+0 &amp; 1 \\ 0 &amp; 0
+\end{bmatrix}
+\begin{bmatrix}
+x \\ \dot{x}
+\end{bmatrix} + 
+\begin{bmatrix}
+0 \\ 1
+\end{bmatrix} u. \tag{1}
+$$</p>
+
+<p>There are also constraints to this system. Namely, </p>
+
+<p>$$
+\left\{\begin{matrix} -1&lt;u&lt;\frac12 \\ -0.1&lt;x&lt;1.1\end{matrix}\right. \tag{2}
+$$</p>
+
+<p>Usually for MPC a discrete model is considered. Using a sampling time of 1 second and zero order hold for $u$, then the given continues time model can be converted into the following discrete time model,</p>
+
+<p>$$
+\begin{bmatrix}
+x_{k+1} \\ \dot{x}_{k+1}
+\end{bmatrix} = 
+\begin{bmatrix}
+1 &amp; 1 \\ 0 &amp; 1
+\end{bmatrix}
+\begin{bmatrix}
+x_{k} \\ \dot{x}_{k}
+\end{bmatrix} + 
+\begin{bmatrix}
+0.5 \\ 1
+\end{bmatrix} u_{k}. \tag{3}
+$$</p>
+
+<p>We want to use MPC to find a sequence $\mathbb{u}=\{u_0,u_1,\cdots,u_{N-1}\}$ which minimizes,</p>
+
+<p>$$
+\min_\mathbb{u}\sum_{k=0}^N x_{k}^2, \tag{4}
+$$</p>
+
+<p>subjected to $(2)$ and $(3)$. So $x_k$ should be steered towards zero.</p>
+
+<p>The initial condition is given to be $x_0=1$ and $\dot{x}_0 = 0$. If the horizon would be taken to be one, so $N=1$, then solving $(4)$ would yield $u_0=-1$. The state of the system after this input would be $x_1=0.5$ and $\dot{x}_1=-1$. But for the next time step it is not possible to apply a suitable control input, which satisfies the first half of $(2)$ such that the position constraint from $(2)$ will still be met the next time step. Namely applying $u_1=0.5$ would still yield $x_2 = -0.25$ and $\dot{x}_2=-0.5$.</p>
+
+<p>So you need a longer horizon in order to find a $u$ which guarantees that $(2)$ will always be satisfied. When initially neglecting the input constraint and solving $(4)$ for $u_k$ and then saturating the applied input afterwards nullifies the entire remainder of the calculated inputs/states. So nothing can be said based on this applied input about whether system would ever violate $(2)$. For this system this might never be the case, but if you would for example have time dependent inequality constraints then this system might become unstable when neglecting the constraint on $u$ when solving $(4)$.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11692" data-toggle = "popover">
+				<p>user name : fibonatic</p>
+				<p> user reputation : 373</p>
+				<p class = "tagcontent" id = "usertaginfo-11692">{'quadcopter': 2, 'None': 19, 'design': 2}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11692" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11692" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11692">
+					<img id="start_img-11692" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11692">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

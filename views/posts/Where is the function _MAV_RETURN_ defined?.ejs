@@ -1,0 +1,149 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Where is the function _MAV_RETURN_ defined?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-5255" class = "post">
+			<h2>Question</h2>
+			<div id="vote-5255" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 93</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Where is the function _MAV_RETURN_ defined?</h2>
+<p>I'm trying to understand the source code of ArduPlane. The MAVLink message is decoded using a set of <code>_MAV_RETURN_????</code> functions, e.g. <code>_MAV_RETURN_float</code></p>
+
+<p>When I grep recursively for <code>_MAV_RETURN_float</code>, I could not find where it is defined. I wonder if I'm missing anything.  </p>
+
+<hr>
+
+<p><strong>UPDATE</strong><br>
+Here is the source code of Ardupilot, including ArduPlane.<br>
+<a href="https://github.com/diydrones/ardupilot" rel="nofollow">https://github.com/diydrones/ardupilot</a></p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-5255" data-toggle = "popover">
+				<p>user name : qsp</p>
+				<p> user reputation : 58</p>
+				<p class = "tagcontent" id = "usertaginfo-5255">{'None': 0, 'ardupilot': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-5255">Load Comments</button></br>
+			<div id = "commentsection-5255" class = 'collapse'>
+			<div id = "comment-8043" class = "comment">
+				<p>they look like macros and not functions. take a look into the header file (.h or .hpp). Anyway, since not everybody has ArduPlane installed it should be nice if you points us to the repository on GitHub if present (as I started it was there)</p>
+			</div>
+			<div id = "comment-8054" class = "comment">
+				<p>@Dave thanks for your reply, I updated the repository of the source code. I grepped recursively for all files in all sub-folders, and  I could only see places it is called.</p>
+			</div>
+			<div id = "comment-8055" class = "comment">
+				<p>You are right. I've downloaded the whole repositiry and searched with grep thru all files. I get only return functions, but not the macro. I saw in internet but nothing. I think you should ask in the diydrones forum. Sorry!</p>
+			</div>
+			<div id = "comment-8070" class = "comment">
+				<p>@Dave I already asked in the APM forum, and nobody has replied me yet. Thanks anyway.</p>
+			</div>
+			</div>
+				<textarea id = "speech-5255" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-5255">
+					<img id="start_img-5255" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-5255">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-5305"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-5305" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Macros(_MAV_RETURN_??) for uin8_t, int8_t and char are defined at <a href="https://github.com/diydrones/ardupilot/blob/master/libraries/GCS_MAVLink/include/mavlink/v1.0/protocol.h#L236" rel="nofollow noreferrer">https://github.com/diydrones/ardupilot/blob/master/libraries/GCS_MAVLink/include/mavlink/v1.0/protocol.h#L236</a> onwoards. </p>
+
+<p>However for datatype with more that 8 bits, they have written inline function _MAV_RETURN_## using 'Token Pasting Operator' which handles rest 16bit, 32bit and 64bit datatypes handled by mavlink including float. This function is written at <a href="https://github.com/diydrones/ardupilot/blob/master/libraries/GCS_MAVLink/include/mavlink/v1.0/protocol.h#L242" rel="nofollow noreferrer">https://github.com/diydrones/ardupilot/blob/master/libraries/GCS_MAVLink/include/mavlink/v1.0/protocol.h#L242</a> onwards</p>
+
+<p>You an read more about Token Pasting Operator (##) in following links
+<a href="https://stackoverflow.com/questions/216875/in-macros">https://stackoverflow.com/questions/216875/in-macros</a>
+<a href="https://gcc.gnu.org/onlinedocs/cpp/Concatenation.html#Concatenation" rel="nofollow noreferrer">https://gcc.gnu.org/onlinedocs/cpp/Concatenation.html#Concatenation</a></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-5305" data-toggle = "popover">
+				<p>user name : nikhil</p>
+				<p> user reputation : 633</p>
+				<p class = "tagcontent" id = "usertaginfo-5305">{'wireless': 0, 'communication': 0, 'None': 36, 'serial': 0, 'raspberry-pi': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-5305">Load Comments</button></br>
+			<div id = "commentsection-5305" class = 'collapse'>
+			<div id = "comment-8087" class = "comment">
+				<p>Thank you. I didn't know about the Token Pasting Operator.</p>
+			</div>
+			</div>
+				<textarea id = "speech-5305" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-5305">
+					<img id="start_img-5305" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-5305">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

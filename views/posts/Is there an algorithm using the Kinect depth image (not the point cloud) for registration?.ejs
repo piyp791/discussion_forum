@@ -1,0 +1,170 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Is there an algorithm using the Kinect depth image (not the point cloud) for registration?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9985" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9985" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 553</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Is there an algorithm using the Kinect depth image (not the point cloud) for registration?</h2>
+<p>I know given the intrinsics <code>fx, fy, cx, cy</code> (where <code>fx, fy</code> are the horizontal and vertical focal length, and <code>(cx, cy)</code> is the location of principal point of the camera if pinhole camera model assumed) of an Kinect depth camera(or other range sensor?), a depth pixel <code>px=(u, v, d)</code> (<code>(u, v)</code> is the pixel coordinate, <code>d</code> is the depth value) can be converted to a 3D point <code>p</code>:</p>
+
+<p><code>p=(x, y, z)
+x=(u-cx)/fx*d
+y=(v-cy)/fy*d
+z=d
+</code>
+so that a depth image can be converted to a point cloud, and indeed, a depth Image represents a unique point cloud physically.</p>
+
+<p>SLAM systems e.g. KinectFusion use such point clouds for ICP based registration to obtain camera pose at each time and then fuse new point cloud to the previously reconstructed model.</p>
+
+<p>However, my mentor told me that depth Image cannot be inveribly converted to a point cloud since it's 2D->3D mapping with ambiguity (which I disagree), and he claims that I should use the depth Image at time (i-1) and (i) for registration, not the derived point cloud.</p>
+
+<p> If I have to obey my mentor's order) I've been reading papers and found one using Gradient Descent to solve camera pose <code>(tx, ty, tz, qw, qx, qy, qz)</code>:</p>
+
+<blockquote>
+  <p>Prisacariu V A, Reid I D. PWP3D: Real-time segmentation and tracking
+  of 3D objects[J]. International journal of computer vision, 2012,
+  98(3): 335-354.</p>
+</blockquote>
+
+<p>which uses <strong>RGB</strong> Images and a known model for pose estimation. However, I've <strong>NEVER</strong> found a paper (e.g., KinectFusion and other later RGB-D SLAM algorithms) deals with depth data just as plane image but not point cloud for registration. So could someone give me some hint (papers or opensource code) about: </p>
+
+<p><em>How to do depth image registration without converting them to point clouds</em>?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9985" data-toggle = "popover">
+				<p>user name : zhangxaochen</p>
+				<p> user reputation : 146</p>
+				<p class = "tagcontent" id = "usertaginfo-9985">{'odometry': 5, 'None': 0, 'errors': 0, 'localization': 1, 'pose': 5, 'kinect': 1, 'slam': 9, '3d-reconstruction': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9985">Load Comments</button></br>
+			<div id = "commentsection-9985" class = 'collapse'>
+			<div id = "comment-17823" class = "comment">
+				<p>Can you clarify what the meaning is of the terms you're using? For instance, what are `fx, fy, cx, cy, u, v, and d`? Also, what exactly are you trying to accomplish? I would argue that the depth image represents a unique point cloud *when paired with the corresponding camera model*, because two identical depth maps with different lenses on the camera mean that two distinctly different scenes were recorded. Ultimately I think I would argue with you but there could be nuances to your particular application that I think you're glossing over that could decide one way or the other what's required.</p>
+			</div>
+			<div id = "comment-17826" class = "comment">
+				<p>@Chuck, sorry ;), edited. Shortern my question: to my knowledge, SLAM and Visual Odometry algorithms always use point clouds for frame registration and camera localization, is there an algorithm which uses raw depth image for registration?</p>
+			</div>
+			</div>
+				<textarea id = "speech-9985" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9985">
+					<img id="start_img-9985" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9985">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9992"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9992" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Consider this - what is the process of doing SLAM? First, get some sensor data, then <em>move in the world</em>, get some more sensor data, then try to do feature identification and matching to build up a map. </p>
+
+<p>You could, theoretically, still build a map in "depth" units instead of in meters or feet or whatever units your camera model spits out. After all, what is a coordinate frame but some arbitrary choice?</p>
+
+<p><strong>However</strong>, all the algorithms you read about <em>do</em> use the camera models to convert to Cartesian "world" coordinates because that's a "common language" that is "spoken" by most other sensors. </p>
+
+<p>To that point, if you are going to attempt SLAM, maybe a wheel encoder would help determine how much distance has been traveled. <em>BUT</em>, if you (or your advisor) is insisting on using "native" depth units instead of converting those back to world coordinates via the camera transform, then that means that you instead need to convert your wheel encoder into depth units. </p>
+
+<p>That is, you can either convert maps in depth units to Cartesian units, or you can convert every other sensor from Cartesian to depth units. GPS, magnetometers, wheel encoders, etc. </p>
+
+<p>You could, of course, do SLAM without any external input, but then what? Well, then you get your entire map of the world and the localization of the sensor in terms of depth units. So what does it mean to be 1.5 depth units from a wall? Can you do anything useful with that? </p>
+
+<p>In conclusion I would argue that, if you are insisting on not converting to proper world coordinates, then you are doing SLAM for the sole purpose of a SLAM exercise and not because you intend on doing anything useful, because the resulting map and localization doesn't have any external meaning.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9992" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-9992">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9992">Load Comments</button></br>
+			<div id = "commentsection-9992" class = 'collapse'>
+			<div id = "comment-17846" class = "comment">
+				<p>thx for your apply! Is your key point "depth unit" lacking real world scale? but isn't kinect (or Xtion etc.)'s output depth map of millimeters unit? Sorry if I misunderstand u ;)</p>
+			</div>
+			<div id = "comment-17865" class = "comment">
+				<p>@zhangxaochen - The depth map may have engineering units, but that's only half of the puzzle. If I told you an object was 1 meter away at pixel (1,1), what would that mean? It depends on the mapping between the 2D pixel plane and the 3D space - i.e., the camera model. With a regular lens it might be in front of you, but with a fisheye lens it might be above you. If you knew that an object was 15 pixels wide in your depth map, how far does the wheel need to turn to pass it? Well, what is the FOV of the camera? Again, put the camera in world coordinates or put everything else in the camera's.</p>
+			</div>
+			<div id = "comment-17872" class = "comment">
+				<p>the **camera model** is given and fixed, I mean, with regular camera of certain intrinsics `fx, fy, cx, cy` and regardless of distortion params, *How to use depth image as an intensity image directly for registration?* My advisor told me the reason for this is that he'd like to treat depth and color the same way so that they could be written in one energy function, yet I don't think it's the right way that other known RGB-D SLAM algorithms use (maybe there is indeed a paper with such an idea but I didn't find it?)</p>
+			</div>
+			</div>
+				<textarea id = "speech-9992" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9992">
+					<img id="start_img-9992" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9992">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

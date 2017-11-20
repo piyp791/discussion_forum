@@ -1,0 +1,232 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to relate forward kinematics into PWM~speed?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11715" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11715" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 59</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to relate forward kinematics into PWM~speed?</h2>
+<p>I am having a hard time understanding how to relate forward kinematics to things one can control in a robot like PWM and reading encoder values.</p>
+
+<p>For example, how to relate the encoder values from motors and RPM to PWM values of the motors to make a robot follow a curved path?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11715" data-toggle = "popover">
+				<p>user name : valueRunner</p>
+				<p> user reputation : 8</p>
+				<p class = "tagcontent" id = "usertaginfo-11715">{'motion': 1, 'None': 0, 'forward-kinematics': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11715" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11715" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11715">
+					<img id="start_img-11715" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11715">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-11722"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11722" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Usually you do this by implementing a feedback-loop.</p>
+
+<h2>Theory</h2>
+
+<p>By generating a PWM Signal you are (over time average) generating a voltage at your motor. As a approximitation the voltage is proportional to the speed of the motor (this could be redefined by measuring the relationship between voltage and speed).</p>
+
+<p>This could be decribed by:</p>
+
+<p><img src="https://latex.codecogs.com/gif.latex?r(p)&space;=&space;r_%7Bmax%7D&space;%5Ccdot&space;%5Cfrac%7Bp%7D%7Bp_%7Bmax%7D%7D" title="r(p) = r_{max} \cdot \frac{p}{p_{max}}" /></p>
+
+<p>where r is the rotation as a function of the duty-cycle p.</p>
+
+<p>Now you know which rotation your motor should have. Now you can implement a feedback loop, you know how fast your motor is running and how fast your motor is actually running so you can define delta r:</p>
+
+<p><img src="https://latex.codecogs.com/gif.latex?%5Cdelta_r&space;=&space;r(p)&space;-&space;r_%7Bmeasured%7D" title="\delta_r = r(p) - r_{measured}" /></p>
+
+<p>This delta r can be used to implement a PID Controller so your motor always rotates at the speed it should. The power P of your PID controller is defined by (the three constant P,I,D are device dependent):</p>
+
+<p><img src="https://latex.codecogs.com/gif.latex?P_%7BMotor%7D(%5Cdelta_r)=P_%7Bconstant%7D&space;%5Ccdot&space;%5Cdelta_r&space;&plus;&space;I_%7Bconstant%7D&space;%5Ccdot&space;%5Cint_%7B0%7D%5Et&space;%5Cdelta_r&space;%5Ctext%7B&space;d%7Dt&space;&plus;&space;D_%7Bconstant%7D&space;%5Ccdot&space;%5Cfrac%7B%5Ctext%7Bd%7D%5Cdelta_r%7D%7B%5Ctext%7Bd%7Dt%7D" title="P_{Motor}(\delta_r)=P_{constant} \cdot \delta_r + I_{constant} \cdot \int_{0}^t \delta_r \text{ d}t + D_{constant} \cdot \frac{\text{d}\delta_r}{\text{d}t}" /></p>
+
+<p>With a good setup your motor rotates now more or less always at the exact speed it should. The distance s your robots travells over time is now given by:</p>
+
+<p><img src="https://latex.codecogs.com/gif.latex?s(t)&space;=&space;%5Cint_%7B0%7D%5Et&space;r(p(t))&space;%5Ctext%7Bd%7Dt" title="s(t) = \int_{0}^t r(p(t)) \text{d}t" /></p>
+
+<p>with p(t) beeing the power as a function of time.</p>
+
+<h2>Implementation</h2>
+
+<p>In this example motorPower(int16_t power) is a function which controls the motor with a power between -255 and 255. This function does not reads the current motor speed. The function currMotorSpeed() returns the current speed of the motor, for simplicity reasons also a value between -255 and 255. The constant dt is the time between each execution of the PID controller.</p>
+
+<p>Implementation in C++:</p>
+
+<pre><code>// PID Controll for the motor
+int16_t motorPowerControlled(int16_t motorPower){
+    static int iArea, dLastValue;
+    int16_t deltaPower = currMotorSpeed() - motorPower;
+
+    int16_t pValue = deltaPower * P_CONSTANT
+
+    iArea += deltaPower;
+    int16_t iValue = iArea * dT * I_CONSTANT
+
+    int16_t dValue = (deltaPower-dLastValue)/dt * D_FACTOR;
+    dLastValue = deltaPower;
+
+    return pValue + iValue + dValue;
+}
+
+
+int main(void){
+    int16_t distanceDriven = 0;
+    const int16_t POWER = 100;
+
+    while(true){
+        motorPowerController(POWER);
+        distanceDriven += POWER * dt;
+        delay_ms(dt);
+    }
+}
+</code></pre>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11722" data-toggle = "popover">
+				<p>user name : aul12</p>
+				<p> user reputation : 61</p>
+				<p class = "tagcontent" id = "usertaginfo-11722">{'None': 8, 'cameras': 0, 'ultrasonic-sensors': 0, 'lidar': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11722">Load Comments</button></br>
+			<div id = "commentsection-11722" class = 'collapse'>
+			<div id = "comment-20921" class = "comment">
+				<p>Thanks for the explanation, I understand now that PID will be key to control the motor speeds to get the orientation correct.</p>
+			</div>
+			</div>
+				<textarea id = "speech-11722" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11722">
+					<img id="start_img-11722" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11722">Comment</button>
+			<br><div id = "ans-11723"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11723" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Forward kinematics is used to compute the pose (position and orientation) the end-effector of a robot from the joint angles. Simialry, higher order forward kineamtics can be defined to calcualte the velocities of the end-effector from the volocities (and angular positions) of the joints. The same can be done for accelerations.</p>
+
+<p>Inverse kinematics represents the same transformation  but in a reversed direction. It is used to calculate the joint angles from the end-effectro pose. Simialry, higher order inverse kinematics can be defined for calculating joint velocities from end-effectro velocities (and pose). The same can be done for accelerations.</p>
+
+<p>A curve is given in Cartesian space as a string of points. For each point the inverse kinematics problem can be solved, and so, a string of points in joint space can be computed. This string of points will consist of joint angle coordinates. If the joints are set to thee values, one after another, the end-effectro will describe the given path. Please be advised, that the points have to be close to one another. The closer they are, the more precise the curve will be. </p>
+
+<p>The motors of all joints have to be commanded to turn in the positive or negative direction in order to reach the desired point. This is what the PID controller does. It gets the reference value (the desired angle) and then calculates the PWM duty cycle toe make the motor move. The PWM duty cycle, as a simplistic explanation, is proportional to the maximum speed of the motor. 100% duty cycle will turin the motor with full speed, 50% will turin the motor with half speed. The PID Controller calcultes the PWM duty cycle based on how far the desired point is from the current point. If far, high speeds will be reached, if it is near, only slow speed will be necesary. </p>
+
+<p>So, if you want to make the robot follow a path, a simplisic approach is to:</p>
+
+<ol>
+<li>Define the curve in cartesian space a string of points</li>
+<li>Compute the joint coordinates of the robot for each point</li>
+<li>Select the First point in the list</li>
+<li>Command the motors of the robot to turn to the selected point</li>
+<li>Wait for the robot to arrive</li>
+<li>If there are point left in the list select the next point in the list and go to 3 if not end</li>
+</ol>
+
+<p>A more advancced appraoch would need also velocity information from the Cartesian Space and would transfomr those velocitey to joint space and not just set motor positions but also motor velocities to generate a smoother motion. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11723" data-toggle = "popover">
+				<p>user name : 50k4</p>
+				<p> user reputation : 2800</p>
+				<p class = "tagcontent" id = "usertaginfo-11723">{'geometry': 0, 'None': 193, 'kinematics': 0, 'robotic-arm': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11723">Load Comments</button></br>
+			<div id = "commentsection-11723" class = 'collapse'>
+			<div id = "comment-20922" class = "comment">
+				<p>Thank you. So, the key really is to translate the encoder ticks into cartesian space points and check them if they are within bounds of the curve requirements; and if they are out of bounds to correct the speed of the motors.</p>
+			</div>
+			<div id = "comment-20923" class = "comment">
+				<p>Most likely it is simpler to do it the other way around. Translate the cartesian curve to encoder ticks and set pwm accordingly</p>
+			</div>
+			</div>
+				<textarea id = "speech-11723" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11723">
+					<img id="start_img-11723" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11723">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

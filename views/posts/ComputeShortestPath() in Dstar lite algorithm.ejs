@@ -1,0 +1,219 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>ComputeShortestPath() in Dstar lite algorithm
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9602" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9602" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 90</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>ComputeShortestPath() in Dstar lite algorithm</h2>
+<p>In optimized D*Lite algorithm as shown in the figure below (page 5, of the paper <a href="http://robotics.cs.tamu.edu/dshell/cs625/aaai02b.pdf" rel="nofollow noreferrer">D*Lite</a>), when the procedure ComputeShortestPath() is called for the first time in line 31, U(list of inconsistent vertices) contains only goal vertex ($s_{goal}$). Thus in the procedure ComputeShotestPath()(line 10-28), $u = s_{goal}$. And as, $k_{old}=k_{new}$ (because $k_m=0$), condition $k_{old}\leq k_{new}$ is satisfied and $u = s_{goal}$ is again inserted in U with same value of $k_{old}=k_{new}$. Thus, it seems that line(11-15) will run forever, and the algorithm will not be able to find the shortest path from goal to start.</p>
+
+<p>I know that this algorithm has been widely used and I am failing to understand it. But where am I going wrong? </p>
+
+<p><a href="https://i.stack.imgur.com/uXuNY.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/uXuNY.jpg" alt="enter image description here"></a></p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9602" data-toggle = "popover">
+				<p>user name : vacky</p>
+				<p> user reputation : 140</p>
+				<p class = "tagcontent" id = "usertaginfo-9602">{'control': 8, 'None': 0, 'computer-vision': 6, 'algorithm': 8, 'monocular': 6, 'python': 3, 'pose': 0, 'wheeled-robot': 7, 'visual-odometry': 6, 'opencv': 0, 'slam': 6, 'robotic-arm': 18, 'mobile-robot': 12, 'motion-planning': 19, 'navigation': 6}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9602">Load Comments</button></br>
+			<div id = "commentsection-9602" class = 'collapse'>
+			<div id = "comment-17005" class = "comment">
+				<p>$k_{new} = CalculateKey(u))$ that additional closing parenthesis at the end of this line looks wrong to me.</p>
+			</div>
+			</div>
+				<textarea id = "speech-9602" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9602">
+					<img id="start_img-9602" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9602">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9606"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9606" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The first relevant line is line 6:</p>
+
+<p>$$U.Insert(s_{goal}, [h(s_{start}, s_{goal});0]);$$</p>
+
+<p>Basically speaking, this is an association of the goal to some vector with two values in it. Now $U$ looks like this:</p>
+
+<p>$$U:s_{goal}\rightarrow \left(\begin{matrix}h(s_{start}, s_{goal})\\0\end{matrix}\right)$$</p>
+
+<p>Of course, $U$ is a list of such associations, but within the context of this question there's only one element in it.</p>
+
+<blockquote>
+  <p>Thus in the procedure <code>ComputeShotestPath()</code> (line 10-28), $u = s_{goal}$</p>
+</blockquote>
+
+<p>That is correct.</p>
+
+<blockquote>
+  <p>And as, $k_{old}=k_{new}$ (because $k_m=0$)</p>
+</blockquote>
+
+<p>That is not necessarily correct. The relevant lines are 12</p>
+
+<p>$$k_{old}=U.TopKey();$$</p>
+
+<p>Looking at what $U$ is above, this line is equivalent to:</p>
+
+<p>$$k_{old}=\left(\begin{matrix}h(s_{start}, s_{goal})\\0\end{matrix}\right);$$</p>
+
+<p>and line 13 for $k_{new}$:</p>
+
+<p>$$k_{new}=CalculateKey(u)\color{red}{)};$$</p>
+
+<p><em>I think the extra parenthesis is a typo. I will ignore it.</em> This value actually comes from a function call and results in the following:</p>
+
+<p>$$k_{new}=\left(\begin{matrix}\min\big(g(s), rhs(s)\big) + h(s_{start}, s) +k_m\\rhs(s)\end{matrix}\right);$$</p>
+
+<p>Where $s$ is the parameter passed to the function, which is actually $u$ which in turn is actually $s_{goal}$, also as you stated $k_m=0$, thus:</p>
+
+<p>$$k_{new}=\left(\begin{matrix}\min\big(g(s_{goal}), rhs(s_{goal})\big) + h(s_{start}, s_{goal})\\rhs(s_{goal})\end{matrix}\right);$$</p>
+
+<p>I don't know what the functions $g()$ and $rhs()$ do (look them up in the paper) and what values they return, but if $rhs(s_{goal}) = 0$ and $g(s_{goal}) &gt; rhs(s_{goal})$ then yes it's true that $k_{new}=k_{old}$.</p>
+
+<blockquote>
+  <p>condition $k_{old}\leq k_{new}$ is satisfied</p>
+</blockquote>
+
+<p>I think there's your problem. I for one cannot see a condition $k_{old}\leq k_{new}$ being evaluated in the code. I guess you are referring to line 14, but that line actually looks like that:</p>
+
+<p>$$if(k_{old} \color{red}{\dot\lt}k_{new})$$</p>
+
+<p>This is <strong>not</strong> a less-than-or-equal sign. That is a les-than sign with a dot above it. I don't think they are the same thing and I wonder if the following is actually valid way to express that:
+$$\le\neq\dot\lt$$</p>
+
+<p>Anyway, what the heck is $\dot\lt$? I don't know. What I think it means is that it's an <strong>element wise</strong> less-than operator. In languages like Matlab or Octave it's common to add a dot to denote that an operator is applied element wise. The thing is that it doesn't make too much sense to apply a less-than operator to a vector. It's defined for scalar values, not vectors or matrices. I admit that I'm not sure about this one.</p>
+
+<p>The condition in line 14 is not satisfied. </p>
+
+<hr>
+
+<p>Now all of the above is under the assumption that the condition of the while loop in <code>ComputeShotestPath()</code> is true and the body of the loop is executed.</p>
+
+<p>The (first part of the) condition looks like this:</p>
+
+<p>$$U.TopKey()\dot\lt CalculateKey(s_{start})$$</p>
+
+<p>With the assumptions from above this expands to:</p>
+
+<p>$$\left(\begin{matrix}h(s_{start}, s_{goal})\\0\end{matrix}\right)
+\dot\lt
+\left(\begin{matrix}\min\big(g(s_{start}), rhs(s_{start})\big) + h(s_{start}, s_{start})\\rhs(s_{start})\end{matrix}\right)$$</p>
+
+<p>Again, I don't know  how this algorithm works exactly, I had a quick look at the paper and from what I understood is that $h(s_{start}, s_{start}) = 0$ and $rhs(s_{start}) = 0$, which makes me doubt that the condition is true.</p>
+
+<p>In other words: I don't think the while loop is even running at all and if it actually does, it's not because of that part of its condition.</p>
+
+<hr>
+
+<p><strong>tl,dr;</strong>
+Holy cow, stop staring at nontextual pseudocode! Get yourself an implementation (or write it yourself) and use a debugger to step through the program.</p>
+
+<p><strong>Run the actual code on an actual machine</strong>, this is what matters in the end.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9606" data-toggle = "popover">
+				<p>user name : Bending Unit 22</p>
+				<p> user reputation : 1335</p>
+				<p class = "tagcontent" id = "usertaginfo-9606">{'None': 93}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9606">Load Comments</button></br>
+			<div id = "commentsection-9606" class = 'collapse'>
+			<div id = "comment-17007" class = "comment">
+				<p>Thanks a lot for the detailed explanation @Bending Unit 22.  I misunderstood the sign <  to be equal to   .</p>
+			</div>
+			<div id = "comment-17008" class = "comment">
+				<p>And yes.. im going to actually implement the pseudo code, but isn't it necessary to understand it before blindly implementing? Im sorry if my approach is wrong. Im new to this coding world and so once again thanks for your explanation. @Bending Unit 22</p>
+			</div>
+			<div id = "comment-17010" class = "comment">
+				<p>You are right, you need a certain amount of understanding. But if you implemented it you would have actually encounteted an endless loop. If you think there's a problem, it might be that your thinking is the actual problem. If it fails on the machine, you know that there's a real problem and you can be sure that it exists. In other (obscure) words: you cannot connect a debugger to Plato's cave. =)</p>
+			</div>
+			<div id = "comment-17011" class = "comment">
+				<p>Thanks for your advice @Bending Unit 22. I will keep this in mind.</p>
+			</div>
+			</div>
+				<textarea id = "speech-9606" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9606">
+					<img id="start_img-9606" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9606">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

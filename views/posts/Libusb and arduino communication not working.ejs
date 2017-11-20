@@ -1,0 +1,184 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Libusb and arduino communication not working
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7409" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7409" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 360</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Libusb and arduino communication not working</h2>
+<p>I am doing a line following robot based on opencv. I have my onboard computer(an old pandaboard) running opencv. It will calculate the offset from the required path and communicate it to the arduino via USB. Then it will do PID optimisation on the data, and adjust the speed of the left and right motors.</p>
+
+<p>To my dismay the communication part is not working, and I've tried hard for a day to fix it with no result. Here is the relavent code running on the pandaboard:</p>
+
+<pre><code>while(1)
+    {
+
+        r = libusb_bulk_transfer(dev_handle, 131, recieve, 1, &amp;actual, 0);
+        cout&lt;&lt;"r="&lt;&lt;r&lt;&lt;endl;
+        int a;
+        cin&gt;&gt;a;
+        imgvalue=krish.calc_offset();
+        send[0]=imgvalue&amp;0xff; 
+        send[1]=imgvalue&gt;&gt;8;
+
+//make write
+
+        cout&lt;&lt;"Data to send-&gt;"&lt;&lt;imgvalue&lt;&lt;"&lt;-"&lt;&lt;endl; //just to see the data we want to write : abcd
+        cout&lt;&lt;"Writing Data..."&lt;&lt;endl;
+        r = libusb_bulk_transfer(dev_handle, (4 | LIBUSB_ENDPOINT_OUT), send, 2, &amp;actual, 0); //my device's out endpoint was 2, found with trial- the device had 2 endpoints: 2 and 129
+        if(r == 0 &amp;&amp; actual == 2) //we wrote the 4 bytes successfully
+            cout&lt;&lt;"Writing Successful!"&lt;&lt;endl;
+        else
+            cout&lt;&lt;"Write Error"&lt;&lt;endl;
+
+    }
+</code></pre>
+
+<p>where <code>imgvalue</code> is the data to be send. This is the code running on the Arduino:</p>
+
+<pre><code>void loop()
+{
+  Serial.write('s');
+  if(Serial.available()&gt;0)
+    Input_tmp = Serial.read();
+  if(Serial.available()&gt;0)
+    Input_tmp = Input_tmp | (Serial.read() &lt;&lt; 8);
+  Input=Input_tmp;
+  myPID.Compute();
+
+// adjust the motor speed
+
+}
+</code></pre>
+
+<p>What happens when I run is that it will pause at the libusb read operation as the timeout is zero(infinity). At this point I've tried resetting the arduino, but this doesn't help. So how do I make my program respond to this start byte send my the Arduino? Where did I go wrong?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7409" data-toggle = "popover">
+				<p>user name : daltonfury42</p>
+				<p> user reputation : 162</p>
+				<p class = "tagcontent" id = "usertaginfo-7409">{'underwater': 7, 'None': 0, 'usb': 3, 'arduino': 4, 'communication': 4, 'localization': 6, 'operating-systems': 1, 'c++': 2, 'odometry': 1, 'kinematics': 1, 'sensor-fusion': 6, 'sensors': 6, 'ros': 1, 'differential-drive': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7409">Load Comments</button></br>
+			<div id = "commentsection-7409" class = 'collapse'>
+			<div id = "comment-10564" class = "comment">
+				<p>As a follow up to my answer/question, I guess I would ask to see your code where you initialize and configure the USB connection.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7409" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7409">
+					<img id="start_img-7409" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7409">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7410"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7410" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Did you initialize libusb?</p>
+
+<p>From <a href="http://libusb.sourceforge.net/api-1.0/group__lib.html#initialize" rel="nofollow">the Sourceforge documentation:</a></p>
+
+<blockquote>
+<p>int libusb_init  (   libusb_context **   context ) </p>
+<p> Initialize libusb.</p>
+<p>This function must be called before calling any other libusb function.</p>
+</blockquote>
+
+<p>Seems like a trivial thing to ask but I didn't see it in your code, but I also don't see anything blatantly wrong with your code.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7410" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-7410">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7410">Load Comments</button></br>
+			<div id = "commentsection-7410" class = 'collapse'>
+			<div id = "comment-10565" class = "comment">
+				<p>Thankyou, It was an initialization problem! Thanks for pointing me in the write direction!</p>
+			</div>
+			<div id = "comment-10567" class = "comment">
+				<p>Awesome! Glad to help!</p>
+			</div>
+			</div>
+				<textarea id = "speech-7410" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7410">
+					<img id="start_img-7410" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7410">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

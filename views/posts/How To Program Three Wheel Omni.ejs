@@ -1,0 +1,185 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How To Program Three Wheel Omni
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7829" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7829" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 972</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How To Program Three Wheel Omni</h2>
+<p>I have created a three wheeled omni robot like the diagram below. Now I am unsure of how to program it. I want to use a single joystick so one x and one y value. The values for x and y are between -1 and 1, also the motors can be set anywhere from -1 to 1. How do I use this data to make the robot move based on the joystick without changing orientations? After doing some initial research this seems like a complex problem, but I am hoping there is a formula that I can.</p>
+
+<p><a href="https://i.stack.imgur.com/xDIs0.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/xDIs0.png" alt="enter image description here"></a></p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7829" data-toggle = "popover">
+				<p>user name : Alex Pelletier</p>
+				<p> user reputation : 120</p>
+				<p class = "tagcontent" id = "usertaginfo-7829">{'wheeled-robot': 3, 'None': 0, 'design': 0, 'mechanism': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7829" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7829" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7829">
+					<img id="start_img-7829" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7829">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7833"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7833" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The math involved for controlling a holonomic robot is really not too bad.  It is basically just high-school trigonometry and knowing how to set up the problem.</p>
+
+<p>First, lets start with the joystick.  I think the easiest way to deal with joysticks is to convert it's cartesian $(x,y)$ readings into polar $(r,\phi)$ coordinates.  This will allow us to control the holomonic robot much more naturally.</p>
+
+<p><a href="https://i.stack.imgur.com/PW7zX.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/PW7zX.png" alt="joystick diagram"></a></p>
+
+<p>The polar coordinates are simply:
+$$
+\phi_{joy} = atan2(Y_{joy}, X_{joy})
+$$
+$$
+r_{joy} = \sqrt{Y_{joy}^2 + X_{joy}^2}
+$$</p>
+
+<p>Now we can think of this as a vector, where the angle indicates the direction to move, and the length of the vector is the desired speed.</p>
+
+<p><a href="https://i.stack.imgur.com/PaCP4.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/PaCP4.png" alt="speed vector"></a></p>
+
+<p>If we want full speed to be when the joystick is pushed straight forward, we have a little bit of a problem.  If the joystick is pushed diagonally, $r$ will be greater than when it is forward.  Basically $\sqrt{Y_{max}^2 + X_{max}^2} &gt; Y_{max}$. This is because the joystick space is square, whereas we want a circular space.  </p>
+
+<p><a href="https://i.stack.imgur.com/tb4TT.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/tb4TT.png" alt="joystick corner problem"></a></p>
+
+<p>There are a number of ways to compensate for this.  Some simple ways are to make diagonal full speed, but this isn't great because straight forward is not full speed anymore.  You could also simply cap the speed, but now your joystick has a large dead zone.  My preferred method is to adaptively scale $r$ depending on where it is in joystick space.  You need to extend the line of where the joystick is currently $(r,\phi)$, to the boundary of the space.  Let's call this $b$.  </p>
+
+<p><a href="https://i.stack.imgur.com/yKkzn.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/yKkzn.png" alt="adaptive scaling"></a></p>
+
+<p>Computation of this length is simply a matter of a few conditionals (to determine which side of the square you intersect) and some more trigonometry.  This is left as an exercise for the reader.  Now the translational speed is:</p>
+
+<p>$$
+speed_t = maxspeed * r_{joy} / b
+$$</p>
+
+<p>Where $maxspeed$ is what ever you want the max translational velocity of your robot to be.  Note that your joystick units cancel out here.</p>
+
+<p>Now to figure out the individual wheel speeds.  This procedure will work for any type of robot with omni-wheels.  (But not mecanum wheels.  Those are different).  3 wheels, 4 wheels, and even odd combinations with different radii from the robot center and wheel diameters.  As long as all the wheel axes converge at a single point.  But lets focus on 3 wheels as in your question.</p>
+
+<p><a href="https://i.stack.imgur.com/hzFWX.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/hzFWX.png" alt="kinds of omni-wheel robots"></a></p>
+
+<p>First, number the wheels.</p>
+
+<p><a href="https://i.stack.imgur.com/8ELBn.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/8ELBn.png" alt="wheel numbers"></a></p>
+
+<p>Then create a coordinate system.  (i.e. designate the front of your robot).  Now lets call the angle to each wheel axis.  $\alpha_1$, $\alpha_2$, and $\alpha_3$.  </p>
+
+<p><a href="https://i.stack.imgur.com/9yB8q.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/9yB8q.png" alt="wheel angles"></a></p>
+
+<p>And lets set our convention to be positive motor speeds will make the robot spin clockwise. </p>
+
+<p><a href="https://i.stack.imgur.com/KWrqM.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/KWrqM.png" alt="wheel direction convention"></a></p>
+
+<p>Now we overlay our joystick vector on our robot.  We create a right triangle between the motor axis and the joystick vector.  For wheel 1, it will look like this:</p>
+
+<p><a href="https://i.stack.imgur.com/1LGUx.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/1LGUx.png" alt="wheel 1 computation"></a></p>
+
+<p>Now wheel 1's speed ($M_1$) is simply the length of the line.  To get this quantity, we subtract the angles, then use $sin$.</p>
+
+<p>$$
+\theta_1 = \alpha_1 - \phi
+$$
+$$
+M_1 = speed_t * sin(\theta_1)
+$$</p>
+
+<p>Note that this is actually the ground speed that the wheel should have.  So you will probably want to convert it into rotational velocity (rpm for example).  Use the equation for circle circumference, and keep your units straight.</p>
+
+<p>And that's it.  Believe it or not, but the same equation works for all wheels.  This entire procedure is only for translating the robot.  If you want the robot to rotate too then you can simply add some rotation to all 3 motors.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7833" data-toggle = "popover">
+				<p>user name : Ben</p>
+				<p> user reputation : 3608</p>
+				<p class = "tagcontent" id = "usertaginfo-7833">{'None': 277, 'inverse-kinematics': 3, 'accelerometer': 5, 'calibration': 10, 'kinematics': 14, 'robotic-arm': 8, 'jacobian': 6, 'dh-parameters': 8, 'imu': 5, 'sensors': 5}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7833" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7833" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7833">
+					<img id="start_img-7833" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7833">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

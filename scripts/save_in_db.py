@@ -58,8 +58,6 @@ def insertIntoPosts(keyStr, value_arr, cnx):
 	print 'format str-->', formatStr;
 	print 'value array -->', value_arr;
 
-
-
 	add_user = ("INSERT INTO Tags (" + keyStr + ") VALUES (" + value_arr  + ")");
 
 	#values_arr = 'some text';
@@ -86,7 +84,7 @@ def main():
 	cnx = getConn()
 	print cnx
 	print 'Hello World'
-	xmldoc = minidom.parse('../data/apple.meta.stackexchange.com/Tags.xml')
+	xmldoc = minidom.parse('../data/robotics.stackexchange.com/Tags.xml');
 	#doc = ET.parse("apple.meta.stackexchange.com/Posts.xml");
 	itemlist = xmldoc.getElementsByTagName('row')
 
@@ -104,6 +102,8 @@ def main():
 			val = atr.value.replace("'", "");
 			val = val.replace("\\", "")
 			val = re.sub(r'[^\x00-\x7F]+',' ', val)
+			val = (val[:29992] + '..') if len(val) > 29992 else val
+
 			keys = keys + "" + atr.name.replace("'", "") + ",";
 			values = values + "'" + val + "',";
 

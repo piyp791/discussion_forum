@@ -1,0 +1,294 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How frequently should a PID controller update?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-3027" class = "post">
+			<h2>Question</h2>
+			<div id="vote-3027" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 1716</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How frequently should a PID controller update?</h2>
+<p>I am developing a quadcopter platform on which will be extended over the next year. The project can be found on <a href="https://github.com/micavdtu/MICAV" rel="nofollow">Github</a>. Currently, we are using an Arduino Uno R3 as the flight management module.</p>
+
+<p>At present, I am tuning the <a href="https://github.com/micavdtu/MICAV/blob/master/mav_pilot/PID.cpp" rel="nofollow">PID loops</a>. The PID function is implemented as:</p>
+
+<pre><code>int16_t pid_roll(int16_t roll)
+{
+    static int16_t roll_old = 0;
+    int16_t result = 
+    (KP_ROLL * roll) + 
+    (KI_ROLL * (roll_old + roll)) +
+    (KD_ROLL * (roll - roll_old))
+    ;
+    roll_old += roll;
+    result = constrain(result, PID_MIN_ROLL, PID_MAX_ROLL);
+    return -result;
+}
+</code></pre>
+
+<p>I am having trouble interpreting the system response on varying the constants. I believe the problem is related to the questions below.</p>
+
+<ul>
+<li>How frequently should a PID controller update the motor values? Currently, my update time is about 100-110 milliseconds. </li>
+<li>What should be the maximum change that a PID update should make on the motor thrusts? Currently, my maximum limit is about +-15% of the thrust range.</li>
+<li>At what thrust range or values, should the tuning be performed? Minimum, lift off, or mid-range or is it irrelevant?</li>
+</ul>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-3027" data-toggle = "popover">
+				<p>user name : asheeshr</p>
+				<p> user reputation : 255</p>
+				<p class = "tagcontent" id = "usertaginfo-3027">{'quadcopter': 4, 'None': 8, 'pid': 9, 'ugv': -1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-3027">Load Comments</button></br>
+			<div id = "commentsection-3027" class = 'collapse'>
+			<div id = "comment-5522" class = "comment">
+				<p>10Hz seems quite slow! I would recommend something in the range 100Hz - 1000Hz. Crank it up to the highest possible speed.</p>
+			</div>
+			<div id = "comment-5523" class = "comment">
+				<p>I dont see how I will be able to bring the time below 20-40 milliseconds.</p>
+			</div>
+			<div id = "comment-5524" class = "comment">
+				<p>Faster microcontroller? Alternatively, ask the question "How can I optimise this PID code?". I have had a 5kHz PID control loop running on a PIC18, which was also handling CAN bus traffic, and EEPROM writing at the same time. I'm sure there's something we can do to get your loop time down to less than 10ms.</p>
+			</div>
+			<div id = "comment-5528" class = "comment">
+				<p>See: http://robotics.stackexchange.com/questions/143/how-do-i-calculate-the-required-loop-frequency-for-a-servo-controller</p>
+			</div>
+			<div id = "comment-5529" class = "comment">
+				<p>@Rocketmagnet After seeing your comment, I went through the source code and checked the execution time of each of the main functions. After some experimentation, the time came down to 45 milliseconds. Also, out of the 45 milliseconds, 37 ms is being consumed by [the pilot input function](https://github.com/micavdtu/MICAV/blob/master-pid/mav_pilot/drivers.cpp#L65) probably because of the `pulseIn` command. Other than that, 7 ms is being taken by the IMU. So, thanks! 100 Hz might just be achievable.</p>
+			</div>
+			<div id = "comment-10110" class = "comment">
+				<p>http://robotics.stackexchange.com/questions/231/what-frequency-does-my-quadcopter-output-sense-calculate-output-update-loop-need may be related.</p>
+			</div>
+			<div id = "comment-10111" class = "comment">
+				<p>The derivative term is wrong: use another variable to store just the previous roll sample.</p>
+			</div>
+			</div>
+				<textarea id = "speech-3027" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-3027">
+					<img id="start_img-3027" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-3027">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-3028"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-3028" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>1) I would try find out how fast your ESCs can update and use that as the PID update rate. Your current rate is definitely too slow (need at least 50Hz for marginal performance).</p>
+
+<p>2) Putting a threshold on the maximum change should only be used to handle emergency/unexpected situations. You should NOT expect it to be part of the normal operation, and if you are see spikes during normal operation it means you need to fix something somewhere else or lower gains.</p>
+
+<p>3) Tune the PIDs wherever you need best performance, which depends on your application. One strategy is to use different sets of gain values for different situations (e.g. separate takeoff gains) but each set of gains needs to be tuned separately so it adds more work.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-3028" data-toggle = "popover">
+				<p>user name : ryan0270</p>
+				<p> user reputation : 1814</p>
+				<p class = "tagcontent" id = "usertaginfo-3028">{'None': 133}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-3028" class = 'collapse'>
+			</div>
+				<textarea id = "speech-3028" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-3028">
+					<img id="start_img-3028" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-3028">Comment</button>
+			<br><div id = "ans-7117"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7117" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I have programmed a quad myself and learned to stay away from the PulseIn function. What it basically does is waiting and constantly reading the pin.
+I believe Arduino UNO has 2 interrupt input pins, try using those.With some receivers it is possible to use OR ports if pulses are sent one after the other, and combine pulses into a CPPM signal. Interrupt handlers don't take too much time, all you need to do is to start and read a timer. Using this technique I got a rate of well over 200Hz</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7117" data-toggle = "popover">
+				<p>user name : Andr </p>
+				<p> user reputation : 11</p>
+				<p class = "tagcontent" id = "usertaginfo-7117">{'None': 1}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7117" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7117" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7117">
+					<img id="start_img-7117" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7117">Comment</button>
+			<br><div id = "ans-7119"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7119" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>It is related with response time of electronic speed controller units and bldc motors. In discrete time only Ki and Kd have time variable. In a stable system If you change the sample rate you have to change Ki and Kd to companse it. So you can do it conversly. You can change just Ki and Kd constants instead of changing sample rate. both make same effect. </p>
+
+<p>You can look this link for relation between PID and sample rate : <a href="http://support.motioneng.com/downloads-notes/tuning/scaling_pid_param.htm" rel="nofollow">http://support.motioneng.com/downloads-notes/tuning/scaling_pid_param.htm</a> </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7119" data-toggle = "popover">
+				<p>user name : acs</p>
+				<p> user reputation : 838</p>
+				<p class = "tagcontent" id = "usertaginfo-7119">{'stereo-vision': 4, 'control': 1, '3d-printing': 2, 'simulator': 8, 'multi-agent': 0, 'pid': 1, 'slam': 2, 'robotic-arm': 1, 'mobile-robot': 10, 'ros': 8, 'battery': 0, 'swarm': 2, 'cameras': 4, 'lidar': 4, '3d-model': 2, 'imu': 3, 'kalman-filter': 3, 'gazebo': 1, 'gps': 2, 'None': 34, 'localization': 4, 'sensors': 7, '3d-reconstruction': 2, 'quadcopter': 0, 'computer-vision': 2, 'algorithm': 1, 'sensor-fusion': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7119">Load Comments</button></br>
+			<div id = "commentsection-7119" class = 'collapse'>
+			<div id = "comment-10964" class = "comment">
+				<p>Adjusting k values would only work if the system is controllable with the current time step size, right? You cannot control the system (a flying object) if the time step is 2 seconds, for example.</p>
+			</div>
+			<div id = "comment-10965" class = "comment">
+				<p>different step sizes needs different constants. If you use dynamic sampling rates you can compansate with dynamic constants.</p>
+			</div>
+			<div id = "comment-10966" class = "comment">
+				<p>Do you mean gain constants can be dynamic? isn't it counter-intuitive? constants are by definition constants, and do not change. Or, do you mean under different conditions (like hover and forward flight), that delta_t could be changed to keep the gains the same? Could you tell what is the advantage of keeping gains constant and trying to come up with dynamic delta_time? I guess it is the same effort for tuning, and software could get even more complicated.</p>
+			</div>
+			<div id = "comment-10971" class = "comment">
+				<p>PID is just piece of code. you can change everything dynamicaly in that code. If your system changes sample time you have to update with proper constants. that means you can response to sample time changes.</p>
+			</div>
+			<div id = "comment-10972" class = "comment">
+				<p>that's correct, you can change for example the Kd constant as well, a simple way to accomplish the same result is to multiply it with the current delta-time.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7119" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7119">
+					<img id="start_img-7119" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7119">Comment</button>
+			<br><div id = "ans-7596"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7596" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Your code assumes that the CPU is running at a constant clock. However, in real life it will change, and sometimes even drastically! So it is required to insert a Delta Time (dt) factor to your KI and KD terms in the computations.</p>
+
+<p>i.e.</p>
+
+<pre><code>(KI_ROLL * (roll_old + roll) *dt) +
+(KD_ROLL * (roll - roll_old) *dt)
+</code></pre>
+
+<p>(dt = time_now - time_previous)</p>
+
+<p>By the way, your Integral term is a <em>wrong one</em>! As it stands, it's probably destabilizing the whole system. An integral controller should use a Integral_Roll_error variable, which is the addition of errors in time. For example:</p>
+
+<pre><code>Integral_Roll_error = Integral_Roll_error + roll - roll_old;
+</code></pre>
+
+<p>Running fast is important, but running a stable rate is required, especially if you want to be able to analyse your system, or do tests, compare different control logics, to add a Navigation algorithm, or payload control algorithm later on, etc.</p>
+
+<p>Coming back to the question:</p>
+
+<pre><code>"I am having trouble interpreting the system response on varying the constants."
+</code></pre>
+
+<p>It would be beneficial to elaborate a little bit more on what sort of funny or difficulties you ran into. Adding some response charts from your tests would probably let the community help many in practical ways.</p>
+
+<p>The second question asks about the rate limit of the motor control output command. This depends a lot on what sort of a performance you are expecting. The code is only computing the roll_command. How it is turned to motor commands is a relevant topic. In general, as long as the motor accelerations do not cause harm, you could make them as fast as you could.</p>
+
+<p>The performance requirement of the controller (how fast it should stably bring the system to the desired state, how far it should/could overshoot, what sort of a damping it should have), derives the required motor_rate_limit. For example, lift off could be one of the performance requirements. From a standing position to leving the ground, if it takes 30 seconds, is it acceptable? or if the vehicle is tilted by 60 degrees in 2 seconds, (the lift will drop to half if not compensated), you need more Lift all of a sudden. So angular agility of the vehicle is indirectly affecting the lift_agility of the vehicle, and in turn the motor_control_rates.</p>
+
+<pre><code>3) At what thrust range or values, should the tuning be performed? Minimum, lift off, or mid-range or is it irrelevant?
+</code></pre>
+
+<p>It is relevant. At the limits of thrust, you are not able to accelerate the motors that are already at their maximum. (unless you never allow to go beyond a specific total_Thrust, which is a workaround, by giving up some performance.) So the gains of the controller must be tuned at the maximum, as well as some other points of the operational envelope (forward flight, hover). Reminder: Max thrust and similarly min thrust tests would not be easy to achieve with normal flights.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7596" data-toggle = "popover">
+				<p>user name : G rkan  etin</p>
+				<p> user reputation : 284</p>
+				<p class = "tagcontent" id = "usertaginfo-7596">{'None': 13}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7596">Load Comments</button></br>
+			<div id = "commentsection-7596" class = 'collapse'>
+			<div id = "comment-10963" class = "comment">
+				<p>The derivative term is also incorrect. I will update the answer. The derivative should be multiplying the derivative of the error, not the difference to error. Should also check the proportional term.</p>
+			</div>
+			<div id = "comment-10968" class = "comment">
+				<p>I just found the time to check a bit further. As long as "roll" is not defined, my understanding of the algorithm is incomplete. Maybe "roll" is already the state error. My comments about correctness assumes that "roll" is the state variable.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7596" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7596">
+					<img id="start_img-7596" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7596">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

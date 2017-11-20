@@ -1,0 +1,214 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Non linear control system?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7913" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7913" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 210</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Non linear control system?</h2>
+<p>I have a dual (sequential) loop control system controlling the angle of a rotational joint on a robot using an absolute encoder. I have tuned the inner control loop (for the motor) and am now working on tuning the outer loop (for the joint).</p>
+
+<p><em>Example of a dual loop controller</em>
+<a href="https://i.stack.imgur.com/IuDx0.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/IuDx0.png" alt="dual loop"></a></p>
+
+<p>When I disturb the system the response isn't what I would expect.</p>
+
+<p><em>Kp = 0.4</em>
+<a href="https://i.stack.imgur.com/fmBnB.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/fmBnB.png" alt="enter image description here"></a></p>
+
+<p><em>Kp = 0.1 Kd = 0.001</em>
+<a href="https://i.stack.imgur.com/PBz8Q.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/PBz8Q.png" alt="enter image description here"></a></p>
+
+<p>I didn't add a <em>Ki</em> term because I don't have any steady state error.</p>
+
+<p>I'm confused by the fact that the second overshoot in the first plot is larger than the first one. No matter how I adjust the parameters I can't seem to get rid of the oscillation in the velocity of the joint (seen in the second plot). One limitation I have is if I increase both <em>Kp</em> and <em>Kd</em> too high the gearbox of the becomes very noisy because the noise in the encoder signal creates larger adjustments in the position of the motor. I'm working on adding a filter to the output using the method described <a href="http://controlguru.com/pid-with-controller-output-co-filter/" rel="nofollow noreferrer">here</a>.</p>
+
+<p>The code I'm using for the outer loop is:</p>
+
+<pre><code>static float e_prev = 0.0;
+
+e = joint_setpoint - joint_angle;
+e_i += e/0.001; // dt = 0.001s
+e_d = (e - e_prev)/0.001; // dt = 0.001s
+
+e_prev = e;
+
+motor_setpoint += k_p * e + k_i * e_i + k_d * e_d;
+</code></pre>
+
+<p>I'm beginning to think that the system might not be able to be modeled by a first order equation, but would this change the implementation of the control loop at all? Any advice is appreciated!</p>
+
+<p>Ben</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7913" data-toggle = "popover">
+				<p>user name : beenjaminnn</p>
+				<p> user reputation : 108</p>
+				<p class = "tagcontent" id = "usertaginfo-7913">{'None': 0, 'pid': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7913">Load Comments</button></br>
+			<div id = "commentsection-7913" class = 'collapse'>
+			<div id = "comment-11547" class = "comment">
+				<p>You said "_non constant_" velocity, but I presume you meant "_non purely_" exponential velocity, right? Then, what did you mean with your edit? What kind of disturbances did you apply to your system? What are the units in the plots? How is your control diagram arranged?</p>
+			</div>
+			<div id = "comment-11550" class = "comment">
+				<p>If you want advice on what's wrong with your controller, you have to provide your controller. Please post the exact code you're using for the controller and the exact code you're using to create the test.</p>
+			</div>
+			<div id = "comment-11553" class = "comment">
+				<p>What kind of joint is that? What does the robot look like? What equations did you use to model that robot? What controller are you using? What disturbance are you applying to the system? Your question is very vague, boiling down to "How do I get rid of this wobble in the line?" Please provide all the information that you have.</p>
+			</div>
+			<div id = "comment-11557" class = "comment">
+				<p>Thanks for the feedback! I clarified my question and switched the graphs out for more informative ones. I also added the code for the outer loop controller.</p>
+			</div>
+			<div id = "comment-11568" class = "comment">
+				<p>Again: please provide the required information. You are talking about if a first order equation can model the system properly. But you never mention **what equation you are actually using** nor do you **explain the system**. You talk about "sequential loops" and then you talk about "inner loop", which is a contradiction, an inner loop is not in sequence to the outer one. **Please provide the full block diagram of EVERYTHING including ALL parameters** so that we can stop the guesswork and start to do some science. thanks.</p>
+			</div>
+			<div id = "comment-11570" class = "comment">
+				<p>Ok, so you have an inner and an outer loop. How does the code for your inner loop look like? How often do you execute the code of the inner loop before executing the code of the outer loop? If you are not sure what I'm asking for, please post a continuous portion of your code that shows both inner and outer loop.</p>
+			</div>
+			<div id = "comment-11592" class = "comment">
+				<p>@beenjaminnn, two nested loops both in positions are useless and also conceptually wrong. Either you use only one PID in position, closed on the joint feedback or you employ one outer loop in position and one inner loop in velocity (at the motor side).</p>
+			</div>
+			</div>
+				<textarea id = "speech-7913" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7913">
+					<img id="start_img-7913" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7913">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7918"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7918" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>If you see integral, think area. Derivative, think slope. Integral error is error <em>times</em> sample time (plus previous integral error), derivative error is the change in error divided by time. </p>
+
+<p>Your derivative error term is correct, but your integral error term is not. This shouldn't be an issue because you aren't using an integral term (even though you should!)</p>
+
+<p>Where I would guess your problem lies is with your controller output - you have </p>
+
+<p><code>motor_setpoint += k_p * e + k_i * e_i + k_d * e_d;</code></p>
+
+<p>Here you have the <code>+=</code> operator, which indicates that <code>motor_setpoint</code> is <em>accumulating</em> the output of your controller. This is incorrect. The output of your PID controller alone is the input to your motor. </p>
+
+<p>I would guess you might be thinking that you are adding the control signal to your reference, but remember that your reference was already taken into account when calculating the error! </p>
+
+<p>This is, for me at least, the magical aspect of the PID controller. It doesn't care what is between the controller and the output, it just adjusts until there is zero error. </p>
+
+<p>If error is accumulating quickly (integral error is high), the controller "opens up", but then if error starts to drop quickly (derivative error is high) it will "ease off" to minimize the overshoot. </p>
+
+<p>If anything, I would suggest eliminating the derivative term and using only the PI controller - this is commonly done in industry because the derivative term is highly sensitive to noise. </p>
+
+<p>Anyways, hopefully this fixes your issue, but if not please at least make the changes and then re-generate  and re-post your plots. If the base controller isn't right we can't divine anything from the plots.</p>
+
+<p>Also, check out <a href="https://en.wikipedia.org/wiki/Ziegler%E2%80%93Nichols_method" rel="nofollow">Ziegler-Nichols</a> tuning if you're looking for some professional PID tuning advice. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7918" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-7918">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7918">Load Comments</button></br>
+			<div id = "commentsection-7918" class = 'collapse'>
+			<div id = "comment-11559" class = "comment">
+				<p>Thanks Chuck! I'm confused to how I apply the output of the controller to the setpoint of the motor. If I was to apply the output directly to the motor, for a joint setpoint of 1.0 and an error of 0 (for the sake of argument) the motor will want to go to a position of 0.0, instead of staying where is. This is why I added the `+=`.</p>
+			</div>
+			<div id = "comment-11560" class = "comment">
+				<p>If the error is zero, then that means the joint angle is equal to the joint setpoint because `error = joint_setpoint - joint_angle`. In this case, for the sake of argument, if error is zero then the controller output `kP*error` is zero because error is zero. This is what you want - you want the signal to the motor to be zero when the output equals the input.</p>
+			</div>
+			<div id = "comment-11561" class = "comment">
+				<p>In reality, just because error is zero doesn't mean the integral or proportional errors are zero, and this causes oscillations in the response. There is extensive literature regarding tuning for rise time, settling time, etc. Essentially, the oscillations in the output are the cost you pay for a faster response, and they are caused by inertia in the system.</p>
+			</div>
+			<div id = "comment-11562" class = "comment">
+				<p>I think in my case I want the motor to stop moving when the proportional term is zero, not return to 0. I fixed this by having mostly integral gain and a lower proportional gain.</p>
+			</div>
+			<div id = "comment-11563" class = "comment">
+				<p>@beenjaminnn, beside applying the corrections pointed out by Chuck, please provide also the complete diagram of your system, as suggested by Bending Unit 22 too. To me it's very unclear how the two _sequential_ controllers are devised.</p>
+			</div>
+			<div id = "comment-11564" class = "comment">
+				<p>@beenjaminn - I'm not sure what you mean "return to zero", but the motor **does** stop when the proportional term is zero. A PID controller does not drive the output to zero like a basic state space controller, but rather **a PID controller drives error to zero.** The only way zero error occurs is if your output and input are equal.</p>
+			</div>
+			<div id = "comment-11565" class = "comment">
+				<p>The PID signal is a bunch of gain terms multiplying a bunch of error terms. If the error is zero then the reference signal is zero. Here's where you may be getting confused - typically a motor reference is a speed reference. PID output of zero gets the motor to stop, so it stays in position, but **even if** your output is position, as soon as zero error occurs the controller output becomes 0, causing position drift, creating error. With error, the controller output is nonzero.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7918" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7918">
+					<img id="start_img-7918" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7918">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

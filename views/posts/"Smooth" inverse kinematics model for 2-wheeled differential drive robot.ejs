@@ -1,0 +1,172 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>"Smooth" inverse kinematics model for 2-wheeled differential drive robot
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-3040" class = "post">
+			<h2>Question</h2>
+			<div id="vote-3040" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 1056</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>"Smooth" inverse kinematics model for 2-wheeled differential drive robot</h2>
+<p>I have been reading about kinematic models for nonholonomic mobile robots such as <a href="http://en.wikipedia.org/wiki/Differential_wheeled_robot" rel="nofollow">differential wheeled robots</a>. The texts I've found so far all give reasonably decent solutions for the forward kinematics problem; but when it comes to inverse kinematics, they weasel out of the question by arguing that for every possible destination pose there are either infinite solutions, or in cases such as $[0 \quad 1 \quad 0]^T$ (since the robot can't move sideways) none at all. Then they advocate a method for driving the robot based on a sequence of straight forward motions alternated with in-place turns.</p>
+
+<p>I find this solution hardly satisfactory. It seems inefficient and inelegant to cause the robot to do a full-stop at every turning point, when a smooth turning would be just as feasible. Also the assertion that some points are "unreachable" seems misleading; maybe there <em>are</em> poses a nonholonomic mobile robot can't reach by maintaining a single set of parameters for a finite time, but clearly, if we vary the parameters over time according to some procedure, and in the absence of obstacles, it <em>should</em> be able to reach any possible pose.</p>
+
+<p>So my question is: what is the inverse kinematics model for a 2-wheeled differential drive robot with shaft half-length $l$, two wheels of equal radii $r$ with adjustable velocities $v_L \ge 0$ and $v_R \ge 0$ (i.e. no in-place turns), and given that we want to minimize the number of changes to the velocities?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-3040" data-toggle = "popover">
+				<p>user name : xperroni</p>
+				<p> user reputation : 386</p>
+				<p class = "tagcontent" id = "usertaginfo-3040">{'None': 19, 'inverse-kinematics': 3, 'algorithm': 2, 'speech-processing': 2, 'rangefinder': 2, 'linux': 3, 'mobile-robot': 8, 'sensors': 2, 'digital-audio': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-3040">Load Comments</button></br>
+			<div id = "commentsection-3040" class = 'collapse'>
+			<div id = "comment-5539" class = "comment">
+				<p>I think this is related: https://robotics.stackexchange.com/questions/2604/differential-drive-trajectory-following-control</p>
+			</div>
+			<div id = "comment-5543" class = "comment">
+				<p>The problems are similar, yes, although I gave a narrower description for the kind of solution I'm looking for. Also I don't see how the accepted solution (pure pursuit) could generate a path between any two poses: from what I [read](http://www.ri.cmu.edu/pub_files/pub3/coulter_r_craig_1992_1/coulter_r_craig_1992_1.pdf), it is only concerned with direction of movement, not the robot's orientation at the destination point.</p>
+			</div>
+			</div>
+				<textarea id = "speech-3040" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-3040">
+					<img id="start_img-3040" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-3040">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-3041"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-3041" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>While there may be an inverse kinematic solution, the most likely reason that your texts are avoiding the problem is because this sort of thing falls more naturally in the domain of AI and path planning.</p>
+
+<p>In the simplest case, you should look at the <a href="http://en.wikipedia.org/wiki/Dubins_path" rel="nofollow">Dubins path</a>.  Balancing constraints like turning radius, maximum speed, etc, is what takes you from infinite solutions to a very reasonable set of possible movements.  Given a set of poses, you can plan Dubins paths between them for whatever cost function you prefer.</p>
+
+<p>Here's an example paper on the topic: <a href="ftp://ftp.math.ucla.edu/pub/camreport/cam09-74.pdf" rel="nofollow">A Practical Path-planning Algorithm for a Vehicle with a Constrained
+Turning Radius: a Hamilton-Jacobi Approach</a>.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-3041" data-toggle = "popover">
+				<p>user name : Ian</p>
+				<p> user reputation : 9640</p>
+				<p class = "tagcontent" id = "usertaginfo-3041">{'planning': 10, 'None': 809, 'power': 1, 'algorithm': 10, 'battery': 1, 'slam': 7, 'coverage': 10, 'mobile-robot': 9, 'sensors': 9}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-3041" class = 'collapse'>
+			</div>
+				<textarea id = "speech-3041" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-3041">
+					<img id="start_img-3041" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-3041">Comment</button>
+			<br><div id = "ans-10141"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10141" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>If I understand correctly, you would like to understand how control a two-wheeled differential drive robot so that you can achieve smooth/elegant driving while arriving at a desired final orientation--this is known as the parking problem. Ian presented an AI approach to the problem, which is interesting, but I would be remiss if I didn't interject with a control theoretic perspective.</p>
+
+<p>Because two-wheeled differential drive robotics are a well-studied robotic platform, we can determine a control law from a model of the dynamics. Differential drive robots can be modeled with unicycle dynamics of the form: $$\dot{z}=\left[\begin{matrix}\dot{x}\\ \dot{y} \\ \dot{\theta} \end{matrix}\right] = \left[\begin{matrix}cos(\theta)&amp;0\\sin(\theta)&amp;0\\0&amp;1\end{matrix}\right] \left[\begin{matrix}v\\\omega\end{matrix}\right],$$ where $x$ and $y$ are Cartesian coordinates of the robot, and $\theta \in (-\pi,\pi]$ is the angle between the heading and the $x$-axis. The input vector $\left[v, \omega \right]^T$ consists of linear and angular velocity inputs.</p>
+
+<p>The parking problem that you mention interest in in your comment has been studied widely. <a href="http://www-personal.umich.edu/~jongjinp/papers/Park-icra-11.pdf" rel="nofollow">A Smooth Control Law for Graceful Motion of Differential Wheeled Mobile Robots in 2D Environment</a> presents one possible solution.</p>
+
+<p>Another solution to tracking a trajectory is to control a point, which is holonomic, some small distance $l$ away from the center of the the two wheels rather than controlling the unicycle robot directly. To do this, we can derive the following rotation matrix to transform the control law of the robot to the control law of the point: $$\dot{p}=\left[\begin{matrix}\dot{p_x}\\\dot{p_y}\end{matrix}\right]=\left[\begin{matrix}\text{cos}(\theta)&amp;-l\text{sin}(\theta)\\\text{sin}(\theta)&amp;l \text{cos}(\theta)\end{matrix}\right]\left[\begin{matrix}v\\\omega\end{matrix}\right]$$</p>
+
+<p>$\dot{p}$ is the velocity of the point being controlled, and it is decomposed into its $x$ and $y$ components. At this point, control is quite simple, simply control the point directly! Setting $$\dot{p}=u=r(t),$$ accomplishes this, where $u$ is the input, and $r(t)$ is the reference trajectory that you want; this will accomplish smooth movement along the trajectory.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10141" data-toggle = "popover">
+				<p>user name : NBCKLY</p>
+				<p> user reputation : 741</p>
+				<p class = "tagcontent" id = "usertaginfo-10141">{'None': 44, 'roomba': 4, 'irobot-create': 4, 'arduino': 2}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10141">Load Comments</button></br>
+			<div id = "commentsection-10141" class = 'collapse'>
+			<div id = "comment-18035" class = "comment">
+				<p>This *is* inverse kinematics. *Kinematics* is the study of the physical arrangement of a system without regard to forces or dynamics. That is, if you move a joint some angle $\theta$, how much of a translation and/or rotation does that create at some other point? *Inverse* kinematics is the opposite - what joint angle $\theta$ does it take to achieve a desired translation or rotation at the other point? Or, in this case, what wheel speeds does it take to achieve a desired trajectory? You're *almost* (but not quite!) to the answer.</p>
+			</div>
+			<div id = "comment-18036" class = "comment">
+				<p>In your equation, you give $\dot{p} = [A][v]$, and your control input is $u = \dot{p}$. Well, the *kinematic* relationship $[A]$ is where the sine/cosine and wheel base $l$ come into play, so to get the linear and angular inputs you need to send to the system you have to take the *inverse* of the *kinematic* matrix $[A]$ to get the *inverse kinematic equation* $[v] = [A]^{-1}u$.</p>
+			</div>
+			</div>
+				<textarea id = "speech-10141" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10141">
+					<img id="start_img-10141" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10141">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

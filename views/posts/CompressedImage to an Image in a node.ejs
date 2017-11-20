@@ -1,0 +1,179 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>CompressedImage to an Image in a node
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-10295" class = "post">
+			<h2>Question</h2>
+			<div id="vote-10295" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 222</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>CompressedImage to an Image in a node</h2>
+<h1>Update</h1>
+
+<p>Hey I have the following subscriber on Nvidia TX1 board running on an agricultural robot. we have the following issue with subscribing to Sensor_msgs::Compressed:</p>
+
+<pre><code>ImageConverter(ros::NodeHandle &amp;n) :  n_(n), it_(n_)
+{
+  image_pub_ = it_.advertise("/output_img",1);
+
+  cv::namedWindow(OPENCV_WINDOW);
+  image_transport::TransportHints TH("compressed");
+  image_sub_compressed.subscribe(n,"/Logitech_webcam/image_raw/compressed",5,&amp;ImageConverter::imageCallback,ros::VoidPtr(),TH);
+}
+</code></pre>
+
+<p>And the callback function</p>
+
+<pre><code>void imageCallback(const sensor_msgs::CompressedImageConstPtr&amp; msg)
+</code></pre>
+
+<p>When I compile this I get an error:</p>
+
+<pre><code>from /home/johann/catkin_ws/src/uncompressimage/src/publisher_uncompressed_images.cpp:1:
+/usr/include/boost/function/function_template.hpp: In instantiation of  static void boost::detail::function::function_void_mem_invoker1&lt;MemberPtr, R, T0&gt;::invoke(boost::detail::function::function_buffer&amp;, T0) [with MemberPtr = void (ImageConverter::*)(const boost::shared_ptr&lt;const sensor_msgs::CompressedImage_&lt;std::allocator&lt;void&gt; &gt; &gt;&amp;); R = void; T0 = const boost::shared_ptr&lt;const sensor_msgs::Image_&lt;std::allocator&lt;void&gt; &gt; &gt;&amp;] :
+/usr/include/boost/function/function_template.hpp:934:38:   required from  void boost::function1&lt;R, T1&gt;::assign_to(Functor) [with Functor = void (ImageConverter::*)(const boost::shared_ptr&lt;const sensor_msgs::CompressedImage_&lt;std::allocator&lt;void&gt; &gt; &gt;&amp;); R = void; T0 = const boost::shared_ptr&lt;const sensor_msgs::Image_&lt;std::allocator&lt;void&gt; &gt; &gt;&amp;] 
+/usr/include/boost/function/function_template.hpp:722:7:   required from  boost::function1&lt;R, T1&gt;::function1(Functor, typename boost::enable_if_c&lt;boost::type_traits::ice_not&lt;boost::is_integral&lt;Functor&gt;::value&gt;::value, int&gt;::type) [with Functor = void (ImageConverter::*)(const boost::shared_ptr&lt;const sensor_msgs::CompressedImage_&lt;std::allocator&lt;void&gt; &gt; &gt;&amp;); R = void; T0 = const boost::shared_ptr&lt;const sensor_msgs::Image_&lt;std::allocator&lt;void&gt; &gt; &gt;&amp;; typename boost::enable_if_c&lt;boost::type_traits::ice_not&lt;boost::is_integral&lt;Functor&gt;::value&gt;::value, int&gt;::type = int] 
+/usr/include/boost/function/function_template.hpp:1069:16:   required from  boost::function&lt;R(T0)&gt;::function(Functor, typename boost::enable_if_c&lt;boost::type_traits::ice_not&lt;boost::is_integral&lt;Functor&gt;::value&gt;::value, int&gt;::type) [with Functor = void (ImageConverter::*)(const boost::shared_ptr&lt;const sensor_msgs::CompressedImage_&lt;std::allocator&lt;void&gt; &gt; &gt;&amp;); R = void; T0 = const boost::shared_ptr&lt;const sensor_msgs::Image_&lt;std::allocator&lt;void&gt; &gt; &gt;&amp;; typename boost::enable_if_c&lt;boost::type_traits::ice_not&lt;boost::is_integral&lt;Functor&gt;::value&gt;::value, int&gt;::type = int] 
+/home/johann/catkin_ws/src/uncompressimage/src/publisher_uncompressed_images.cpp:27:126:   required from here
+</code></pre>
+
+<p>The red error statement was:</p>
+
+<pre><code>/usr/include/boost/function/function_template.hpp:225:11: error: no match for call to  (boost::_mfi::mf1&lt;void, ImageConverter, const boost::shared_ptr&lt;const sensor_msgs::CompressedImage_&lt;std::allocator&lt;void&gt; &gt; &gt;&amp;&gt;) (const boost::shared_ptr&lt;const sensor_msgs::Image_&lt;std::allocator&lt;void&gt; &gt; &gt;&amp;) 
+           BOOST_FUNCTION_RETURN(boost::mem_fn(*f)(BOOST_FUNCTION_ARGS));
+</code></pre>
+
+<p>I am not using BOOST, and searching around hasn't helped me solve it</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10295" data-toggle = "popover">
+				<p>user name : JTIM</p>
+				<p> user reputation : 101</p>
+				<p class = "tagcontent" id = "usertaginfo-10295">{'opencv': 0, 'None': 0, 'ros': 0, 'c++': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10295">Load Comments</button></br>
+			<div id = "commentsection-10295" class = 'collapse'>
+			<div id = "comment-18444" class = "comment">
+				<p>this wont be a terribly constructive comment but have you considered using python for your vision processing?</p>
+			</div>
+			<div id = "comment-18445" class = "comment">
+				<p>@holmeski no sitting on the edge and hoping for some help :) if you can help with a node that subscribes to the compressed message, then it could be a possibility, but my skills are limited with python, but if you could help with a python script of the above I would be truly grateful.</p>
+			</div>
+			<div id = "comment-18448" class = "comment">
+				<p>So you are trying to subscribe to a ros topic that carries compressed images. Once the callback is triggered you would like to convert that image to a more friendly type of image then publish that back across ROS?</p>
+			</div>
+			<div id = "comment-18449" class = "comment">
+				<p>@holmeski all other stuff should be possible for me to do on my own :) I wanted to publish as a normal sensor_msgs::image</p>
+			</div>
+			<div id = "comment-18502" class = "comment">
+				<p>@JTIM - I was in favor of moving the question because you're having trouble with the *software*. It *is* called "Robotic" operating system, but it is still a piece of software. For reference, we have 97 questions tagged with 'ros', where StackOverflow has *630*. I would argue that, if you're having some trouble with the **system** interaction, e.g., you're getting unexpected motion or outputs with ROS, then that's a *Robotics* question. It sounds like you're having **compiler** errors, which is why I would suggest SO. That said, if you're getting help here then by all means stay :)</p>
+			</div>
+			<div id = "comment-18503" class = "comment">
+				<p>In general, as I mention above, I think of robots as *systems*, so if you are having a problem with the *system*, then you should come here. If you are having problems with some other aspect then you might get better answer, and faster, asking on the specific site. Regarding the deletion, migration would have closed the question here and "created" one there; it already existed so I just closed it here.</p>
+			</div>
+			<div id = "comment-18512" class = "comment">
+				<p>@holmeski any change for the help ? :)</p>
+			</div>
+			</div>
+				<textarea id = "speech-10295" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10295">
+					<img id="start_img-10295" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10295">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-10345"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10345" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Boost is linked against your code by default when you're using ROS. I'll take a guess, you have namespace issue. Refrain from using "using namespace" and explicitly use cv:: in front of your calls. It's probably a name collision with Boost.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10345" data-toggle = "popover">
+				<p>user name : Damjan Dakic</p>
+				<p> user reputation : 650</p>
+				<p class = "tagcontent" id = "usertaginfo-10345">{'control': 6, 'None': 32, 'sensor-fusion': 5, 'localization': 5, 'rcservo': 3, 'pid': 6, 'automation': 0, 'servomotor': 3, 'differential-drive': 6, 'design': 3, 'kalman-filter': 5, 'sensors': 5, 'pwm': 3, 'navigation': 6}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10345">Load Comments</button></br>
+			<div id = "commentsection-10345" class = 'collapse'>
+			<div id = "comment-18550" class = "comment">
+				<p>seemed to be an issue with the catkin make file. Thanks for your time!</p>
+			</div>
+			</div>
+				<textarea id = "speech-10345" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10345">
+					<img id="start_img-10345" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10345">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,605 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Tuning PD for line follower
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7959" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7959" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 719</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Tuning PD for line follower</h2>
+<p>I am trying to make line following robot. I am using atmega328p mcu, pololu 10:1 motors, pololu qtr6-rc sensor, 2s li-po. Here is my code:</p>
+
+<pre><code>/*
+* LineFollower.c
+*
+* Created: 30.04.2015 16:00:05
+*  Author: Mikk
+*/
+#define F_CPU 20000000         //we're running on 20mHz clock
+
+#define numberOfButtons 1
+
+#define READPORT    PORTC
+#define READDDR     DDRC
+#define READPIN     PINC        // lines connected to PC0 - PC5
+
+#define MAXTICKS    2500
+#define QTRCNT      6
+
+#include &lt;avr/io.h&gt;
+#include &lt;util/delay.h&gt;
+#include &lt;avr/interrupt.h&gt;
+#include &lt;Mikk/Button.h&gt;
+#include &lt;Mikk/QTRRCSensors.h&gt;
+
+int baseSpeed = 70;
+int maxSpeed = 140;
+const float Kp = 8.1;
+const float Kd = 400;
+
+uint8_t mode = 0;                //indicates in which mode program is 
+
+uint8_t RmotorSpeed = 0;         //
+uint8_t LmotorSpeed = 0;         //motors
+
+void button(void);
+
+void setMotors(int ml, int mr)
+{
+    if(ml &gt; maxSpeed)             //make sure that speed is not out of range for left motor
+        ml = maxSpeed;
+    if(ml &lt; -maxSpeed)
+        ml = -maxSpeed;
+
+    if(mr &gt; maxSpeed)             //make sure that speed is not out of range for right motor
+        mr = maxSpeed;
+    if(mr &lt; -maxSpeed)
+        mr = maxSpeed;
+
+    if(ml &gt; 0)                    //if left motor speed is positive then drive motor forwards
+        LmotorSpeed = ml;
+    if(ml == 0)                   //if left motor speed is 0 then stop motor
+        LmotorSpeed = 0;
+
+    if(mr &gt; 0)                    //if right motor speed is positive then drive motor forwards
+        RmotorSpeed = mr;
+    if(mr == 0)                   //if right motor speed is 0 then stop motor
+        RmotorSpeed = 0;
+}
+
+void emittersOn(void)            //function for turning emitters on
+{
+    PORTD |= (1 &lt;&lt; PIND0);
+}
+
+void emittersOff(void)           //function for turning emitters off
+{
+    PORTD &amp;= ~(1 &lt;&lt; PIND0);
+}
+
+void LedOn(void)                 //function for turning led on
+{
+    PORTB |= (1 &lt;&lt; PINB5);
+}
+
+void LedOff(void)               //function for turning led off
+{
+    PORTB &amp;= ~(1 &lt;&lt; PINB5);
+}
+
+void stop(void)                 //stop everything
+{
+    LedOff();
+    setMotors(0, 0);
+    emittersOff();
+}
+
+void calibration(void)          //calibration takes about 5 seconds
+{
+    //turn led on
+    LedOn();
+    //turn emitters on
+    emittersOn();
+    // reset minimums and maximums
+    for (int i = 0; i &lt; QTRCNT; i++)
+    {
+        QTRmax[i] = 0;
+        QTRmin[i] = MAXTICKS;
+    }
+    //calibrate sensors
+    for(int i=0; i&lt;250; i++)
+    {
+        calibrateQTRs();
+        _delay_ms(5);
+    }
+    //turn emitters off
+    emittersOff();
+    //turn led off
+    LedOff();
+}
+
+void start(void)
+{
+    //turn led on
+    LedOn();
+
+    //create all necessary variables
+    int power_difference = 0;
+    float error = 0;
+    float lastError = 0;
+    float derivative = 0;
+    int position = 0;
+
+    //turn emitters on
+    emittersOn();
+    _delay_ms(500);               //wait so you can pull your hand away
+    while(mode == 2)
+    {
+        //check for mode change
+        button();
+
+        //read position
+        position = readLine();
+        //make calculations
+        error = position - 2500;
+        derivative = error - lastError;
+
+        //remember last error
+        lastError = error;
+
+        //calculate power_difference of motors
+        power_difference = error/(Kp/100) + derivative*(Kd/100);
+
+        //make sure that power difference is in correct range
+        if(power_difference &gt; baseSpeed)
+            power_difference = baseSpeed;
+        if(power_difference &lt; -baseSpeed)
+            power_difference = -baseSpeed;
+
+        //drive motors
+        if(power_difference &gt; 0)
+            setMotors(baseSpeed+power_difference, baseSpeed-power_difference/2);
+        else if(power_difference &lt; 0)
+            setMotors(baseSpeed+power_difference/2, baseSpeed-power_difference);
+        else if(power_difference == 0)
+            setMotors(maxSpeed, maxSpeed);
+    }
+}
+
+void button(void)
+{
+    char buttonState = 0;
+    //check for current button status
+    buttonState = ButtonReleased(0, PINB, 1, 200);
+    //check if button is pressed
+    if(buttonState) //pin change from low to high
+    {
+        mode++;
+        if(mode == 1) calibration();
+    }
+}
+
+void pwmInit(void)
+{
+    //set fast-PWM mode, inverting mode for timer0
+    TCCR0A |= (1 &lt;&lt; COM0A1) | (1 &lt;&lt; COM0A0) | (1 &lt;&lt; WGM00) | (1 &lt;&lt; WGM01) | (1 &lt;&lt; COM0B1) | (1 &lt;&lt; COM0B0);
+    //set fast-PWM mode, inverting mode for timer2
+    TCCR2A |= (1 &lt;&lt; COM2A1) | (1 &lt;&lt; COM2A0) | (1 &lt;&lt; WGM20) | (1 &lt;&lt; WGM21) | (1 &lt;&lt; COM2B1) | (1 &lt;&lt; COM2B0);
+    //set timer0 overflow interrupt
+    TIMSK0 |= (1 &lt;&lt; TOIE0);
+    //set timer2 overflow interrupt
+    TIMSK2 |= (1 &lt;&lt; TOIE2);
+
+    //enable global interrupts
+    sei();
+    //set timer0 prescaling to 8
+    TCCR0B |= (1 &lt;&lt; CS01);
+    //set timer2 prescaling to 8
+    TCCR2B |= (1 &lt;&lt; CS21);
+}
+
+int main(void)
+{   
+    DDRB |= 0x2A;                 //0b00101010
+    DDRD |= 0x69;                 //0b01101001
+    DDRC |= 0x00;                 //0b00000000
+
+    //clear port d
+    PORTD |= 0x00;
+
+    //enable pull-up resistor
+    PORTB |= (1 &lt;&lt; PINB1);
+
+    initQTRs();
+    pwmInit();
+
+    //blink 2 times indicate that we are ready
+    for(int i=0; i&lt;4; i++)
+    {
+        PORTB ^= (1 &lt;&lt; PINB5);
+        _delay_ms(500);
+    }
+
+    while(1)
+    {
+        button();
+        if(mode == 0) stop();
+        if(mode == 2) start();
+        if(mode &gt;= 3) mode = 0;
+    }
+}
+
+//update OCRnx values
+ISR(TIMER0_OVF_vect)
+{
+    OCR0A = RmotorSpeed;
+}
+ISR(TIMER2_OVF_vect)
+{
+    OCR2A = LmotorSpeed;
+}
+</code></pre>
+
+<p>And here is my qtr library:</p>
+
+<pre><code>    #ifndef QTRRCSensors
+#define QTRRCSensors
+
+#define SLOW        1
+#define FAST        0
+
+static inline void initQTRs(void) 
+{
+    TCCR1B = (1 &lt;&lt; CS11);
+}
+
+uint16_t QTRtime[QTRCNT], QTRmax[QTRCNT], QTRmin[QTRCNT];
+
+static inline void readQTRs(uint8_t forceSlow) {
+    uint8_t lastPin, i, done = 0;
+
+    for (i = 0; i &lt; QTRCNT; i++)                    // clear out previous times
+        QTRtime[i] = 0;
+
+    READDDR |= 0b00111111;                          // set pins to output
+    READPORT |= 0b00111111;                         // drive them high
+
+    _delay_us(10);                                  // wait 10us to charge capacitors
+
+    READDDR &amp;= 0b11000000;                          // set pins to input
+    READPORT &amp;= 0b11000000;                         // turn off pull-up registers
+
+    TCNT1 = 0;                                      // start 16bit timer at 0
+    lastPin = READPIN;
+
+    while ((TCNT1 &lt; MAXTICKS) &amp;&amp; ((done &lt; QTRCNT) || forceSlow))     // if forceSlow, always take MAXTICKS time
+    {
+        if (lastPin != READPIN)                     // if any of the pins changed
+        {
+            lastPin = READPIN;
+            for (i = 0; i &lt; QTRCNT; i++)
+            {
+                if ((QTRtime[i] == 0) &amp;&amp; (!(lastPin &amp; (1&lt;&lt;i))))    // did pin go low for the first time
+                {
+                    QTRtime[i] = TCNT1;
+                    done++;
+                }
+            }
+        }
+    }
+    if (done &lt; QTRCNT)                              // if we timed out, set any pins that didn't go low to max
+        for (i = 0; i &lt; QTRCNT; i++)
+            if (QTRtime[i] == 0)
+                QTRtime[i] = MAXTICKS;
+}
+
+void calibrateQTRs(void) {
+    uint8_t i, j;
+
+    for (j = 0; j &lt; 10; j++) {                      // take 10 readings and find min and max values
+        readQTRs(SLOW);
+        for (i = 0; i &lt; QTRCNT; i++) {
+            if (QTRtime[i] &gt; QTRmax[i])
+                QTRmax[i] = QTRtime[i];
+            if (QTRtime[i] &lt; QTRmin[i])
+                QTRmin[i] = QTRtime[i];
+        }
+    }
+}
+
+void readCalibrated(void) {
+    uint8_t i;
+    uint16_t range;
+
+    readQTRs(FAST);
+
+    for (i = 0; i &lt; QTRCNT; i++) {                  // normalize readings 0-1000 relative to min &amp; max
+        if (QTRtime[i] &lt; QTRmin[i])                 // check if reading is within calibrated reading
+            QTRtime[i] = 0;
+        else if (QTRtime[i] &gt; QTRmax[i])
+            QTRtime[i] = 1000;
+        else {
+            range = QTRmax[i] - QTRmin[i];
+            if (!range)                             // avoid div by zero if min &amp; max are equal (broken sensor)
+                QTRtime[i] = 0;
+            else
+                QTRtime[i] = ((int32_t)(QTRtime[i]) - QTRmin[i]) * 1000 / range;
+        }
+    }
+}
+
+uint16_t readLine(void) {
+    uint8_t i, onLine = 0;
+    uint32_t avg;                                   // weighted total, long before division
+    uint16_t sum;                                   // total values (used for division)
+    static uint16_t lastValue = 0;                  // assume line is initially all the way left (arbitrary)
+
+    readCalibrated();
+
+    avg = 0;
+    sum = 0;
+
+    for (i = 0; i &lt; QTRCNT; i++) {                  // if following white line, set QTRtime[i] = 1000 - QTRtime[i]
+        if (QTRtime[i] &gt; 50) {                      // only average in values that are above a noise threshold
+            avg += (uint32_t)(QTRtime[i]) * (i * 1000);
+            sum += QTRtime[i];
+            if (QTRtime[i] &gt; 200)                   // see if we're above the line
+                onLine = 1;
+        }
+    }
+
+    if (!onLine)
+    {
+        // If it last read to the left of center, return 0.
+        if(lastValue &lt; (QTRCNT-1)*1000/2)
+            return 0;
+
+        // If it last read to the right of center, return the max.
+        else
+            return (QTRCNT-1)*1000;
+
+    }
+
+    lastValue = avg/sum;                            // no chance of div by zero since onLine was true
+
+    return lastValue;
+}
+
+#endif
+</code></pre>
+
+<p>I am trying to find Kp constant but when it's 7 then my robot just turns off the line always on the same spot. When Kp is 8 then it follows staright line but wobbles a lot and can't take corners. I also tried to increase Kd 10 to 20 times when my Kp was 8 but it didn't change much. How can I get it working?</p>
+
+<p>Here is my robot and the track I want to follow.</p>
+
+<p><a href="https://i.stack.imgur.com/HfCtL.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/HfCtL.jpg" alt=""></a></p>
+
+<p><a href="https://i.stack.imgur.com/o3UxV.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/o3UxV.jpg" alt=""></a></p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7959" data-toggle = "popover">
+				<p>user name : mikk</p>
+				<p> user reputation : 11</p>
+				<p class = "tagcontent" id = "usertaginfo-7959">{'None': 0, 'pid': 2, 'avr': 2, 'line-following': 2, 'tuning': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7959" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7959" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7959">
+					<img id="start_img-7959" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7959">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7961"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7961" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Your PID calculation is all wrong. You have:</p>
+
+<pre><code> //calculate power_difference of motors
+power_difference = error/(Kp/100) + derivative*(Kd/100);
+</code></pre>
+
+<p>First,  you need correct error terms. You calculate:</p>
+
+<pre><code>//make calculations
+error = position - 2500;
+derivative = error - lastError;
+</code></pre>
+
+<p>I'm assuming here that 2500 is the signal you are expecting if you are exactly centered on the line. Even if this is the case, you should be calculating error as:</p>
+
+<pre><code>error = reference - output; 
+</code></pre>
+
+<p>You have, assuming 2500 is the ideal line reading, </p>
+
+<pre><code>error = output - reference; 
+</code></pre>
+
+<p>which is incorrect. This is flipping the sign on your error term.  You then calculate derivative error as the difference between current and previous error, which is also incorrect. You need the sample time, loop time, sweep time, etc. - the time that elapses between when you calculate the error terms. You can do this with a timer for an exact measurement or you can use a <code>pause</code> or <code>delay</code> command at the end of the loop for an approximate measurement. </p>
+
+<p>Once you have your sample time, your derivative error is calculated by:</p>
+
+<pre><code>derivativeError = (error - previousError)/sampleTime;
+</code></pre>
+
+<p>Now your control signal is just proportional gain times error and derivative gain times derivative error. You are dividing by your gains and then dividing those gains each by 100.</p>
+
+<p>Where you have:</p>
+
+<pre><code>power_difference = error/(Kp/100) + derivative*(Kd/100);
+</code></pre>
+
+<p>You <em>should</em> have:</p>
+
+<pre><code>power_difference = error*Kp + derivative*Kd;
+</code></pre>
+
+<p>Honestly I'm surprised you managed to get it to do anything at all. Putting it all together, I would suggest something like:</p>
+
+<pre><code>sampleTime = 50;    // 50 ms sample time
+while(mode == 2)
+{
+    //check for mode change
+    button();
+
+    //read position
+    position = readLine();
+    //make calculations
+    error = 2500 - position;
+    derivative = (error - lastError)/sampleTime;
+
+    //remember last error
+    lastError = error;
+
+    //calculate power_difference of motors
+    power_difference = error*Kp + derivative*Kd;
+
+    //make sure that power difference is in correct range
+
+    //drive motor 
+    delay (sampleTime)
+}
+</code></pre>
+
+<p>Adjust sample time down if you find you absolutely need a faster response, but know that the lower you set it the more inaccurate you get because calculation time takes up a proportionally bigger time. </p>
+
+<p>Finally, reset your gains and tune again. Check out <a href="https://en.wikipedia.org/wiki/Ziegler%E2%80%93Nichols_method" rel="nofollow">Ziegler-Nichols</a> method for some help tuning your controller once you've made the code changes. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7961" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-7961">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7961" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7961" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7961">
+					<img id="start_img-7961" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7961">Comment</button>
+			<br><div id = "ans-7991"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7991" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>When looking at PID loop control code, <code>if</code> statements are always a code smell for me. Every <code>if</code> statement has the potential to add a discontinuity into the control loop that complicates PID tuning immensely. PID loops work much more predictably when their response is smooth (within the bounds of the limits of the system).</p>
+
+<p>Unfortunately, your two main functions, <code>start</code> and <code>setMotors</code> have lots of <code>if</code>s and thus several potential discontinuities.</p>
+
+<h3>setMotors()</h3>
+
+<p>If either motor ever gets to max. speed, it is clamped at max. speed without changing the speed of the other motor. If you consider how your robot moves, if one motor is running slower than has been calculated, the other by definition is running faster than it should be for your calculated <em>power difference</em> and you will be moving in the wrong direction. The only way to avoid this is to tune your system so conservatively that you never ask motors to run at <code>maxSpeed</code>.</p>
+
+<p>This isn't helped by the fact that <code>if (mr &lt; -maxSpeed)</code> sets <code>mr = maxspeed</code> rather than <code>mr = -maxspeed</code> which could be rather unfortunate - driving that motor at max. speed in the <em>opposite</em> direction. *8')</p>
+
+<p>Also, if <code>start</code> calculates that a motor should be run in reverse you are throwing away that command and leaving it running at whatever speed it was running before! While <code>start</code> shouldn't do this at the moment, that may not always be the case. If you changed start to better deal with the right angle turn in your track for instance, it could easily require negative speeds for one motor to turn on the spot.</p>
+
+<p>This could have serious repercussions for the stability of your robot.</p>
+
+<h3>start()</h3>
+
+<p>Another example of a discontinuity is in <code>start</code>, where as the absolute value of <code>power_difference</code> tends towards 0, the both motor speed converges on <code>baseSpeed</code>, but as soon as <code>power_difference</code> hits 0, both motors jump to <code>maxSpeed</code>. Doubling your speed like this can play havoc with with your tuning, and cause you to need to tune much more conservatively to avoid instability.</p>
+
+<p>All it takes is for one motor to respond slightly more aggressively to the command than the other and you have been kicked off in the wrong direction and then your subsequent PID cycles will have to compensate.</p>
+
+<h3>Suggestions</h3>
+
+<p>I would suggest that you try to rework your calculations so that you have a continuum between <em>maxSpeed</em> through <em>baseSpeed</em> and <em>0</em> to <em>-maxSpeed</em> based on the magnitude of the error.</p>
+
+<p>I would also start by making sure that you can follow the track slowly with conservative tuning and then ramp up to higher speeds and more aggressive turns as you get more experienced with running your PID loop.</p>
+
+<p>See also <a href="https://robotics.stackexchange.com/a/1527/37">my answer</a> to <a href="https://robotics.stackexchange.com/questions/1524">Line Follower optimization</a>.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7991" data-toggle = "popover">
+				<p>user name : Mark Booth</p>
+				<p> user reputation : 3037</p>
+				<p class = "tagcontent" id = "usertaginfo-7991">{'control': 7, 'quadcopter': 2, 'None': 258, 'tuning': 7, 'uav': 2, 'design': 2, 'stepper-motor': 7}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7991" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7991" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7991">
+					<img id="start_img-7991" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7991">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

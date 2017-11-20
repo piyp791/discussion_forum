@@ -1,0 +1,190 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to consider gravity in the design of a compensator?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11399" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11399" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 77</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to consider gravity in the design of a compensator?</h2>
+<p>I have to solve an exercise for the Digital Control System course (using MATLAB software) which stands:</p>
+
+<p><a href="https://i.stack.imgur.com/aBDSH.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/aBDSH.png" alt="Problem diagram."></a></p>
+
+<p>"A ball is suspended inside a vertical tube by airflow 'u' and connected via a spring of stiffness K to the bottom of the tube. The ball is subjected to gravity and a viscous friction with coefficient 'B'. The force 'F' exerted on the ball by the airflow is proportional to the airflow 'u' via the constant G; airflow can only be positive (entering the tube)."</p>
+
+<p>I have also all the data needed to solve the problem numerically, but this is not important for the question. What I need to do is: "Write the system equations in state space form with airflow as input and the ball vertical position 'z' as output.Then, select a sampling time and design a digital control system that regulates the ball position by acting on the airflow to the following specifications:</p>
+
+<ul>
+<li><p>Zero steady-state error (in response to the desired altitude step input).</p></li>
+<li><p>Max overshoot: 30%;</p></li>
+<li><p>Settling time at 5% less than 8 seconds."</p></li>
+</ul>
+
+<p>After this, we have to compute the transfer function of the plant and put it in unitary feedback with the compensator.</p>
+
+<p>I usually write first the system dynamics equations, then from these I choose a suitable set of state variables and I write the matrices A, B, C and D according to the state variables (I use the 'ss' function). The problem is that I don't know how to consider the gravity in this case because it comes in the system dynamics as a constant term (-g*m). For example by considering the state variables as [z' z] I obtained the following matrices:</p>
+
+<p>A = [-B/m -K/m; 1 0];</p>
+
+<p>B = [G/m; 0];</p>
+
+<p>C = [0 1];</p>
+
+<p>D = 0;</p>
+
+<p><a href="https://i.stack.imgur.com/ZbHAF.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/ZbHAF.png" alt="Simulink model."></a></p>
+
+<p>I tried to design the compensator (a simple PID) without considering the gravity and by adding it later in the Simulink model used to test the system (after designing the compensator we have to build a Simulink model in which the discrete time compensator is tested with the transfer function of the continuous time system) but of course the system output is no more able to meet the requirements.
+For the gravity transfer function I considered to have the mass as input and the position as output</p>
+
+<p>Am I wrong in not considering the gravity when designing the compensator? Or perhaps, if correctly implemented the gravity should not affect the system output?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11399" data-toggle = "popover">
+				<p>user name : PaulRox</p>
+				<p> user reputation : 6</p>
+				<p class = "tagcontent" id = "usertaginfo-11399">{'control': 1, 'None': 0, 'pid': 1, 'matlab': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11399" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11399" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11399">
+					<img id="start_img-11399" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11399">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-11402"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11402" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The presence of gravity does impact on how fast you can achieve steady-state with zero error, because the integral part of your PID compensator needs to charge in order to counteract the term $mg$. As a result, you won't meet the requirement on the settling time, with the same setting of the gains.</p>
+
+<p>It's still possible to follow your design steps if you consider adding eventually a <strong>feed-forward term</strong> $u_{ff}=mg/G$ to sum up at the output of your PID.</p>
+
+<p>Therefore,
+$$
+u=u_{PID}+u_{ff}
+$$</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11402" data-toggle = "popover">
+				<p>user name : Ugo</p>
+				<p> user reputation : 1482</p>
+				<p class = "tagcontent" id = "usertaginfo-11402">{'None': 99}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11402">Load Comments</button></br>
+			<div id = "commentsection-11402" class = 'collapse'>
+			<div id = "comment-20562" class = "comment">
+				<p>Thank you for the answer, but from a theoretical point of view what I did to consider the effect of the gravity on the system is correct? Because I also thought that I could simply compute the equilibrium point of the system (z0 by which we have K*z0 = m*g) and then subtract that position from the system transfer function output, is it right?</p>
+			</div>
+			<div id = "comment-20569" class = "comment">
+				<p>Hi Paul, from a theoretical standpoint, gravity acts as a _disturbance_, thus you should study the **sensitivity function** that accounts for the effect of the disturbance on the output. [**Here**](http://cse.lab.imtlucca.it/~bemporad/teaching/ac/pdf/AC2-02-LoopShaping.pdf) some notes on that.</p>
+			</div>
+			</div>
+				<textarea id = "speech-11402" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11402">
+					<img id="start_img-11402" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11402">Comment</button>
+			<br><div id = "ans-11403"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11403" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Why don't you use pole placement method to meet your control objective. Since you already have a state space model it is much easier. You have to just check the controllability of your system and then based on control requirement decide on the poles. You can use cmu's Controll tutorial. <a href="http://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&amp;section=ControlStateSpace" rel="nofollow noreferrer">http://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&amp;section=ControlStateSpace</a></p>
+
+<p>At the same time it doesn't not make sense to me to model the whole system just to make a PID controller. With a good enough system model you can make better controllers such lqr etc.</p>
+
+<p>However if you are hell bent on using a PID controller, you can still improve your PID controllers performance by making use of anti-windup and thereby making integral term much more aggressive which will increasing the response time. PID controllers don't require gravity compensators (PD controller does), but you can assist it by providing feed forward and you can always tune it to meet your requirement. At the same time you can use bode plot to check whether it is theoretically possible to attain such a bandwidth of the system without making it unstable.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11403" data-toggle = "popover">
+				<p>user name : shekhar gupta</p>
+				<p> user reputation : 56</p>
+				<p class = "tagcontent" id = "usertaginfo-11403">{'control': 4, 'kuka': 1, 'None': 3, 'robotic-arm': 4, 'motor': 4}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11403" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11403" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11403">
+					<img id="start_img-11403" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11403">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

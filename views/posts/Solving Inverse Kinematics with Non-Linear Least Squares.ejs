@@ -1,0 +1,159 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Solving Inverse Kinematics with Non-Linear Least Squares
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-10004" class = "post">
+			<h2>Question</h2>
+			<div id="vote-10004" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 419</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Solving Inverse Kinematics with Non-Linear Least Squares</h2>
+<p>I want to write my own inverse kinematics solver, and I have been recommended to use Google's Ceres Solver to help. Now, according to the documentation, Ceres Solver is usually used for non-linear least squares problems (<a href="http://ceres-solver.org/nnls_tutorial.html" rel="nofollow">http://ceres-solver.org/nnls_tutorial.html</a>). This minimises the sum of squared differences between the measured and target values, over all data. What I am confused about, is how this relates to inverse kinematics.</p>
+
+<p>In inverse kinematics, with the example of a robot arm, the goal is to determine what joint angles the robot should be positioned in, in order to reach a target end effector pose. There exists a single equation which determines the end effector pose, given the set of joint angles, and we want to determine the parameters in that equation (the joint angles).</p>
+
+<p>But how does this relate to the least-squares problem, where there are multiple measurements? Is the problem I am trying to solve essentially the same, except that the number of measurements is one? And in that case, is using Ceres Solver's non-linear least squares solver really necessary?</p>
+
+<p>Thanks!</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10004" data-toggle = "popover">
+				<p>user name : Karnivaurus</p>
+				<p> user reputation : 328</p>
+				<p class = "tagcontent" id = "usertaginfo-10004">{'control': 10, 'walking-robot': 4, 'simulator': 0, 'torque': 4, 'slam': 0, 'robotic-arm': 20, 'mobile-robot': 0, 'dynamics': 17, 'forward-kinematics': 7, 'manipulator': 10, 'accelerometer': 4, 'kinematics': 29, 'jacobian': 16, 'policy': 1, 'actuator': 4, 'None': 0, 'inverse-kinematics': 18, 'localization': 0, 'mapping': 0, 'sensors': 4, 'simulation': 0, 'navigation': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10004">Load Comments</button></br>
+			<div id = "commentsection-10004" class = 'collapse'>
+			<div id = "comment-17850" class = "comment">
+				<p>@Ugo's answer is spot on.  Also, you mention that there is a single inverse kinematics solution.   For most robot systems there are many possible inverse solutions to reach the same end effector pose.  Plus, you cannot always come up with closed-form equations for the inverse solution.  Look up some of the papers related to nonspherical wrists (also called offset wrists).   In these, and other, cases, iterative solutions are necessary.</p>
+			</div>
+			</div>
+				<textarea id = "speech-10004" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10004">
+					<img id="start_img-10004" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10004">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-10008"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10008" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The inverse kinematics problem can be stated as a <strong>nonlinear constrained least-squares optimization</strong>, which is in its simpler form as follows:</p>
+
+<p>$$
+\mathbf{q}^*=\arg\min_{\mathbf{q} \in \mathbb{R}^n} \left\| \mathbf{x}_d-K \left( \mathbf{q} \right) \right\|^2 \\
+\text{s.t.} \quad \mathbf{q}_l&lt;\mathbf{q}&lt;\mathbf{q}_u
+$$</p>
+
+<p>where $\mathbf{q}$ is the vector of the $n$ independent joint angles, $\mathbf{x}_d$ is the desired Cartesian pose comprising target position and orientation of the end-effector, and $K\left(\cdot\right)$ is the forward kinematic map. The minimization must be carried out without violating the lower and upper joints bounds, $\mathbf{q}_l$ and $\mathbf{q}_u$ respectively.</p>
+
+<p>Therefore, you are right - in a sense - saying that there exists only one measurement you have to account for, if compared with the traditional least-squares setting.</p>
+
+<p>Concerning how we can solve the problem, there's a large number of traditional techniques that do not resort to sophisticated optimizations: <em>Jacobian transposed</em>, <em>Jacobian pseudoinverse</em>, a synergy of the two termed <em>Damped Least-Squares</em>, to cite the most known. Thus, it's not necessary to employ <a href="http://ceres-solver.org" rel="nofollow"><strong>Ceres</strong></a>, for example, as back-end to implement your solver.</p>
+
+<p>Nonetheless, lately there's been an increasing attention in the community to the use of <em>Sequential Quadratic Programming</em> and more generally nonlinear methods: see for example [1] for a extensive survey. The reason for that is the significant amount of benefits you'll get with a nonlinear optimizer:</p>
+
+<ul>
+<li>robustness against singularities and out-of-reach targets</li>
+<li>better handling of joints bounds</li>
+<li>possibility to deal with higher number of linear/nonlinear constraints</li>
+<li>scalability with the number of DoFs</li>
+<li>and more...</li>
+</ul>
+
+<p>Personally, I developed in the past a nonlinear inverse kinematics solver using <a href="https://projects.coin-or.org/Ipopt" rel="nofollow"><strong>Ipopt</strong></a> for a humanoid robot ([2]) and I found that I managed to easily outperform other standard techniques, as those provided by <a href="http://www.orocos.org/kdl" rel="nofollow">KDL</a>.</p>
+
+<p>Thereby, my warm suggestion is to go with <em>Ceres</em>, <em>Ipopt</em> or other equivalent optimizers.</p>
+
+<h3>References</h3>
+
+<p>[1] <a href="http://dx.doi.org/10.1109/HUMANOIDS.2015.7363472" rel="nofollow">TRAC-IK: An open-source library for improved solving of generic inverse kinematics</a>.</p>
+
+<p>[2] <a href="http://dx.doi.org/10.1109/IROS.2010.5650851" rel="nofollow">An experimental evaluation of a novel minimum-jerk cartesian controller for humanoid robots</a>.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10008" data-toggle = "popover">
+				<p>user name : Ugo</p>
+				<p> user reputation : 1482</p>
+				<p class = "tagcontent" id = "usertaginfo-10008">{'None': 99}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-10008" class = 'collapse'>
+			</div>
+				<textarea id = "speech-10008" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10008">
+					<img id="start_img-10008" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10008">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

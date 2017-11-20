@@ -1,0 +1,215 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Stepper motor control
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-12518" class = "post">
+			<h2>Question</h2>
+			<div id="vote-12518" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 97</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Stepper motor control</h2>
+<p>I am trying to understand the stepper motor to Mach3 type software control interfaces, mostly from a logical perspective, deducing most of everything because I have no concrete resource to refer. </p>
+
+<p>So basically I have purchased a "LinkSprite" 3 axis engraver. It says it comes with Arduino GRBL board which interprets G-code. Sends it to stepper driver shields. </p>
+
+<h3>Bottom</h3>
+
+<p>I can see the drivers need to send a approximate sign wave of some sort to one or both windings to actuate them. </p>
+
+<h3>Top</h3>
+
+<p>Mach3 I read essentially transmits two signals per axis to the motion controller/breakout board (which in turn is connected to the drivers), one being the number of steps the other the direction and probably via parallel ports GPIO or something.</p>
+
+<ol>
+<li><p>So what underlying transmission protocol carries mach3 signals, like i2c or something via the parallel poet? How is steps and direction, and axis encoded?</p></li>
+<li><p>What does the motion controller do exactly? Minimally does it just breakout out the signal to the drivers? What is the drivers inputs?</p></li>
+<li><p>My Arduino GRBL board I read interprets G-code, but isn't that what Mach3 does?</p></li>
+</ol>
+
+<p>How can I connect from stepper motor waveform on windings to some interface like Mach3 the encodings and concrete information of this logical path of the workings of the control of the stepper motors?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12518" data-toggle = "popover">
+				<p>user name : marshal craft</p>
+				<p> user reputation : 148</p>
+				<p class = "tagcontent" id = "usertaginfo-12518">{'control': 1, 'stepper-driver': 1, 'None': 4, 'microcontroller': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-12518">Load Comments</button></br>
+			<div id = "commentsection-12518" class = 'collapse'>
+			<div id = "comment-21979" class = "comment">
+				<p>I guess is there a standard stepper driver interface which defines input signals? And how is g code translated to the controller input signals described above? I see a lot of g code like G1 x1.5848 y2.3948 z1.3939, G1 x1.5835, y2.3935, z1.3929,... So is that its position to move in terms of steps and direction?</p>
+			</div>
+			</div>
+				<textarea id = "speech-12518" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12518">
+					<img id="start_img-12518" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12518">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-12521"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-12521" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>So you have three different questions here I will answer them separately:</p>
+
+<h2>Q: How is Mach 3 controlling steppers?</h2>
+
+<p>Mach 3 normally uses a step and direction interface where it is abusing the parallel port on your PC to output signals. </p>
+
+<p>A step and direction port does just what it sounds like, it has one pin where every transition of the signal from low to high to low (or vice versa) commands the motor to take one "step" (fraction of a rotation) forward, the other signal indicates what direction the step should go, where high is forward and low is reverse or vice versa. There are 7 data pins on a parallel port enough to control 3 steppers.</p>
+
+<p>These step and direction commands are going to servo drivers that interpret those commands and move the stepper, the motion controllers are normally very dumb with minimal logic.</p>
+
+<p><a href="https://i.stack.imgur.com/9AGaQ.gif" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/9AGaQ.gif" alt="Step and Direction"></a></p>
+
+<h2>Q: How is GRBL controlling steppers?</h2>
+
+<p>GRBL is just interpreting the G-Code line by line and controlling the steppers, which brings us to your last question.</p>
+
+<h2>Q: How does G-code translate to real world movement?</h2>
+
+<p><a href="https://en.wikipedia.org/wiki/G-code" rel="nofollow noreferrer">G-Code</a> is a standard numerical control programming language for encoding moving things. </p>
+
+<ol>
+<li>G-Code is first parsed by a parser that decodes the commands, say a movement command like G01 X1 (Fast move to x value of 1)</li>
+<li>The parsed command is then compared to the current state of the machine to find out what needs to change, so in our example say we were at x 0 (the origin) it would find out that we need to move 1 unit in the x direction</li>
+<li>The controller would then command the appropriate number of steps at the appropriate speed to complete the desired movement, for our example if our controller was told that 100 steps corresponded to 1 unit, it would command 100 steps in the forward direction</li>
+<li>The Servo driver then outputs the right waveforms to move the stepper.</li>
+<li>The controller would then loop to step 1 to interpret the next line of G-Code</li>
+</ol>
+
+<p>A GRBL/Stepper shield is handling steps 1-4 all on its own, with the computer feeding in lines of G-Code as it needs it. </p>
+
+<p>Mach 3 is handling lines 1-3 and just outputting the resulting step and direction command to a separate box with Servo Drivers.</p>
+
+<p>My example is very basic, normally the Motion control software is pretty sophisticated, handling things like relative vs absolute position movements, soft limits feed rated coordinated axis movement etc... but that should give you an idea of how it works under the hood.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12521" data-toggle = "popover">
+				<p>user name : Mark Omo</p>
+				<p> user reputation : 1786</p>
+				<p class = "tagcontent" id = "usertaginfo-12521">{'None': 119}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-12521">Load Comments</button></br>
+			<div id = "commentsection-12521" class = 'collapse'>
+			<div id = "comment-21984" class = "comment">
+				<p>So mach3 is basically a software version of grbl or a typical motion control board.</p>
+			</div>
+			<div id = "comment-21985" class = "comment">
+				<p>Also wouldn't the parallel port maximum data rate impose upper limit on the steps possible per unit of time or maximum angle of rotation?</p>
+			</div>
+			<div id = "comment-21989" class = "comment">
+				<p>It does, most parallel ports can only handle about 100khz</p>
+			</div>
+			</div>
+				<textarea id = "speech-12521" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12521">
+					<img id="start_img-12521" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12521">Comment</button>
+			<br><div id = "ans-12581"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-12581" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Well, I guess the most difficult part is implementing the functions that calculate the Linear/Circular Interpolations and translating those to stepper motion. I've been working on a similar project, however, most of the motion required relies only on absolute positioning. </p>
+
+<p>The 6-axis motion controller that I have designed for this project is built around the dSPIN L6470 from STMicroelectronics. ST Provides a decent library to program the device and the integrated motion-engine makes the job a lot easier.</p>
+
+<p>However, it turns out that this approach is not as reliable for a CNC or even a 3D printer application, where a simple Go_To(abs_value); command is not sufficient to do the mission. Simply because the trajectory of the motion is unpredictable. Another drawback is the speed, aka the Feed Rate. There's no way to achieve a target speed with each absolute positioning command having its own distance and trajectory. I believe here comes into play what the "planner" does in GRBL and other implementations out there that are based on the same rule of thumb. </p>
+
+<p>I tried to understand how GRBL does all of that, but because the functions concerned are distributed across different modules and they are all dependent on each other, I found it waste of time to dig more into this, as my own g-code interpreter follows a different path/approach and I'm quite satisfied with the results I have achieved so far. However, I would love to get a clear picture of other implementations and compare the performance with mine and see what's the best in different scenarios. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12581" data-toggle = "popover">
+				<p>user name : Embedded Music</p>
+				<p> user reputation : 1</p>
+				<p class = "tagcontent" id = "usertaginfo-12581">{'None': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-12581">Load Comments</button></br>
+			<div id = "commentsection-12581" class = 'collapse'>
+			<div id = "comment-22069" class = "comment">
+				<p>I haven't messed with the microcontrollers. Been meaning to get an i2c bootliader St arm chip if they still sell them. I like low level control. Usb programing ruins the complete picture which is left to be desired. With i2c I don't need yet another microcontroller just to program the first controller. I don't need some c library I don't understand. I just need the architectures programmers manual, memory map etc. Program the thing in binary myself, bare metal solution.</p>
+			</div>
+			</div>
+				<textarea id = "speech-12581" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12581">
+					<img id="start_img-12581" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12581">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,199 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Changing the logic on a PLC while it is running - exact timings
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11016" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11016" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 76</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Changing the logic on a PLC while it is running - exact timings</h2>
+<p>Following my last question which confirmed that you can change the logic on a PLC while it is running, I'm now trying to understand the timings with which this happens.</p>
+
+<p>Say that a PLC is sent a command to update its logic (I'm assuming that this can be done without using the PLC programming software, but could be wrong), and that the new, pending program code is stored in an area of memory which program execution then switches to when all of the new logic has been downloaded onto it. My questions are this:</p>
+
+<p>1) Does a command need to be sent to switch to the new logic, or does this happen automatically once it has been downloaded?</p>
+
+<p>2) Will the PLC switch to the new logic at the start of the next <strong>scan cycle</strong> (i.e. before that scan cycle's input scan), or at the start of the <strong>logic scan</strong>.</p>
+
+<p>3) Would it always be that the new logic takes effect the scan cycle after it has finished being downloaded, or could there be a delay? I am trying to look for timing relationships between the networking data and the updated PLC logic, so need to be strict.</p>
+
+<p>If anyone knows of any documentation for commands to update a PLC's logic while it is still running could they please point me to it?</p>
+
+<p>Many thanks.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11016" data-toggle = "popover">
+				<p>user name : Lord Cat</p>
+				<p> user reputation : 8</p>
+				<p class = "tagcontent" id = "usertaginfo-11016">{'None': 0, 'plc': 1, 'industrial-robot': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11016">Load Comments</button></br>
+			<div id = "commentsection-11016" class = 'collapse'>
+			<div id = "comment-19881" class = "comment">
+				<p>This is a good and detailed question, but more context would be helpful. What exactly are you trying to accomplish? If you're just debugging/tweaking logic while online, that's normal. But as Chuck said, downloading logic is not a precision operation.</p>
+			</div>
+			</div>
+				<textarea id = "speech-11016" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11016">
+					<img id="start_img-11016" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11016">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-11017"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11017" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Preface - I don't know of any way to program or download a PLC without using the associated programming software. Industrial PLCs are not cheap and generally not open source (that is, there is no API or other documentation on how to implement your own version of their programming software). </p>
+
+<p>As mentioned in an answer your earlier question, the changes you are allowed to make without stopping the controller are generally limited to what is referred to as a "word for word" change, which means you can typically only replace one hard-coded constant for another. </p>
+
+<p>So, to your questions:</p>
+
+<ol>
+<li><p>Like I mention above, you're generally changing one address with one address, or the contents of one register with one new register. There can be a list of changes like this, but that's the scope of what you're allowed to do. Changing <em>logic</em>, or the flow of the PLC, usually requires restarting. The changeover happens at the end of downloading, but I don't know this happens or what the trigger looks like; as I mentioned there's no explicit definition (that I've seen) of what the packet structure looks like for downloading software.</p></li>
+<li><p>I don't know what you mean when you call "logic scan" and "scan cycle" as two different terms. I don't think the change would happen mid-scan, but I could be wrong. </p></li>
+<li><p>I don't know if there could be a delay. Simple PLC code I work on has a sweep time of 10-15ms, complex PLC code has a sweep time of 30-40ms. This is a negligible amount of time relative to the amount of time to download new code, even if it IS just a word-for-word change. That word-for-word change may take 2-3 seconds to download, but that's maybe 100 cycles of the PLC. </p></li>
+</ol>
+
+<p>I don't know what you're trying to do, but there shouldn't be any time where you're relying on downloading and re-downloading PLC code down and expecting to get timing accuracy down to the individual sweep cycle. Get an I/O card and toggle a switch, or write a message and toggle a bit, etc., if you need timing that close.</p>
+
+<p>More background on what you're trying to do would be helpful. From your questions, "I'm looking for timing relationships between the networking data and the updated PLC logic" - again, I don't know <strong>WHY</strong> you care about this, downloading is a horrible way to switch code (that's what a <code>switch</code> statement is for, or a <a href="https://en.wikipedia.org/wiki/Finite-state_machine" rel="nofollow noreferrer">state machine</a>), but what I would do would look like this pseudo-code:</p>
+
+<pre><code>loopCount = loopCount+1;
+myConst = 5;
+TCP_WRITE(loopCount, myConst);
+</code></pre>
+
+<p>You continuously read messages coming off the PLC. Each message gets 1) a number that increments every sweep, and 2) a number that is fixed.</p>
+
+<p>You update the PLC code to change myConst from 5 to 6 or anything else, download the change, and see how many cycles elapse between when you push download and when <code>myConst</code> changes. You can have multiple constants, change them all, and see if they all update simultaneously or if <code>loopCount</code> increments between updates. </p>
+
+<p>But again, seriously, don't expect to ever be able to reliably download logic to the individual sweep precision.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11017" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-11017">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11017" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11017" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11017">
+					<img id="start_img-11017" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11017">Comment</button>
+			<br><div id = "ans-11027"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11027" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I'm not sure I agree with Chuck, or maybe I'm just not following what he's saying, so I'll have a go.</p>
+
+<p>First of all, these questions might be easier to handle with a particular controller in mind, but I'll answer them assuming we're dealing with something mainstream such as Siemens or Allen-Bradley.</p>
+
+<p>You can most definitely write an entire new module with hundreds of lines of codes and sometimes even create new variables and DB's (depending on processor) or extensively modify an existing module while a PLC is online and running, with negligible impact to the cycle time.</p>
+
+<p>The timing of this will be the PLC will continue to loop through its typical scan/task assignment in parallel with the download.  After download is finished there's going to be some sort of error checking / handshake to make the code is downloaded and complete.  Some PLC's let you download the change, then test it, such as Allen-Bradley.  And conversely you can remove it from test but leave it in the controller.  Others, however, will immediately put it into effect when you download the change.  Regardless of what initiates it, it will happen seemlessly, possibly between cycles, or perhaps if a module is updated prior to it being called in that scan/task cycle, it <em>may</em> call the new one.  That depends on the controller.</p>
+
+<p>A possible scenario:
+Cycle 1 (running old logic, downloading in parallel)<br>
+Cycle 2 (running old logic, downloaded finishes during scan)<br>
+Cycle 3 (running new logic)<br></p>
+
+<p>But regardless, if your concern is if there's a delay in the scan cycle or if the processing is somehow interfered with during download, I would say no in most cases. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11027" data-toggle = "popover">
+				<p>user name : NateGreco</p>
+				<p> user reputation : 153</p>
+				<p class = "tagcontent" id = "usertaginfo-11027">{'stereo-vision': 0, 'None': 4, 'computer-vision': 0, 'laser': 2, 'lidar': 2, 'opencv': 0, 'rangefinder': 2}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11027">Load Comments</button></br>
+			<div id = "commentsection-11027" class = 'collapse'>
+			<div id = "comment-19884" class = "comment">
+				<p>But I do agree with Chuck and mentioned in the earlier post making PLC changes are almost exclusively done through an ide that hides a lot of what were discussing in the background.  I don't know of a plc that this wouldn't be the case.  Maybe CoDeSys based PLC's still would have enough public information to make something yourself but I see no benefit and a high risk with thst.</p>
+			</div>
+			</div>
+				<textarea id = "speech-11027" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11027">
+					<img id="start_img-11027" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11027">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,226 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>ComputerCraft (Minecraft mod) navigation: Collision avoidance and path planning~finding in 2D~3D space
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2236" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2236" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 601</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>ComputerCraft (Minecraft mod) navigation: Collision avoidance and path planning~finding in 2D~3D space</h2>
+<p>I'm programming Lua for controlling computers and robots in-game in the Minecraft mod <a href="http://computercraft.info" rel="nofollow">ComputerCraft</a>.</p>
+
+<p>ComputerCraft has these robots called Turtles, that are able to move around in the <em>grid based</em>(?) world of Minecraft. They are also equipped with sensors making them able to detect blocks (obstacles) adjacent to them. Turtles execute Lua programs written by a player.</p>
+
+<p>As a hobby project I would like to program a <code>goto(x, y, z)</code> function for my Turtles. Some Turtles actually have equipment to remove obstacles, but I would like to make them avoid obstacles and thus prevent the destruction of the in-game environment.</p>
+
+<p>I have no prior experience in robotics, but I have a B.Sc. in Computer Science and am now a lead web developer.</p>
+
+<p>I did some research and found some basic strategies, namely <em>grid based</em> and <em>quadtree based</em>. As I have no experience in this area, these strategies might be old school.</p>
+
+<p>Note that Turtles are able to move in three dimensions (even hover in any height). I could share the obstacles as well as obstacle free coordinates in a common database as they are discovered if that would help me out, as most obstacles are stationary once they are placed.</p>
+
+<p>What are my best options in this matter? Are there any <em>easy fixes</em>? Where do I look for additional resources?</p>
+
+<p>Thank you very much in advance! :-)</p>
+
+<p><strong>EDIT</strong>: Thank you for your feedback!</p>
+
+<p>I started reading the book <em>Artificial Intelligence: A Modern Approach, 3rd Edition</em> to get up to speed on basic theory as suggested by <strong>Ian</strong>. Pointers to other educational resources are appreciated.</p>
+
+<p>Also, I started developing a basic navigation algorithm for moving in unexplored areas, similar to what <strong>Cube</strong> suggested.</p>
+
+<p>The priority for me is as few moves as possible, as it costs time and fuel cells for each additional move (approx. 0.8 seconds and 1 fuel cell per move in either direction). I plan on using the Euclidean heuristics function in a Greedy Best-First Search for computing a path that is expected to be quite optimal in reducing the number of moves to reach the goal, if enough data is available from the shared database from previous exploration.</p>
+
+<p>Each time an obstacle is reached, I plan to use the following very basic algorithm, exploiting the fact that Turtles are able to move vertically:</p>
+
+<pre><code>1. Calculate direct horizontal path to the goal.
+2. Turn to the direction of the next step of the path.
+3. If an obstacle is detected in front of the Turtle go to 5. If this is the 4th time that an obstacle is detected in front of the Turtle after moving up, go to 6.
+4. Move forward, go to 2.
+5. If no obstacle is detected above the Turtle, move up and go to 3, else go to 7.
+6. Backtrack to the coordinates the Turtle was in before moving upwards.
+7. Turn left, go to 3.
+</code></pre>
+
+<p>When using this algorithm, records are kept of the explored coordinates and uploaded to a shared database. However, there are some cases, that I did not consider:</p>
+
+<pre><code>- When should it move down?
+- What if the goal is not reachable from a coordinate directly above it?
+- If no horizontal move in any direction is possible, how long should it backtrack?
+- How to detect unreachable goals (obstacles can then be removed if requested)
+</code></pre>
+
+<p>Maybe if enough exploration data of the area is available, a Jump Point Search is performed to calculate an optimal path. However this assumes a 2D map. How can I take the 3rd dimension into account?</p>
+
+<p>Also, what would be a good data structure to store the exploration data?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2236" data-toggle = "popover">
+				<p>user name : LayZee</p>
+				<p> user reputation : 126</p>
+				<p class = "tagcontent" id = "usertaginfo-2236">{'mobile-robot': 5, 'None': 0, 'navigation': 5}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2236">Load Comments</button></br>
+			<div id = "commentsection-2236" class = 'collapse'>
+			<div id = "comment-4365" class = "comment">
+				<p>If I wanted to do this, I would look at some variant of A*...</p>
+			</div>
+			<div id = "comment-4379" class = "comment">
+				<p>I'm glad my answer helped you, and I would recommend splitting your edit into an entirely new question so we can address it more directly.</p>
+			</div>
+			<div id = "comment-4380" class = "comment">
+				<p>I thought about that too, __Ian__. I found a lot of useful books on the topics. The questions I need answers for are becoming clearer as I study more theory and think about the features I want the robot agent to have.</p>
+			</div>
+			</div>
+				<textarea id = "speech-2236" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2236">
+					<img id="start_img-2236" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2236">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-2240"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2240" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>What comes to my mind first is some sort of bug algorithm. That is a path finding algorithm that has only small constant amount of memory and only sees (small) local parts of the world.</p>
+
+<p>You can imagine this as</p>
+
+<ol>
+<li>Go directly to the goal</li>
+<li>If there is an obstacle in a way, pick a direction and start going around it</li>
+<li>Once there is a free path again, goto 1</li>
+</ol>
+
+<p>Of cause there are some problems with this, I'm not entirely sure that this will work in 3D. Selecting a way around an obstacle will be a little trickier than just saying "always go right".
+Other than that, this algorithm can select a wrong direction and spend a long time going around the obstacle which it could avoid easily by going other way around it.</p>
+
+<p><a href="https://www.cs.cmu.edu/~motionplanning/lecture/Chap2-Bug-Alg_howie.pdf" rel="nofollow">These slides</a> might help you with some of the details.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2240" data-toggle = "popover">
+				<p>user name : cube</p>
+				<p> user reputation : 567</p>
+				<p class = "tagcontent" id = "usertaginfo-2240">{'control': 2, 'None': 31, 'wifi': 2, 'kalman-filter': 3, 'calibration': 3, 'geometry': 0, 'localization': 2, 'c': 1, 'avr': 1, 'robotic-arm': 0, 'brushless-motor': 2, 'differential-drive': 2, 'esc': 1, 'motor': 2, 'mobile-robot': 2}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2240">Load Comments</button></br>
+			<div id = "commentsection-2240" class = 'collapse'>
+			<div id = "comment-4367" class = "comment">
+				<p>the nature of 3d worlds is that going "over" an obstacle almost always works better than going "around". Unless of course, you're in a tunnel. Seeing as there is no energy penalty in flying...</p>
+			</div>
+			<div id = "comment-4369" class = "comment">
+				<p>Thanks for the suggestions. You are right, __Mhz4.77__. See my draft in updated question.</p>
+			</div>
+			</div>
+				<textarea id = "speech-2240" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2240">
+					<img id="start_img-2240" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2240">Comment</button>
+			<br><div id = "ans-2242"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2242" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>It looks like your research here is a little too specific -- you're working on the practical level before being up to speed on the theory.  Take a look at more of the higher-level concepts of motion planning and obstacle avoidance.</p>
+
+<p>The <em>extremely</em> simplified process is:</p>
+
+<ol>
+<li>Expressing a high-level objective for the robot</li>
+<li>Based on data describing the current environment, creating a set of planned movements that meet the objective (using path planning algorithms like <a href="http://en.wikipedia.org/wiki/A%2a_search_algorithm#Example" rel="nofollow">A* search</a>)</li>
+<li>As time passes, collecting new data about the environment (e.g. current position, new obstacles) and re-planning the path</li>
+</ol>
+
+<p>Quadtrees and grids are just 2 ways of representing the environment itself; one of the practical problems involved in robotics is the sheer volume of data that can come in, and quadtrees offer a more memory-space-efficient representation of that data (see also, <a href="http://en.wikipedia.org/wiki/Octree" rel="nofollow">octrees</a> for 3D spaces) in return for some extra CPU time and complexity.  There are many such optimizations that you could make, but it sounds like you're considering them a little too early in the design process.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2242" data-toggle = "popover">
+				<p>user name : Ian</p>
+				<p> user reputation : 9640</p>
+				<p class = "tagcontent" id = "usertaginfo-2242">{'planning': 10, 'None': 809, 'power': 1, 'algorithm': 10, 'battery': 1, 'slam': 7, 'coverage': 10, 'mobile-robot': 9, 'sensors': 9}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2242" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2242" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2242">
+					<img id="start_img-2242" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2242">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

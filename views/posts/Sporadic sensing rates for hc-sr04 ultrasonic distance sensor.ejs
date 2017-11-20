@@ -1,0 +1,221 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Sporadic sensing rates for hc-sr04 ultrasonic distance sensor
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-6843" class = "post">
+			<h2>Question</h2>
+			<div id="vote-6843" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 2456</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Sporadic sensing rates for hc-sr04 ultrasonic distance sensor</h2>
+<p>Been working on a robot recently which uses ultrasonic sensors for an integral part of the navigation.
+While testing the sensors I noticed a strange behaviour, the sensors seem to frequently stop functioning and bring the entire Arduino Mega I'm working with to a stop. The strange part is that these stops seem to be entirely random, on some occasions the sensor will read values consistently (at maybe 20 vals per second) for 10+ seconds, then all of a sudden the sensor will slow to reading only 2-3 values per second with stalls between.</p>
+
+<p>I have tested several sensors and different codes for pinging distances yet the problem has persisted.</p>
+
+<p>This leads me to believe the issue is with the arduino mega itself, but I am unsure how to verify this. Any advice?
+Thanks in advance!</p>
+
+<p>PS: other pins on the Mega seem to be working fine, i.e. analog pins for IR reflectance sensors and PWM pins for driving 2 DC motors.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6843" data-toggle = "popover">
+				<p>user name : Nolan Rempe</p>
+				<p> user reputation : 23</p>
+				<p class = "tagcontent" id = "usertaginfo-6843">{'mobile-robot': 2, 'None': 0, 'two-wheeled': 2, 'ultrasonic-sensors': 2, 'arduino': 4}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-6843">Load Comments</button></br>
+			<div id = "commentsection-6843" class = 'collapse'>
+			<div id = "comment-9791" class = "comment">
+				<p>Just tested the sensors using the PWM pins on the mega and problem is persisting, although this pins do work fine for driving motors... Maybe the issue is with the sensors after all.</p>
+			</div>
+			<div id = "comment-9793" class = "comment">
+				<p>Can you post the code that you are using?</p>
+			</div>
+			<div id = "comment-9797" class = "comment">
+				<p>Using this library: http://playground.arduino.cc/Code/NewPing
+More specifically the median() and convert_cm() functions in the following statement: 
+Serial.println(frontUS.convert_cm(frontUS.ping_median(3)));
+
+Where frontUS stands for the ultrasonic sensor at the front of my robot.</p>
+			</div>
+			</div>
+				<textarea id = "speech-6843" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6843">
+					<img id="start_img-6843" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6843">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-6850"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6850" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Looking at the signal waveform in the datasheet of the <a href="http://www.micropik.com/PDF/HCSR04.pdf" rel="nofollow noreferrer">HC-SR04 ultrasonic sensor</a>, we can see that measuring the "echo back" pulse is proportional to the distance between the sensor and the object in front.
+<img src="https://i.stack.imgur.com/qXspy.png" alt="enter image description here"></p>
+
+<p>To be able to time this "echo back" pulse, this would require the use of an interrupt and a timer which is ubiquitously found in many microcontrollers.  That is an interrupt will be used to detect the rising edge of the signal to start the timer and the falling edge of the signal to stop the timer. </p>
+
+<p>Assuming that you are using the Arduino Mega 2560 (the concepts can also apply to the Arduino Mega as well), browsing through the datasheet of the <a href="http://www.atmel.com/Images/Atmel-2549-8-bit-AVR-Microcontroller-ATmega640-1280-1281-2560-2561_datasheet.pdf" rel="nofollow noreferrer">ATmega2560 microcontroller</a> found on the board, the Input Capture Unit elaborated on page 140 will be able to achieve this task.</p>
+
+<p>It is very critical that you time this pulse with an interrupt.  The microcontroller can only execute one instruction at a time, so using a regular input/output pin and polling the pins to time this pulse could introduce latency into the system.  For example the code could be executing at some other place in the program and at the same time there is a change in the pulse signal, thus effectively missing the measurement and producing an incorrect result.</p>
+
+<p>What you need to do is figure out whether the code you are using is employing the Input Capture Unit.  If not,then see how the Input Capture Unit maps to the header pins of the Arduino Mega 2560 and how to enable the feature in the code (e.g. using an Arduino library, statements, etc.)</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6850" data-toggle = "popover">
+				<p>user name : jrcatbagan</p>
+				<p> user reputation : 103</p>
+				<p class = "tagcontent" id = "usertaginfo-6850">{'None': 6, 'kinematics': 2, 'inverse-kinematics': 2}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-6850">Load Comments</button></br>
+			<div id = "commentsection-6850" class = 'collapse'>
+			<div id = "comment-9792" class = "comment">
+				<p>Hey @jrcatbagan, thanks for the help. The code I'm using is a simple function called PulseIn which uses a timer to measure the time between a HIGH and LOW reading on the same pin (details here: http://arduino.cc/en/Reference/pulseIn).
+The strange part is that this function allows for a timeout value, which should theoretically break the timer if we exceed the given timeout value. When playing around with this value I found that irregardless of how large or small this value was, the sporadic behaviour persisted.
+At this point I'm just very confused, and I appreciate the help.</p>
+			</div>
+			</div>
+				<textarea id = "speech-6850" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6850">
+					<img id="start_img-6850" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6850">Comment</button>
+			<br><div id = "ans-7329"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7329" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You said, <em>"on some occasions the sensor will read values consistently (at maybe 20 vals per second)"</em>. </p>
+
+<p>20 values per second is 20Hz. This means that you are polling every 50ms. In the datasheet linked in the other response, it says,</p>
+
+<p><em>"we suggest to use over 60ms measurement cycle, in order to prevent trigger signal to the echo signal"</em></p>
+
+<p>In the operation discussion it says the your 10$\mu$s pulse starts the "sonic burst", after which the sensor raises the echo bit. You are watching for that echo bit to return to zero; time raised determines distance. What it appears that you are doing is polling the sensor too frequently. The trigger signal causes another sonic burst, which raises the echo pulse a second time. This could overlap the first pulse, resulting in a signal that stays high. </p>
+
+<p>Your <em>"maybe 20 vals per second"</em> could also be the reason for your intermittent issue; if you're not using a dedicated timer (interrupt) to initiate the polling, then you're at the mercy of whatever other logic you have running on the microcontroller. </p>
+
+<p>You could (good solution) use an interrupt to trigger the polling and to measure the signal length, or you could (bad solution) add some meaningless math calculations in your code in an attempt to increase the time between sensor function calls. Bad solution is bad, but it could be handy to help troubleshoot. You're looking for a value of about 10Hz; 15Hz is right on the border of instability for the sensor. Of course, if you could reliably count on polling to go off at a precise interval <strong>cough interrupt cough</strong> then borderline cases are very manageable. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7329" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-7329">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7329">Load Comments</button></br>
+			<div id = "commentsection-7329" class = 'collapse'>
+			<div id = "comment-10432" class = "comment">
+				<p>The project's over now but thanks for the help, if I continue to fool around with robotics using these sensors I'll try and implement some sort of interrupt method so that the bursts don't interfere with each other.
+Cheers</p>
+			</div>
+			<div id = "comment-10461" class = "comment">
+				<p>Sorry, hadn't noticed the date on the question. I was browsing through unanswered questions and figured I'd offer my two cents. I've had issues in the past with clock/polling timing that caused erratic behavior like you describe.
+
+Anyways, best of luck in the future. Hope your project went well!</p>
+			</div>
+			</div>
+				<textarea id = "speech-7329" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7329">
+					<img id="start_img-7329" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7329">Comment</button>
+			<br><div id = "ans-10071"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10071" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I think that the strange behaviour that you are experiencing comes from lost echoes. The HC-SR04 is at it's best performance with obstacles of 0.5 square meters (you can check this in the data sheet). With smaller obstacles some of the echoes at random wont be detected. The sensor waits for echoes to return up to about 182 mS no matter how fast you trigger it. Only then the echo signal goes low if no echo is detected. I have checked this behaviour by free triggering the sensor at different rates and watching the echo signal at the same time with an oscilloscope.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10071" data-toggle = "popover">
+				<p>user name : Joe Ercolino</p>
+				<p> user reputation : 11</p>
+				<p class = "tagcontent" id = "usertaginfo-10071">{'None': 1}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-10071" class = 'collapse'>
+			</div>
+				<textarea id = "speech-10071" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10071">
+					<img id="start_img-10071" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10071">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

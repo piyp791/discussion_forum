@@ -1,0 +1,323 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>VFH (Vector Field Histogram+): Obtaining the Primary Polar Histogram
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9925" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9925" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 153</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>VFH (Vector Field Histogram+): Obtaining the Primary Polar Histogram</h2>
+<p>Good day</p>
+
+<p>Note: I have found out that my code works. I have placed a minor explanation to be further expounded.</p>
+
+<p>I have been having trouble obtaining the right directional output from my implementation. I noticed that every time I put an obstacle at the right, it gives left, it gives the right steering direction, the problem is with the presence of a left obstacle where it still tends to steer itself towards that obstacle. I have checked the occupancy map generated using matlab and was found to be correct. I couldn't pinpoint what is exactly wrong with my code for I have been debugging this for almost a week now and was hoping if someone can see the error I cannot.</p>
+
+<p>Here is my code implementation:</p>
+
+<pre><code>//1st:: Create Occupancy Grid from Data-------------------------------------------------
+// &gt; Cell Size/Grid Resolution  = 5meters/33 cells = 0.15meters each = 15cm each
+// &gt; Grid Dimension = 5meters by 5meters / 33x33 cells //Field of view of robot is 54 degrees
+//or 31 meters horizontal if subject is 5 meters away
+// &gt; Robot Width = 1meter 100cm
+// &gt; Because the focal length of the lens is roughly the same as the width of the sensor,
+// it is easy to remember the field of view: at x meters away, you can see about x meters horizontally,
+// assuming 4x3 stills mode. Horizontal field of view in 1080p video mode is 75%
+// of that (75% H x 55% V sensor crop for 1:1 pixels at 1920x1080).
+
+//Converting the Position into an Angle--------------------------------------------
+//from:
+//  A. https://decibel.ni.com/content/docs/DOC-17771
+//  B. "USING THE SENSOR KINECT FOR LANDMARK" by ANDRES FELIPE ECHEVERRI GUEVARA
+//1. Get angle
+// &gt; Each pixel from the image represents an angle
+// &gt; angle = ith pixel in row * (field of view in degrees/number of pixels in row)
+// &gt; field of view of Pi camera is 54 degrees horizontal
+//2. Convert Polar to Cartesian
+// &gt; x = z*cos(angle)
+// &gt; y = z*sin(angle)
+
+int arrOccupancyGrid[33][33];
+float matDepthZ[33][33];
+int robotPosX = 0;
+int robotPosY = 0;
+int xCoor=0; //Coordinates of Occupancy Map
+int yCoor=0;
+int xPosRobot=0; //Present cordinates of robot
+int yPosRobot=0;
+float fov = 54; // 54 degrees field of view in degrees must be converted to radians
+float nop = 320; //number of pixels in row
+int mapDimension = 33; // 33by33 array or 33*15cm = 5mby5m grid
+int mapResolution = 15; //cm
+
+//Limit max distance measured
+/*
+for(i=0; i&lt; nop ;i++){
+    if(arrDepthZ.at(i)&gt;500){
+        arrDepthZ.at(i) = 500;
+    }
+}
+*/
+
+for (i=0 ; i &lt; nop; i++){
+    //Process data/Get coordinates for mapping
+        //Get Angle
+        int angle = ((float)(i-160.0f) * ((float)fov/(float)nop)); //if robot is centered at zero add -160 to i
+        //cout &lt;&lt; "arrDepthZ " &lt;&lt; arrDepthZ.at(i) &lt;&lt; endl;
+            //cout &lt;&lt; "i " &lt;&lt; i &lt;&lt; endl;
+            //cout &lt;&lt; "fov " &lt;&lt; fov &lt;&lt; endl;
+            //cout &lt;&lt; "nop " &lt;&lt; nop &lt;&lt; endl;
+            //cout &lt;&lt; "angle " &lt;&lt; i * (fov/nop) &lt;&lt; endl;
+        arrAngle.push_back(angle);
+        //Get position X and Y use floor() to output nearest integer
+        //Get X --------
+        xCoor = (arrDepthZ.at(i) / mapResolution) * cos(angle*PI/180.0f); //angle must be in radians because cpp
+        //cout &lt;&lt; "xCoor " &lt;&lt; xCoor &lt;&lt; endl;
+        arrCoorX.push_back(xCoor);
+        //Get Y --------
+        yCoor = (arrDepthZ.at(i) / mapResolution) * sin(angle*PI/180.0f); //angle must be in radians because cpp
+                //cout &lt;&lt; "yCoor " &lt;&lt; yCoor &lt;&lt; endl;
+        arrCoorY.push_back(yCoor);
+    //Populate Occupancy Map / Cartesian Histogram Grid
+
+        if((xCoor &lt;= 33) &amp;&amp; (yCoor &lt;= 33)){ //Condition Check if obtained X and Y coordinates are within the dimesion of the grid
+            arrOccupancyGrid[xCoor][yCoor] = 1; //[increment] equate obstacle certainty value of cell by 1
+            matDepthZ[xCoor][yCoor] = arrDepthZ.at(i);
+        }
+
+        //cout &lt;&lt; "arrCoorX.size()" &lt;&lt; arrCoorX.size() &lt;&lt; endl;
+        //cout &lt;&lt; "arrCoorY.size()" &lt;&lt; arrCoorY.size() &lt;&lt; endl;
+
+}
+
+for (i=0 ; i &lt; arrCoorX.size(); i++){
+  file43 &lt;&lt; arrCoorX.at(i) &lt;&lt; endl;
+}
+
+for (i=0 ; i &lt; arrCoorY.size(); i++){
+  file44 &lt;&lt; arrCoorY.at(i) &lt;&lt; endl;
+}
+
+for (i=0 ; i &lt; arrDepthZ.size(); i++){
+  file45 &lt;&lt; arrDepthZ.at(i) &lt;&lt; endl;
+}
+
+//------------------------- End Create Occupancy Grid -------------------------
+
+
+//2nd:: Create 1st/Primary Polar Histogram ------------------------------------------------------
+//1. Define angular resolution alpha
+// &gt; n = 360degrees/alpha;
+// &gt; set alpha to 5 degrees resulting in 72 sectors from 360/5 = 72 ///// change 180/5 = 35
+//2. Define number of sectors (k is the sector index for sector array eg kth sector)
+// &gt; k=INT(beta/alpha), where beta is the direction from the active cell
+//to the Vehicle Center Point (VCP(xPosRobot, yPosRobot)). Note INT asserts k to be an integer
+
+cout &lt;&lt; "2nd:: Create 1st/Primary Polar Histogram" &lt;&lt; endl;
+
+//Put this at the start of the code away from the while loop ----------------
+int j=0;
+int sectorResolution = 5; //degrees 72 sectors, alpha
+int sectorTotal = 36; // 360/5 = 72 //// change 180/5 = 36
+int k=0; //sector index (kth)
+int maxDistance = 500; //max distance limit in cm
+//vector&lt;int&gt;arrAlpha; //already initiated
+
+float matMagnitude[33][33]; //m(i,j)
+float matDirection[33][33]; //beta(i,j)
+float matAngleEnlarge[33][33]; //gamma(i,j)
+int matHconst[33][33]; //h(i,j) either = 1 or 0
+
+float robotRadius = 100; //cm
+float robotSafeDist = 50; //cm
+float robotSize4Sector = robotRadius + robotSafeDist;
+
+for (i=0; i&lt;sectorTotal; i++){
+    arrAlpha.push_back(i*sectorResolution);
+}
+//---------end initiating sectors----------
+
+//Determine magnitude (m or matMagnitude) and direction (beta or matDirection) of each obstacle vector
+//Modify m(i,j) = c(i,j)*(a-bd(i,j)) to m(i,j) = c(i,j)*(dmax-d(i,j)) from sir Lounell Gueta's work (RAL MS)
+//Compute beta as is, beta(i,j) = arctan((yi-yo)/(xi-xo))
+//Enlarge robot and compute the enlargment angle (gamma or matAngleEnlarge)
+int wew =0;
+int firstfillPrimaryH = 0; //flag for arrayPrimaryH storage
+for (k=0; k&lt;sectorTotal; k++){
+    for (i=0; i&lt;mapDimension; i++){
+        for (j=0; j&lt;mapDimension; j++){
+            //cout &lt;&lt; "i" &lt;&lt; i &lt;&lt; "j" &lt;&lt; j &lt;&lt; "k" &lt;&lt; k &lt;&lt; endl;
+            //cout &lt;&lt; "mapDimension" &lt;&lt; mapDimension &lt;&lt; endl;
+            //cout &lt;&lt; "sectorTotal" &lt;&lt; sectorTotal &lt;&lt; endl;
+            //Compute magnitude m, direction beta, and enlargment angle gamma
+            matMagnitude[i][j] = (arrOccupancyGrid[i][j])*( maxDistance-matDepthZ[i][j]); //m(i,j)
+            //cout &lt;&lt; "matMagnitude[i][j]" &lt;&lt;  (arrOccupancyGrid[i][j])*( maxDistance-matDepthZ[i][j]) &lt;&lt; endl;
+            matDirection[i][j] = ((float)atan2f( (float)(i-yPosRobot), (float)(j-xPosRobot))*180.0f/PI); //beta(i,j)
+            //cout &lt;&lt; "matDirection[i][j]" &lt;&lt; ((float)atan2f( (float)(i-yPosRobot), (float)(j-xPosRobot))*180.000/PI) &lt;&lt; endl;
+            //cout &lt;&lt; "matDepthZ[i][j]" &lt;&lt; matDepthZ[i][j] &lt;&lt; endl;
+            if(matDepthZ[i][j] == 0){ //if matDepthZ[i][j] == 0; obstable is very far thus path is free, no enlargement angle
+                matAngleEnlarge[i][j] = 0; //gamma(i,j)
+                //cout &lt;&lt; "matAngleEnlarge[i][j]" &lt;&lt; 0 &lt;&lt; endl;
+            }
+            else{ //if matDepthZ[i][j] &gt; 0 there is an obstacle so compute enlargement angle
+                matAngleEnlarge[i][j] = asin( robotSize4Sector / matDepthZ[i][j])*180/PI; //gamma(i,j)
+                //cout &lt;&lt; "matAngleEnlarge[i][j]" &lt;&lt; asin( robotSize4Sector / matDepthZ[i][j])*180.0f/PI &lt;&lt; endl;
+            }
+
+            wew = k*sectorResolution; //k*alpha
+            //cout &lt;&lt; "wew" &lt;&lt; k*sectorResolution &lt;&lt; endl;
+            //Check if magnitude is a part of the sector
+            if ( ((matDirection[i][j]-matAngleEnlarge[i][j]) &lt;= wew) &amp;&amp; (wew &lt;= (matDirection[i][j]+matAngleEnlarge[i][j])) ){
+                matHconst[i][j]=1; //Part of the sector
+                //cout &lt;&lt; "Part of the sector ---------------------------------------------------------------" &lt;&lt; endl;
+                //cout &lt;&lt; "matHconst[i][j]=1" &lt;&lt; matHconst[i][j] &lt;&lt; endl;
+            }
+            else{
+                matHconst[i][j]=0; //Not Part of the sector
+                //cout &lt;&lt; "Not Part of the sector" &lt;&lt; endl;
+                //cout &lt;&lt; "matHconst[i][j]=0" &lt;&lt; matHconst[i][j] &lt;&lt; endl;
+            }
+            //Compute primary polar histogram Hp(k)
+            //cout &lt;&lt; "firstfillPrimaryH" &lt;&lt; firstfillPrimaryH &lt;&lt; endl;
+            if (firstfillPrimaryH==0){ //If first fill at sector
+                //cout &lt;&lt; "matMagnitude[i][j]" &lt;&lt; matMagnitude[i][j] &lt;&lt; endl;
+                //cout &lt;&lt; "matHconst[i][j]" &lt;&lt; matHconst[i][j] &lt;&lt; endl;
+                float temp = matMagnitude[i][j]*matHconst[i][j];
+                //cout &lt;&lt; "matMagnitude[i][j]*matHconst[i][j]" &lt;&lt; temp &lt;&lt; endl;
+                arrPrimaryH.push_back(temp);
+                firstfillPrimaryH=1; //Trigger flag
+                //cout &lt;&lt; "arrPrimaryH kth" &lt;&lt; arrPrimaryH.at(k) &lt;&lt; endl;
+            }
+            else{ //If sector filled previously
+                arrPrimaryH.at(k) = arrPrimaryH.at(k)+(matMagnitude[i][j]*matHconst[i][j]);
+                //cout &lt;&lt; "arrPrimaryH kth" &lt;&lt; arrPrimaryH.at(k) &lt;&lt; endl;
+            }
+
+        }
+    }
+    firstfillPrimaryH=0; //Reset flag
+}
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9925" data-toggle = "popover">
+				<p>user name : user123456098</p>
+				<p> user reputation : 415</p>
+				<p class = "tagcontent" id = "usertaginfo-9925">{'control': 16, 'stereo-vision': 2, 'communication': 0, 'pid': 19, 'uav': 0, 'stability': 13, 'mobile-robot': 2, 'sensor-error': 0, 'tuning': 2, 'cameras': 0, 'integration': 0, 'opencv': 2, 'differential-drive': 0, 'motion-planning': 0, 'None': 13, 'raspberry-pi': 14, 'localization': 0, 'microcontroller': 0, 'mapping': 0, 'path-planning': 0, 'real-time': 1, 'sensors': 0, 'quadcopter': 19, 'computer-vision': 2, 'vfh': 0, 'c++': 2, 'filter': 0, 'dead-reckoning': 0, 'sensor-fusion': 5, 'sonar': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9925">Load Comments</button></br>
+			<div id = "commentsection-9925" class = 'collapse'>
+			<div id = "comment-17645" class = "comment">
+				<p>Welcome to *Robotics*, user123456098. As it stands, it's not clear what you're asking. The only reference you provide is a link to NI.com in the source code you provide, which in turn provides some more code and videos. Please break up your code with explanations of what you are expecting to happen with each portion of the code, along with the sample data you provided to the code, the output you expected, and the output you received. 
+
+While code review isn't explicitly disallowed here, *clarity* is a requirement and it's missing in your question.</p>
+			</div>
+			<div id = "comment-17646" class = "comment">
+				<p>As it stands, it looks like your question is, "Every time I put an obstacle at the right, it gives left, it gives the right steering direction, the problem is with the presence of a left obstacle where it still tends to steer itself towards that obstacle." Please use "right" when you mean a direction and "correct" when you mean correct; your question is currently not especially clear. Please revise your question and then we can re-open it.</p>
+			</div>
+			<div id = "comment-17681" class = "comment">
+				<p>@Chuck I just found out that my code is working, it's just my lack of undersanding on how the vector field histogram works :)) It turns out that the part of the data that gets updated on the histogram is dependent on the field of view of the camera used on the stereo vision setup. I will post an explanation of the code when I have time after I have finished my project.</p>
+			</div>
+			<div id = "comment-17719" class = "comment">
+				<p>Please move your "Note" to an answer and you can then accept it. I would also just caution you that LIDAR would also not update all fields simultaneously - this is only true of LIDAR units that have a 360 degree field of view (Velodyne VLP-XX, SICK LD-LRS, etc.). LIDAR units that don't have a 360 degree field of view (SICK LMSXXX, etc.) will have the same issue as the camera.</p>
+			</div>
+			</div>
+				<textarea id = "speech-9925" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9925">
+					<img id="start_img-9925" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9925">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9961"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9961" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I have found out that my code works. It is just that most of the literature I have read uses Lidar or Sonar sensors for histogram updates. I had assumed that in the case of a stereo vision set-up, all sectors are updated simultaneously. However only the sectors in the field of view of the camera is update unlike in the lidar implementation that samples a complete 360 degree sweep of its surroundings. Another thing I have found out that when deriving the X and Y coordinates from the depthmap, the resulting map is a mirror image of the actual surrounding thus the sectors must be labeled counter clockwise. I used the formula from NI' s paper linked at the code. The same case is also true when using the camera matrix with open cv to obtain the real world X,Y coordinates from the depth map. I shall edit this question to a clearer one soon :)</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9961" data-toggle = "popover">
+				<p>user name : user123456098</p>
+				<p> user reputation : 415</p>
+				<p class = "tagcontent" id = "usertaginfo-9961">{'control': 16, 'stereo-vision': 2, 'communication': 0, 'pid': 19, 'uav': 0, 'stability': 13, 'mobile-robot': 2, 'sensor-error': 0, 'tuning': 2, 'cameras': 0, 'integration': 0, 'opencv': 2, 'differential-drive': 0, 'motion-planning': 0, 'None': 13, 'raspberry-pi': 14, 'localization': 0, 'microcontroller': 0, 'mapping': 0, 'path-planning': 0, 'real-time': 1, 'sensors': 0, 'quadcopter': 19, 'computer-vision': 2, 'vfh': 0, 'c++': 2, 'filter': 0, 'dead-reckoning': 0, 'sensor-fusion': 5, 'sonar': 1}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-9961" class = 'collapse'>
+			</div>
+				<textarea id = "speech-9961" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9961">
+					<img id="start_img-9961" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9961">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

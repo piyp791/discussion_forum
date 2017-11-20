@@ -1,0 +1,242 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>RGB-D SLAM - Compute Information Matrix
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-6895" class = "post">
+			<h2>Question</h2>
+			<div id="vote-6895" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 544</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>RGB-D SLAM - Compute Information Matrix</h2>
+<p>currently im working on a RGB-D SLAM with a Kinect v1 Camera. In the front-end the SLAM estimates the pose with Ransac as an initial guess for the ICP. With the pose estimation i transform the pointcloud to a pointcloud-scene which represents my map.</p>
+
+<p>To smooth the map im trying to implement a graph optimizing algorithm (g2o). 
+Until now, there is no graph representation in my frontend, so i started to integrate that.</p>
+
+<p>Im trying to build a .g2o file with the following fromat:</p>
+
+<p><strong>VERTEX_SE3 i x y z qx qy qz qw</strong></p>
+
+<p>where x, y, z is the translation and qx, qy, qz, qw ist the Rotation in respect to the initial coordinate system. And,</p>
+
+<p><strong>EDGE_SE3 observed_vertex_id observing_vertex_id x y z qx, qy, qz, qw inf_11 inf_12 .. inf_16 inf_22 .. inf_66</strong></p>
+
+<p>Translation and rotation for the edge is the pose estimate that i compute with Ransac and ICP (visual odometry). </p>
+
+<p>Now im getting stuck with the information matrix.
+I read the chapter 3.4 <em>THE INFORMATION FILTER</em> in Thrun's <em>Probabolistic Robotics</em> and several threads in this forum, such as:</p>
+
+<p><a href="https://robotics.stackexchange.com/questions/764/the-relationship-between-point-cloud-maps-and-graph-maps">The relationship between point cloud maps and graph maps</a></p>
+
+<p>and</p>
+
+<p><a href="https://robotics.stackexchange.com/questions/1180/information-filter-instead-of-kalman-filter-approach">information filter instead of kalman filter approach</a></p>
+
+<p>From the second link, i got this here. </p>
+
+<blockquote>
+  <p>The covariance update
+  $$P_{+} = (I-KH)P$$
+  can be expanded by the definition of K to be</p>
+  
+  <p>$$ P_{+} = P - KHP$$
+  $$ P_{+} = P - PH^T (HPH^T+R)^{-1} HP$$</p>
+  
+  <p>Now apply the matrix inversion lemma, and we have:</p>
+  
+  <p>$$P_{+} = P - PH^T (HPH^T+R)^{-1} HP$$
+  $$ P_{+} = (P^{-1} + H^TR^{-1}H)^{-1}$$</p>
+  
+  <p>Which implies:
+  $$ P_{+}^{-1} = P^{-1} + H^TR^{-1}H$$</p>
+  
+  <p>The term $P^{-1}$ is called the prior information,$$H^TR^{-1}H$$ 
+  is the sensor information (inverse of sensor variance), and this gives us  $P^{-1}_+$, which is the posterior information. </p>
+</blockquote>
+
+<p>Could you please point this out for me. 
+What data do i need to compute the information matrix? </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6895" data-toggle = "popover">
+				<p>user name : Ralf</p>
+				<p> user reputation : 11</p>
+				<p class = "tagcontent" id = "usertaginfo-6895">{'kinect': 2, 'None': 0, 'slam': 2, 'matlab': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-6895" class = 'collapse'>
+			</div>
+				<textarea id = "speech-6895" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6895">
+					<img id="start_img-6895" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6895">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-6897"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6897" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>From the wiki of the <a href="https://github.com/RainerKuemmerle/g2o/wiki/File-Format" rel="nofollow">g2o file format</a>:    </p>
+
+<blockquote>
+  <p>The information matrix or precision matrix which represent the
+  uncertainty of   the measurement error is the inverse of the
+  covariance matrix. Hence, it is symmetric and positive semi-definite.</p>
+</blockquote>
+
+<p>Unfortunately there is no mentioning of the representation for the covariance matrix for that file format, that I could find. My guess is that it is a compact representation, so either a $6\times6$ matrix using $[x, y, z, \psi, \phi, \theta]$ (euler angles) or $[x, y, z, r_1, r_2, r_3]$ (scaled axis of rotation). </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6897" data-toggle = "popover">
+				<p>user name : Jakob</p>
+				<p> user reputation : 2519</p>
+				<p class = "tagcontent" id = "usertaginfo-6897">{'ransac': 3, 'None': 210, 'computer-vision': 1, 'cameras': 1, 'c++': 3, 'slam': 12, 'rock': 1, 'i2c': 3, 'servos': 3, 'software': 1}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-6897" class = 'collapse'>
+			</div>
+				<textarea id = "speech-6897" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6897">
+					<img id="start_img-6897" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6897">Comment</button>
+			<br><div id = "ans-6901"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6901" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The information matrix is the inverse of the covariance matrix.  In this case, the covariance is over the variables (x,y,z,qx,qy,qz).  It is assumed that your quaternion is normalized to be unit magnitude.</p>
+
+<p>You should be able to get an estimate of the information matrix from the ICP.</p>
+
+<p>Edit:</p>
+
+<p>In general the covariance estimate can be found by the following procedure.  </p>
+
+<ul>
+<li>Set I = 0 (I will be the information matrix for the system)</li>
+<li>For each input.
+<ul>
+<li>Get the covariance (must be estimated somehow empirically).</li>
+<li>Invert the covariance to get the information W</li>
+<li>Calculate the Jacobian J of your error in the output space with respect to the input (see <a href="http://en.wikipedia.org/wiki/Jacobian_matrix_and_determinant" rel="nofollow">http://en.wikipedia.org/wiki/Jacobian_matrix_and_determinant</a>)</li>
+<li>Transform the information into the error space via X = J^T * W * J</li>
+<li>Set I = I + X</li>
+</ul></li>
+<li>Invert I to get the covariance S of the output</li>
+</ul>
+
+<p>Edit 2:</p>
+
+<p>The covariance formula that you linked to is the covariance of the points in the point cloud.  For the mapping, you want the covariance estimate for the estimated transform which is not at all the same thing.  It is a little difficult to explain.  Try looking at <a href="http://en.wikipedia.org/wiki/Non-linear_least_squares" rel="nofollow">http://en.wikipedia.org/wiki/Non-linear_least_squares</a> .  In your case the x_i would be points in P_A, y_i would be points in P_B, f would be the function that transforms points from P_A to P_B (i.e. f(x_i, T) = T(x_i) where T(x) is applying T to x), and beta would be the transform parameters.  In the last equation in the theory section, the J^T<em>W</em>J term is the estimated information for the parameters.  Inverting this provides a covariance estimate (this is based on the Cramer-Rao lower bound, see <a href="http://en.wikipedia.org/wiki/Cram%C3%A9r%E2%80%93Rao_bound" rel="nofollow">http://en.wikipedia.org/wiki/Cram%C3%A9r%E2%80%93Rao_bound</a>).  For the typical case of independent measurements, the J^T * W * J term ends up just being a sum of J_i^T * W_i * J_i for each measurement i.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6901" data-toggle = "popover">
+				<p>user name : DrRoboto</p>
+				<p> user reputation : 151</p>
+				<p class = "tagcontent" id = "usertaginfo-6901">{'None': 12}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-6901">Load Comments</button></br>
+			<div id = "commentsection-6901" class = 'collapse'>
+			<div id = "comment-9871" class = "comment">
+				<p>Actually the Covariance Matrix computed by the ICP has the dimension 3 x 3. So that seems not to be the final form of the covariance matrix we are looking for.</p>
+			</div>
+			<div id = "comment-9889" class = "comment">
+				<p>What are you using for the ICP implementation?  It could be that it is only outputting part of the full covariance.  It could also be that is assuming a planar robot and given the covariance of the 2D estimate.</p>
+			</div>
+			<div id = "comment-9890" class = "comment">
+				<p>Im using Segal's Implementation of the Generalized-ICP as described here:
+http://www.robots.ox.ac.uk/~avsegal/resources/papers/Generalized_ICP.pdf</p>
+			</div>
+			<div id = "comment-9965" class = "comment">
+				<p>It doesn't look like that ICP is setup to provide covariance information.  The way it does the solving also looks to make it hard to add.  Usually the covariance estimate is either based on the Rao-Cramer lower bound or some sort of ad-hoc or empirical method is used to estimate the covariance.  The covariance of the estimate will definitely depend on the scene.</p>
+			</div>
+			<div id = "comment-9989" class = "comment">
+				<p>At first, thanks for your reply!
+A standard ICP with Point to Point matching computes the Covariance like this:
+
+[Covariance](http://s7.postimg.org/fm8812kwr/point2point.png).
+
+In the Image, H represents a $3x3$ covariance matrix. For testing i implented such an ICP.
+How do I continue? What do you mean exactly with calculating the jacobian of the output with respect to the input?</p>
+			</div>
+			</div>
+				<textarea id = "speech-6901" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6901">
+					<img id="start_img-6901" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6901">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

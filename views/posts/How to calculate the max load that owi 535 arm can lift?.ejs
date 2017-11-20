@@ -1,0 +1,167 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to calculate the max load that owi 535 arm can lift?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-12064" class = "post">
+			<h2>Question</h2>
+			<div id="vote-12064" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 46</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to calculate the max load that owi 535 arm can lift?</h2>
+<p>I am trying to calculate the max lifting capability of the OWI 535 arm. The robot has 3 DOF and 3 three 3 DC motor with the robot power source delivers an Operating Voltage current of 3 Volts. The motors have a Stall Torque 60g-cm. I would like to know how to do the math to calculate the lifting capacity. </p>
+
+<p>The Robot has a wrist motion of 120 degrees, an extensive elbow range of 300 degrees, base rotation of 270 degrees, base motion of 180 degrees, vertical reach of 15 inches, horizontal reach of 12.6 inches, and lifting capacity of 100g</p>
+
+<p>Again, I am attempting to use the robot information on the Society of Robots <a href="http://www.societyofrobots.com/robot_arm_calculator.shtml" rel="noreferrer">http://www.societyofrobots.com/robot_arm_calculator.shtml</a></p>
+
+<p>I have middle and high school student that want to be able to calculate this information.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12064" data-toggle = "popover">
+				<p>user name : user16610</p>
+				<p> user reputation : 26</p>
+				<p class = "tagcontent" id = "usertaginfo-12064">{'None': 0, 'robotic-arm': 5}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-12064">Load Comments</button></br>
+			<div id = "commentsection-12064" class = 'collapse'>
+			<div id = "comment-22359" class = "comment">
+				<p>A word. My guess is that you'll get the most lifting power when the arm is moving like a [Scissor Jack](http://images3.campingworld.com/CampingWorld/images/products/5000/originals/55637n.jpg)</p>
+			</div>
+			</div>
+				<textarea id = "speech-12064" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12064">
+					<img id="start_img-12064" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12064">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-12825"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-12825" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>To solve this analytically you need the following information (I have <strong>bolded</strong> that which you have not provided):</p>
+
+<ul>
+<li>Stall torque for each joint</li>
+<li><strong>Mass and COM of each joint</strong></li>
+<li>Orientation of each joint relative to its parent joint (not given but I know the robot, they are all parallel to the ground)</li>
+<li><strong>Mass and COM of each link</strong></li>
+<li><strong>Length of each link</strong></li>
+</ul>
+
+<p>I use the word <em>joint</em> and not <em>motor</em> here for simplicity. If you want to include things like gearing and other things which may make the joint stall torque different from the motor stall torque, then you will need to know these factors. If your motors are directly connected, you can assume the motor torque is the joint torque for simplicity.</p>
+
+<p>I am also going to ignore the Omi 535's base joint (it is actually 4DOF) since it is orthogonal to the ground. Not having a go, I assume you ignore it too because you knew it experiences no torque due gravity, but it's probably worth mentioning for completeness.</p>
+
+<p>Since all your motors are the same and aligned parallel to the floor, your job is easier. You just need to find the highest possible torque on any joint for any given payload, and then calculate the value of that payload that equals the joint stall torque.</p>
+
+<p>For a robotic arm like yours where all joint axes are parallel to the ground in all configurations, the maximum torque for any joint occurs at the first joint when the arm is stretched out horizontally. This is because torque due to gravity is: </p>
+
+<p>$\tau = m \cdot g \cdot r_{xy}$</p>
+
+<p>That is, mass times gravity times the horizontal distance from the mass to the joint. You can see how the further any mass gets away from the joint horizontally, the higher the torque at the joint. The first joint has to deal with the mass of all the links and other joints plus the payload, and all these masses are furthest away from the first joint horizontally when the arm is fully outstretched.</p>
+
+<p>The total torque at the first joint can be calculated by adding up the torque contributed by each mass along the arm (i.e the links, other joints and finally the payload):
+\begin{align}
+\tau_{max} &amp;= \sum_im_i\cdot g \cdot r_i\\
+&amp;= g\sum_im_i \cdot r_i \\
+&amp;= g \cdot (m_{l_1} \cdot r_{l_1} + m_{j_2} \cdot r_{j_2} + m_{l_2} \cdot r_{l_2} + m_{j_3} \cdot r_{j_3} + m_{l_3} \cdot r_{l_3} + m_{payload} \cdot r_{payload})
+\end{align}</p>
+
+<p>Each $r$ value is the horizontal distance from that component's center of mass to the joint. If the COM of each joint lies on the joint axis, you can simply add up the lengths of the links preceding, since the arm is stretched horizontally. The $r_{payload}$ value should be simply the addition of all the lengths of the links.</p>
+
+<p>The only variable on the RHS of the above equation that is unknown at this stage is $m_{payload}$. We want to know what this value is, when we set $\tau_{max}$ to our stall torque. By solving this equation we get the maximum payload of the arm:
+\begin{align}
+\tau_{stall} &amp;= g \cdot (m_{l_1} \cdot r_{l_1} + m_{j_2} \cdot r_{j_2} + m_{l_2} \cdot r_{l_2} + m_{j_3} \cdot r_{j_3} + m_{l_3} \cdot r_{l_3} + m_{payload} \cdot r_{payload})\\
+\frac{\tau_{stall}}{g} &amp;= m_{l_1} \cdot r_{l_1} + m_{j_2} \cdot r_{j_2} + m_{l_2} \cdot r_{l_2} + m_{j_3} \cdot r_{j_3} + m_{l_3} \cdot r_{l_3} + m_{payload} \cdot r_{payload}\\
+m_{payload} \cdot r_{payload} &amp;= \frac{\tau_{stall}}{g} - m_{l_1} \cdot r_{l_1} - m_{j_2} \cdot r_{j_2} - m_{l_2} \cdot r_{l_2} + m_{j_3} \cdot r_{j_3} - m_{l_3} \cdot r_{l_3}\\
+m_{payload} &amp;= \frac{\frac{\tau_{stall}}{g} - m_{l_1} \cdot r_{l_1} - m_{j_2} \cdot r_{j_2} - m_{l_2} \cdot r_{l_2} + m_{j_3} \cdot r_{j_3} - m_{l_3} \cdot r_{l_3}}{r_{payload}}\\
+\end{align}</p>
+
+<p>This value is the mass at which the arm will not be able to move when holding it in this stretched out configuration. It does not mean it cannot hold this weight at all, since for any other configuration the maximum torque on any joint will be less.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12825" data-toggle = "popover">
+				<p>user name : Peter w</p>
+				<p> user reputation : 76</p>
+				<p class = "tagcontent" id = "usertaginfo-12825">{'None': 6}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-12825" class = 'collapse'>
+			</div>
+				<textarea id = "speech-12825" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12825">
+					<img id="start_img-12825" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12825">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

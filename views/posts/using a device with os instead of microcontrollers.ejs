@@ -1,0 +1,160 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>using a device with os instead of microcontrollers
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8365" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8365" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 70</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>using a device with os instead of microcontrollers</h2>
+<p>Im working on a robot that needs image processing to analyze data recieves from cameras. </p>
+
+<p>As i searched for ARM and AVR libraries i found that there is no dip library for these micros and their limited ram is hard for image data process. i want to know is there any hardware that connects to a win or android or... devices and make it possible to that device connect to actuators and sensors?</p>
+
+<p>thank you or helping.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8365" data-toggle = "popover">
+				<p>user name : virtouso</p>
+				<p> user reputation : 113</p>
+				<p class = "tagcontent" id = "usertaginfo-8365">{'None': 0, 'microcontroller': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8365">Load Comments</button></br>
+			<div id = "commentsection-8365" class = 'collapse'>
+			<div id = "comment-13458" class = "comment">
+				<p>Can you clarify your question?  Do you need to know how to connect motors and sensors to an Android device or Windows PC?  Or do you want to know how to connect a camera to and do some image processing on an embedded processor?</p>
+			</div>
+			<div id = "comment-13463" class = "comment">
+				<p>@Ben  my question is simple. a micro like AVR has some pins or ports that lets it to connect to sensors and actuators.i want o be pc device instead of AVR in there. what hardware can handle input and output there.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8365" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8365">
+					<img id="start_img-8365" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8365">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8366"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8366" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>First you are right, Imageprocessing is nothing for MCUs. Mostly because of their limited hardware ressources. But it is simply not the task of those thingys. So the reason you use MCU is the control you have over the system. You can use hunderds of different interrupts, you can manipulate all timers, you have DMAs, tons of different peripherals and response times within few microseconds. The complexity and controlability of those chips can be seen by looking at the documentation of those chips. An actual one, eg out of the STM32F7-Series has 3000 pages documentation of software and registers. <br>
+If you look at image processing, what you need there? Lot of computation power!!! You need no timers, no DMA, no responses within microseconds.
+<br> So why use MCU for imageprocessing? It's just not there business.
+For Imageprocessing you need moderen processors with huge computational power. <br>
+The drawback of modern processors you loose all the nice stuff you like about MCUs. So you cannot control something with high frequencies, you have no access to timer registers,not a lot of peripherial things.
+<br> Given this background and the task to solve a problem with sensors, actors and some conputer vision you can solve this taks with following approaches:<br></p>
+
+<p><strong>Use dedicated I/O Hardware for normal Computer</strong> <br></p>
+
+<p>Let your computer vision and all your control algorithms on your computer and use additional hardware to switch IOs use some buses or whatever you have to do. An example hardware would be phidgets, which work with USB; or a PCI card which is directly connected to your computer's bus system.
+This provides the advantage that you only have one system, but your system's realtime capability is not given at all. The OS (Windows or Android) have no realtime capabilities at all. with some tweeks and experience you reach a jitter of 0.5ms. This is basically your idea, you mentioned in the question.</p>
+
+<p><strong>Programm MCUs for vision</strong></p>
+
+<p>Well use MCUs for things they are not made for. If you do not need lot of processing on the images this can be a viable option. Depends on your task and on the setup. Most of the algorithms are available and can be implemented with some time investment. The problem is that your are missing the computational power and the memory. So you are limited in computations per timeframe.</p>
+
+<p><strong>Apply a distributed controller concept</strong></p>
+
+<p>Take the best of both worlds. Let the MCU and the computer with decent CPU,Memory and OS what they were designed for. The only problem is communication between those modules. But there are solutions, from serial (USB) over TCP/IP(Ethernet) or even SPI. It's just you need to figure out, what are the requirements and what fits them best.</p>
+
+<p><strong>Use a system which combines the best out of each world</strong></p>
+
+<p>There are not a lot modules which are made for such applications but in the time of early development for the IoT there are some. In my personal opinion the best module is the Beaglebone Black. It has some high performance ARM core out of there cortex A series and a DSP coprocessor for the high responsiveness and low jitter. On this DSP you do not have all features you can access on a normal MCU but it maybe sufficent.</p>
+
+<p>As conclusion the distributed controller is the most sophisticated and can be adjusted to meet almost any need. The other methods depend a lot on the requirements. They might be enought or maybe not. For some "I want to try something quick and dirty and i do not care about performance" use some phidgets, they are relatively cheap and are pretty easy to make them work. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8366" data-toggle = "popover">
+				<p>user name : TobiasK</p>
+				<p> user reputation : 1572</p>
+				<p class = "tagcontent" id = "usertaginfo-8366">{'control': 1, 'None': 102, 'communication': 0, 'wireless': 0, 'imu': 0, 'sensor-fusion': 0, 'gps': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8366">Load Comments</button></br>
+			<div id = "commentsection-8366" class = 'collapse'>
+			<div id = "comment-13431" class = "comment">
+				<p>thank you so much for your complete answer. im searching on them</p>
+			</div>
+			<div id = "comment-13433" class = "comment">
+				<p>and another question: doest arduino same function like phidgets?</p>
+			</div>
+			</div>
+				<textarea id = "speech-8366" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8366">
+					<img id="start_img-8366" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8366">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

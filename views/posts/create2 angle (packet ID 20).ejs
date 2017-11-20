@@ -1,0 +1,140 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>create2 angle (packet ID 20)
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7062" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7062" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 336</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>create2 angle (packet ID 20)</h2>
+<p>how to convert the value you get for the angle (packet ID 20) into degrees?
+i am using the create2 robot and when I did not understand the data I am getting back. The documentation it says it's in degrees but what I get back is a huge number like 4864 when I turned the robot just 45 degrees.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7062" data-toggle = "popover">
+				<p>user name : Jack</p>
+				<p> user reputation : 24</p>
+				<p class = "tagcontent" id = "usertaginfo-7062">{'c': -1, 'python': 1, 'None': 0, 'c++': -1, 'irobot-create': 4, 'software': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7062" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7062" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7062">
+					<img id="start_img-7062" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7062">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7088"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7088" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Well, the <code>Distance</code> opcode (packet ID 19) has a <a href="https://robotics.stackexchange.com/questions/6869/roomba-create-2-problem-reading-distance-traveled">known bug</a> in it.  So I wouldn't be surprised if this also affects the <code>Angle</code> packet.  I would recommend using the <code>Left Encoder Counts</code> and <code>Right Encoder Counts</code> opcodes (packets 43 and 44) and compute the angle yourself.  </p>
+
+<p>The angle is pretty easy to calculate from the distances traveled by each wheel.  <a href="http://chess.eecs.berkeley.edu/eecs149/documentation/differentialDrive.pdf" rel="nofollow">This document</a> has a good introduction to mobile robot kinematics.  But simply:</p>
+
+<p>$$
+\theta = \frac{d_r - d_l}{l}
+$$</p>
+
+<p>Where $d_r$ and $d_l$ are the distances traveled by the right and left wheels respectively since the last time step.  And $l$ is the wheel base of the robot.  The wheel base, number of encoder ticks per revolution, and wheel diameter can be found in the <a href="http://www.irobot.com/~/media/MainSite/PDFs/About/STEM/Create/create_2_Open_Interface_Spec.pdf" rel="nofollow">OI Spec</a>.</p>
+
+<p>Regarding units, the units for $d_r$, $d_l$, and $l$ shouldn't matter as long as they are all the same.  $\theta$ is in radians.  Picking mm for the lengths is easy because that is what is specified in the spec.  The wheel base is 235.0 mm.  To determine mm traveled from encoder ticks, I find it easiest to think about as a unit conversion using the equation for circle circumference.  If you have $X$ ticks:</p>
+
+<p>$$
+d \text{ (mm)} = X \text{ (ticks)} \begin{bmatrix} \frac{1 \text{ (revolution)}}{508.8 \text{ (ticks)}} \end{bmatrix} \begin{bmatrix} \frac{\pi 72.0 \text{ (mm)}} {1 \text{ (revolution)}} \end{bmatrix}
+$$</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7088" data-toggle = "popover">
+				<p>user name : Ben</p>
+				<p> user reputation : 3608</p>
+				<p class = "tagcontent" id = "usertaginfo-7088">{'None': 277, 'inverse-kinematics': 3, 'accelerometer': 5, 'calibration': 10, 'kinematics': 14, 'robotic-arm': 8, 'jacobian': 6, 'dh-parameters': 8, 'imu': 5, 'sensors': 5}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7088">Load Comments</button></br>
+			<div id = "commentsection-7088" class = 'collapse'>
+			<div id = "comment-10065" class = "comment">
+				<p>Thanks for the reply. packet 43&44 give you  raw  encoder counts does the equation above cares about units? also I am not sure how to calculate the wheel base give the encoder ticks /rev and wheel diameter. can you please shed more light on this? thanks a million</p>
+			</div>
+			<div id = "comment-10070" class = "comment">
+				<p>See expanded answer.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7088" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7088">
+					<img id="start_img-7088" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7088">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

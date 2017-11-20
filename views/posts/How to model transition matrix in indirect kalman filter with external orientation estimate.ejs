@@ -1,0 +1,138 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to model transition matrix in indirect kalman filter with external orientation estimate
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11958" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11958" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 113</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to model transition matrix in indirect kalman filter with external orientation estimate</h2>
+<p>I am trying to implement an indirect/error state kalman filter following <a href="http://www.iri.upc.edu/people/jsola/JoanSola/objectes/notes/kinematics.pdf" rel="nofollow noreferrer">http://www.iri.upc.edu/people/jsola/JoanSola/objectes/notes/kinematics.pdf</a>.
+However, instead of modelling the orientation and error in orientation I have chosen to utilize Madwick (<a href="http://x-io.co.uk/res/doc/madgwick_internal_report.pdf" rel="nofollow noreferrer">http://x-io.co.uk/res/doc/madgwick_internal_report.pdf</a>) to estimate the orientation.</p>
+
+<p>The problem is that when I create the transition matrix from the first paper it expects the orientation error which it multiplies with the skew matrix of the measured acceleration and the accelerometer bias (page 40, equation 204). Since I have removed that from my states I can't use it, but then the measured acceleration is never considered (which I assume makes the filter worse). Is there any change I can make to the transition matrix so that it accounts for the acceleration?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11958" data-toggle = "popover">
+				<p>user name : Nordmoen</p>
+				<p> user reputation : 1</p>
+				<p class = "tagcontent" id = "usertaginfo-11958">{'None': 0, 'sensor-fusion': 0, 'kalman-filter': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11958">Load Comments</button></br>
+			<div id = "commentsection-11958" class = 'collapse'>
+			<div id = "comment-21229" class = "comment">
+				<p>"Instead of modelling the orientation and error in orientation I have chose to utilize [the Madwick filter]." What are you trying to measure with your filter, then?</p>
+			</div>
+			<div id = "comment-21230" class = "comment">
+				<p>Position, velocity and other factors. I have only removed orientation and gyroscope bias (since the Madwick filter accounts for bias). My thinking is that the Madwick filter is more than enough to model orientation, but I want position and velocity as well and so keep those state in the filter.</p>
+			</div>
+			<div id = "comment-21232" class = "comment">
+				<p>The Madgwick filter gives you position.</p>
+			</div>
+			<div id = "comment-21235" class = "comment">
+				<p>How does it do that? As far as I can see the only state that is kept in the paper is orientation, it also has no way of incorporating additional data like GPS or vision.</p>
+			</div>
+			</div>
+				<textarea id = "speech-11958" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11958">
+					<img id="start_img-11958" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11958">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-12010"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-12010" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>After careful reading of the first paper I think the solution to the problem is to simply not include the multiplication. From the proof of 172b and equation 177, in my filter I have $R_t$ (since I get that from the Madgwick filter) and can simply apply that to the error state. So equation 195b is instead $\delta v  = \delta v - (R\delta a_b - \delta g)\Delta t + \mathbf{v_i}$, note that we don't multiply with $\theta$ since the Madgwick filter models that error.</p>
+
+<p>The transition matrix does then not have to include any terms related to $\theta$ which means we only relate error in speed with error in accelerometer $\delta a_b$ and error in the gravity vector $\delta g$. In essence we remove the skew matrix multiplication.</p>
+
+<p>Edit: I will hold of accepting this answer either until I have a chance to try the improvement or until someone else can vouch for it. Other answers are very welcome!</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12010" data-toggle = "popover">
+				<p>user name : Nordmoen</p>
+				<p> user reputation : 1</p>
+				<p class = "tagcontent" id = "usertaginfo-12010">{'None': 0, 'sensor-fusion': 0, 'kalman-filter': 0}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-12010" class = 'collapse'>
+			</div>
+				<textarea id = "speech-12010" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12010">
+					<img id="start_img-12010" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12010">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

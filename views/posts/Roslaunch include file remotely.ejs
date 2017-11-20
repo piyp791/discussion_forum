@@ -1,0 +1,155 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Roslaunch include file remotely
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-1564" class = "post">
+			<h2>Question</h2>
+			<div id="vote-1564" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 202</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Roslaunch include file remotely</h2>
+<p>I am trying to launch a file from remote computer but I could not success. Actually I can connect to remote computer but I think the problem is with including a file from remote computer. In other words, I am looking for a machine tag for include. Here is the my code:</p>
+
+<pre><code>&lt;launch&gt;  
+
+    &lt;group &gt;
+      &lt;machine name="marvin-1" address="tek-marvin-1" user="blabla" password="blabla" env-loader="/home/blabla/.rosLaunchScript.sh"/&gt;  
+
+      &lt;include file="$(find openni_launch_marvin)/launch/kinect_left.launch"/&gt;
+    &lt;/group&gt;     
+
+&lt;/launch&gt;
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1564" data-toggle = "popover">
+				<p>user name : Batuhan Tasdoven</p>
+				<p> user reputation : 106</p>
+				<p class = "tagcontent" id = "usertaginfo-1564">{'None': 0, 'ros': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1564">Load Comments</button></br>
+			<div id = "commentsection-1564" class = 'collapse'>
+			<div id = "comment-3282" class = "comment">
+				<p>You may find help on this topic here, but you may have more luck getting a fast answer at answers.ros.org.</p>
+			</div>
+			</div>
+				<textarea id = "speech-1564" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1564">
+					<img id="start_img-1564" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1564">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-11377"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11377" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>A better approach would be to first ssh into the remote computer. In the remote terminal, run</p>
+
+<pre><code>export MASTER_URI = http://IP_address_master:Port_number
+</code></pre>
+
+<p>where <code>IP_address_master</code> should be the IP address of the computer on which you want to run the master node. IP address could either be of your local machine or remote computer. <code>Port_number</code> is the port of your master node (generally it is <code>11311</code>). On the same terminal, run</p>
+
+<pre><code>export ROS_IP = IP_address_remote
+</code></pre>
+
+<p>where <code>IP_address_remote</code> is the IP of your remote computer.
+In the terminal of your local machine (not the one where you are running ssh from), run the following commands:</p>
+
+<pre><code>export MASTER_URI = http://IP_address_master:Port_number
+export ROS_IP = IP_address_local
+</code></pre>
+
+<p>where, <code>IP_address_master</code> and <code>Port_number</code> is same as above but <code>IP_address_local</code> should be the IP address of your local computer. </p>
+
+<p>Now, you are ready to launch the file from your remote terminal. Your no longer require a separate launch file. In the ssh terminal, run the launch file <code>kinect_left.launch</code> directly as:</p>
+
+<pre><code>roslaunch openni_launch_marvin kinect_left.launch
+</code></pre>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11377" data-toggle = "popover">
+				<p>user name : Telepresence</p>
+				<p> user reputation : 31</p>
+				<p class = "tagcontent" id = "usertaginfo-11377">{'None': 3}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11377" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11377" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11377">
+					<img id="start_img-11377" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11377">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

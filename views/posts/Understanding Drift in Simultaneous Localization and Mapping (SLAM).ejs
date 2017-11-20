@@ -1,0 +1,140 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Understanding Drift in Simultaneous Localization and Mapping (SLAM)
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9318" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9318" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 447</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Understanding Drift in Simultaneous Localization and Mapping (SLAM)</h2>
+<p>I am trying to understand the effect of drift in Simultaneous Localization and Mapping (SLAM). My understanding is that drift occurs because the robot tracks its position relative to a set of landmarks it is storing, but each landmark has a small error in its location. Therefore, an accumulation of these small errors over a long trajectory causes a large error by the end of the trajectory.</p>
+
+<p>However, what I am confused about is what would happen when the robot tracks its way back to its starting positions. Suppose the robot starts in position A, and then starts to move along a path, mapping the environment as it does so, until it reaches position B. Now, the robot will have some error in its stored position of B, due to the drift during tracking. But then suppose the robot makes its way back to A, by tracking relative to all the landmarks it created during the first path. When it reaches A, will it be back at the true position of A, i.e. where it started the first path? Or will it have drifted away from A?</p>
+
+<p>My intuition is that it will end up at the true position of A, because even though the landmarks have errors in them, as long as the error is not too large then the robot will eventually get back to the position where it stored the landmarks for A. And once it is there, those landmarks are definitely correct, without error, because they were initialized before any drift errors had started to accumulate.</p>
+
+<p>Any help? Thanks!</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9318" data-toggle = "popover">
+				<p>user name : Karnivaurus</p>
+				<p> user reputation : 328</p>
+				<p class = "tagcontent" id = "usertaginfo-9318">{'control': 10, 'walking-robot': 4, 'simulator': 0, 'torque': 4, 'slam': 0, 'robotic-arm': 20, 'mobile-robot': 0, 'dynamics': 17, 'forward-kinematics': 7, 'manipulator': 10, 'accelerometer': 4, 'kinematics': 29, 'jacobian': 16, 'policy': 1, 'actuator': 4, 'None': 0, 'inverse-kinematics': 18, 'localization': 0, 'mapping': 0, 'sensors': 4, 'simulation': 0, 'navigation': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-9318" class = 'collapse'>
+			</div>
+				<textarea id = "speech-9318" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9318">
+					<img id="start_img-9318" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9318">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9319"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9319" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Your intuition is mostly correct. Returning to where you started and re-observing landmarks you mapped earlier is called <em>closing the loop</em> in the SLAM literature. As you mentioned, your uncertainty will grow as the errors accumulate before you return to the start, <em>if you don't have an absolute sensor</em>. An absolute sensor is one that directly measures your state in the inertial coordinate frame (e.g., GPS). If you are relying on relative sensors (e.g., wheel encoders, an IMU, laser scanner), your uncertainty will grow. This is called <em>dead reckoning</em> in the literature.</p>
+
+<p>Closing the loop can be difficult because how do you know you've returned to the start? How do you know the landmarks you're observing now are the same ones you observed when you started? This depends on a number things. For example, if the landmarks have some sort of unique signature about them (e.g., this is possible with some computer vision algorithms), you can look up each landmark you come across in your "dictionary" of landmarks you've seen so far. But let's say the landmarks are trees that all kind of look the same and you have a laser scanner. Well if you have been keeping track of your uncertainty properly, and you know the uncertainty of your measurements, you can determine the likelihood any new landmark is one you've seen before by calculating the <em>Mahalanobis distance</em> (i.e., distance that takes uncertainty into account) between new observations and landmarks in your current map. If the Mahalanobis distance is below some threshold, then you say you've found a match.</p>
+
+<p>Once you've successfully closed the loop, depending on your SLAM algorithm, the uncertainty in your pose and the landmarks in your map becomes greatly reduced. This intuitively makes sense when you think about it. Let's say right before you close the loop, the uncertainty in your position was $\pm 3$ metres. Then your laser scanner (which has noise of $\pm 0.02$ metres) measures a landmark that you saw earlier, whose position you know pretty well (e.g., $\pm 0.05$ metres). It then makes sense that you know your position way better now! But wait, what about the other landmarks in your map? Their uncertainties are <em>correlated</em> with the uncertainty of your position because they were measured from the robot (these correlations manifest themselves in the off-diagonal terms of your covariance matrix). Then it only makes sense that drastically improving knowledge of your pose also improves your map!</p>
+
+<p>So you're definitely on the right track. If you want to learn more, there is a good chapter on this topic in <em>Probabilistic Robotics</em> by Thrun <em>et al.</em> that has some pretty pictures showing the effects of loop closures. <a href="https://www.youtube.com/watch?v=BaqSRf5pAZ0" rel="nofollow">Here is a video</a> that shows a loop closure (watch what happens to the uncertainty ellipses around both the robot and the landmarks when the robot returns to the start).</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9319" data-toggle = "popover">
+				<p>user name : kamek</p>
+				<p> user reputation : 775</p>
+				<p class = "tagcontent" id = "usertaginfo-9319">{'None': 48}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9319">Load Comments</button></br>
+			<div id = "commentsection-9319" class = 'collapse'>
+			<div id = "comment-16516" class = "comment">
+				<p>Thanks very much for your detailed response. I understand the idea of loop closure, and how this can help when returning to the original position. However, what I am trying to understand is just the effect of tracking relative to the store landmarks, without any loop closure. Suppose the robot is just going down a corridor, such that it roughly goes in a straight line from A to B. If after reaching B, it then turns around and follows the landmarks back to A, will it reach the "true" position A, or the "noisy" position A?</p>
+			</div>
+			<div id = "comment-16517" class = "comment">
+				<p>My intuition is the former, because even though the stored landmarks have errors in them, they are the *same* landmarks which took it from A to B, and so if the robot just tracks relative to them then it will still eventually reach A, no matter how big those errors are.... Correct?</p>
+			</div>
+			<div id = "comment-16518" class = "comment">
+				<p>It depends on a few things, like how accurate your landmark measuring sensor is, and how much your uncertainty has grown since you left. If you're using a Kalman filter, and your uncertainty has grown a lot but your sensor is quite accurate, then the Kalman gain would be approximately equal to one (in a 1D example) when you close the loop. A Kalman gain of one means "believe your sensor measurement 100%", so your position estimate after you close your loop would be proportional to the noise in your sensor (which may be quite small), no matter how much error you've accumulated.</p>
+			</div>
+			</div>
+				<textarea id = "speech-9319" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9319">
+					<img id="start_img-9319" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9319">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

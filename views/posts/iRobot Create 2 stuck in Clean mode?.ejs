@@ -1,0 +1,178 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>iRobot Create 2 stuck in Clean mode?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8976" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8976" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 203</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>iRobot Create 2 stuck in Clean mode?</h2>
+<p>I'm using the Delphi example to command my Create 2, I just adapted the demo code to Unicode (DelphiXE). I use the original iRobot USB to serial cable. </p>
+
+<p>My Create 2 seemed to be responding fine to all the commands send via serial yesterday and correctly received all sensor data back this morning, until I recharged the battery. Now when I send "7" "Soft reset" the robot attempts every time to start a clean cycle. It also attempts to start the clean cycle when I press the clean button. It tells me to move the Roomba to a new location, which is normal in cleaning mode because my wheels are not touching my desk. Communication via serial seem to be fine because I still get the Soft Reset response texts in the log memo of my app when I use the 2 buttons method to soft reset my Create 2, so there is still communication both ways.</p>
+
+<p>I must say I had the same yesterday after charging but after a while unexpectedly, don't know why, the robot responded again fine to my commands.</p>
+
+<p>It really seems to me the Create 2 is stuck in the Cleaning mode, or am I missing something?</p>
+
+<p>BTW, I also tried to fix the problem by removing the battery.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8976" data-toggle = "popover">
+				<p>user name : xavier22</p>
+				<p> user reputation : 51</p>
+				<p class = "tagcontent" id = "usertaginfo-8976">{'None': 3, 'irobot-create': 4}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8976" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8976" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8976">
+					<img id="start_img-8976" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8976">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8980"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8980" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I think I found the solution myself. When I send a "128 255" opcode to my Create it seems the robot is switched out of Clean mode, and back in to programming mode.</p>
+
+<p>There is no mention anywhere in the specs of opcode "255", nor is there any mention of switching off Clean mode in the specs either.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8980" data-toggle = "popover">
+				<p>user name : xavier22</p>
+				<p> user reputation : 51</p>
+				<p class = "tagcontent" id = "usertaginfo-8980">{'None': 3, 'irobot-create': 4}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8980">Load Comments</button></br>
+			<div id = "commentsection-8980" class = 'collapse'>
+			<div id = "comment-16778" class = "comment">
+				<p>255 is not a valid opcode. 128 will enter Passive mode, which allows programming.</p>
+			</div>
+			<div id = "comment-16790" class = "comment">
+				<p>255 works for me. Sending 128 does not enter passive mode, even removing the battery does not enter passive mode</p>
+			</div>
+			<div id = "comment-16792" class = "comment">
+				<p>When stuck in Clean mode.</p>
+			</div>
+			<div id = "comment-16851" class = "comment">
+				<p>Sending a 128 will enter Passive mode. Passive mode does not stop the robot from cleaning. If you want to stop the robot cleaning, send 135.</p>
+			</div>
+			<div id = "comment-16852" class = "comment">
+				<p>255 is not a valid OI opcode. It shouldn't do *anything*, but if it does produce any behavior, it is not part of the OI and should be considered "undefined behavior".</p>
+			</div>
+			</div>
+				<textarea id = "speech-8980" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8980">
+					<img id="start_img-8980" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8980">Comment</button>
+			<br><div id = "ans-9494"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9494" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Your robot is fine.</p>
+
+<p>When you send a 7 to reset the robot, you are also exiting Open Interface Mode. If the robot was in a cleaning cycle when you send the 7, it may under certain circumstances resume cleaning after the reboot. This is a feature that allows the Roomba to recover from errors while cleaning. This can give the appearance of being "stuck" in cleaning mode.</p>
+
+<p>Pressing the Clean button will also start a cleaning cycle.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9494" data-toggle = "popover">
+				<p>user name : Andrea</p>
+				<p> user reputation : 209</p>
+				<p class = "tagcontent" id = "usertaginfo-9494">{'None': 10}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9494">Load Comments</button></br>
+			<div id = "commentsection-9494" class = 'collapse'>
+			<div id = "comment-16791" class = "comment">
+				<p>Yes, sending 7 will attempt to resume Clean mode, thats not what i want.</p>
+			</div>
+			<div id = "comment-16850" class = "comment">
+				<p>Sending a 7 performs a powered reset of the microcontroller. It's not really part of the Open Interface but we documented the feature because it can be useful under some circumstances.</p>
+			</div>
+			</div>
+				<textarea id = "speech-9494" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9494">
+					<img id="start_img-9494" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9494">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

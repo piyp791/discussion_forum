@@ -1,0 +1,212 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to sumarize Kalman filter covariances for display?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8027" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8027" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 95</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to sumarize Kalman filter covariances for display?</h2>
+<p>I'm implementing an extended Kalman filter and I'm facing a problem with showing the covariances to the user.</p>
+
+<p>The covariance matrix estimate contains all the information we have about the current value estimate, but that is too much to display.
+I would like to have a single number that says "our estimate is really good" when close to 0 and "our estimate is not worth much" when large.</p>
+
+<p>My intuitive simple solution would be to average all the values in the covariance estimate matrix (or maybe just the diagonal), except that in my case the values have different units and different ranges.</p>
+
+<p>Is it possible to do something like this?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8027" data-toggle = "popover">
+				<p>user name : cube</p>
+				<p> user reputation : 567</p>
+				<p class = "tagcontent" id = "usertaginfo-8027">{'control': 2, 'None': 31, 'wifi': 2, 'kalman-filter': 3, 'calibration': 3, 'geometry': 0, 'localization': 2, 'c': 1, 'avr': 1, 'robotic-arm': 0, 'brushless-motor': 2, 'differential-drive': 2, 'esc': 1, 'motor': 2, 'mobile-robot': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8027">Load Comments</button></br>
+			<div id = "commentsection-8027" class = 'collapse'>
+			<div id = "comment-12796" class = "comment">
+				<p>How many values do you have in the matrix?</p>
+			</div>
+			<div id = "comment-12798" class = "comment">
+				<p>The filter has 26 dimensions, so there are 676 values in the matrix.</p>
+			</div>
+			<div id = "comment-12804" class = "comment">
+				<p>What kind of users are they?</p>
+			</div>
+			</div>
+				<textarea id = "speech-8027" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8027">
+					<img id="start_img-8027" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8027">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8031"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8031" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You want to display $\frac{n(n+1)}{2}$ values of a symmetric $n \times n$ matrix, where $n=26$, which means you have 351 values.</p>
+
+<p>It doesn't make too much sense to display all those numeric values. After all you want to display them to a human being, which is unlikely able to oversee all these values if displayed as numbers.</p>
+
+<p>Then as you say, the values have different units and ranges. that means there's no automatic way of finding the "good" range.
+I suggest running the system for a while, disturbing it, gathering some rough estimates of where the values are and to what peaks they can rise.
+With these values you can provide a rough estimate of "good" and "bad", somewhat fuzzy if you will.</p>
+
+<p>Back to the original problem: displaying all those values. A numerical display is out of the question. And that precision isn't even desired, so why not map the values to colors and display each value as a pixel? Make good green and the red bad. Now the job looks a lot simpler: display some 351 pixels<sup>1</sup>. It's easy to see when some pixels go red if something goes wrong and what other pixels go "hot" at the same moment. It's also easy to see if some values are generally uncertain, constantly staying in the orange color.</p>
+
+<p>Depending on your needs you can expand that debug facility further, allowing the user to only display a subset of the matrix. Or allow closer inspection, displaying the true values behind the colors and/or plot them to see how they change to the "bad" state.</p>
+
+<p><sup>1</sup>of course you can display these values as large as you want. I'd start with a a 10x10px box for each number, resulting in a 260x260px box, which should be big enough to see clearly, yet small enough to add other debugging/observation tools around it.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8031" data-toggle = "popover">
+				<p>user name : Bending Unit 22</p>
+				<p> user reputation : 1335</p>
+				<p class = "tagcontent" id = "usertaginfo-8031">{'None': 93}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8031">Load Comments</button></br>
+			<div id = "commentsection-8031" class = 'collapse'>
+			<div id = "comment-12800" class = "comment">
+				<p>Colors are definitely a good idea.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8031" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8031">
+					<img id="start_img-8031" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8031">Comment</button>
+			<br><div id = "ans-8032"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8032" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Yes you can do so by converting the covariance matrix to a gray level image. For example, in the below picture the covariance matrix is represented as a gray image in which the gray intensity represents the correlation between the elements, the darker the stronger correlation. </p>
+
+<p><a href="https://i.stack.imgur.com/viwng.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/viwng.png" alt="enter image description here"></a> </p>
+
+<p>More information see <a href="http://www.amazon.ca/Fastslam-Scalable-Simultaneous-Localization-Robotics/dp/3540463992" rel="nofollow noreferrer">FastSLAM
+A Scalable Method for the Simultaneous Localization and Mapping Problem in Robotics</a></p>
+
+<p>This shows the correlation. To show how the uncertainty of a quantity decreasing, then plot the $x\pm 3\sigma_{x}$ where $x$ the true value not the estimate. You can't describe the entire system with one single value. Averaging has no meaning in this context. In my opinion, pick an element of your state vector and its uncertainty and plot them according to $x\pm 3\sigma_{x}$. EKF is a sub-optimal filter which means converging to the true value might not be possible as the case in KF. This is due to the linearization step, however, EKF is a good choice and generally yields satisfactory results. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8032" data-toggle = "popover">
+				<p>user name : CroCo</p>
+				<p> user reputation : 1040</p>
+				<p class = "tagcontent" id = "usertaginfo-8032">{'control': 18, 'pid': 4, 'slam': 16, 'manipulator': 3, 'mobile-robot': 14, 'dynamics': 6, 'errors': 2, 'data-association': 1, 'kinematics': 3, 'matlab': 6, 'kalman-filter': 21, 'motion-planning': 3, 'None': 41, 'noise': 24, 'theory': 1, 'localization': 14, 'microcontroller': 5, 'mapping': 5, 'sensor-error': 1, 'sensors': 7, 'quadcopter': 8, 'ekf': 26, 'simulation': 1, 'motion': 3}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8032" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8032" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8032">
+					<img id="start_img-8032" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8032">Comment</button>
+			<br><div id = "ans-8037"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8037" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>It's tough to say anything about a really large covariance matrix. This is because (presumably) the matrix includes the uncertainty about a whole bunch of features, not just the robot pose. Typically what matters in real life is the uncertainty in the position of the robot (and possibly orientation). So with only three spatial deimensions, you can easily display a 3D covariance ellipse which will tell you the expected position and uncertainty of the robot.</p>
+
+<p>In literature there are several methods for displaying some statistics about an arbitrarily large state space. The most common is some measure of the eigenvalues of the matrix. (For a 2x2 or 3x3 matrix, this is often a covariance ellipse as mentioned above) For an nxn matrix, you can display the blockwise covariances for each feature, which will tell you which features are very, very roughly estimated, <em>or</em> you can output some function of the covariance itself.</p>
+
+<p>For example, the determinant is a common measure of uncertainty used in GPS as the Dillution of Precision. Another common measure is the maximum eigenvalue, though that only really makes sense on a feature-by-feature basis.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8037" data-toggle = "popover">
+				<p>user name : Josh Vander Hook</p>
+				<p> user reputation : 3960</p>
+				<p class = "tagcontent" id = "usertaginfo-8037">{'None': 345}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8037">Load Comments</button></br>
+			<div id = "commentsection-8037" class = 'collapse'>
+			<div id = "comment-12859" class = "comment">
+				<p>I'll probably split it into blocks of variables with identical units and do determinants of the blocks. Thank you.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8037" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8037">
+					<img id="start_img-8037" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8037">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

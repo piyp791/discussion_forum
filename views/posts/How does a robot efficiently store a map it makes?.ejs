@@ -1,0 +1,266 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How does a robot efficiently store a map it makes?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2945" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2945" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 320</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How does a robot efficiently store a map it makes?</h2>
+<p>From what I understand, you can create a map using sensors and storing values in an array.  For example, the array can have 0's for places not visited, and 1's for places visited, or 0's for open spaces and 1's for occupied spaces, etc.  </p>
+
+<p>The map I'm thinking of making will have about 1000 x 2000 members.  This means I need an array of 2 million members.  That seems like a lot.  If I have eight attributes about each member (like temperature, light level, sound level, etc.), then I have 16 million pieces of information to capture.  </p>
+
+<p>Is this correct, or is there a better way to create a map for a robot using software?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2945" data-toggle = "popover">
+				<p>user name : Alligator</p>
+				<p> user reputation : 18</p>
+				<p class = "tagcontent" id = "usertaginfo-2945">{'None': 0, 'mapping': 3, 'software': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2945">Load Comments</button></br>
+			<div id = "commentsection-2945" class = 'collapse'>
+			<div id = "comment-10042" class = "comment">
+				<p>Consider packing your data. Don't use a whole byte/word for something that doesn t need it.  Those 0 and 1 can be packed 8 to a byte - quite a saving. Temperature - realistically, no more range than -10 to +40 C . A range or 50 can be packed into 6 bits (you might get it down to 5). How many light levels? You can probably get away with only a few bits. There will be a **minor** performance hit, but bit bit-wise & shift operations are usually efficient.  Alternatively, you can just add a multi-gB SSD</p>
+			</div>
+			</div>
+				<textarea id = "speech-2945" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2945">
+					<img id="start_img-2945" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2945">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-2950"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2950" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>It really really depends on the kind of map. If you want a map that is a 2-D grid of boolean values, then it depends on how sparse the map is expected to be.</p>
+
+<p>If you want to keep all boolean values, you would need at least <code>N * M * S</code> bits (assuming the map is <code>N</code> by <code>M</code> and each location has <code>S</code> sensor readings), which for your numbers translate to ~2MB of data. If your microcontroller doesn't have this much space, then that's a bad approach.</p>
+
+<p>However, all is not lost! Usually the environment has some feature you can take advantage of. For example, if the environment is not full of obstacles, you don't need to memorize all the empty spaces, right? Or if there is an area closed by obstacles, you don't to keep track of what's inside it, since you can't get there anyway.</p>
+
+<p>That said, perhaps the approach with the least amount of memory would be to model your environment by a set of closed polygons. As you explore the world, you refine the polygons, but not with extreme details, to reduce the memory footprint. All algorithms would then work with polygons (e.g. collision detection) rather than bitmaps which is possibly also less costly, so it could be a win for everyone!</p>
+
+<p><a href="https://en.wikipedia.org/wiki/Robotic_mapping" rel="nofollow">This Wikipedia article</a> may help, where topological frameworks are hinted at, and the thereby linked <a href="http://en.wikipedia.org/wiki/Map_database_management" rel="nofollow">Map Database Management</a> which could also provide some insight.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2950" data-toggle = "popover">
+				<p>user name : Shahbaz</p>
+				<p> user reputation : 2615</p>
+				<p class = "tagcontent" id = "usertaginfo-2950">{'None': 193, 'usb': 12, 'distributed-systems': 7, 'microcontroller': 1, 'embedded-systems': 7, 'servomotor': 1, 'platform': 18, 'can': 1, 'machine-learning': 12, 'real-time': 18, 'mobile-robot': 1, 'rs232': 12, 'software': 20}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2950">Load Comments</button></br>
+			<div id = "commentsection-2950" class = 'collapse'>
+			<div id = "comment-5387" class = "comment">
+				<p>Do you know of any examples showing how a polygon-based map is stored?  Is this also stored in an array?</p>
+			</div>
+			<div id = "comment-5390" class = "comment">
+				<p>I don't know of any particular implementation you could use. But effectively it could be a set of points, stored in array if you want, or a [Quad tree](https://en.wikipedia.org/wiki/Quad_tree) or any other data structure based on your usage, and a set of lists of indices to those points, showing a closed polygon traversed in anticlockwise for example.</p>
+			</div>
+			</div>
+				<textarea id = "speech-2950" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2950">
+					<img id="start_img-2950" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2950">Comment</button>
+			<br><div id = "ans-2953"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2953" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Look at papers and projects at universities on how others have done this.
+Unfortunately most of this is not as transferable from robot to robot as one would initially imagine.
+There is a lot that will be custom to your robot.</p>
+
+<p>That being said, here's what I did...</p>
+
+<p>What I was doing for mine was a graph of 1" squares representing the room.<br>
+To "fill in" a square I incremented the value of it by 1.  To "clear" it I decremented it by 2, to min of 0.
+I then filled in squares as IR and Ultrasonic detectors detected them.  I cleared them as the squares would be seen to be clear.
+This handled transient obstacles OK, but it walked about as the sensors and their precision did not match the grid well.</p>
+
+<p>This also depends as Shahbaz stated on resources for storage/processing power, etc.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2953" data-toggle = "popover">
+				<p>user name : Matt M</p>
+				<p> user reputation : 11</p>
+				<p class = "tagcontent" id = "usertaginfo-2953">{'None': 1}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2953">Load Comments</button></br>
+			<div id = "commentsection-2953" class = 'collapse'>
+			<div id = "comment-5416" class = "comment">
+				<p>Good method but the question is about how to store the data. So in your case, which data type is used to store the squares?</p>
+			</div>
+			<div id = "comment-5550" class = "comment">
+				<p>Sorry, I got busy and hadn't got back...  I used a signed byte for each point.</p>
+			</div>
+			</div>
+				<textarea id = "speech-2953" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2953">
+					<img id="start_img-2953" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2953">Comment</button>
+			<br><div id = "ans-2960"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2960" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The world is always bigger than the robot's memory can hold (it's bigger than <em>your</em> memory can hold, too).</p>
+
+<p>There are 2 ways to reduce the space that you need.  The first is to consider whether you need to pre-allocate the storage space, and the second is to consider what kind of compression you can use.</p>
+
+<p>Pre-allocating space makes sense if you already have values for those 8 attributes at every square, or if the robot's job is to visit all 2 million squares and measure them.  However, if the robot is just going to visit a small portion of the total squares then you might be able to store the data in something like a <a href="http://en.wikipedia.org/wiki/Quadtree" rel="nofollow">quadtree</a> instead.  (There are many other structures that take advantage of sparse data sets, and I won't list them here.)</p>
+
+<p>Compression can help if you can't avoid pre-allocating the space.  For example, you could store the state of visited squares as bits instead of bytes to get 8:1 compression with minimal effort.  For the attributes of the spaces, do you need exact values?  Can you exploit patterns in the data to save on storage space (think of GIF, JPEG, and other 2D compression schemes).   </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2960" data-toggle = "popover">
+				<p>user name : Ian</p>
+				<p> user reputation : 9640</p>
+				<p class = "tagcontent" id = "usertaginfo-2960">{'planning': 10, 'None': 809, 'power': 1, 'algorithm': 10, 'battery': 1, 'slam': 7, 'coverage': 10, 'mobile-robot': 9, 'sensors': 9}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2960" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2960" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2960">
+					<img id="start_img-2960" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2960">Comment</button>
+			<br><div id = "ans-2985"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2985" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Are you just using a microcontroller? Do you have the option of strapping a laptop to it?</p>
+
+<p>I use Octomap to store my robot's maps (with the robotic operating system):
+<a href="http://octomap.github.io/" rel="nofollow">http://octomap.github.io/</a></p>
+
+<p>It is the best method I have found to store rich robot sensory data in an efficient way. There is a good PDF explaining how it works:</p>
+
+<p>www.first-mm.eu/files/hornung13auro.pdf</p>
+
+<p>I'm pretty sure you could apply the same principles to a raw embedded robot.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2985" data-toggle = "popover">
+				<p>user name : Pikey</p>
+				<p> user reputation : 56</p>
+				<p class = "tagcontent" id = "usertaginfo-2985">{'None': 4, 'lidar': 0, 'kinect': 0, 'slam': 0, 'mobile-robot': 0, 'ros': 0}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2985" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2985" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2985">
+					<img id="start_img-2985" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2985">Comment</button>
+			<br><div id = "ans-7064"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7064" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Since the robot is unlikely to visit all the locations you have a sparse data set that you can most simply store in a hash table.  You would have to think of a good way of hashing the x and y locations together.  You need a function hash(x,y) and feed that into a hash table.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7064" data-toggle = "popover">
+				<p>user name : SeanOCVN</p>
+				<p> user reputation : 11</p>
+				<p class = "tagcontent" id = "usertaginfo-7064">{'None': 1}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7064" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7064" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7064">
+					<img id="start_img-7064" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7064">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

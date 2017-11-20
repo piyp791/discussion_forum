@@ -1,0 +1,270 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Mobile Robot path reconstruction by using IMU acceleration and Yaw angle
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8077" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8077" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 381</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Mobile Robot path reconstruction by using IMU acceleration and Yaw angle</h2>
+<p>I hope you can help me with my project.</p>
+
+<p>I'm using a skid-steering wheeled mobile robot for autonomous navigation and I'd like to find a way to be able to perform path reconstruction in Matlab.</p>
+
+<p>By using only the robot encoders (installed on the robot) and the yaw rate information (which come from a very accurate IMU sensor mounted on the robot frame), I can successfully do the path reconstruction.
+(I'm using XBOW-300CC sensor)</p>
+
+<p>The problem is that I would like to try to reconstruct the path by using only the IMU yaw rate and the IMU acceleration values for X and Y axis.</p>
+
+<p>I'm able to obtain velocity and distance by integrating two times the IMU acceleration values but my problem is that I don't know how to use this data.</p>
+
+<p>Do I have to use a rotation matrix to pass from the IMU frame to the robot frame coordinates? 
+I'm asking this because I use a rotation matrix for the encoder values which come from the robot encoder.</p>
+
+<p>At the moment, I use these equations for robot encoders and IMU yaw rate:</p>
+
+<pre><code>tetha(i)=(yaw(i)+yaw(i-1))/2*(encoder(i)-encoder(i-1))+tetha(i-1); %trapezoidal integral
+
+Rx=[1 0 0;0 cos(-roll_angle(i)) -sin(-roll_angle(i)); 0 sin(-roll_angle(i)) cos(-roll_angle(i))];
+Ry=[cos(-pitch_angle(i)) 0 sin(-pitch_angle(i)); 0 1 0; -sin(-pitch_angle(i)) 0 cos(-pitch_angle(i))];
+Rz=[cos(-tetha(i)) -sin(-tetha(i)) 0; sin(-tetha(i)) cos(-tetha(i)) 0; 0 0 1];
+R2=Rz*Ry*Rx;
+
+disp=R2 *[encoder_displacement(i) 0 0]';
+X_r(i)=disp(1);
+Y_r(i)=disp(2);
+Z_r(i)=disp(3);
+
+X(i)=x0+sum(X_r(1:i));
+Y(i)=y0+sum(Y_r(1:i));
+Z(i)=z0+sum(Z_r(1:i));
+</code></pre>
+
+<p>Do I still have to use R2 matrix?</p>
+
+<p>Thank you a lot</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8077" data-toggle = "popover">
+				<p>user name : Marcus Barnet</p>
+				<p> user reputation : 101</p>
+				<p class = "tagcontent" id = "usertaginfo-8077">{'None': 0, 'imu': 0, 'kinematics': 0, 'matlab': 0, 'mobile-robot': 0, 'navigation': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8077">Load Comments</button></br>
+			<div id = "commentsection-8077" class = 'collapse'>
+			<div id = "comment-12871" class = "comment">
+				<p>I forgot to say that the IMU sensor if fixed on the robot frame.</p>
+			</div>
+			<div id = "comment-12876" class = "comment">
+				<p>What exactly are "robot encoders"? I searched "XBOW-300CC" and all I saw were go-karts and motorcycles.</p>
+			</div>
+			<div id = "comment-12879" class = "comment">
+				<p>Xbow IMU 300-CC is the IMU sensors: http://memsic.cn/index.php?option=com_phocadownload&view=category&download=14%3Aimu300-400&id=1%3Auser-manuals&Itemid=85&lang=zh this is the user manual</p>
+			</div>
+			<div id = "comment-12908" class = "comment">
+				<p>First things first. Is this a 3D system? If it isn't, then why do I see three 3D-rotation matrices? If it is, then why are you integrating rotational velocity?</p>
+			</div>
+			<div id = "comment-12913" class = "comment">
+				<p>Yes, it is a 3D system. Where do you see that I'm integrating the rotational velocity? :(</p>
+			</div>
+			</div>
+				<textarea id = "speech-8077" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8077">
+					<img id="start_img-8077" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8077">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8078"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8078" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>If you aligned the IMU "well", then this should be a relatively trivial problem. Consider your statement that you can reconstruct the path using only "robot encoders" (wheel encoders?) and the yaw rate. Now, if you have the IMU configured such that the X-axis is the forward/reverse direction, then double-integrating the x-axis accelerometer should duplicate the wheel encoder information. The only information the Y-axis accelerometer should tell you is if the robot is sliding sideways. </p>
+
+<p>If you have the IMU aligned "poorly" then you could have some projection of the x- and y-axis along the forward/reverse axis, at which point you would need to take the correct projection from each and add them together to get the forward distance. </p>
+
+<p>Regarding rotation matrices, whatever you're doing currently to apply it to the (wheel encoder?) robot encoder should work the same when you convert the acceleration data to distance.</p>
+
+<h2>:EDIT:</h2>
+
+<p>Assuming your yaw angle is a z-axis rotation, your rotation matrix should look like:</p>
+
+<p>$$
+R = \left[ \begin{array}{ccc}
+\cos{\theta} &amp; -\sin{\theta} &amp; 0 \\
+\sin{\theta} &amp; \cos{\theta} &amp; 0 \\
+0 &amp; 0 &amp; 1 \end{array} \right] \\
+$$</p>
+
+<p>You should have some starting heading, $\theta_0$. You also need a starting velocity $v_0$ and a starting position, $p_0$. Now, you get samples at some update rate, where the time between samples, the sample time, is $dT$. So, from physics, you can calculate your new distance and velocity:</p>
+
+<p>$$
+p_N = p_{N-1} + v_{N-1} dT + \frac{1}{2} a_N dT^2 \\
+v_N = v_{N-1} + a_N dT \\
+$$</p>
+
+<p>where $N$ indicates the current sample and $N-1$ indicates the previous sample. In this instance your initial conditions, $p_0$ and $v_0$ are used and you get your first update, $p_1$ and $v_1$ from your first accelerometer reading. I've used $p$ for position instead of $x$ to try to keep the concepts separate - the accelerometer will give you some position, but it doesn't get to be a coordinate until you've reconciled it back to your world coordinates. This is done with the rotation matrix:</p>
+
+<p>$$
+\left[ \begin{array}{ccc}
+x_N \\
+y_N \\
+z_N \end{array} \right] = R_{N-1} * \left[ \begin{array}{ccc}
+p_N \\
+0 \\
+0 \end{array} \right] \\
+$$</p>
+
+<p>Here I've shown the $N-1$ rotation matrix, the rotation matrix based on the previous yaw reading (or starting heading, if you're considering the first sample), but your choice of which angle to use (previous sample, current sample, an average, etc.) shouldn't actually make a big difference for the same reason that <a href="https://en.wikipedia.org/wiki/Trapezoidal_rule" rel="nofollow">trapezoidal integration</a> and <a href="https://en.wikipedia.org/wiki/Rectangle_method" rel="nofollow">rectangular integration</a> both converge on the same result. As long as the sample time is sufficiently short relative to the motion of your vehicle, any errors accumulated going one direction should generally be canceled out going the other.</p>
+
+<p>I would say if you wanted the most reasonable yaw estimate, use the average of the previous and current headings:
+$$
+R = (R_{N} + R_{N-1})/2 \\
+$$</p>
+
+<p>So, to summarize, I would try the following:</p>
+
+<p>$$
+\theta_N = \mbox{read(yaw)} \\
+a_N = \mbox{read(x-axis IMU)} \\
+$$</p>
+
+<p>$$
+\theta_{\mbox{mean}} = (\theta_N + \theta_{N-1})/2 \\
+R = \left[ \begin{array}{ccc} 
+\cos{\theta_{\mbox{mean}}} &amp; -\sin{\theta_{\mbox{mean}}} &amp; 0 \\
+\sin{\theta_{\mbox{mean}}} &amp; \cos{\theta_{\mbox{mean}}} &amp; 0 \\
+0 &amp; 0 &amp; 1 \end{array} \right] \\
+$$</p>
+
+<p>$$
+p_N = p_{N-1} + v_{N-1} dT + \frac{1}{2} a_N dT^2 \\
+v_N = v_{N-1} + a_N dT \\
+$$</p>
+
+<p>$$
+\left[ \begin{array}{ccc}
+x_N \\
+y_N \\
+z_N \end{array} \right] = R * \left[ \begin{array}{ccc}
+p_N \\
+0 \\
+0 \end{array} \right] \\
+$$</p>
+
+<p>Now, as a final note, again, I would leave the y-axis accelerometer out of everything because you'll find one of two scenarios:</p>
+
+<ol>
+<li>The IMU is located on the center of rotation of the vehicle, so you don't actually ever get a y-axis acceleration during normal operation, or</li>
+<li>The IMU is not located on the center of the rotation of the vehicle, so you get a y-axis acceleration any time you turn. In this instance, any y-axis acceleration only indicates rotation, which you already know from the z-axis rotation. </li>
+</ol>
+
+<p>In both cases, <em>assuming the vehicle isn't sliding sideways</em>, the y-axis accelerometer isn't providing you any forward/reverse information. It's only providing you either nothing (case 1) or a more obfuscated form of rotation (case 2) that you already get from your yaw angle. So, just leave it off. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8078" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-8078">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8078">Load Comments</button></br>
+			<div id = "commentsection-8078" class = 'collapse'>
+			<div id = "comment-12877" class = "comment">
+				<p>Thank you, chuck, for your support. I'm using Wheel encoders and they are mounted on the motor shaft after the gear box. If I can well understand what you explained, I can directly use the double integration in place of the wheel encoder information? In this case, should I use only the X-axis acceleration or should I use also the Y-axis? The X-axis is in the forward/reverse direction and the Y-axis in on the left-right direction.</p>
+			</div>
+			<div id = "comment-12878" class = "comment">
+				<p>Is it correct to use the same rotation matrix for the double integration even if the acceleration values come from the IMU frame?</p>
+			</div>
+			<div id = "comment-12880" class = "comment">
+				<p>Do you have suggestions on how add the X and Y-axis information together to get the correct forward distance, please? Or can you suggest me any documents to read to learn how to do this?</p>
+			</div>
+			<div id = "comment-12881" class = "comment">
+				<p>@MarcusBarnet I added content. Let me know if this clears everything up for you.</p>
+			</div>
+			<div id = "comment-12884" class = "comment">
+				<p>your comment is very pretty straightforward and I think I really got how to set up the equations. I'm going to read again your comment in order to better understand them and then I'll try to put them in Matlab.
+
+Just an observation: I'm trying to investigate about slipping effects on skid-steering robot during turning operations. In this case, do you think the Y-axis could give me useful information or can I just use the X-axis information? Thank you!</p>
+			</div>
+			<div id = "comment-12885" class = "comment">
+				<p>If the *skids* slip along the y-axis then you're just in an uncontrolled steering mode - this should register with the yaw reading. If the *drive wheels* slip along the y-axis then it's actually throwing the vehicle off course, but I think if your drive wheels are slipping to the point that they are impacting your course then you have bigger problems to deal with!</p>
+			</div>
+			</div>
+				<textarea id = "speech-8078" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8078">
+					<img id="start_img-8078" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8078">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

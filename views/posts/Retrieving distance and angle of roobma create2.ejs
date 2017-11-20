@@ -1,0 +1,213 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Retrieving distance and angle of roobma create2
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11832" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11832" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 23</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Retrieving distance and angle of roobma create2</h2>
+<p>The goal of my project is to get a real-time location information of roobma. The information include the x position, y position and the angle(12 o'clock direction is 0 degree, 3 o'clock is 90 degree and so on)
+I use c++ to program the roomba. I want to use "Stream"(Opcode: 148) to get the date, but it doesn't work for me. Please help me out thanks.</p>
+
+<p>this is the part I get stuck</p>
+
+<pre><code>unsigned char streamCommand[3];
+streamCommand[0]=148;
+streamCommand[1]=1;
+streamCommand[2]=19;
+write(robot,&amp;streamCommand,3);
+signed char readStream[6];
+
+
+bool indicator=true;
+while(indicator){
+    string command="";
+    cout&lt;&lt;"Please input your command"&lt;&lt;endl;
+    cin&gt;&gt;command;
+    action(command);
+    read(robot,&amp;readStream,6);
+    cout&lt;&lt;"[0]="&lt;&lt;readStream[0]&lt;&lt;endl;
+    cout&lt;&lt;"[1]="&lt;&lt;readStream[1]&lt;&lt;endl;
+    cout&lt;&lt;"[2]="&lt;&lt;readStream[2]&lt;&lt;endl;
+    cout&lt;&lt;"[3]="&lt;&lt;readStream[3]&lt;&lt;endl;
+    cout&lt;&lt;"[4]="&lt;&lt;readStream[4]&lt;&lt;endl;
+    cout&lt;&lt;"[5]="&lt;&lt;readStream[5]&lt;&lt;endl;
+}
+
+return 0;
+</code></pre>
+
+<p>}</p>
+
+<p>I use streamCommand is a read command to ask roomba to send back data in stream.
+readStream is the array that I store my retreive data.</p>
+
+<p>it doesn't work for me. Please help me out thanks.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11832" data-toggle = "popover">
+				<p>user name : luke lin</p>
+				<p> user reputation : 1</p>
+				<p class = "tagcontent" id = "usertaginfo-11832">{'control': 0, 'programming-languages': 0, 'None': 0, 'roomba': 0, 'sensors': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11832" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11832" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11832">
+					<img id="start_img-11832" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11832">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-11838"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11838" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You say, "It doesn't work for me." What does that mean? You get nothing? You get numbers that don't make sense? Does it lock up? Something else? </p>
+
+<p>First, I'd refer you to the <a href="https://cdn-shop.adafruit.com/datasheets/create_2_Open_Interface_Spec.pdf" rel="nofollow noreferrer">Create2 Documentation</a> where I'd suggest you read up on the Opcode 148 protocol, starting on Page 20. </p>
+
+<p>Notably:</p>
+
+<blockquote>
+  <p>Serial sequence: [148] [Number of packets] [Packet ID 1] [Packet ID 2] etc.</p>
+</blockquote>
+
+<p>In your question title you say you want distance and angle (packets 19 and 20) but in your question you say you want a date (which doesn't exist). In your code though, you're only requesting packet 19, not 19 and 20. Your code should be:</p>
+
+<pre><code>streamCommand[0]=148;
+streamCommand[1]=2;
+streamCommand[2]=19;
+streamCommand[3]=20;
+</code></pre>
+
+<p>On the next page in the documentation:</p>
+
+<blockquote>
+  <p>The format of the data returned is:</p>
+  
+  <p>[19][N-bytes][Packet ID 1][Packet 1 data...][Packet ID 2][Packet 2 data...][Checksum]</p>
+</blockquote>
+
+<p>So, let's say for the moment that you really DO just want packet 19 right now, for troubleshooting/development purposes. In that case, the data coming back to you would look like the following:</p>
+
+<p>[19][3][19][2 bytes of data][checksum]</p>
+
+<p>The first byte is the header, 19.
+The second byte is the number of bytes between the second byte and the checksum, which is three: the packet ID (the number 19) and the two bytes of data for that packet. 
+The third byte is the packet ID (19)
+The fourth and fifth bytes are the data for that packet. 
+The sixth byte is the checksum. </p>
+
+<p>The problem here that you might be having if you're getting data but it doesn't look correct is that you don't appear to ever check that you're starting in the right location; you need to <em>parse</em> the data you read to be sure that you're getting <em>valid</em> data. </p>
+
+<p>Ideally, you should read bytes one at a time until you get the correct header (19). Then you should read the next byte, which is supposed to be the number of "data" bytes. Then you read however many bytes the second byte tells you to (3), then you read one more for the checksum. </p>
+
+<p>Run the checksum calculation and compare your calculated checksum to the provided checksum. If the values don't match, then you either have bad data or the header you read (19) isn't the actual header but something else (maybe the packet ID - it's also 19). </p>
+
+<p>In your case, you might be able to skate by knowing that you should expect [19][3][19] (or, when you get to reading distance AND angle, [19][6][19]). </p>
+
+<p>If you have a three-byte sequence that goes [19][3][19], then you could probably assume that's [header][number of bytes][packet ID]. </p>
+
+<p>Again, though, you should really be checking the checksum, because it could be [packet ID][byte 1][byte 0], where byte 1 is 3 and byte 0 is 19. Not likely to happen, but definitely could. </p>
+
+<p>Also keep in mind that the Create2 starts writing data to you every 15ms after you issue the stream command; I'm not sure how your language/hardware handles buffers but you might get a buffer overflow and/or garbage data if you don't periodically clear that input buffer. </p>
+
+<p>You can handle that by reading the entire buffer, parse the data for the first (or last, or arbitrary, etc.) message, then ignoring/deleting the rest of the data, or you could enter a while/for loop to read through all the data and display all of the valid data contained in the buffer. </p>
+
+<p>As a final note, again you're constantly getting data returned to you right now, but you're pausing for input in your while loop. The messages will continue to back up while you're paused, and again you don't read/clear the buffer after the pause, you only read the first six bytes. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11838" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-11838">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11838">Load Comments</button></br>
+			<div id = "commentsection-11838" class = 'collapse'>
+			<div id = "comment-21067" class = "comment">
+				<p>Thanks for the advice. It is really useful. I am not looking for "date". It is a typo of  "data". So far, I think I just want to get the angle first to simply the problem. 
+I think my problem now is how to do the "parsing data" and buffer stuff. I use c++ for software and odroid for hardware. Is there any resource that I can look into for the parsing and buffer stuff?
+I have import wiringSerial.h into my program. Will this be useful?
+http://wiringpi.com/reference/serial-library/</p>
+			</div>
+			</div>
+				<textarea id = "speech-11838" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11838">
+					<img id="start_img-11838" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11838">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

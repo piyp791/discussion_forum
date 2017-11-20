@@ -1,0 +1,183 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Equation to limit rate of change of end-effector in X and Y coordinates
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-1158" class = "post">
+			<h2>Question</h2>
+			<div id="vote-1158" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 139</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Equation to limit rate of change of end-effector in X and Y coordinates</h2>
+<p>Some vector math is involved here so prepare yourself.</p>
+
+<p>I am developing a robotic arm that moves in two dimensions.  It is a rotary-rotary design which looks roughly like the picture in this post:
+<a href="https://robotics.stackexchange.com/questions/869/building-robotic-arm-joint">Building Robotic arm joint</a></p>
+
+<p>I am now trying to limit the speed of the end-effector.  I am using Simulink and believe that the best way to limit the speed is the limit the rate of change of the X and Y coordinates that I tell it to move to.  </p>
+
+<p>Now, I also want the end-effector to be able to move in a straight line and believe that I can accomplish this by defining functions that calculate the maximum rate for movement in the X or Y direction based on the distance the arm is trying to travel.  The equasion I came up with is this :</p>
+
+<pre><code>xRate = (abs(currentX - nextX) / max(abs(currentX - nextX), abs(currentY - nextY))
+yRate = (abs(currentY - nextY) / max(abs(currentX - nextX), abs(currentY - nextY))
+</code></pre>
+
+<p>So basically, XRate: distance in x / max between distance in X and distance in Y.</p>
+
+<hr>
+
+<p>Now, for the actual problem.  Because this limits the speed in both X and Y, the end-effector can travel (for instance) 1 in./sec in both directions at the same time.  Meaning that it is travelling at OVER 1 in./sec overall.  If, however, it is only moving in ONE direction then it will only move at that 1 in./sec speed because there is no second component.  It boils down to the fact that the max speed the arm can move is 'sqrt(2)' and the minimum is '1'.</p>
+
+<p><strong>My main question is</strong>:  Given that I need to calculate a max xRate and a max yRate, how can I limit the overall speed of the end-effector?</p>
+
+<p>Secondarily, is there a way for me to implement a rate control that will limit the overall rate instead of limiting X and Y independantly using Simulink?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1158" data-toggle = "popover">
+				<p>user name : user912447</p>
+				<p> user reputation : 45</p>
+				<p class = "tagcontent" id = "usertaginfo-1158">{'joint': 6, 'None': 0, 'design': 8, 'arm': 6}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-1158" class = 'collapse'>
+			</div>
+				<textarea id = "speech-1158" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1158">
+					<img id="start_img-1158" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1158">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-1159"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1159" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Rather than trying to limit the 'x' and 'y' velocities separately, you should be limiting the overall velocity and calculating the component velocities from that overall velocity. In other words, something like:</p>
+
+<pre><code>dx = currentX - nextX
+dy = currentY - nextY
+rate = min (maxRate, maxRate / sqrt( dx^2 + dy^2 )
+xRate = dx * rate
+yRate = dy * rate
+</code></pre>
+
+<p>So for moving only in X:</p>
+
+<pre><code>dx = currentX - nextX                              = 1
+dy = currentY - nextY                              = 0
+rate = min (maxRate, maxRate / sqrt( dx^2 + dy^2 ) = maxRate
+xRate = 1 * rate                                   = maxRate
+yRate = 0 * rate                                   = 0
+</code></pre>
+
+<p>While moving only in Y:</p>
+
+<pre><code>dx = currentX - nextX                              = 0
+dy = currentY - nextY                              = 1
+rate = min (maxRate, maxRate / sqrt( dx^2 + dy^2 ) = maxRate
+xRate = 0 * rate                                   = 0
+yRate = 1 * rate                                   = maxRate
+</code></pre>
+
+<p>And for the diagonal movement you suggested:</p>
+
+<pre><code>dx = currentX - nextX                              = 1
+dy = currentY - nextY                              = 1
+rate = min (maxRate, maxRate / sqrt( dx^2 + dy^2 ) = maxRate / sqrt(2)
+xRate = dx * rate                                  = maxRate / sqrt(2)
+yRate = dy * rate                                  = maxRate / sqrt(2)
+</code></pre>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1159" data-toggle = "popover">
+				<p>user name : Mark Booth</p>
+				<p> user reputation : 3037</p>
+				<p class = "tagcontent" id = "usertaginfo-1159">{'control': 7, 'quadcopter': 2, 'None': 258, 'tuning': 7, 'uav': 2, 'design': 2, 'stepper-motor': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1159">Load Comments</button></br>
+			<div id = "commentsection-1159" class = 'collapse'>
+			<div id = "comment-2639" class = "comment">
+				<p>Fantastic answer.  If you don't mind me asking, is there a resource somewhere you know of, or did you work this out yourself?</p>
+			</div>
+			<div id = "comment-2641" class = "comment">
+				<p>No problem @user912447, I just worked it out from first principals based on your premise. It's completely untested pseudocode though, so I would write some tests and try it yourself before assuming that it works. *8')</p>
+			</div>
+			<div id = "comment-2644" class = "comment">
+				<p>Yep, gave it a try and it worked well.</p>
+			</div>
+			</div>
+				<textarea id = "speech-1159" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1159">
+					<img id="start_img-1159" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1159">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

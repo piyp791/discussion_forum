@@ -1,0 +1,241 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>What do the commutation waveforms look like for a brushless motor?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-261" class = "post">
+			<h2>Question</h2>
+			<div id="vote-261" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">10</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 12762</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>What do the commutation waveforms look like for a brushless motor?</h2>
+<p>I have seen waveforms for driving a brushless motor.</p>
+
+<p><img src="https://i.stack.imgur.com/UHO04.jpg" alt="Brushless motor waveform"></p>
+
+<p>I guess this is the waveform used for the simpler block commutation. But if I want to do sinusoidal waveforms, what does the PWM signal look like now? Is there a need to carefully synchronise the edges on the three phases?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-261" data-toggle = "popover">
+				<p>user name : Rocketmagnet</p>
+				<p> user reputation : 4235</p>
+				<p class = "tagcontent" id = "usertaginfo-261">{'control': 31, 'force': 8, 'multi-agent': 5, 'pid': 29, 'air-muscle': 6, 'uav': 52, 'stepper-driver': 3, 'reliability': 5, 'motor': 12, 'esc': 1, 'mobile-robot': 6, 'ros': 35, 'stepper-motor': 3, 'tuning': 12, 'swarm': 10, 'research': 5, 'platform': 17, 'imu': 4, 'kalman-filter': 49, 'hri': 4, 'None': 266, 'raspberry-pi': 24, 'localization': 7, 'python': 7, 'torque': 3, 'brushless-motor': 28, 'failure': 5, 'force-sensor': 15, 'sensors': 20, 'pwm': 10, 'wireless': 10, 'servos': 7, 'wifi': 24, 'simulation': 6, 'servomotor': 11, 'particle-filter': 0, 'sensor-fusion': 4, 'automatic': 12, 'software': 17}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-261">Load Comments</button></br>
+			<div id = "commentsection-261" class = 'collapse'>
+			<div id = "comment-7289" class = "comment">
+				<p>i have a question, why we use PWM only at 3, not at all 6 gates? PWM is used here to reduce the voltage, another purpose to form a sinusoidal wave form, i think, it could be better if we use PWM at all gates right?</p>
+			</div>
+			</div>
+				<textarea id = "speech-261" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-261">
+					<img id="start_img-261" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-261">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-264"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-264" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">12</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>There is a fair deal of literature on the implementation of brushless motor control but here is an overview.</p>
+
+<p>To understand the differences between commutation waveforms it is important to understand how brushless motors operate.</p>
+
+<p><img src="https://i.stack.imgur.com/1qCuF.jpg" alt="Brushless Motor"></p>
+
+<p>A three phase (two pole) motor will have three coils around a single magnet in the center.  The goal is to energize the coils in sequence so that the shaft of the motor (and its magnet) rotates.</p>
+
+<p>There are two magnetic fields that are important here, the field of the rotor (rotating magnet) and the field of the stator (static coils):</p>
+
+<p><img src="https://i.stack.imgur.com/NahC8.jpg" alt="field vectors"></p>
+
+<p>We refer to the direction of the magnetic field as its "flux vector" because it sounds super cool.  The most important thing to learn from this image is that you want the two magnetic fields to be at right angles to each other.  This maximizes efficiency and torque.</p>
+
+<p>The dumbest commutation scheme is trapezoidal.  Using either hall sensors or back EMF from the motor, it is possible to determine if the motor is in one of a discrete number of positions and perform on/off control on one or two coils to lead the magnetic field around the motor:</p>
+
+<p><img src="https://i.stack.imgur.com/TyG7F.jpg" alt="trapezoid"></p>
+
+<p>Because there might only be six separate orientations for the stator field, the flux vector of the motor could be anywhere from 60-120 degrees (instead of the desired 90) and therefore you get torque ripple and poor efficiency.</p>
+
+<p>An obvious solution here is to switch to sinusoidal commutation and just smooth out the waveform:</p>
+
+<p><img src="https://i.stack.imgur.com/OzDz0.jpg" alt="sin"></p>
+
+<p>If you know the exact orientation of the rotor you can just do some trig to calculate the exact PWM duty cycle to apply to each coil in order to keep the flux vector at 90 degrees and bam you have a beautiful 90 degree flux vector.  (The rotor orientation can be determined via encoder, interpolation or more advanced estimation such as a kalman filter).</p>
+
+<p>So right now you might be wondering how you can do better than sinusoidal commutation.  The key flaw of sinusoidal commutation is that the outputs are sent straight to PWM.  Because of coil inductance, the current (and therefore flux vector) will lag behind the commanded values and as the motor approaches its top speed the flux vector will be at 80 or 70 degrees instead of 90.</p>
+
+<p>This is why sinusoidal commutation has poor high speed performance.</p>
+
+<p>This finally brings us to flux-vector control which is a name given to (often proprietary) control algorithms that attempt to ensure the magnetic flux stays at 90 degrees even at high speeds.  The simplest way to do this would be to lead the field by, for example, 90-120 degrees depending on how fast you are going, knowing that the actual magnetic flux will lag.</p>
+
+<p>More robust solutions involve PID/feedforward to accurately control the current going through each phase.  Every servo manufacturer has their own in-house algorithm so I am sure there is some pretty complicated stuff at the bleeding edge.</p>
+
+<p>To put it in simplest terms, flux vector control is sinusoidal control of the current going to each phase (instead of just the PWM duty cycle).</p>
+
+<p>The line between sinusoidal/flux vector is pretty vague since some companies perform advanced control on their "sinusoidal" drives (which essentially makes them flux vector).  Also, since you can technically call almost anything flux vector control the quality of implementations can vary.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-264" data-toggle = "popover">
+				<p>user name : user65</p>
+				<p> user reputation : 2041</p>
+				<p class = "tagcontent" id = "usertaginfo-264">{'None': 174, 'localization': 16}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-264">Load Comments</button></br>
+			<div id = "commentsection-264" class = 'collapse'>
+			<div id = "comment-282" class = "comment">
+				<p>Thanks for this in depth answer. However, I was more interested to see what the PWM waveforms look like when doing sinusoidal commutation. (This is for a low speed application, so I don't need flux vector control)</p>
+			</div>
+			<div id = "comment-284" class = "comment">
+				<p>+1 nice explanation. Perhaps Wikipedia: [pulse-width modulation](http://en.wikipedia.org/wiki/pulse-width_modulation) would answer Rocketmagnet's remaining questions?</p>
+			</div>
+			<div id = "comment-307" class = "comment">
+				<p>Any question that contains the words "because it sounds super cool" deserves many many upvotes ;) Also, awesomely indepth, great answer!</p>
+			</div>
+			</div>
+				<textarea id = "speech-264" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-264">
+					<img id="start_img-264" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-264">Comment</button>
+			<br><div id = "ans-281"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-281" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">9</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The diagram you show looks like it would produce a pretty rough trapezoidal Back-EMF. I'm assuming that the gates that are at 100% are the lower legs of the motor drive bridge. I can't think of a reason you would want to do this. In general you want the gate voltage of the return leg to be the complement of the gate voltage of the supply leg.</p>
+
+<p>In six-step trapezoidal commutation, you typically ramp the PWM up to 100%, leave it there for a while (~30 electrical degrees of rotation), and then ramp it back down again.</p>
+
+<p><a href="http://www.dian-deng.com/index_motor_3phase_6step.htm" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/5EHWn.png" alt="six-step trapezoidal"></a></p>
+
+<p>In sinusoidal commutation, the PWM duty cycle is continuously varied in sinusoidal values. Here is a good diagram showing the difference between sinusoidal drive and trapezoidal drive PWM and phase signals:</p>
+
+<p><a href="http://www.embedded.com/design/embedded/4006783/Implementing-Embedded-Speed-Control-for-Brushless-DC-Motors-Part-4" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/9FvgT.jpg" alt="sine versus trapezoidal"></a></p>
+
+<p>This Fairchild app note shows the PWM though a full 360  rotation:</p>
+
+<p><a href="http://www.fairchildsemi.com/ds/FC/FCM8202.pdf" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/4FmHz.png" alt="360 sine rotation"></a></p>
+
+<p><a href="http://www.imakenews.com/eletra/mod_print_view.cfm?this_id=287045&amp;u=getoshiba_mve-news&amp;issue_id=000057909&amp;show=F,T,T,T,F,Article,F,F,F,F,T,T,F,F,T,T" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/sVmnF.jpg" alt="sine drive single"></a></p>
+
+<p>It's useful to look at what's going on in the signal up close. What you're really doing is gradually varying the current in a triangular wave so that it slowly builds up in the stator of the motor. You have more control over this buildup if you drive the supply and return gates in a complementary fashion rather than holding the lower leg open.</p>
+
+<p><a href="http://www.screenlightandgrip.com/html/emailnewsletter_generators.html" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/JsxNP.jpg" alt="current variance"></a></p>
+
+<p>Computing a sine wave is more computationally intensive (unless you use a lookup table) than a simple ramp up, hold, ramp down. But it produces a much smoother drive.</p>
+
+<p>Space-vector commutation is even more computationally intensive. And while it has more torque ripple than a sinusoidal drive, it makes higher utilization of the bus voltage and is therefore more efficient in terms of power.</p>
+
+<p>The phase voltage in space vector drive ends up looking like this:</p>
+
+<p><a href="http://www.powerlab-tr.com/?p=693" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/FZVFU.png" alt="space vector voltage"></a></p>
+
+<p>This is done by varying the PWM duty cycle in all three phases at the same time. This is opposed to having just a single phase driven as in two-quadrant drive or having two phases driven in complementary pairs as in four-quadrant drive.</p>
+
+<p><a href="https://www.sciencedirect.com/science/article/pii/S037877960900056X" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/UXgZ2.jpg" alt="space-vector PWM"></a></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-281" data-toggle = "popover">
+				<p>user name : embedded.kyle</p>
+				<p> user reputation : 1469</p>
+				<p class = "tagcontent" id = "usertaginfo-281">{'None': 124}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-281">Load Comments</button></br>
+			<div id = "commentsection-281" class = 'collapse'>
+			<div id = "comment-294" class = "comment">
+				<p>Thanks. This is much closer to what I'm looking for. What I would really like to see is the PWM of all 3 phases in one diagram. Can you add Phase C to your second diagram?</p>
+			</div>
+			<div id = "comment-296" class = "comment">
+				<p>@Rocketmagnet See edit. Hopefully that's clearer. If I was still working for a motor controller manufacturer, I'd just go generate some waveforms on a system for you. But alas, I left that all behind when I left that job. So I have to make do with what I can find from the interweb.</p>
+			</div>
+			<div id = "comment-297" class = "comment">
+				<p>Getting much closer. It's a shame you can't generate a waveform. I'm really interested to see the PWM signals up close. Especially to see exactly how the edges line up across the phases. It's kind of hard to see that in the 2nd diagram. The 3rd diagram is a bit confusing because, firstly the PWM signal looks different (there are sections with zero duty). Secondly the sine wave part also looks strange with that double hump. What's that for? (Sorry to be a pain)</p>
+			</div>
+			<div id = "comment-302" class = "comment">
+				<p>@Rocketmagnet No problem. I'm a bit of a motor-head (if you'll excuse the expression) so I love discussing this stuff. Sorry for the crummy diagrams. If you click the 3rd diagram, it'll open the Fairchild datasheet for a "sinusoidal motor controller". Though they seem to use confused terminology between space vector and sinusoidal. The output waveform looks like space vector, but the PWM looks _almost_ sinusoidal.</p>
+			</div>
+			<div id = "comment-303" class = "comment">
+				<p>@Rocketmagnet In four-quadrant drive of a three-phase motor, you will have one phase "pushing" the current, one phase "pulling" the current, and one phase off at all times. Click on the top figure and take a look at the truth tables near the top. Each commutation state lasts for 60  electrical degrees. Each commutation state, you turn off one phase, turn on one phase and leave one phase on. Though you're varying the PWM duty cycle during each commutation state to achieve the desired output.</p>
+			</div>
+			</div>
+				<textarea id = "speech-281" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-281">
+					<img id="start_img-281" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-281">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

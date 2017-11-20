@@ -1,0 +1,288 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Unwanted Arduino reconnect: Servo + Arduino + Python (Raspberry Pi)
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2273" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2273" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">6</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 2260</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Unwanted Arduino reconnect: Servo + Arduino + Python (Raspberry Pi)</h2>
+<p>I am having difficulty sustaining a connection between my Raspberry Pi (Model B running <a href="http://en.wikipedia.org/wiki/Raspbian" rel="nofollow noreferrer">Raspbian</a>) and my Arduino (<a href="http://arduino.cc/en/Main/ArduinoBoardUno" rel="nofollow noreferrer">Uno</a>) while sending signals from the Raspberry Pi to a <a href="http://www.pololu.com/product/2149" rel="nofollow noreferrer" title="title here">continuously rotating servo</a> (PowerHD AR- 3606HB Robot Servo) via Python. I'm not sure if there is a more efficent way of sending servo instructions via Python to the Arduino to rotate the servo. I'm attempting to communicate signals from the Raspberry Pi to the Arduino via USB using what I believe is considered a "digital Serial connection". My current connection:</p>
+
+<p><code>Wireless Xbox 360 Controller
+-&gt;
+Wireless Xbox 360 Controller Receiver
+-&gt;
+Raspberry Pi
+-&gt;
+Externally Powered USB Hub
+-&gt;
+Arduino
+-&gt;
+Servo</code></p>
+
+<p><img src="https://i.stack.imgur.com/u038Q.png" alt="Enter image description here"></p>
+
+<pre><code>Servo connection to Arduino:
+   Signal (Orange) - pin 9
+   Power (Red) - +5 V
+   Ground (Black) - GND
+</code></pre>
+
+<p>On the Raspberry Pi I have installed the following (although not all needed for addressing this problem):</p>
+
+<ul>
+<li><a href="https://github.com/Grumbel/xboxdrv" rel="nofollow noreferrer">xboxdrv</a></li>
+<li><a href="http://pyserial.sourceforge.net/" rel="nofollow noreferrer">pyserial</a></li>
+<li><a href="https://github.com/thearn/Python-Arduino-Command-API" rel="nofollow noreferrer">Python-Arduino-Command-API</a></li>
+<li><a href="http://www.pygame.org/news.html" rel="nofollow noreferrer">PyGame</a></li>
+<li><a href="https://github.com/zephod/lego-pi" rel="nofollow noreferrer">lego-pi</a></li>
+<li><a href="http://arduino.cc/" rel="nofollow noreferrer">Arduino</a></li>
+</ul>
+
+<p>The sketch I've uploaded to the Arduino Uno is the <a href="https://github.com/thearn/Python-Arduino-Command-API/blob/master/sketches/prototype/prototype.ino" rel="nofollow noreferrer">corresponding sketch</a> provided with the Python-Arduino-Command-API. *Again, I'm not positive that this is the best method means of driving my servo from Python to Arduino (to the servo).</p>
+
+<p>From the Raspberry Pi, I can see the Arduino is initially correctly connected via USB:</p>
+
+<pre><code>pi@raspberrypi ~/Python-Arduino-Command-API $ dir /dev/ttyA*
+/dev/ttyACM0  /dev/ttyAMA0
+</code></pre>
+
+<p>and</p>
+
+<pre><code>pi@raspberrypi ~/Python-Arduino-Command-API $ lsusb
+Bus 001 Device 002: ID 0424:9512 Standard Microsystems Corp.
+Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+Bus 001 Device 003: ID 0424:ec00 Standard Microsystems Corp.
+Bus 001 Device 004: ID 045e:0719 Microsoft Corp. Xbox 360 Wireless Adapter
+Bus 001 Device 005: ID 1a40:0201 Terminus Technology Inc. FE 2.1 7-port Hub
+Bus 001 Device 006: ID 0bda:8176 Realtek Semiconductor Corp. RTL8188CUS 802.11n WLAN Adapter
+Bus 001 Device 007: ID 046d:c52b Logitech, Inc. Unifying Receiver
+Bus 001 Device 008: ID 2341:0043 Arduino SA Uno R3 (CDC ACM)
+</code></pre>
+
+<p>From the Raspberry Pi, I'm able to rotate the servo as a test clockwise for one second, counter-clockwise for one second, then stop the servo, with the following Python script:</p>
+
+<pre><code>#!/usr/bin/env python
+from Arduino import Arduino
+import time
+
+board = Arduino(9600, port='/dev/ttyACM0')
+
+board.Servos.attach(9) # Declare servo on pin 9
+board.Servos.write(9, 0) # Move servo to full speed, clockwise
+time.sleep(1) # Sleep for 1 second
+print board.Servos.read(9) # Speed check (should read "0")
+
+board.Servos.write(9, 180)
+time.sleep(1)
+print board.Servos.read(9) # (Should read "180")
+
+board.Servos.write(9, 90)
+print board.Servos.read(9)
+board.Servos.detach(9)
+</code></pre>
+
+<p>The output via the Raspberry Pi terminal reads:</p>
+
+<pre><code>0
+180
+90
+</code></pre>
+
+<p>Although this only performs full-speed in both direction (as well as the calibrated "stop" speed of 90), I have successfully alternated from a full-speed to slower speeds, for example, going from 0 up to 90 in increments of 10.</p>
+
+<p>From the Raspberry Pi, I'm able to send input from my Xbox controller to drive the servo with a small custom Python script I've created along with xboxdrv (which works flawlessly with other projects I'm doing):</p>
+
+<pre><code>#!/usr/bin/python
+
+from legopi.lib import xbox_read
+from Arduino import Arduino
+
+# To catch Ctrl+C
+import signal
+import sys
+
+# The deadzone within which we ignore inputs, approximately 1/3 of total possible input
+DEADZONE = 12000
+
+def signal_handler(signal, frame):
+    print "Stopping Wrapper"
+    sys.exit(0)
+
+# Capture Ctrl+C so we can shut down nicely
+signal.signal(signal.SIGINT, signal_handler)
+
+print "Starting Wrapper"
+print "Press Ctrl+C at any time to quit"
+
+board = Arduino(9600, port='/dev/ttyACM0')
+board.Servos.attach(9)
+board.Servos.write(9, 90)
+
+for event in xbox_read.event_stream(deadzone=DEADZONE):
+    print "Xbox event: %s" % (event)
+
+    # If the RB button it's being held, rotate the servo counter-clockwise at full-speed.
+    # When the RB button is released, stop the servo.
+    if(event.key=='RB'):
+        if(event.value&gt;0):
+            board.Servos.write(9, 180)
+            print board.Servos.read(9)
+        else:
+            board.Servos.write(9, 90)
+            print board.Servos.read(9)
+        continue
+</code></pre>
+
+<p>This script runs, and I'm able to control the servo using the RB button on my controller. However, <strong>it eventually fails</strong> - sometimes after minutes, sometimes after seconds (rapid and intermittent input seemingly having no influence on expediting a crash). Input is no longer read by the script, the terminal comes to a halt, the servo freezes on whatever the last command given was (either spinning endlessly or stopped), and I'm forced to <kbd>Ctrl</kbd> + <kbd>C</kbd> out of the script. If I check to see if the Arduino is still connected to the Raspberry Pi, it shows that it has reconnected itself to the Raspberry Pi as "ttyACM1" (from /dev/ttyACM0 to /dev/ttyACM1):</p>
+
+<pre><code>pi@raspberrypi ~/robotarm $ dir /dev/ttyA*
+/dev/ttyACM1  /dev/ttyAMA0
+</code></pre>
+
+<p>Why does the Arduino reconnect itself? Is there some other way I should be processing this information? Distance to the wireless Xbox receiver is not a factor as all of these pieces are adjacent to one another for testing purposes. It will prove impossible to use this servo as a wheel for my robot if I'm constantly tending to this issue.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2273" data-toggle = "popover">
+				<p>user name : root</p>
+				<p> user reputation : 33</p>
+				<p class = "tagcontent" id = "usertaginfo-2273">{'python': 6, 'None': 0, 'servos': 6, 'raspberry-pi': 6, 'arduino': 6}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2273">Load Comments</button></br>
+			<div id = "commentsection-2273" class = 'collapse'>
+			<div id = "comment-4464" class = "comment">
+				<p>I read you are using an USB connection between Raspberry Pi and Arduino. You are using the power from the USB to the Arduino and then to the Servo? So 800mA could be an issue, the USB should provide at maximum 500mA. Try to use an external power supply to the Arduino, at least 1A because of the motor, and try again. Anyway I think you could do a direct UART link without using the USB for that. More specifically the Arduino could be reseting, and as it is working with a USB-Serial converter, the fast reset with no signal could be changing the port at the Raspberry Pi.</p>
+			</div>
+			<div id = "comment-4465" class = "comment">
+				<p>Or a simple test, try removing the "servo" motor, and see if this occurs. If not, try adding a small current led instead of the servo and see if the signal is being transmitted. If so, is probably the "servo" motor that is getting to much current from the power supply "chain".</p>
+			</div>
+			<div id = "comment-4472" class = "comment">
+				<p>It almost sounds as if you have a bad physical connection between pi->hub->arduino. A faulty connector, or broken wire can be in the position to almost always be conducting, but when vibrated or wiggled, fail momentarily. This could cause the pi to assume the re-acquired Arduino is a another Arduino.I would be particularity suspicious of the Tx/Rx pair.</p>
+			</div>
+			<div id = "comment-4475" class = "comment">
+				<p>@DiegoCNascimento Great test idea, the Arduino was able to process the information without crashing once I disconnected the "servo" (I understand how this piece of hardware essentially forfeits all rights to be identified as a true servo). Looked up the [documentation](http://www.pololu.com/file/0J693/AR-3606HB.pdf) on the part, it has a `Stall current` of `800mA`. The servo was attempting to draw more than 500mA over USB and was triggering the Arduino's [USB Overcurrent Protection](http://arduino.cc/en/Main/arduinoBoardUno) feature. An appropriate power supply for the Arduino fixed the issue.</p>
+			</div>
+			<div id = "comment-4476" class = "comment">
+				<p>@DiegoCNascimento If you rephrase this solution as an actual answer I'll be happy to mark it as the answer.</p>
+			</div>
+			<div id = "comment-4478" class = "comment">
+				<p>@root I'm glad being helpfull, I put my response. Also about your motor, if it correct it's speed (have an speed feedback an correct by the signal you put) than yes its no doubt a Servo-motor. If it has no feedback signal, it is not a servo-motor, as servo implies a feed-back. Anyway this is just curiosity :))</p>
+			</div>
+			</div>
+				<textarea id = "speech-2273" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2273">
+					<img id="start_img-2273" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2273">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-2296"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2296" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I suspect that your Arduino is reseting, by the fact that the stall current of the motor by the product sheet is $800mA$, and you are using the USB power, then Arduino regulator, to supply the motor.</p>
+
+<p>As you are using the USB/Serial converter to make the connection to the Raspberry Pi, when it resets, it can be creating a new "virtual" serial port on the Raspberry Pi, like you are saying.</p>
+
+<p>The USB maximum supply of current is near $500mA$ in this case, but in reality there's more
+than the motor, Arduino, and so on, so its less.</p>
+
+<p>To test it, just disconnect the motor and see if don't reset or create a new "virtual" serial port.</p>
+
+<p>Being the problem (or even if its not) you should power your motor from an external supply capable of suppling the required current under the voltage you want.</p>
+
+<blockquote>
+  <p>The servo was attempting to draw more than 500mA over USB and was triggering the 
+  Arduino's USB Overcurrent Protection feature. An appropriate power supply for the 
+  Arduino fixed the issue. </p>
+</blockquote>
+
+<p>I still suggest you to use other power supply to the motor, or use the same power supply but not use the power from the Arduino to supply the motor. This is due that even with an external power supply the Arduino has an power regulator with a $1000mA$ capacity, and also this could put some noise on the ATMega supply. Of course the power supply should be in the motor voltage supply range.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2296" data-toggle = "popover">
+				<p>user name : Diego C Nascimento</p>
+				<p> user reputation : 758</p>
+				<p class = "tagcontent" id = "usertaginfo-2296">{'None': 39, 'mechanism': 1, 'motor': 1}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2296" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2296" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2296">
+					<img id="start_img-2296" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2296">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

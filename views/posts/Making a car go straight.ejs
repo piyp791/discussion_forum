@@ -1,0 +1,179 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Making a car go straight
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9144" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9144" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 1005</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Making a car go straight</h2>
+<p>I'm trying to work a car that's being controlled by an Arduino. I'm using the following chassis: <a href="http://www.aliexpress.com/item-img/New-2WD-car-chassis-DC-gear-motor-wheels-easy-assembly-and-expansion-car-toys-robot-toys/32310649967.html" rel="nofollow">New 2WD car chassis DC gear motor, wheels easy assembly and expansion</a> and an L298N motor driver.</p>
+
+<p>The problem is that it's hard to make the car go straight. Giving the same PWM value to the motors still makes them spin in different speeds, trying to calibrate the value is hard and every time I recharge my batteries the value changes.</p>
+
+<p>What are my options on making the car go straight when I want (well, sometimes I'll want to turn it around of course)?</p>
+
+<p>I've thought about using an encoder but I wish to avoid that since it will complicate the whole project, is there any other viable option? and even when using an encoder, Does it means I will need to keep track all the time and always adjust the motors value continuously? is there some built-in library for that?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9144" data-toggle = "popover">
+				<p>user name : Avenger</p>
+				<p> user reputation : 101</p>
+				<p class = "tagcontent" id = "usertaginfo-9144">{'two-wheeled': 0, 'None': 0, 'calibration': 0, 'wheeled-robot': 0, 'arduino': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9144">Load Comments</button></br>
+			<div id = "commentsection-9144" class = 'collapse'>
+			<div id = "comment-15149" class = "comment">
+				<p>To make one sought of guess for the problems 1. Everything might not be perfectly symmetric with your car 2. Not all transistors in your drivers will have the same gain value so the output might differ from these drivers....</p>
+			</div>
+			<div id = "comment-15150" class = "comment">
+				<p>I appreciate that you wish to avoid using encoders to keep things simple, but realistically they are probably the simplest sensor method available. Odometry-based navigation can be done on an arduino, it's not too complicated.</p>
+			</div>
+			<div id = "comment-15153" class = "comment">
+				<p>I agree that it may be a duplicate, but here OP is open (though resistant) to using feedback, and is curious how to *use* the feedback to drive straight.</p>
+			</div>
+			</div>
+				<textarea id = "speech-9144" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9144">
+					<img id="start_img-9144" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9144">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9148"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9148" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>If you're driving a car down a road, even if that road is straight, you still need to use the steering wheel occasionally to keep the car on the road. This means looking at your surroundings to determine if you're drifting, and (somewhat) constantly interfacing with the steering wheel to adjust your heading. </p>
+
+<p>If you want the vehicle to go straight, <a href="https://robotics.stackexchange.com/a/9006/9720">you need feedback</a>. Mark Booth gives a <a href="https://robotics.stackexchange.com/a/1234/9720">great answer</a> to a similar-ish question, but there that OP wanted to go in a straight line <em>at a speed proportional to distance remaining</em>. </p>
+
+<p>I think the way I would consider approaching the problem would be to generate a PID controller using the difference in motor speeds as the reference and feedback channel. The output of the controller would be an adjustment you would add to one motor and subtract from the other. </p>
+
+<p>Consider this pseudo-code:</p>
+
+<pre><code>vehicleSpeed = &lt;joystickYAxis&gt;;
+steeringRef = &lt;joystickXAxis&gt;;
+leftMotorSpeed = pollEncoder(leftMotor);
+rightMotorSpeed = pollEncoder(rightMotor);
+
+steeringFbk = leftMotorSpeed - rightMotorSpeed;
+</code></pre>
+
+<p>So, at this point, <code>steeringFbk</code> is positive if the left motor is running faster than the right motor, which would indicate you're turning right. Now, to correct this, you would want something like:</p>
+
+<pre><code>steeringError = steeringRef - steeringFbk;
+
+setMotorSpeed(leftMotor, vehicleSpeed + steeringError);
+setMotorSpeed(rightMotor, vehicleSpeed - steeringError);
+</code></pre>
+
+<p>So here <code>steeringError</code> is now a <em>negative</em> number (desired - actual), so you add that to the desired vehicle speed. This means that the left motor will be set to some value slightly under the desired speed and the right motor will be set to some value slightly over. This should correct the motor speeds such that the vehicle is now traveling straight. </p>
+
+<p>A couple of notes - </p>
+
+<ol>
+<li>Now you have a means to steer the vehicle. If you set <code>steeringRef</code> to a positive value the vehicle will turn left, and if you set it negative it will turn right.</li>
+<li>The code I wrote above just uses (unmodified) proportional error to drive the steering. This will probably give less-than-satisfactory results; consider instead using a PID controller:</li>
+</ol>
+
+<p>.</p>
+
+<pre><code>steeringError = steeringRef - steeringFbk;
+steeringAdjustment = PID(steeringError,kP,kI,kD);    
+setMotorSpeed(leftMotor, vehicleSpeed + steeringAdjustment);
+setMotorSpeed(rightMotor, vehicleSpeed - steeringAdjustment);
+</code></pre>
+
+<p>Now, with PID gains, you can tune the system for the desired response time, overshoot, etc.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9148" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-9148">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9148">Load Comments</button></br>
+			<div id = "commentsection-9148" class = 'collapse'>
+			<div id = "comment-15154" class = "comment">
+				<p>Afterthought - this of course needs to be run in a loop, but you could also run it on an interrupt setup to check and correct speed as often as your experience tells you that you need to.</p>
+			</div>
+			</div>
+				<textarea id = "speech-9148" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9148">
+					<img id="start_img-9148" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9148">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

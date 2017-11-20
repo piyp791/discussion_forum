@@ -1,0 +1,238 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Does anyone know what might be giving me this error coming from an i2c device
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-984" class = "post">
+			<h2>Question</h2>
+			<div id="vote-984" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 80</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Does anyone know what might be giving me this error coming from an i2c device</h2>
+<p>Here is the background. I am trying to write a service for the HiTechnic prototype board. </p>
+
+<p>Using the Appendix 2 from the blue tooth developers kit from Lego's site I am able to understand what is going on with this service I am trying to build however the response I get is always 221 = 0xDD = "Communication Bus Error" or 32 = 0x20 = "Pending communication transaction in progress". </p>
+
+<p>I figured out that the HiTechnic prototype board is using <a href="http://refriedgeek.blogspot.com/2013/02/connecting-to-hitechnic-prototype-board.html" rel="nofollow">i2c address 0x08</a> so I modified the brick code to use that address instead of the standard 0x02. It goes out and configures the device, I get a response and then it does an LSWrite which seems OK then I get a get an error when it does the LSGetStatus. </p>
+
+<p>I know this thing works - I can bit bang it all day long with an Arduino but I only did that to test it out - <a href="http://refriedgeek.blogspot.com/2013/02/connecting-to-hitechnic-prototype-board.html" rel="nofollow">see this link</a></p>
+
+<p>I am not sure what else to try. Here is how I am setting it up in the connect to brick handler. </p>
+
+<pre><code> pxbrick.Registration registration = new pxbrick.Registration(
+                new LegoNxtConnection(LegoNxtPort.Sensor1),
+                LegoDeviceType.DigitalSensor,
+                Contract.DeviceModel,
+                Contract.Identifier,
+                ServiceInfo.Service,
+                _state.Name);
+        Debugger.Break();
+        // Reserve the port
+        LogInfo("ConnectToBrickHandler");
+        yield return Arbiter.Choice(_legoBrickPort.ReserveDevicePort(registration),
+            delegate(pxbrick.AttachResponse reserveResponse)
+            {
+                Debugger.Break();
+                if (reserveResponse.DeviceModel == registration.DeviceModel)
+                {
+                    registration.Connection = reserveResponse.Connection;
+                }
+            },
+            delegate(Fault f)
+            {
+                Debugger.Break();
+                fault = f;
+                LogError("#### Failed to reserve port");
+                LogError(fault);
+                registration.Connection.Port = LegoNxtPort.NotConnected;
+            });
+</code></pre>
+
+<p>I have also tried setting AnyPort as well so that it will hit the TestPortForI2CSensorHandler that just does what I explained before - it seems to set the mode fine and then gets an error when it tries to read the device information. </p>
+
+<p>Here is the data. - this first part is the set input more - both the message and response - You can see it is totally fine. </p>
+
+<p>Send command data. </p>
+
+<pre><code>0 
+5
+0 
+11 
+0 
+receive command data. (_commState.SerialPort.Read(receiveData, 0, packetSize);) 
+2 
+5 
+0
+</code></pre>
+
+<p>Then it does an LSWrite - everything still seems fine... You can see I have modified the NxtComm code to use 0x08 instead of 0x02 which it would normally use, then the last byte is also 0x08 which is the starting address of the manufacturer. It's asking for 16 bytes which would be the manufacturer and sensor type. like I said - I know that works I can print that info out using the Arduino.  </p>
+
+<pre><code>128 
+15 
+0 
+2 
+16 
+8 // i2c address
+8 //I assume this is what address I want to read from? 
+Got response: True Error code Success [02/25/2013 02:20:31]
+-- SendCommandHandler (NxtComm) [02/25/2013 02:20:31]
+--- RequestResponseHandler (NxtComm) [02/25/2013 02:20:31]
+--- CommSendImmediateHandler (NxtComm) [02/25/2013 02:20:31]
+Send command data.
+</code></pre>
+
+<p>Then it tries to get the status</p>
+
+<pre><code>0 
+14 
+0 
+</code></pre>
+
+<p>Here is the response... </p>
+
+<pre><code> 2 
+14 
+32 
+ 0 
+</code></pre>
+
+<p>It's either 32 or 221. It's making me nuts... </p>
+
+<p>If anyone has anything that might help me out I would so much appreciate it. At this point I am running out of ideas. I can see what is going on, I can understand the entire transaction but can't seem to figure out why it just errors out like that. </p>
+
+<p>Also - just for grins I tried 0x10 which is what they tell you on the HiTechnic website. That gets a response of 2,14,0,0 from the NXT brick - that would indicate there is no data but as I pointed out I can get data using the Arduino. How could I have two different I2C device addresses? </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-984" data-toggle = "popover">
+				<p>user name : Kenn</p>
+				<p> user reputation : 143</p>
+				<p class = "tagcontent" id = "usertaginfo-984">{'nxt': 4, 'None': 0, 'i2c': 4, 'arduino': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-984" class = 'collapse'>
+			</div>
+				<textarea id = "speech-984" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-984">
+					<img id="start_img-984" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-984">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-992"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-992" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Triumphant</p>
+
+<p>Check this out. Under normal circumstances you would configure your sensor by giving it a port. It would look like the following.</p>
+
+<pre><code>pxbrick.Registration registration = new pxbrick.Registration(new LegoNxtConnection((LegoNxtPort)_state.SensorPort), 
+</code></pre>
+
+<p>Well, inside of the NxtBrick code there is a method called TestPortForI2CSensorHandler and reading the code you can see that if you pass in  AnySensorPort  it will try all four ports. Genuis that I am thought! Oh great. I will just let the already created code do the work for me, after all, at that point all I wanted to do was see of the thing worked. Well here is the problem. When you do that it creates a type of I2CReadSensorType inside of the ctor it executes this line of code.</p>
+
+<pre><code>ExpectedI2CResponseSize = 16;
+</code></pre>
+
+<p>That doesn t seem to work. OK - not seems, it doesn t work. It won t work for the sonsor sensor or any other digital sensor. I assume
+ because it s 0 based, so 16 is actually 17 bytes? I am guessing. At anyrate, I changed it to 15 and low and behold it works. I even went back and tried it with the LEGO sonar sensor. It works to a point - that is to say it actually gets data back but it seems
+ like the sensor type data (which is  SuperPr  on the prototype board) is 0xFF for all the bytes. The name manufacturer is indeed set to LEGO though so I know it read data.
+ if you change the ExpectedI2CResponseSize  back to 16 it fails.</p>
+
+<p>The other issue I had is that the NxtCommType contains the following. </p>
+
+<pre><code>[DataMember, Description("The default I2C Bus Address of the Ultrasonic or other I2C Sensor.")]
+public const byte DefaultI2CBusAddress = 0x02;
+</code></pre>
+
+<p>For my purposes at the moment I am just flipping it to 0x10 for the prototype board (which oddly enough when connected to my Arduino</p>
+
+<p>shows up as 0x08 but that is another story). I need to modify things so I can use sensors that have differing i2c addresses but for now I am thrilled!</p>
+
+<p>I would love to see someone like Trevor Taylor comment on this as to how it ever worked with 16 as the ExpectedI2CResponseSize.</p>
+
+<p>Awesome!</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-992" data-toggle = "popover">
+				<p>user name : Kenn</p>
+				<p> user reputation : 143</p>
+				<p class = "tagcontent" id = "usertaginfo-992">{'nxt': 4, 'None': 0, 'i2c': 4, 'arduino': 2}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-992" class = 'collapse'>
+			</div>
+				<textarea id = "speech-992" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-992">
+					<img id="start_img-992" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-992">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

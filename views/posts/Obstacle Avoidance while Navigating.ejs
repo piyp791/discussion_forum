@@ -1,0 +1,208 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Obstacle Avoidance while Navigating
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-10252" class = "post">
+			<h2>Question</h2>
+			<div id="vote-10252" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 236</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Obstacle Avoidance while Navigating</h2>
+<p>I need some ideas for strategies or algorithms to apply on these strategies to perform obstacle avoidance while navigating.</p>
+
+<p>At the moment I'm doing offline path planning and obstacle avoidance of known obstacles with an occupancy grid. And running the A* algorithm over the created matrix. After that my robot follows along the resulting trajectory. This is done by splitting the whole trajectory into sub-path. The robot adjust it's heading to the new target and follows the straight line. The robot is controlled by a fuzzy logic controller to correct deviations from the ideal line (steering) and adjusting the velocity according to the steering action and distance to the target. So far so good. And it's working very well.</p>
+
+<p>As sensor system, I solely use the Google Project Tango (Motion Tracking and Area Learning for proper path following). Now I want to use the depth perception capability of the device. Getting the appropriate depth information and extracting a possible obstacle is done with a quite simple strategy. The robot analyses the depth information in front of the robot and if any object is in between the robot and the target point of the sub-path, an obstacle must be there.</p>
+
+<p>Now I'm wondering how to bypass this obstacle most efficiently. The robot is only aware of the height and width of the obstacle, but has no clue about the depth (only the front of the obstacle is scanned). Feeding the occupancy grid with this new obstacle and running again the A* algorithm is not effective, because of the missing depth. One possible strategy I could imagine is estimating a depth of the length of the grid cell, re-plan and continue the navigation. If the robot faces the same obstacle again, the depth is increased by the size of one additional grid cell length. But I think this is extremely ineffective. </p>
+
+<p>The requirement is to only use the Google Project Tango and no additional sensors, such as ultrasonic to sense the sides.</p>
+
+<p><strong>Update 1</strong></p>
+
+<p>The first picture illustrates the given trajectory from the path planning (orange). The gray and blue data points are the sensed obstacles in front of the robot. The notch behind the blue obstacle is actually the wall, but is shadowed by the blue obstacle. Image 2 shows the same scene just from a different perspective.</p>
+
+<p>The issue I have to treat is, how to optimally bypass the blue obstacle even I don't know how deep it is. Driving to the left and to the right only to capture better data points (to generate a 3D model) is not possible. </p>
+
+<p><a href="https://i.stack.imgur.com/w7OqT.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/w7OqT.png" alt="Front perspective"></a>
+<a href="https://i.stack.imgur.com/tDx3G.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/tDx3G.png" alt="Side perspective"></a></p>
+
+<p><strong>Update 2</strong>
+Yes, I'm using a depth sensor, the one integrated in Google Project Tango. It's a visual measurement. A infra-red laser beams a grid onto the objects and a RGB-IR camera capture these information and evaluates the appropriate depth information.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10252" data-toggle = "popover">
+				<p>user name : dannyyy</p>
+				<p> user reputation : 123</p>
+				<p class = "tagcontent" id = "usertaginfo-10252">{'control': 4, 'None': 0, 'motion-planning': 4, 'algorithm': 4}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10252">Load Comments</button></br>
+			<div id = "commentsection-10252" class = 'collapse'>
+			<div id = "comment-18358" class = "comment">
+				<p>I'm not sure I understand - you, "want to use ... depth perception," and, "[g]etting the appropriate depth information and extracting a possible obstacle is ... quite simple," but, "[t]he robot ... has no clue about the depth"? Are you using a depth sensor or not? Can you attach any images that show what you're talking about? It sounds like maybe you're looking for [structure from motion](https://en.wikipedia.org/wiki/Structure_from_motion) to help get the missing information, but I can't tell from your terminology what you're actually missing.</p>
+			</div>
+			<div id = "comment-18377" class = "comment">
+				<p>@Chuck "the robot .. has no clue about the depth" - means the robot has no clue about the depth of the object.  The sensor reveals that there is an object, but the sensor can only see the face of the object nearest the robot and not the furthest face.</p>
+			</div>
+			<div id = "comment-18378" class = "comment">
+				<p>Okay, so you mean that the robot knows how *far* the object is, but it doesn't know how "deep" the object is, where "deep" means length along the visual axis.</p>
+			</div>
+			<div id = "comment-18381" class = "comment">
+				<p>@Chuck, exactly what I meant ;)</p>
+			</div>
+			<div id = "comment-18382" class = "comment">
+				<p>I don't think you can pre-plan a route to skirt an object of unknown size. The best you can probably do is to go around the leading edge (closest to you) and hope that you'll collect more data once you get there.</p>
+			</div>
+			<div id = "comment-18391" class = "comment">
+				<p>"*Driving to the left and to the right only to capture better data points (to generate a 3D model) is not possible.*" Why is that? You have to go to the left or right eventually anyway to go around the obstacle.</p>
+			</div>
+			<div id = "comment-18394" class = "comment">
+				<p>seconding chucks answer. you cant expect optimal offline path planning to work when you dont have a map. look into potential flow, that should work well for this</p>
+			</div>
+			</div>
+				<textarea id = "speech-10252" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10252">
+					<img id="start_img-10252" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10252">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-10264"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10264" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I think that <a href="http://www-personal.umich.edu/~ykoren/uploads/The_Vector_Field_HistogramuFast_Obstacle_Avoidance.pdf" rel="nofollow noreferrer">vector field histogram</a> method should be a good solution here. It's a method of local motion planning (avoiding local obstacles while navigating to a global target). It involves mapping measurements into cartesian <a href="https://en.wikipedia.org/wiki/Occupancy_grid_mapping" rel="nofollow noreferrer">occupancy grid</a>, and making a polar obstacle density histogram from that grid. Later the direction with lowest obstacle density and closest to the desired target is selected.
+<a href="https://i.stack.imgur.com/kdPZR.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/kdPZR.jpg" alt="enter image description here"></a></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10264" data-toggle = "popover">
+				<p>user name : mactro</p>
+				<p> user reputation : 925</p>
+				<p class = "tagcontent" id = "usertaginfo-10264">{'control': 1, 'None': 59, 'radio-control': 1, 'pid': 1, 'wifi': 1, 'wheeled-robot': 1, 'mechanism': 1, 'automation': 1, 'wireless': 1, 'industrial-robot': 2, 'design': 1, 'cnc': 2, 'actuator': 2, 'mobile-robot': 2}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10264">Load Comments</button></br>
+			<div id = "commentsection-10264" class = 'collapse'>
+			<div id = "comment-18392" class = "comment">
+				<p>Sounds quote interesting. Is there a full sample implementation in any language available?</p>
+			</div>
+			<div id = "comment-18401" class = "comment">
+				<p>@dannyyy you can have a look at implementation in player/stage project, or ROS.</p>
+			</div>
+			</div>
+				<textarea id = "speech-10264" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10264">
+					<img id="start_img-10264" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10264">Comment</button>
+			<br><div id = "ans-10270"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10270" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>It sounds like you need a <a href="http://wiki.ros.org/costmap_2d" rel="nofollow noreferrer">costmap</a>.  I would project the 3D points down onto a 2D plane.  (At least the points that correspond to the height of your robot).  Then make an occupancy grid where each cell is labeled as either "free space", "obstacle", or "unknown".  You'll get something like this: </p>
+
+<p><a href="https://i.stack.imgur.com/0hfDB.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/0hfDB.png" alt="enter image description here"></a></p>
+
+<p>Where white is free space, blue is obstacle, and grey is unknown.  </p>
+
+<p>Points from your point cloud become the "obstacle" class obviously.  Use simple ray tracing so that points between the robot and obstacle are "free space".  And everything else is unknown.  (i.e. points beyond the obstacle or max distance of your sensor).  Then use these as costs in your A* path planner.  Allow the robot to plan paths through unknown space, but make it cost more than free space.  </p>
+
+<p>Other notes:</p>
+
+<ul>
+<li>Typically, you bloat the obstacle cells by at least the robot's radius so it doesn't get too close to them.</li>
+<li>You can do this probabilisticly if your robot/sensor has noise, or you are in a dynamic environment.  Here, "free", "obstacle", and "unknown" are now floating values based on a number of past sensor readings.</li>
+</ul>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10270" data-toggle = "popover">
+				<p>user name : Ben</p>
+				<p> user reputation : 3608</p>
+				<p class = "tagcontent" id = "usertaginfo-10270">{'None': 277, 'inverse-kinematics': 3, 'accelerometer': 5, 'calibration': 10, 'kinematics': 14, 'robotic-arm': 8, 'jacobian': 6, 'dh-parameters': 8, 'imu': 5, 'sensors': 5}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10270">Load Comments</button></br>
+			<div id = "commentsection-10270" class = 'collapse'>
+			<div id = "comment-18475" class = "comment">
+				<p>I accepted your solution, because it's simpler to implement and enough for the purpose of application.</p>
+			</div>
+			</div>
+				<textarea id = "speech-10270" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10270">
+					<img id="start_img-10270" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10270">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,355 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Send numerical values from Matlab to arduino
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-12151" class = "post">
+			<h2>Question</h2>
+			<div id="vote-12151" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 118</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Send numerical values from Matlab to arduino</h2>
+<p>I have an array (2x4) in Matlab which may contains integer values as well as values in decimals. For example: <em>[1.1, 23, 1.56, 5.29; 2.14, 2.39, 67, 4.001]</em>. I have to send these values to arduino using matlab. How to do so? I know how to <em>send integer values to arduino from matla</em>b but it is <strong><em>not working with decimal values.</em></strong></p>
+
+<p>Matlab Code to send integer values is below:</p>
+
+<pre><code>portName = 'COM5';
+s = serial(portName,'BaudRate',9600,'Terminator','LF');
+s.timeout = 1;
+try 
+    try
+        fopen(s);
+    catch
+        delete(s);
+        fopen(s);
+    end
+catch
+    disp('Unable to open the port ');
+end
+
+angle = [1.3,2];
+    dataOut = angle;
+    dataOut_ = char(dataOut);
+    fprintf(s,'%d',dataOut_);
+</code></pre>
+
+<p>Arduino code is given below:</p>
+
+<pre><code>int d1,d2;
+char d[4];
+
+    void setup() {
+  // put your setup code here, to run once:
+Serial.begin(9600);
+pinMode(13, OUTPUT);
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+if(Serial.available()&gt;0)
+{
+  for(int i=0; i&lt;3;i++)
+  {
+    d[i]= Serial.read();
+  }
+  d1 = d[0]-'0';
+  if (d1 == 1.3)
+  {
+    digitalWrite(13, HIGH);   // turn the LED on (HIGH is the voltage level)
+  delay(2000);              // wait for a second
+  digitalWrite(13, LOW);    // turn the LED off by making the voltage LOW
+  delay(1000);              // wait for a second
+  }
+}
+}
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12151" data-toggle = "popover">
+				<p>user name : Naseeb Gill</p>
+				<p> user reputation : 62</p>
+				<p class = "tagcontent" id = "usertaginfo-12151">{'None': 0, 'manipulator': 2, 'inverse-kinematics': 5, 'simulator': 0, 'arduino': 2, 'simulation': 2, 'servomotor': 1, 'kinematics': 1, 'matlab': 6, 'robotic-arm': 5, 'rotation': 1, 'forward-kinematics': 0, 'dynamics': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-12151">Load Comments</button></br>
+			<div id = "commentsection-12151" class = 'collapse'>
+			<div id = "comment-21504" class = "comment">
+				<p>That's the code you're using to send integers - what code are you using to send decimal values? What output are you seeing when you attempt to send the decimal values?</p>
+			</div>
+			<div id = "comment-21506" class = "comment">
+				<p>I wrote this to send all type of values but it send only integers values only.  I'm new and learning arduino so what I do is I wrote arduino code like if I send 1, pin at 13 will be high for 1 second and if 2 then for 4 seconds and if input value is 1.5 then it should be high for say 2 seconds. But when send 1 or 2 it works fine but for 1.5 value it continuously at high. So I unable to tell you what value I'm getting for decimal values.</p>
+			</div>
+			</div>
+				<textarea id = "speech-12151" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12151">
+					<img id="start_img-12151" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12151">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-12155"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-12155" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You haven't posted any of the code you're using to receive the values, but I'm guessing the problem is with your casting and decoding of the <code>dataOut</code> value. </p>
+
+<p>Consider the following (direct from my copy of Matlab):</p>
+
+<pre><code>dataOut = 1.3;
+dataOut_ = char(dataOut);
+fprintf('%d\n',dataOut_);
+
+1 
+</code></pre>
+
+<p>This is because your <code>dataOut_</code> variable is not a string or character array of values! If you were to instead try <code>fprintf('%d\n',dataOut);</code> (note the lack of trailing underscore), you get:</p>
+
+<pre><code>fprintf('%d\n',dataOut);
+
+1.300000e+00
+</code></pre>
+
+<p>If you want to convert <code>1.3</code> to a character array (what I'm assuming you actually want to do, but again <em>you never posted the receiving code</em> so I don't know really what you're anticipating receiving), then you should use either the long-hand form:</p>
+
+<pre><code>dataOut_ = char(string(dataOut));
+</code></pre>
+
+<p>or the built-in function that does the same thing:</p>
+
+<pre><code>dataOut_ = num2str(dataOut);
+</code></pre>
+
+<p>Both of those return the same:</p>
+
+<pre><code>dataOut_ = char(string(dataOut));
+fprintf('%d\n',dataOut_);
+49
+46
+51
+</code></pre>
+
+<p>These are bytes that correspond to Unicode characters. You can translate those bytes back to characters by casting them to ascii/unicode on the receiving end, BUT then you also need to put those characters into a character array and then convert that character array back to a number. </p>
+
+<p>Matlab has a built in function that could do that, but you're (presumably) not using Matlab on the receiving end:</p>
+
+<pre><code>&gt;&gt; dataIn = native2unicode([49,46,51])
+
+dataIn =
+
+1.3
+</code></pre>
+
+<p>But again, that <code>1.3</code> is a character array. You need to cast it to a number, usually with <code>double(dataIn)</code>. </p>
+
+<hr>
+
+<p><strong>There is an easier solution.</strong></p>
+
+<p>Multiply the number by 100. Round using the Matlab command <code>round</code>, pass that value. On the receiving end, divide by 100. Now you have timing control to a hundredth of a second. A uint8 could do up to 2.55 seconds, a uint16 could do up to 655.35 seconds. </p>
+
+<p>Keep in mind that you'll need to send multiple bytes anyways if you're planning on converting a floating point number to a character array, so using a uint16 shouldn't be a problem as far as your data packets go.</p>
+
+<pre><code>dataOut = 1.3;
+dataOut_ = round(dataOut*100);
+fprintf('%d\n',uint16(dataOut_));
+130
+</code></pre>
+
+<hr>
+
+<h2>:EDIT:</h2>
+
+<p>OP posted some more code, but it doesn't look like everything, but I can comment from here:</p>
+
+<ol>
+<li>I don't see where you multiply by 100 in your transmit code. Is that code current? </li>
+<li>In your Arduino code, you use <code>Serial.read();</code> but you don't ever cast the output. This means that each byte of <code>d</code> is a number from 0-255. If you want to use it as a character array, you (probably) need to cast it to a string/char before you make the comparison check. </li>
+<li>In your Arduino code, you're just checking if <code>d</code> is the floating point number 1.3. You haven't done anything (like <code>char(1.3)</code> or <code>string(1.3)</code>) to cast 1.3 to a character array so you can do byte-by-byte comparisons.</li>
+</ol>
+
+<p>You have a number of options here, but I'm not sure what you want to do:</p>
+
+<ol>
+<li>Cast the floating point number to a byte array, send the resulting byte array, and then recast the byte array back to floating point. In Matlab, use <code>fprintf('%d\n',typecast(1.3,'uint8'))</code>. </li>
+<li>Cast the floating point number to a character (Unicode) byte array, transmit the byte array, and then convert the byte array back to characters, then convert the characters back to a number. In Matlab, use <code>fprintf('%d\n',char(string(1.3)))</code>.</li>
+<li>Multiply from fractional seconds to tenths or hundredths or milliseconds, etc. Round/truncate the number, transmit the number, then convert back to fractional seconds. In Matlab, use <code>fprintf('%d\n',uint16(round(1000*1.3)))</code>.</li>
+</ol>
+
+<p>Matlab inherently uses 64 bit (double) numbers for everything, so keep that in mind when you try to reassemble the bytes on the Arduino end. If you want to transmit the byte array for a 32 bit number, use the <code>single()</code> command, as in <code>fprintf('%d\n',typecast(single(1.3),'uint8'))</code>. This produces a four byte array, as opposed to the eight byte array produced when you run the same command without the <code>single</code> command. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12155" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-12155">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-12155">Load Comments</button></br>
+			<div id = "commentsection-12155" class = 'collapse'>
+			<div id = "comment-21510" class = "comment">
+				<p>Thanks for replay. I thought arduino code in this question is not so important so I skipped it initially.  But now I pasted in my question you can see this. Hope this will help to solve this problem. I tried by multiplying by 100 but matlab shows error as "The third input argument must be a string." What is wrong?</p>
+			</div>
+			<div id = "comment-21511" class = "comment">
+				<p>@NaseebGill - Please see my edit.</p>
+			</div>
+			</div>
+				<textarea id = "speech-12155" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12155">
+					<img id="start_img-12155" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12155">Comment</button>
+			<br><div id = "ans-12169"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-12169" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>What I've found out that using char([float]) converts decimal numbers into the integer numbers in MATLAB 2016a.</p>
+
+<pre><code>&gt;&gt; x = [1.1, 23, 1.56, 5.29; 2.14, 2.39, 67, 4.001]
+
+x =
+
+    1.1000   23.0000    1.5600    5.2900
+    2.1400    2.3900   67.0000    4.0010
+
+&gt;&gt; xch = char(x)
+
+xch =
+
+
+C
+
+&gt;&gt; fprintf('%f\n',xch)
+1.000000
+2.000000
+23.000000
+2.000000
+1.000000
+67.000000
+5.000000
+4.000000
+</code></pre>
+
+<p>So you can send the values as</p>
+
+<pre><code>fprintf('%f\n',x)
+</code></pre>
+
+<p>and at the arduino end you can receive the data as</p>
+
+<pre><code>float d1,d2;
+float d[4];
+
+    void setup() {
+Serial.begin(9600);
+pinMode(13, OUTPUT);
+}
+
+void loop() {
+if(Serial.available()&gt;0)
+{
+  for(int i=0; i&lt;3;i++)
+  {
+    d[i]= Serial.parseFloat();
+  }
+  d1 = d[0];
+  if (d1 == 1.3)
+  {
+    digitalWrite(13, HIGH);
+  delay(2000);
+  digitalWrite(13, LOW);
+  delay(1000);
+  }
+}
+}
+</code></pre>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12169" data-toggle = "popover">
+				<p>user name : lkdhruw</p>
+				<p> user reputation : 136</p>
+				<p class = "tagcontent" id = "usertaginfo-12169">{'None': 2}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-12169">Load Comments</button></br>
+			<div id = "commentsection-12169" class = 'collapse'>
+			<div id = "comment-21525" class = "comment">
+				<p>Great answer! I would always caution against [direct comparisons of float values](http://www.cygnus-software.com/papers/comparingfloats/Comparing%20floating%20point%20numbers.htm), though.</p>
+			</div>
+			</div>
+				<textarea id = "speech-12169" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12169">
+					<img id="start_img-12169" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12169">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

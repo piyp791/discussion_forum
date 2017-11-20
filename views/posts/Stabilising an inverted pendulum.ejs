@@ -1,0 +1,169 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Stabilising an inverted pendulum
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-10011" class = "post">
+			<h2>Question</h2>
+			<div id="vote-10011" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 108</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Stabilising an inverted pendulum</h2>
+<p>With the problem of stabilising an inverted pendulum on a cart, it's clear that the cart needs to move toward the side the pendulum leans. But for a given angle $\theta$, how much should the cart move, and how fast? Is there a theory determining the distance and speed of the cart or is it just trial and error? I've seen quite a few videos of inverted pendulum, but it's not clear how the distance and speed are determined.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10011" data-toggle = "popover">
+				<p>user name : John Munroe</p>
+				<p> user reputation : 143</p>
+				<p class = "tagcontent" id = "usertaginfo-10011">{'brushless-motor': 0, 'None': 0, 'accelerometer': 1, 'rcservo': 0, 'torque': 1, 'servomotor': 0, 'mechanism': 5, 'gearing': 5, 'motor': 4, 'mobile-robot': 1, 'sensors': 1, 'servos': 0, 'gyroscope': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-10011" class = 'collapse'>
+			</div>
+				<textarea id = "speech-10011" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10011">
+					<img id="start_img-10011" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10011">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-10012"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10012" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">6</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>There are lots of ways to solve this problem, which falls into the category of Control Engineering.  There are two standard approaches: </p>
+
+<p>Classical Control:  The control command has to be proportional to a linear combination of the error, the rate of change of the error, and the integral over time of the error, a.k.a. a PID controller.   This approach requires you to tune three parameters controlling which dictate how much gain should be used in proportion to the three aforementioned measurements.  This can be done manually by trial and error, but more sophisticated approaches exist such as Ziegler-Nichols tuning.</p>
+
+<p>Optimal Control:  construct a cost function which is constrained by the system's dynamics and obtain it's minimum.  A common choice is a quadratic cost function in terms of the state vector and the control command, leading to a thing called an LQR controller.  The minimum is obtained by solving the Riccati equations, for which there are standard numerical techniques. </p>
+
+<p>In my personal experience, LQR gives better results, but requires a bit of computational power and mathematical understanding to accomplish.  PID is, by far, easier to implement and doesn't require a whole lot of mathematical understanding to do, but may not perform as robustly as you wish.</p>
+
+<p>In any case, you will need sensors to detect the pendulum's angle and either its rate of change in angle, or a data recorder to accumulate the error over time, or both.  </p>
+
+<p>Also, you may find that your sensors do not always give correct values, due to cheap technology or unexpected disturbances, in which case you also need to account for uncertainty in measurements.  A Kalman filter would be needed in such a case, and a sophisticated mathematical understanding will of the dynamics be needed to develop one properly.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10012" data-toggle = "popover">
+				<p>user name : Paul</p>
+				<p> user reputation : 704</p>
+				<p class = "tagcontent" id = "usertaginfo-10012">{'control': 6, 'occupancygrid': 1, 'pid': 3, 'slam': 14, 'design': 0, 'motor': 5, 'dynamics': 11, 'probability': 1, 'accelerometer': 4, 'mechanism': 3, 'differential-drive': 1, 'kalman-filter': 6, 'actuator': 1, 'reference-request': 8, 'None': 30, 'inverse-kinematics': 3, 'mapping': 1, 'sensors': 10, 'quadcopter': 4, 'motion': 3, 'particle-filter': 4, 'sonar': 4, 'balance': 12, 'automatic': 2}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10012">Load Comments</button></br>
+			<div id = "commentsection-10012" class = 'collapse'>
+			<div id = "comment-17852" class = "comment">
+				<p>In that case, do camera stabilisers (gimbals) or drones use control engineering or optimise control for balancing and levelling?</p>
+			</div>
+			<div id = "comment-17923" class = "comment">
+				<p>@John Munroe: yes, control theory/engineering in general deals with finding mathematical models for systems and how to control their values based on measurements. A stabiliser is a perfect example for that.</p>
+			</div>
+			</div>
+				<textarea id = "speech-10012" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10012">
+					<img id="start_img-10012" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10012">Comment</button>
+			<br><div id = "ans-10013"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10013" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The theory that describes what you are looking for is call Control Theory. Search for the <em>Nonlinear Systems</em> textbook by Hassan Khalil for an excellent overview of the material--the inverted pendulum problem is addressed explicitly.</p>
+
+<p>To theoretically stabilize the inverted pendulum on the cart, a model of the dynamics of the system are needed and can easily be found on the web. The next step is to find a state space representation of the dynamics. With the state space represented, there are two options--linearize the dynamics around the desired equilibrium (balanced pendulum bob angle of zero degrees from vertical) or utilize the nonlinear dynamics directly. Most projects that I have seen use linearization. At this point, a desired output must be chosen, and a controller accomplishing this objective must be found--this is the bread and butter of Control Theory, and it is non-trivial to do so. For linearized inverted pendulum systems, PID control is typically used.</p>
+
+<p>So to answer your question: yes, there is theory; no, it isn't (shouldn't be) trial and error, and yes, it is hard to accomplish.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10013" data-toggle = "popover">
+				<p>user name : NBCKLY</p>
+				<p> user reputation : 741</p>
+				<p class = "tagcontent" id = "usertaginfo-10013">{'None': 44, 'roomba': 4, 'irobot-create': 4, 'arduino': 2}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10013">Load Comments</button></br>
+			<div id = "commentsection-10013" class = 'collapse'>
+			<div id = "comment-17853" class = "comment">
+				<p>Thanks. My impression is that computing equations for non linear systems can be computationally expensive. Are gimbals and drones also non linear systems? In that case, how do they manage to maintain balance with so little computational power?</p>
+			</div>
+			<div id = "comment-17858" class = "comment">
+				<p>Both gimbals and quad-rotors (assuming this is what you meant by drones) are highly non-linear--stabilizing a quad-rotor is very similar to the inverted pendulum problem. It is unclear what you mean by "computing equations for non-linear systems." The controller is implemented in real-time based on state measurements from the sensors, but the bulk of the work is finding the control law itself, which is done by hand (almost exclusively). The computational complexity of finding a stabilizing control input is highly dependent on the specific control law and objective.</p>
+			</div>
+			</div>
+				<textarea id = "speech-10013" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10013">
+					<img id="start_img-10013" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10013">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

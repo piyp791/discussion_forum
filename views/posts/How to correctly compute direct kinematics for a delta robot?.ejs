@@ -1,0 +1,403 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to correctly compute direct kinematics for a delta robot?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-1730" class = "post">
+			<h2>Question</h2>
+			<div id="vote-1730" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 573</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to correctly compute direct kinematics for a delta robot?</h2>
+<p>I'm trying to put together a simple simulation for a delta robot and I'd like to use forward kinematics (direct kinematics) to compute the end effector's position in space by passing 3 angles.</p>
+
+<p>I've started with the <a href="http://forums.trossenrobotics.com/tutorials/introduction-129/delta-robot-kinematics-3276/" rel="nofollow">Trossen Robotics Forum Delta Robot Tutorial</a> and I can understand most of the math, but not all. I'm lost at the last part in forward kinematics, when trying to compute the point where the 3 sphere's intersect. I've looked at spherical coordinates in general but couldn't work out the two angles used to find to rotate towards (to E(x,y,z)).
+I see they're solving the equation of a sphere, but that's where I get lost. </p>
+
+<p>Can someone please 'dumb it down' for me ?</p>
+
+<p>Also, I've used the example code to do a quick visualization using <a href="http://processing.org/" rel="nofollow">Processing</a>,
+but the last part seems wrong. The lower leg changes length and it shouldn't:</p>
+
+<pre><code>//Rhino measurements in cm
+final float e = 21;//end effector side
+final float f = 60.33;//base side
+final float rf = 67.5;//upper leg length - radius of upper sphere
+final float re = 95;//lower leg length - redius of lower sphere (with offset will join in E(x,y,z))
+
+final float sqrt3 = sqrt(3.0);
+final float sin120 = sqrt3/2.0;   
+final float cos120 = -0.5;        
+final float tan60 = sqrt3;
+final float sin30 = 0.5;
+final float tan30 = 1/sqrt3;
+final float a120 = TWO_PI/3;
+final float a60 = TWO_PI/6;
+
+//bounds
+final float minX = -200;
+final float maxX = 200;
+final float minY = -200;
+final float maxY = 200;
+final float minZ = -200;
+final float maxZ = -10;
+final float maxT = 54;
+final float minT = -21;
+
+float xp = 0;
+float yp = 0;
+float zp =-45;
+float t1 = 0;//theta
+float t2 = 0;
+float t3 = 0;
+
+float prevX;
+float prevY;
+float prevZ;
+float prevT1;
+float prevT2;
+float prevT3;
+
+boolean validPosition;
+//cheap arcball
+PVector offset,cameraRotation = new PVector(),cameraTargetRotation = new PVector();
+
+void setup() {
+  size(900,600,P3D);
+}
+
+void draw() {
+  background(192);
+  pushMatrix();
+  translate(width * .5,height * .5,300);
+  //rotateY(map(mouseX,0,width,-PI,PI));
+
+  if (mousePressed &amp;&amp; (mouseX &gt; 300)){
+    cameraTargetRotation.x += -float(mouseY-pmouseY);
+    cameraTargetRotation.y +=  float(mouseX-pmouseX);
+  }
+  rotateX(radians(cameraRotation.x -= (cameraRotation.x - cameraTargetRotation.x) * .35));
+  rotateY(radians(cameraRotation.y -= (cameraRotation.y - cameraTargetRotation.y) * .35));
+
+  stroke(0);
+  et(f,color(255));
+  drawPoint(new PVector(),2,color(255,0,255));
+  float[] t = new float[]{t1,t2,t3};
+  for(int i = 0 ; i &lt; 3; i++){
+    float a = HALF_PI+(radians(120)*i);
+    float r1 = f / 1.25 * tan(radians(30));
+    float r2 = e / 1.25 * tan(radians(30));
+    PVector F = new PVector(cos(a) * r1,sin(a) * r1,0);
+    PVector E = new PVector(cos(a) * r2,sin(a) * r2,0);
+    E.add(xp,yp,zp);
+    //J = F * rxMat
+    PMatrix3D m = new PMatrix3D();
+    m.translate(F.x,F.y,F.z);
+    m.rotateZ(a);
+    m.rotateY(radians(t[i]));
+    m.translate(rf,0,0);
+
+    PVector J = new PVector();
+    m.mult(new PVector(),J);
+    line(F.x,F.y,F.z,J.x,J.y,J.z);
+    line(E.x,E.y,E.z,J.x,J.y,J.z);
+    drawPoint(F,2,color(255,0,0));
+    drawPoint(J,2,color(255,255,0));
+    drawPoint(E,2,color(0,255,0));
+    //println(dist(F.x,F.y,F.z,J.x,J.y,J.z)+"\t"+rf);
+    println(dist(E.x,E.y,E.z,J.x,J.y,J.z)+"\t"+re);//length should not change
+  }
+  pushMatrix();
+    translate(xp,yp,zp);
+    drawPoint(new PVector(),2,color(0,255,255));
+    et(e,color(255));
+    popMatrix();
+  popMatrix(); 
+}
+void drawPoint(PVector p,float s,color c){
+  pushMatrix();
+    translate(p.x,p.y,p.z);
+    fill(c);
+    box(s);
+  popMatrix();
+}
+void et(float r,color c){//draw equilateral triangle, r is radius ( median), c is colour
+  pushMatrix();
+  rotateZ(-HALF_PI);
+  fill(c);
+  beginShape();
+  for(int i = 0 ; i &lt; 3; i++)
+    vertex(cos(a120*i) * r,sin(a120*i) * r,0);
+  endShape(CLOSE);
+  popMatrix();
+}
+void keyPressed(){
+  float amt = 3;
+  if(key == 'q') t1 -= amt;
+  if(key == 'Q') t1 += amt;
+  if(key == 'w') t2 -= amt;
+  if(key == 'W') t2 += amt;
+  if(key == 'e') t3 -= amt;
+  if(key == 'E') t3 += amt;
+  t1 = constrain(t1,minT,maxT);
+  t2 = constrain(t2,minT,maxT);
+  t3 = constrain(t3,minT,maxT);
+  dk();
+}
+
+void ik() {
+  if (xp &lt; minX) { xp = minX; }
+  if (xp &gt; maxX) { xp = maxX; }
+  if (yp &lt; minX) { yp = minX; }
+  if (yp &gt; maxX) { yp = maxX; }
+  if (zp &lt; minZ) { zp = minZ; }
+  if (zp &gt; maxZ) { zp = maxZ; }
+
+  validPosition = true;
+  //set the first angle
+  float theta1 = rotateYZ(xp, yp, zp);
+  if (theta1 != 999) {
+    float theta2 = rotateYZ(xp*cos120 + yp*sin120, yp*cos120-xp*sin120, zp);  // rotate coords to +120 deg
+    if (theta2 != 999) {
+      float theta3 = rotateYZ(xp*cos120 - yp*sin120, yp*cos120+xp*sin120, zp);  // rotate coords to -120 deg
+      if (theta3 != 999) {
+        //we succeeded - point exists
+        if (theta1 &lt;= maxT &amp;&amp; theta2 &lt;= maxT &amp;&amp; theta3 &lt;= maxT &amp;&amp; theta1 &gt;= minT &amp;&amp; theta2 &gt;= minT &amp;&amp; theta3 &gt;= minT ) { //bounds check
+          t1 = theta1;
+          t2 = theta2;
+          t3 = theta3;
+        } else {
+          validPosition = false;
+        }
+
+      } else {
+        validPosition = false;
+      }
+    } else {
+      validPosition = false;
+    }
+  } else {
+    validPosition = false;
+  }
+
+  //uh oh, we failed, revert to our last known good positions
+  if ( !validPosition ) {
+    xp = prevX;
+    yp = prevY;
+    zp = prevZ;
+  }
+
+}
+
+void dk() {
+  validPosition = true;
+
+  float t = (f-e)*tan30/2;
+  float dtr = PI/(float)180.0;
+
+  float theta1 = dtr*t1;
+  float theta2 = dtr*t2;
+  float theta3 = dtr*t3;
+
+  float y1 = -(t + rf*cos(theta1));
+  float z1 = -rf*sin(theta1);
+
+  float y2 = (t + rf*cos(theta2))*sin30;
+  float x2 = y2*tan60;
+  float z2 = -rf*sin(theta2);
+
+  float y3 = (t + rf*cos(theta3))*sin30;
+  float x3 = -y3*tan60;
+  float z3 = -rf*sin(theta3);
+
+  float dnm = (y2-y1)*x3-(y3-y1)*x2;
+
+  float w1 = y1*y1 + z1*z1;
+  float w2 = x2*x2 + y2*y2 + z2*z2;
+  float w3 = x3*x3 + y3*y3 + z3*z3;
+
+  // x = (a1*z + b1)/dnm
+  float a1 = (z2-z1)*(y3-y1)-(z3-z1)*(y2-y1);
+  float b1 = -((w2-w1)*(y3-y1)-(w3-w1)*(y2-y1))/2.0;
+
+  // y = (a2*z + b2)/dnm;
+  float a2 = -(z2-z1)*x3+(z3-z1)*x2;
+  float b2 = ((w2-w1)*x3 - (w3-w1)*x2)/2.0;
+
+  // a*z^2 + b*z + c = 0
+  float a = a1*a1 + a2*a2 + dnm*dnm;
+  float b = 2*(a1*b1 + a2*(b2-y1*dnm) - z1*dnm*dnm);
+  float c = (b2-y1*dnm)*(b2-y1*dnm) + b1*b1 + dnm*dnm*(z1*z1 - re*re);
+
+  // discriminant
+  float d = b*b - (float)4.0*a*c;
+  if (d &lt; 0) { validPosition = false; }
+
+  zp = -(float)0.5*(b+sqrt(d))/a;
+  xp = (a1*zp + b1)/dnm;
+  yp = (a2*zp + b2)/dnm;
+
+  if (xp &gt;= minX &amp;&amp; xp &lt;= maxX&amp;&amp; yp &gt;= minX &amp;&amp; yp &lt;= maxX &amp;&amp; zp &gt;= minZ &amp; zp &lt;= maxZ) {  //bounds check
+  } else {
+    validPosition = false;
+  }
+
+  if ( !validPosition ) {    
+    xp = prevX;
+    yp = prevY;
+    zp = prevZ;
+    t1 = prevT1;
+    t2 = prevT2;
+    t3 = prevT3;  
+  }
+
+}
+
+void  storePrev() {
+  prevX = xp;
+  prevY = yp;
+  prevZ = zp;
+  prevT1 = t1;
+  prevT2 = t2;
+  prevT3 = t3;
+}
+
+float rotateYZ(float x0, float y0, float z0) {
+  float y1 = -0.5 * 0.57735 * f; // f/2 * tg 30
+  y0 -= 0.5 * 0.57735    * e;    // shift center to edge
+  // z = a + b*y
+  float a = (x0*x0 + y0*y0 + z0*z0 +rf*rf - re*re - y1*y1)/(2*z0);
+  float b = (y1-y0)/z0;
+  // discriminant
+  float d = -(a+b*y1)*(a+b*y1)+rf*(b*b*rf+rf); 
+  if (d &lt; 0) return 999; // non-existing point
+  float yj = (y1 - a*b - sqrt(d))/(b*b + 1); // choosing outer point
+  float zj = a + b*yj;
+  return 180.0*atan(-zj/(y1 - yj))/PI + ((yj&gt;y1)?180.0:0.0);
+} 
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1730" data-toggle = "popover">
+				<p>user name : George Profenza</p>
+				<p> user reputation : 121</p>
+				<p class = "tagcontent" id = "usertaginfo-1730">{'forward-kinematics': 3, 'None': 0, 'kinematics': 3, 'robotic-arm': 1, 'communication': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1730">Load Comments</button></br>
+			<div id = "commentsection-1730" class = 'collapse'>
+			<div id = "comment-3627" class = "comment">
+				<p>It may be OT here, maybe you try it on http://codereview.stackexchange.com</p>
+			</div>
+			<div id = "comment-3628" class = "comment">
+				<p>Which link corresponds to the one which lengthens? 1 or 3?Usually if the point is "stretched" from the last link, you have an inadvertent scaling in your transformation.</p>
+			</div>
+			<div id = "comment-3629" class = "comment">
+				<p>The distance from vector E to vector J changes and it shouldn't (towards the end of the draw() function). Can you please point me to where your spotted the scaling ?</p>
+			</div>
+			<div id = "comment-3730" class = "comment">
+				<p>Out of interest, why do you need to solve the forward kinematics. Usually you want to control the effector position, and calculate where the legs should be to reach your desired position. The maths for the inverse kinematics  is actually simpler than that of the forward kinematics.</p>
+			</div>
+			<div id = "comment-3731" class = "comment">
+				<p>@Rocketmagnet I can record the positions of the servos and would like to generate a 3d path from those angles. The idea is then to simplify the data, fit it to curves, multiply the points to an orientation matrix, etc. then I can use IK to convert the points on the path to angles again. I've made good progress and also used a more 'visual' approach to doing the FK by simply doing matrix multiplication until I reach the J' points(joints offset by hand the end effector's median) then trilateration. Will post my approach soon because I'm getting a different range of motion with my approach...</p>
+			</div>
+			<div id = "comment-3732" class = "comment">
+				<p>...and would like to know if it's simply me doing the math wrong or finding a limitation in the formula from the trossen forum robotics tutorial(which I've seen used extensively in many other papers)</p>
+			</div>
+			</div>
+				<textarea id = "speech-1730" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1730">
+					<img id="start_img-1730" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1730">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-4984"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4984" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>It is very easy to conceive the direct kinematics, which has a closed form anyway. Just read this nice <a href="http://www.cim.mcgill.ca/~paul/Delta9Af.pdf" rel="nofollow">paper</a>. Don't just read crappy tutorial and wikipages, try read some papers.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4984" data-toggle = "popover">
+				<p>user name : Troy Woo</p>
+				<p> user reputation : 306</p>
+				<p class = "tagcontent" id = "usertaginfo-4984">{'None': 16}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-4984" class = 'collapse'>
+			</div>
+				<textarea id = "speech-4984" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4984">
+					<img id="start_img-4984" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4984">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

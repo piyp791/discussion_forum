@@ -1,0 +1,420 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Issues with Running Multiple Instructions in Sequence
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9892" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9892" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 41</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Issues with Running Multiple Instructions in Sequence</h2>
+<p>I tried to use Microsoft Robotics Dev Studio (sample 4) to write a code that was able for robot to go with a square path by just one clicked. However, there is one problem.
+When I try to put DriveDistanceRequest and RotateDegreesRequest in a loop. It would only execute the last request. The problem is that Arbiter.Choice within the DriveDistance is activated immediately as soon as the drive operation starts. Did anyone have this kind of problem before? If so, how do I solve it? If no, how am I able to fix this problem? Thanks your so much.</p>
+
+<p>//-----------------------------------------------------------------------</p>
+
+<p>//  This file is part of Microsoft Robotics Developer Studio Code Samples.
+//</p>
+
+<p>//  Copyright (C) Microsoft Corporation.  All rights reserved.
+//</p>
+
+<p>//  $File: RoboticsTutorial4.cs $ $Revision: 22 $</p>
+
+<p>//-----------------------------------------------------------------------</p>
+
+<p>using Microsoft.Ccr.Core;</p>
+
+<p>using Microsoft.Ccr.Adapters.WinForms;</p>
+
+<p>using Microsoft.Dss.Core;</p>
+
+<p>using Microsoft.Dss.Core.Attributes;</p>
+
+<p>using Microsoft.Dss.ServiceModel.Dssp;</p>
+
+<p>using Microsoft.Dss.ServiceModel.DsspServiceBase;</p>
+
+<p>using System;</p>
+
+<p>using System.Collections.Generic;</p>
+
+<p>using System.Security.Permissions;</p>
+
+<p>using xml = System.Xml;</p>
+
+<p>using drive = Microsoft.Robotics.Services.Drive.Proxy;</p>
+
+<p>using W3C.Soap;</p>
+
+<p>using Microsoft.Robotics.Services.RoboticsTutorial4.Properties;</p>
+
+<p>using Microsoft.Robotics.Services.Drive.Proxy;</p>
+
+<p>using System.ComponentModel;</p>
+
+<p>namespace Microsoft.Robotics.Services.RoboticsTutorial4
+{</p>
+
+<pre><code>[DisplayName("(User) Robotics Tutorial 4 (C#): Drive-By-Wire")]
+[Description("This tutorial demonstrates how to create a service that partners with abstract, base definitions of hardware services.")]
+[DssServiceDescription("http://msdn.microsoft.com/library/bb483053.aspx")]
+[Contract(Contract.Identifier)]
+public class RoboticsTutorial4 : DsspServiceBase
+{
+    [ServiceState]
+    private RoboticsTutorial4State _state = new RoboticsTutorial4State();
+
+    [ServicePort("/RoboticsTutorial4", AllowMultipleInstances=false)]
+    private RoboticsTutorial4Operations _mainPort = new RoboticsTutorial4Operations();
+
+    [Partner("Drive", Contract = drive.Contract.Identifier, CreationPolicy = PartnerCreationPolicy.UseExisting)]
+    private drive.DriveOperations _drivePort = new drive.DriveOperations();
+    private drive.DriveOperations _driveNotify = new drive.DriveOperations();
+
+    public RoboticsTutorial4(DsspServiceCreationPort creationPort) :
+            base(creationPort)
+    {
+    }
+
+    #region CODECLIP 02-1
+    protected override void Start()
+    {
+        base.Start();
+
+        WinFormsServicePort.Post(new RunForm(StartForm));
+
+        #region CODECLIP 01-5
+        _drivePort.Subscribe(_driveNotify);
+        Activate(Arbiter.Receive&lt;drive.Update&gt;(true, _driveNotify, NotifyDriveUpdate));
+        #endregion
+    }
+    #endregion
+
+    #region CODECLIP 02-2
+    private System.Windows.Forms.Form StartForm()
+    {
+        RoboticsTutorial4Form form = new RoboticsTutorial4Form(_mainPort);
+
+        Invoke(delegate()
+            {
+                PartnerType partner = FindPartner("Drive");
+                Uri uri = new Uri(partner.Service);
+                form.Text = string.Format(
+                    Resources.Culture,
+                    Resources.Title,
+                    uri.AbsolutePath
+                );
+            }
+        );
+
+        return form;
+    }
+    #endregion
+
+    #region CODECLIP 02-3
+    private void Invoke(System.Windows.Forms.MethodInvoker mi)
+    {
+        WinFormsServicePort.Post(new FormInvoke(mi));
+    }
+    #endregion
+
+
+    /// &lt;summary&gt;
+    /// Replace Handler
+    /// &lt;/summary&gt;
+    [ServiceHandler(ServiceHandlerBehavior.Exclusive)]
+    public virtual IEnumerator&lt;ITask&gt; ReplaceHandler(Replace replace)
+    {
+        _state = replace.Body;
+        replace.ResponsePort.Post(DefaultReplaceResponseType.Instance);
+        yield break;
+    }
+
+    [ServiceHandler(ServiceHandlerBehavior.Concurrent)]
+    //stop
+    public virtual IEnumerator&lt;ITask&gt; StopHandler(Stop stop)
+    {
+        drive.SetDrivePowerRequest request = new drive.SetDrivePowerRequest();
+        request.LeftWheelPower = 0;
+        request.RightWheelPower = 0;
+
+        yield return Arbiter.Choice(
+            _drivePort.SetDrivePower(request),
+            delegate(DefaultUpdateResponseType response) { },
+            delegate(Fault fault)
+            {
+                LogError(null, "Unable to stop", fault);
+            }
+        );
+    }
+
+    //forward
+    #region CODECLIP 01-3 
+    [ServiceHandler(ServiceHandlerBehavior.Concurrent)]
+    //forward
+    public virtual IEnumerator&lt;ITask&gt; ForwardHandler(Forward forward)
+    {
+        if (!_state.MotorEnabled)
+        {
+            yield return EnableMotor();
+        }
+        // movement speed
+        // This sample sets the power to 75%.
+        // Depending on your robotic hardware,
+        // you may wish to change these values.
+        drive.SetDrivePowerRequest request = new drive.SetDrivePowerRequest();
+        request.LeftWheelPower = 0.5;
+        request.RightWheelPower = 0.5;
+
+        yield return Arbiter.Choice(
+            _drivePort.SetDrivePower(request),
+            delegate(DefaultUpdateResponseType response) { },
+            delegate(Fault fault)
+            {
+                LogError(null, "Unable to drive forwards", fault);
+            }
+        );
+    }
+    #endregion
+
+    [ServiceHandler(ServiceHandlerBehavior.Concurrent)]
+    // backup speed
+    public virtual IEnumerator&lt;ITask&gt; BackwardHandler(Backward backward)
+    {
+        if (!_state.MotorEnabled)
+        {
+            yield return EnableMotor();
+        }
+
+        drive.SetDrivePowerRequest request = new drive.SetDrivePowerRequest();          
+        request.LeftWheelPower = -0.6;
+        request.RightWheelPower = -0.6;
+
+        yield return Arbiter.Choice(
+            _drivePort.SetDrivePower(request),
+            delegate(DefaultUpdateResponseType response) { },
+            delegate(Fault fault)
+            {
+                LogError(null, "Unable to drive backwards", fault);
+            }
+        );
+    }
+
+    [ServiceHandler(ServiceHandlerBehavior.Concurrent)]
+    // left turn speed
+    public virtual IEnumerator&lt;ITask&gt; TurnLeftHandler(TurnLeft turnLeft)
+    {
+        if (!_state.MotorEnabled)
+        {
+            yield return EnableMotor();
+        }
+
+        drive.SetDrivePowerRequest request = new drive.SetDrivePowerRequest();
+        request.LeftWheelPower = -0.5;
+        request.RightWheelPower = 0.5;
+
+        yield return Arbiter.Choice(
+            _drivePort.SetDrivePower(request),
+            delegate(DefaultUpdateResponseType response) { },
+            delegate(Fault fault)
+            {
+                LogError(null, "Unable to turn left", fault);
+            }
+        );
+    }
+
+    [ServiceHandler(ServiceHandlerBehavior.Concurrent)]
+    // right turn speed
+    public virtual IEnumerator&lt;ITask&gt; TurnRightHandler(TurnRight forward)
+    {
+        if (!_state.MotorEnabled)
+        {
+            yield return EnableMotor();
+        }
+
+        drive.SetDrivePowerRequest request = new drive.SetDrivePowerRequest();
+        request.LeftWheelPower = 0.5;
+        request.RightWheelPower = -0.5;
+
+        yield return Arbiter.Choice(
+            _drivePort.SetDrivePower(request),
+            delegate(DefaultUpdateResponseType response) { },
+            delegate(Fault fault)
+            {
+                LogError(null, "Unable to turn right", fault);
+            }
+        );
+    }
+
+    #region CODECLIP 01-4
+    private Choice EnableMotor()
+    {
+        drive.EnableDriveRequest request = new drive.EnableDriveRequest();
+        request.Enable = true;
+
+        return Arbiter.Choice(
+            _drivePort.EnableDrive(request),
+            delegate(DefaultUpdateResponseType response) { },
+            delegate(Fault fault)
+            {
+                LogError(null, "Unable to enable motor", fault);
+            }
+        );
+    }
+    #endregion
+
+    #region CODECLIP 01-6
+    private void NotifyDriveUpdate(drive.Update update)
+    {
+        RoboticsTutorial4State state = new RoboticsTutorial4State();
+        state.MotorEnabled = update.Body.IsEnabled;
+
+        _mainPort.Post(new Replace(state));
+    }
+    #endregion
+
+
+    // Here is where I had change the code.
+    #region Test Code (Creating Path)
+    [ServiceHandler(ServiceHandlerBehavior.Concurrent)]
+    public virtual IEnumerator&lt;ITask&gt; PathHandler(StartPath path)
+    {
+        if (!_state.MotorEnabled)
+        {
+            yield return EnableMotor();
+        }
+
+        for(int i=1; i&lt;3; i++)
+        {
+                if(i == 1)
+                {
+                    drive.DriveDistanceRequest distance = new drive.DriveDistanceRequest();
+                    distance.Power = 1;
+                    distance.Distance = 1;
+
+                    yield return Arbiter.Choice(
+                        _drivePort.DriveDistance(distance),
+                        delegate(DefaultUpdateResponseType response) { },
+                        delegate(Fault fault)
+                        {
+                            LogError(null, "Unable to turn left", fault);
+                        }
+                    );
+
+                }
+                else if(i == 2)
+                {
+                    drive.RotateDegreesRequest rotate = new drive.RotateDegreesRequest();
+                    rotate.Power = 1;
+                    rotate.Degrees = 90;
+
+                    yield return Arbiter.Choice(
+                        _drivePort.RotateDegrees(rotate),
+                        delegate(DefaultUpdateResponseType response) { },
+                        delegate(Fault fault)
+                        {
+                            LogError(null, "Unable to turn left", fault);
+                        }
+                    );
+                }
+
+        }
+
+    }
+    #endregion
+}
+</code></pre>
+
+<p>}</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9892" data-toggle = "popover">
+				<p>user name : None</p>
+				<p> user reputation : NA</p>
+				<p class = "tagcontent" id = "usertaginfo-9892">{'control': 0, 'force': 3, 'encoding': 1, 'wheeled-robot': 1, 'legged': 5, 'embedded-systems': 0, 'stability': 5, 'design': 15, 'motor': 3, 'mobile-robot': 3, 'connector': 1, 'h-bridge': 1, 'mrds': 0, 'arduino': 1, 'current': 1, 'kinematics': 0, 'kalman-filter': 8, 'imu': 18, 'irobot-create': 0, 'gyroscope': 1, 'micromouse': 3, 'None': 35, 'power': 16, 'artificial-intelligence': 8, 'driver': 1, 'industrial-robot': 19, 'sensors': 11, 'quadcopter': 7, 'c': 1, 'motion': 1, 'balance': 7, 'servos': 15}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9892">Load Comments</button></br>
+			<div id = "commentsection-9892" class = 'collapse'>
+			<div id = "comment-17603" class = "comment">
+				<p>Can you post the original code and your modifications?</p>
+			</div>
+			<div id = "comment-17615" class = "comment">
+				<p>I edited my question, and posted the code. I did not change many things, but only add the last part of code. As you scroll down to the bottom, you will see a common says "Here is where I had change the code".</p>
+			</div>
+			</div>
+				<textarea id = "speech-9892" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9892">
+					<img id="start_img-9892" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9892">Comment</button>
+
+<h1>Answers</h1>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

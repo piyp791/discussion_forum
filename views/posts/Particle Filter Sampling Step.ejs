@@ -1,0 +1,191 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Particle Filter Sampling Step
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-6810" class = "post">
+			<h2>Question</h2>
+			<div id="vote-6810" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 134</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Particle Filter Sampling Step</h2>
+<p>I emphasize that my question is about <strong><em>sampling</em></strong>, not <em>resampling</em>.  </p>
+
+<p>I'm reading the Probabilistic Robotics book by Thrun et al, Chapter 4 on Non-Parametric Filters.  The section on Particle filters has an algorithm which states that for each particle index $m$ (see line 4):  </p>
+
+<p>sample $x_t^{[m]} \sim p(x_t|u_t,x_{t-1}^{[m]})$</p>
+
+<p>The text's explanation of this step is quoted as:</p>
+
+<blockquote>
+  <p>Line 4. generates a hypothetical state $x_t^{[m]}$ for time t based on
+  the particle $x_{t-1}$ and the control $u_t$.  The resulting sample is
+  index by $m$, indicating that it is generated from the $m$-th particle
+  in $\chi_{t-1}$.  This step involves sampling from the state
+  transition distribution $p(x_t|u_t,x_{t-1})$.  To implement this step,
+  one needs to be able to sample from this distribution.  The set of
+  particles obtained after $M$ iterations is the filter's representation
+  of $\bar{bel}(x_t)$.</p>
+</blockquote>
+
+<p>If I understand correctly, this step says that the m-th <strong><em>sampled</em></strong> particle $x_t^{[m]}$ is obtained by advancing the previous m-th particle with control command $u_t$.  I assume that the motion is not deterministic, so the result of this motion is a conditional probability, based on the particle's previous position $u_t$.  </p>
+
+<p>However, I'm confused over how exactly to construct this conditional probability $p(x_t|u_t,x_{t-1}^{[m]})$.  Is this information usually given?  Or is it constructed from the distribution of the other particles?  </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6810" data-toggle = "popover">
+				<p>user name : Paul</p>
+				<p> user reputation : 704</p>
+				<p class = "tagcontent" id = "usertaginfo-6810">{'control': 6, 'occupancygrid': 1, 'pid': 3, 'slam': 14, 'design': 0, 'motor': 5, 'dynamics': 11, 'probability': 1, 'accelerometer': 4, 'mechanism': 3, 'differential-drive': 1, 'kalman-filter': 6, 'actuator': 1, 'reference-request': 8, 'None': 30, 'inverse-kinematics': 3, 'mapping': 1, 'sensors': 10, 'quadcopter': 4, 'motion': 3, 'particle-filter': 4, 'sonar': 4, 'balance': 12, 'automatic': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-6810" class = 'collapse'>
+			</div>
+				<textarea id = "speech-6810" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6810">
+					<img id="start_img-6810" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6810">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-6813"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6813" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>$p\left(x_t|u_t,x^{[m]}_{t-1}\right)$ should be created from your motion model. See chapter 5 in your book.
+Algorithms can be found in table 5.3 for a velocity model or table 5.6 for a odometry model.</p>
+
+<p>Roughly speaking: If your robot has a speed of 1m/s and it moves straight (which may be your $u_t$) and your update rate is 1Hz, then you could move each particle 1m forward. To respect the fact that nothing is known exactly you could then disturb each position by adding some position noise.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6813" data-toggle = "popover">
+				<p>user name : Steffen</p>
+				<p> user reputation : 186</p>
+				<p class = "tagcontent" id = "usertaginfo-6813">{'None': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-6813">Load Comments</button></br>
+			<div id = "commentsection-6813" class = 'collapse'>
+			<div id = "comment-9769" class = "comment">
+				<p>So, is it necessary to perturb the deterministic prediction with some noise?  If I omit the noise and just use the deterministic motion model, would my particle filter fail?</p>
+			</div>
+			<div id = "comment-9771" class = "comment">
+				<p>Well, if you have a deterministic way, then why use a probabilistic one? But, how can be sure that your deterministic prediction is correct? Can you be sure that there is no noise in your sensors?</p>
+			</div>
+			<div id = "comment-9772" class = "comment">
+				<p>Also, in fact you should not use "some" noise. The values should be pertubed according to you model and your measurement errors...</p>
+			</div>
+			</div>
+				<textarea id = "speech-6813" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6813">
+					<img id="start_img-6813" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6813">Comment</button>
+			<br><div id = "ans-6814"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6814" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The new particle should be created from your motion model, basically you select one random possible outcome of the data you measured.
+This is an example for differential drive, the random.gauss calls are resoponsible for the sampling part:</p>
+
+<pre><code>def update_sample(self, sample, left_ticks, right_ticks):
+    """ Returns a new sample updated according to measured movement."""
+    left_distance = left_ticks * self.left_resolution * random.gauss(1, self.left_sigma)
+    right_distance = right_ticks * self.right_resolution * random.gauss(1, self.right_sigma)
+    forward = (left_distance + right_distance) / 2
+    turn = (right_distance - left_distance) / self.wheel_base
+    alpha = sample.heading + turn / 2
+
+    sample = copy.copy(sample)
+    sample.x += math.cos(alpha) * forward
+    sample.y += math.sin(alpha) * forward
+    sample.heading += turn
+    return sample
+</code></pre>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6814" data-toggle = "popover">
+				<p>user name : cube</p>
+				<p> user reputation : 567</p>
+				<p class = "tagcontent" id = "usertaginfo-6814">{'control': 2, 'None': 31, 'wifi': 2, 'kalman-filter': 3, 'calibration': 3, 'geometry': 0, 'localization': 2, 'c': 1, 'avr': 1, 'robotic-arm': 0, 'brushless-motor': 2, 'differential-drive': 2, 'esc': 1, 'motor': 2, 'mobile-robot': 2}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-6814" class = 'collapse'>
+			</div>
+				<textarea id = "speech-6814" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6814">
+					<img id="start_img-6814" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6814">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

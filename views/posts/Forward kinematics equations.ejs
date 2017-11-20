@@ -1,0 +1,364 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Forward kinematics equations
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-12061" class = "post">
+			<h2>Question</h2>
+			<div id="vote-12061" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 135</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Forward kinematics equations</h2>
+<p>I'm stuck at computing forward kinematics equations.</p>
+
+<p>I have configuration of the first two joints like on the following image:
+<a href="https://i.stack.imgur.com/rsIl2.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/rsIl2.png" alt="Arm configuration"></a></p>
+
+<p>Transformation from the origin to the first joint basis is trivial: just translation by $\vec{OO_{1}}$.</p>
+
+<p>The second transform from joint 1 to joint 2 basis makes me nervous throughout this day. First of all it is a rotation around $Z$ axis. So rotational part will look like this:</p>
+
+<p>$
+R_{12}=
+\begin{pmatrix}
+cos(q_{1}) &amp; -sin(q_{1}) &amp; 0\\
+sin(q_{1}) &amp; cos(q_{1}) &amp; 0\\
+0 &amp; 0 &amp; 1
+\end{pmatrix}
+$</p>
+
+<p>Problems are all about the translation part. I see two approaches here.
+Since angle between $\vec{O_{1}O_{2}}$ and plane $X_{1}O_{1}Y_{1}$ is constant because rotation is performed around $Z$ axis, length of projection of $\vec{O_{1}O_{2}}$ onto $X_{1}O_{1}Y_{1}$ is constant. Here it is:</p>
+
+<p>$\vec{v} = O_{2} - O_{1} = \begin{pmatrix} v_{x}\\ v_{y}\\ v_{z} \end{pmatrix}
+$
+Its' projection onto $X_{1}O_{1}Y_{1}$ is $\vec{v_{p}} = \begin{pmatrix} v_{x}\\ v_{y}\\ 0 \end{pmatrix}$ and it's magnitude is $m=\sqrt{v_{x}^2 + v_{y}^2}=const$.</p>
+
+<p>Now let's look at what happens after rotation:
+<a href="https://i.stack.imgur.com/yEOUg.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/yEOUg.png" alt="Projection after rotation"></a></p>
+
+<p>So the translation matrix looks like:
+$
+S_{12}=
+\begin{pmatrix}
+m\cdot cos(\alpha+q_{1})\\ m\cdot sin(\alpha+q_{1})\\ v_{z}
+\end{pmatrix}
+$</p>
+
+<p>And full transformation matrix from joint 1 to joint 2 basis is:</p>
+
+<p>$
+T_{12}=
+\begin{pmatrix}
+R_{12} &amp; S_{12}\\
+0 &amp; 1
+\end{pmatrix}
+$</p>
+
+<p>Unfortunately it gives me wrong results even when $q_{1}=0$. Can not see where my reasoning is wrong.</p>
+
+<p><strong>Second approach</strong> is more straightforward. Being able to calculate $\vec{O_{1}O_{2}}$ in initial configuration makes it possible just to rotate this vector by $q_{1}$ around $Z$ axis and this has to be our translation vector. Nevertheless I can't make it work.</p>
+
+<p>$R_{z}=
+\begin{pmatrix}
+cos(q_{1}) &amp; -sin(q_{1}) &amp; 0\\
+sin(q_{1}) &amp; cos(q_{1}) &amp; 0\\
+0 &amp; 0 &amp; 1
+\end{pmatrix}\\
+\vec{v} = O_{2} - O_{1} = \begin{pmatrix} v_{x}\\ v_{y}\\ v_{z} \end{pmatrix}\\
+R_{z}\vec{v}= 
+\begin{pmatrix}
+v_{x}cos(q_{1})-v_{y}sin(q_{1})\\
+v_{x}sin(q_{1})+v_{y}cos(q_{1})\\
+v_{z}
+\end{pmatrix}\\
+T_{12}=
+\begin{pmatrix}
+R_{12} &amp; R_{z}\vec{v}\\
+0 &amp; 1
+\end{pmatrix}
+$</p>
+
+<p>It works until I rotate the first joint(i.e. only when $q_{1}=0$).</p>
+
+<p>Under <code>works</code> I mean "calculates position of joint 2 origin right". This is done by multiplying transformation matrix $T_{02} = T_{01}T_{12}$ by $\begin{pmatrix} 0 &amp; 0 &amp; 0 &amp; 1\end{pmatrix}^{T}$</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12061" data-toggle = "popover">
+				<p>user name : Long Smith</p>
+				<p> user reputation : 190</p>
+				<p class = "tagcontent" id = "usertaginfo-12061">{'control': 2, 'None': 4, 'inverse-kinematics': 0, 'algorithm': 0, 'wheeled-robot': 1, 'motion': 1, 'kinematics': 1, 'robotic-arm': 1, 'mobile-robot': 1, 'motion-planning': 2, 'forward-kinematics': 1, 'arm': 1, 'movement': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-12061">Load Comments</button></br>
+			<div id = "commentsection-12061" class = 'collapse'>
+			<div id = "comment-21398" class = "comment">
+				<p>Unfortunately, from the description it is not clear what rotation should the structure execute. If the Z axis in the sketsc is pointing upwards, then it is unclear why is it summed up with alpha (assuming alpha is the tilt angle - y axis rotation - of the upper part). Furthermore, it is uncleat why do you summ up alpha with q1 even if they are rotations in the same direction. The q rotation is part of the rotation matrix, it should not be also part of the translation matrix.</p>
+			</div>
+			<div id = "comment-21399" class = "comment">
+				<p>Please add axis labels to all coordinate systems. Furthermore, sketching the rotational joint would really help understand the orientation of the rotations. Also it is unclear what is the significance of "does not move" in the image.</p>
+			</div>
+			<div id = "comment-21400" class = "comment">
+				<p>@50k4 Yes, I agree sketch is poor I'm going to draw new one. However why do you claim that `The q rotation is part of the rotation matrix, it should not be also part of the translation matrix`? I saw plenty of examples when `q` is used in rotation matrix and then in translation to find a projections onto axes.</p>
+			</div>
+			<div id = "comment-21401" class = "comment">
+				<p>@50k4 Take a look, I have loaded new image. You can see on this image joint 1 origin and joint 2 origin. To find a translation I calculate vector O1O2 when q1 = 0 and after q1 is changed I rotate this vector by q1 and get `x` and `y` translations, `z` translation is const. If this is not the way to do it, it would be glad if you explain why.</p>
+			</div>
+			</div>
+				<textarea id = "speech-12061" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12061">
+					<img id="start_img-12061" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12061">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-12066"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-12066" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You are complicating the translation part of the transformation matrix way to much. </p>
+
+<p>The rotational part:</p>
+
+<p>$
+R_{12}=
+\begin{pmatrix}
+cos(q_{1}) &amp; -sin(q_{1}) &amp; 0\\
+sin(q_{1}) &amp; cos(q_{1}) &amp; 0\\
+0 &amp; 0 &amp; 1
+\end{pmatrix}
+$</p>
+
+<p>takes care of the q1 rotation. There is no further need to include q1 in the translation part. In the rotated coordinate system you make a translation on the x and y axis which is constant. You can express it in function of alpha, but there is no need to, since it is constant, you can use: </p>
+
+<p>$
+Tr_{12} = \begin{pmatrix} v_{x}\\ 0 \\ v_{z} \end{pmatrix}
+$
+ as the translation part.</p>
+
+<p>So the transformation Matrix will look like:</p>
+
+<p>$
+T_{12}=
+\begin{pmatrix}
+R_{12} &amp; Tr_{12}\\
+0 &amp; 1
+\end{pmatrix}
+$</p>
+
+<p>Also please note that the coordinate system definitions you posted are not conform the Denavit-Hartenberg convention. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12066" data-toggle = "popover">
+				<p>user name : 50k4</p>
+				<p> user reputation : 2800</p>
+				<p class = "tagcontent" id = "usertaginfo-12066">{'geometry': 0, 'None': 193, 'kinematics': 0, 'robotic-arm': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-12066">Load Comments</button></br>
+			<div id = "commentsection-12066" class = 'collapse'>
+			<div id = "comment-21402" class = "comment">
+				<p>I agree with this answer. The rotation/translation and transform matrices exist so you can neatly side-step any of the intermediate projections. Translate $ds$, rotate $q$, translate $ds$, rotate $q$, etc. until you're done with all of your links and joints. Don't bother with anything else.</p>
+			</div>
+			<div id = "comment-21405" class = "comment">
+				<p>I fixed update. Now I get the same result for q = 0 and q = pi/2. I feel like the problem is in the vector (0, 0, 0 ,1).</p>
+			</div>
+			<div id = "comment-21406" class = "comment">
+				<p>Maybe this is a problem because I can not actually rotate vector with zero coordinates? Then should I calculate J2 position with T01 and O1O2?</p>
+			</div>
+			<div id = "comment-21407" class = "comment">
+				<p>Think I can not do it because rotation won't be incorporated in this transformation. How then can I calculate J2 position?</p>
+			</div>
+			<div id = "comment-21408" class = "comment">
+				<p>For the coordinate system, I know that. However my modelling environment has exactly such a coordinate system. I don't know why but it does.</p>
+			</div>
+			<div id = "comment-21410" class = "comment">
+				<p>@LongSmith - If you have a follow-up question, please ask a new question and link to this question `[link to this question](http://robotics.stackexchange.com/q/12061/9720)` if you feel this question is relevant.</p>
+			</div>
+			<div id = "comment-21411" class = "comment">
+				<p>@Chuck thanks for a piece of advice. Fortunately I got what I was missing. Just a principal misunderstanding of how I should use this matrices.</p>
+			</div>
+			<div id = "comment-21425" class = "comment">
+				<p>Sorry, I have to unassign your answer since you are not right. I have to include `q` in translation part because new joint basis coordinates are changed after rotation of previous joint. I'm going write an answer with full explanation  later.</p>
+			</div>
+			</div>
+				<textarea id = "speech-12066" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12066">
+					<img id="start_img-12066" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12066">Comment</button>
+			<br><div id = "ans-12080"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-12080" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>In general, when you apply "rotation around a point," you construct that matrix by doing:</p>
+
+<ol>
+<li>translate the center of rotation to world origin</li>
+<li>apply rotation around world origin</li>
+<li>translate the world origin back to the center of rotation</li>
+</ol>
+
+<p>Also note that there are two matrix conventions, and nobody agrees which one is "standard": row vectors on the left, with translation in the bottom row of the matrix, or column vectors on the right, with translation in the right column of the matrix. As long as you know which one you're using, and rigorously stick to it, and know to translate if you import data/formulas from another source, you'll do fine. (The translation of a matrix between conventions is a simple transpose.)</p>
+
+<p>Separately, there's the "left handed" versus "right handed" world coordinate interpretation conventions that may also vary, but luckily, the math is the same for both, so it doesn't change the matrices. A 90 degree rotation of unit X around the Z axis yields the unit Y vector, in either convention; the different only happens on translation to/from world coordinate space.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12080" data-toggle = "popover">
+				<p>user name : Jon Watte</p>
+				<p> user reputation : 645</p>
+				<p class = "tagcontent" id = "usertaginfo-12080">{'None': 43, 'cooling': 7, 'servos': 7, 'heat-management': 7}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-12080" class = 'collapse'>
+			</div>
+				<textarea id = "speech-12080" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12080">
+					<img id="start_img-12080" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12080">Comment</button>
+			<br><div id = "ans-12097"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-12097" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Firstly, I have to say that all the problems was because of my inattentiveness. Nothing was wrong with rotating $O_{1}O_{2}$ by $q_{1}$. The problem was about rotating first joint about global coordinates $Z$ axis instead of its' axis. Therefore I got an error between calculation and position in my modelling environment.</p>
+
+<p>Several times I was told that I have not to include $q$ in the translation part. Not only here but also in some other sources. However it is not true and I wonder why so many people have told me about that. Let us look at what actually happens here. For simplicity we will look at the planar case.</p>
+
+<p>Assume initial configuration like pictured below: 
+<a href="https://i.stack.imgur.com/znzNr.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/znzNr.png" alt="Explanation not rotated"></a></p>
+
+<p>Let's describe two transformation matrices: one which includes $q_{1}$ in translation part and one that does not.</p>
+
+<p>$
+T_{01}=\begin{pmatrix}
+cos(q_{1}) &amp; -sin(q_{1}) &amp; a_{1}\\
+sin(q_{1}) &amp; cos(q_{1}) &amp; 0\\
+0 &amp; 0 &amp; 1
+\end{pmatrix}\\
+T_{01}'=\begin{pmatrix}
+cos(q_{1}) &amp; -sin(q_{1}) &amp; a_{1}cos(q_{1})\\
+sin(q_{1}) &amp; cos(q_{1}) &amp; a_{1}sin(q_{1})\\
+0 &amp; 0 &amp; 1
+\end{pmatrix}\\
+$</p>
+
+<p>Vector $\vec{a_{2}}$ in $O_{1}$ frame is $\vec{a_{2}} = \begin{pmatrix}
+x_{0}'\\y_{0}'\\1\end{pmatrix}$</p>
+
+<p>Now let's rotate our $\vec{a_{1}}$ by some angle $q_{1}$
+<a href="https://i.stack.imgur.com/0kI5R.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/0kI5R.png" alt="Explanation rotated"></a></p>
+
+<p>What coordinates in origin frame vector $\vec{a_{2}}$ has? Geometrically easy to find that $\vec{a_{2}^{0}} = \begin{pmatrix}
+cos(q_{1})x_{0}'-sin(q_{1})y_{0}'+a_{1}cos(q_{1})\\
+sin(q_{1})x_{0}'+cos(q_{1})y_{0}'+a_{1}sin(q_{1})\\
+1
+\end{pmatrix}
+$</p>
+
+<p>Now let's multiply our transformation matrices by $a_{2}$ and we should get the same result.</p>
+
+<p>$
+T_{01}\vec{a_{2}}=\begin{pmatrix}
+cos(q_{1})x_{0}'-sin(q_{1})y_{0}'+a_{1}\\
+sin(q_{1})x_{0}'+cos(q_{1})y_{0}'\\
+1
+\end{pmatrix}\\\\
+T_{01}'\vec{a_{2}}=\begin{pmatrix}
+cos(q_{1})x_{0}'-sin(q_{1})y_{0}'+a_{1}cos(q_{1})\\
+sin(q_{1})x_{0}'+cos(q_{1})y_{0}'+a_{1}sin(q_{1})\\
+1
+\end{pmatrix}
+$</p>
+
+<p>And you see the difference: first transformation does not consider $O_{1}$ coordinate changes introduced by $q_{1}$ and it shifts our vector by the whole $a_{1}$ along $X$ and by 0 along $Y$. Therefore IF next joint coordinates are changed by current joint angle, you have to find projections in your translation part or if you know initial vector between their origins, you can rotate it by $q_{1}$. However the latter approach is more computationally expensive. Otherwise if coordinates are not going to be changed, you can throw out unnecessary calculations.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12097" data-toggle = "popover">
+				<p>user name : Long Smith</p>
+				<p> user reputation : 190</p>
+				<p class = "tagcontent" id = "usertaginfo-12097">{'control': 2, 'None': 4, 'inverse-kinematics': 0, 'algorithm': 0, 'wheeled-robot': 1, 'motion': 1, 'kinematics': 1, 'robotic-arm': 1, 'mobile-robot': 1, 'motion-planning': 2, 'forward-kinematics': 1, 'arm': 1, 'movement': 1}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-12097" class = 'collapse'>
+			</div>
+				<textarea id = "speech-12097" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12097">
+					<img id="start_img-12097" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12097">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

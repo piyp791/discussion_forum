@@ -1,0 +1,130 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>LQR for Inverted pendulumn
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11729" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11729" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 51</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>LQR for Inverted pendulumn</h2>
+<p>I'm studying an optimal control for the inverted pendulum in the following figure</p>
+
+<p><a href="https://i.stack.imgur.com/LM8I8.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/LM8I8.png" alt="enter image description here"></a></p>
+
+<p>the state and the output of the system are defined as
+$$x=\begin{bmatrix}r &amp; \theta &amp; \dot{r} &amp; \dot{\theta} \end{bmatrix}^T, \quad y=\begin{bmatrix}r &amp; \theta-\alpha &amp; \dot{r} \end{bmatrix}^T$$</p>
+
+<p>so the continuos state space model at the upright equilibrium is
+\begin{cases}
+\dot{x}(t)&amp;=Ax(t)+B_u u(t)+B_\alpha \alpha(t)+B_\tau \tau(t)+B_{F_s}F_s\text{sign}(\dot{r}(t)) \\
+y(t)&amp;=Cx(t)+D_\alpha\alpha(t)
+\end{cases}
+where the disturbance inclination $\alpha$ is suppose costant, $\tau$ is a torque disturbance,$B_{F_s}F_s\text{sign}(\dot{r}(t))$ is a Coulomb's friction term and $u$ is the input force applied at the cart. The numerical values for the transfer matrices are
+$$A=\begin{bmatrix}0 &amp; 0 &amp; 1 &amp; 0 \\ 0 &amp; 0 &amp; 0 &amp; 1 \\ 0 &amp; 2.8040 &amp; -5.2658 &amp; 0 \\ 0 &amp; 18.5885 &amp; -19.6959 &amp; 0 \end{bmatrix}, \quad B_u=\begin{bmatrix}0 \\ 0 \\ 3.7629 \\ 5.5257 \end{bmatrix}, \quad B_\alpha=\begin{bmatrix}0 \\ 0 \\ -12.6447 \\ 18.5885 \end{bmatrix}, \quad B_\tau=\begin{bmatrix}0 \\ 0 \\ 0.5650 \\ 3.7629 \end{bmatrix}, \quad B_{F_s}=\begin{bmatrix}0 \\ 0 \\ -1.1187 \\ -0.5650\end{bmatrix}  $$
+$$C=\begin{bmatrix} I_3 &amp; 0_{3\times1}\end{bmatrix} ,\qquad D_\alpha=\begin{bmatrix}0 &amp; -1 &amp; 0\end{bmatrix}^T$$
+where $I_n$ is the identity matrix $n\times n$ and $0_{m\times n}$ is the null matrix $m\times n$.</p>
+
+<p>For a digital implementation is required a suitable sampling of the previus system, so the discrete relative state-space model is in the form
+\begin{cases}
+x_{k+1}&amp;=\Phi x_k+\Gamma_u u_k+\Gamma_\alpha \alpha_k+\Gamma_\tau \tau_k+N_k(\dot{r}_k) \\
+y_k&amp;=Cx_k+D_\alpha\alpha_k
+\end{cases}</p>
+
+<p>Now there is my problem. To counteract the effects of constant rail inclinations a discrete-time integrator is appended to the model $(\Phi,\Gamma_u)$. Is taked in the simple form
+\begin{equation}\tag{1} w_{k+1}=w_k+r_k\end{equation}
+so the extended state of the system become
+$$x^{\text{e}}=\begin{bmatrix}x &amp; w\end{bmatrix}^T$$
+and the control state feedback is designed by minimization the cost function
+$$J(u)=\sum_{k=0}^\infty (x_k^\text{e})^TQx_k^\text{e}+Ru_k^2$$
+where the cost's matrices $Q$ must be semi-defined positive and the scalar cost $R$ must be strictly positive.</p>
+
+<p>I can't understand the function of the integrator $(1)$. The rail inclination affect both input and output of the system, so the integral action counteracts only the effect on output. Moreover, the state matrix $A$ is singular, so the system at least has one integral action by itself, and no more integrator has to appended to the system.</p>
+
+<p>Maybe the integrator $(1)$ is considere for drive the position of the cart to the start of the rail, i.e. $r=0$.</p>
+
+<p>Thanks in advance for any suggestion.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11729" data-toggle = "popover">
+				<p>user name : Gost91</p>
+				<p> user reputation : 16</p>
+				<p class = "tagcontent" id = "usertaginfo-11729">{'control': 3, 'None': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11729" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11729" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11729">
+					<img id="start_img-11729" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11729">Comment</button>
+
+<h1>Answers</h1>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

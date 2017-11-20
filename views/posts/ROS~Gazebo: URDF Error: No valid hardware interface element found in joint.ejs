@@ -1,0 +1,220 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>ROS~Gazebo: URDF Error: No valid hardware interface element found in joint
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-10629" class = "post">
+			<h2>Question</h2>
+			<div id="vote-10629" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 308</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>ROS~Gazebo: URDF Error: No valid hardware interface element found in joint</h2>
+<p>I am fairly new to ROS and Gazebo. I have posted this question on the ROS/Gazebo forums, but they appear to be dead. </p>
+
+<p>I am using ros-kinetic and gazebo7.3 on Ubuntu 16.04. I have been following this tutorial (<a href="http://www.generationrobots.com/blog/en/2015/02/robotic-simulation-scenarios-with-gazebo-and-ros/" rel="nofollow">Tutorial</a>) and have adapted it slightly for my own vehicle (4 wheels instead of 2, skid drive plugin instead of diff drive).</p>
+
+<p>I receive errors when running roslaunch on my own project, and I also get the same errors when using the same command on the completed project provided by the creators of the tutorial, <a href="https://github.com/HumaRobotics/mybot_gazebo_tutorial" rel="nofollow">Complete Project Github</a>. I assume that means that I am missing something in ros or Gazebo.</p>
+
+<p>Running:</p>
+
+<p>roslaunch jaguar4x4_gazebo jaguar4x4_world.launch</p>
+
+<p>gives the following errors (repeated for each of the four joint and trans):</p>
+
+<blockquote>
+  <p></p>
+</blockquote>
+
+<pre><code>[ERROR] [1472045218.311147687, 0.142000000]: No valid hardware interface element found in joint 'left_back_wheel_hinge'.
+
+[ERROR] [1472045218.311359894, 0.142000000]: Failed to load joints for transmission 'left_back_trans'.
+</code></pre>
+
+<p>Also: </p>
+
+<blockquote>
+  <p>[ERROR] [1472045218.646822285, 0.365000000]: Exception thrown while initializing controller leftfrontWheel_effort_controller. Could not find resource 'left_front_wheel_hinge' in 'hardware_interface::EffortJointInterface'. [ERROR] [WallTime: 1472045219.647578] [1.363000] Failed to load leftfrontWheel_effort_controller [INFO] [WallTime: 1472045219.647938] [1.363000] Loading controller: leftbackwheel_effort_controller [ERROR] [WallTime: 1472045220.651591] [2.366000] Failed to load leftbackwheel_effort_controller</p>
+</blockquote>
+
+<p>This error is repeated for each of the 4 wheels.</p>
+
+<p>I have seen similar error messages posted online, however, the solutions don t seem to fix mine (I can't post any more links due to my reputation level).</p>
+
+<p>(1). I already use the hardwareInterface tags</p>
+
+<p>(2). I have already installed ros_control</p>
+
+<p>If anyone has any ideas on how to fix these errors I would appreciate it. </p>
+
+<p>EDIT -------------------------------------------------------------------</p>
+
+<p>I think maybe there is an issue with the way that I have created my joints and the use of the hardwareInterface tags.</p>
+
+<p>In my macros.xacro file I create my joints and link the transmission separately (I repeat this twice for the front and back wheels): </p>
+
+<blockquote>
+<pre><code>   &lt;joint name="${lr}_front_wheel_hinge" type="continuous"&gt;
+      &lt;parent link="chassis"/&gt;
+      &lt;child link="${lr}_front_wheel"/&gt;
+      &lt;origin xyz="${+wheelPos-chassisLength+2*wheelRadius} ${tY*wheelWidth/2+tY*chassisWidth/2} ${wheelRadius}" rpy="0 0 0" /&gt;
+      &lt;axis xyz="0 1 0" rpy="0 0 0" /&gt;
+      &lt;limit effort="100" velocity="100"/&gt;
+      &lt;joint_properties damping="0.0" friction="0.0"/&gt;
+    &lt;/joint&gt;
+</code></pre>
+</blockquote>
+
+<pre><code>  &lt;transmission name="${lr}_front_trans"&gt;
+    &lt;type&gt;transmission_interface/SimpleTransmission&lt;/type&gt;
+    &lt;joint name="${lr}_front_wheel_hinge" /&gt; 
+    &lt;actuator name="${lr}_front_Motor"&gt; 
+      &lt;hardwareInterface&gt;EffortJointInterface&lt;/hardwareInterface&gt;
+      &lt;mechanicalReduction&gt;10&lt;/mechanicalReduction&gt;
+    &lt;/actuator&gt; 
+  &lt;/transmission&gt;
+</code></pre>
+
+<p>Doing it this way gives the errors mentioned above, but my model in Gazebo appears. </p>
+
+<p>If I try to merge both of these blocks so that there is just one joint tag wrapped by the transmission tags then I get the following error and my model does not appear in Gazebo:</p>
+
+<blockquote>
+  <p>[ERROR] [1473672367.041892175]: Failed to find root link: Two root links found: [footprint] and [left_back_wheel]</p>
+</blockquote>
+
+<p>I don't understand why I get this error because I have a joint between my chassis base link and the world in my Jaguar4x4.xacro file : </p>
+
+<pre><code> &lt;link name="footprint" /&gt; 
+
+ &lt;joint name="base_joint" type="fixed"&gt;
+   &lt;parent link="footprint"/&gt;
+   &lt;child link="chassis"/&gt;
+ &lt;/joint&gt;
+</code></pre>
+
+<p>I now get a number of errors when trying to combine the joint and transmission blocks, so I imagine that this is not the best way to go?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10629" data-toggle = "popover">
+				<p>user name : LukeT</p>
+				<p> user reputation : 6</p>
+				<p class = "tagcontent" id = "usertaginfo-10629">{'None': 0, 'ros': 1, 'gazebo': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10629">Load Comments</button></br>
+			<div id = "commentsection-10629" class = 'collapse'>
+			<div id = "comment-19097" class = "comment">
+				<p>Why don't you ask ROS technical question at [its own designated forum](http://answers.ros.org/)?</p>
+			</div>
+			<div id = "comment-19100" class = "comment">
+				<p>Looks like same problem as you http://answers.ros.org/question/186681/no-valid-hardware-interface-element-found-in-joint/</p>
+			</div>
+			<div id = "comment-19126" class = "comment">
+				<p>Hi, @IsaacS I did actually post on the ROS forum, though I didn't receive any responses, even after 2 weeks.</p>
+			</div>
+			<div id = "comment-19127" class = "comment">
+				<p>@hammer , I did actually find that answer (and other similar) a little while ago, but I already use the transmission and hardwareInterface tags. I'll have another look to see if I have missed any.</p>
+			</div>
+			<div id = "comment-19129" class = "comment">
+				<p>@hammer I have edited my original post. I remember now that I do have a joint tag which is not wrapped with the transmission tag. I then link the transmission in the next block (code added to original post).
+
+If I merge these so that there is just one joint tag wrapped by the transmission tags, then the original error disappears and I instead get another error (added to original post).
+
+I hope I haven't made my original post too long and confusing now.</p>
+			</div>
+			<div id = "comment-19189" class = "comment">
+				<p>Two basic questions come to my mind: 
+1) Did you manage to run ANY controllers? I mean, did the unmodified tutorial code work?
+2) Did you install ros_control_controllers? It is a different package than ros_control (:</p>
+			</div>
+			<div id = "comment-19191" class = "comment">
+				<p>@Squelsh hi, 1). No, I wasn't able to run the unmodified tutorial code. 2). I am not sure, I install ros_control but I don't think I installed ros_control_controllers , how can I install ros_control_controllers , I can't seem to find it online.
+
+Unless you meant: (apt-get install ros-kinetic-ros-control ros-kinetic-ros-controllers)</p>
+			</div>
+			<div id = "comment-19192" class = "comment">
+				<p>Sorry, '''ros-kinetic-ros-controllers''' is exactly what I meant.
+I also struggled with ROS/Gazebo controllers, and my advice would be to first find a ros-package that comes with a working simulation example and start from there (like the Universal Robot UR5/UR10 packages, which have a perfect simulation.)</p>
+			</div>
+			<div id = "comment-19228" class = "comment">
+				<p>Two root links error is indicative of having disconnections in the joint chain, the model has to form a directed tree with one root. Try using ros tools to visualize the tree.</p>
+			</div>
+			<div id = "comment-19253" class = "comment">
+				<p>@hammer Sorry, I have had another look at it combining the two blocks as I mentioned in my edit doesn't seem to be the way to go, I get other parsing errors. 
+
+I have since managed to rewrite the whole thing in a single .world file which actually works, but I'd still like to get the urdf approach working.</p>
+			</div>
+			</div>
+				<textarea id = "speech-10629" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10629">
+					<img id="start_img-10629" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10629">Comment</button>
+
+<h1>Answers</h1>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

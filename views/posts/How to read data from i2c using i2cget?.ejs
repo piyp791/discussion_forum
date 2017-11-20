@@ -1,0 +1,163 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to read data from i2c using i2cget?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2897" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2897" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 4593</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to read data from i2c using i2cget?</h2>
+<p>I'm new to embedded devices and am trying to understand how to use i2cget (or the entire I2C protocol really).</p>
+
+<p>I'm using an accelerometer MMA8452, and the datasheet says the Slave Address is 0x1D (if my SAO=1, which I believe is referring to the I2C bus being on channel 1 on my raspberrypi v2).</p>
+
+<p>From the command line, I enter</p>
+
+<pre><code>sudo i2cget -y 1 0X1d
+</code></pre>
+
+<p>It returns</p>
+
+<pre><code>0X00
+</code></pre>
+
+<p>I think that means I'm attached to the correct device.</p>
+
+<p>So now, I'm trying to figure out how do I get actual data back from the accelerometer?</p>
+
+<p>The i2c spec says</p>
+
+<pre><code>i2cget [-y] i2cbus chip-address [data-address [mode]]
+</code></pre>
+
+<p>So I have tried</p>
+
+<pre><code>sudo i2cget -y 1 0x1D 0x01
+</code></pre>
+
+<p>where 0x01 is the OUT_X_MSB. I'm not sure entirely what I'm expecting to get back, but I figured if I saw some data other than 0x00, I might be able to figure that out.</p>
+
+<p>Am I using ic2get wrong? Is there a better way to learn and get data from i2c?</p>
+
+<p>The datasheet for my accelerometer chip is at <a href="http://dlnmh9ip6v2uc.cloudfront.net/datasheets/Sensors/Accelerometers/MMA8452Q.pdf" rel="nofollow">http://dlnmh9ip6v2uc.cloudfront.net/datasheets/Sensors/Accelerometers/MMA8452Q.pdf</a></p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2897" data-toggle = "popover">
+				<p>user name : pedalpete</p>
+				<p> user reputation : 111</p>
+				<p class = "tagcontent" id = "usertaginfo-2897">{'None': 0, 'i2c': 2, 'raspberry-pi': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2897" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2897" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2897">
+					<img id="start_img-2897" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2897">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-4780"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4780" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><blockquote>
+  <p>the Slave Address is 0x1D (if my SAO=1, which I believe is referring to the I2C bus being on channel 1 on my raspberrypi v2)</p>
+</blockquote>
+
+<p>SA0 is actually a pin on the chip (pin 7 by the datasheet). Changing it's value allows you to specify the address, helping to avoid address clashes. So it depends on how you've connected that pin in your circuit.</p>
+
+<p>From the datasheet:</p>
+
+<blockquote>
+  <p>The MMA8452Q's standard slave address is a choice between the two sequential addresses 0011100 and 0011101. The 
+  selection is made by the high and low logic level of the SA0 (pin 7) input respectively</p>
+</blockquote>
+
+<p>If you have SA0 already set to '1' then it's probably worth looking at the values from all the data registers: 0x01 to 0x06. If the device is outputting low values it's possible the MSBs will be 0.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4780" data-toggle = "popover">
+				<p>user name : jsaven</p>
+				<p> user reputation : 121</p>
+				<p class = "tagcontent" id = "usertaginfo-4780">{'None': 2}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-4780" class = 'collapse'>
+			</div>
+				<textarea id = "speech-4780" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4780">
+					<img id="start_img-4780" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4780">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

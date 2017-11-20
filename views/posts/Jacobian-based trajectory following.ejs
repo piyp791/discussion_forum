@@ -1,0 +1,325 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Jacobian-based trajectory following
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-6617" class = "post">
+			<h2>Question</h2>
+			<div id="vote-6617" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 1215</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Jacobian-based trajectory following</h2>
+<p>I would like to control my 7 DOF robot arm to move along a Cartesian trajectory in the world frame.  I can do this just fine for translation, but I am struggling on how to implement something similar for rotation.  So far, all my attempts seem to go unstable.  </p>
+
+<p>The trajectory is described as a translational and rotational velocity, plus a distance and/or timeout stopping criteria.  Basically, I want the end-effector to move a short distance relative to its current location.  Because of numerical errors, controller errors, compliance, etc, the arm won't be exactly where you wanted it from the previous iteration.  So I don't simply do $J^{-1}v_e$.  Instead, I store the pose of the end-effector at the start, then at every iteration I compute where the end-effector <em>should</em> be at the current time, take the difference between that and the current location, then feed that into the Jacobian.</p>
+
+<p>I'll first describe my translation implementation.  Here is some pseudo OpenRave Python:</p>
+
+<pre><code># velocity_transform specified in m/s as relative motion
+def move(velocity_transform):
+  t_start = time.time()
+  pose_start = effector.GetTransform()
+  while True:
+    t_now = time.time()
+    t_elapsed = t_now - t_start
+    pose_current = effector.GetTransform()
+    translation_target = pose_start[:3,3] + velocity_transform[:3,3] * t_elapsed
+    v_trans = translation_target - pose_current[:3,3]
+    vels = J_plus.dot(v_trans) # some math simplified here
+</code></pre>
+
+<p>The rotation is a little trickier.  To determine the desired rotation at the current time, i use Spherical Linear Interpolation (SLERP).  OpenRave provides a quatSlerp() function which I use.  (It requires conversion into quaternions, but it seems to work).  Then I calculate the relative rotation between the current pose and the target rotation.  Finally, I convert to Euler angles which is what I must pass into my AngularVelocityJacobian.  Here is the pseudo code for it.  These lines are inside the while loop:</p>
+
+<pre><code>rot_t1 = np.dot(pose_start[:3,:3], velocity_transform[:3,:3]) # desired rotation of end-effector 1 second from start
+quat_start = quatFromRotationMatrix(pose_start) # start pose as quaternion
+quat_t1 = quatFromRotationMatrix(rot_t1) # rot_t1 as quaternion
+
+# use SLERP to compute proper rotation at this time
+quat_target = quatSlerp(quat_start, quat_t1, t_elapsed) # world_to_target
+rot_target = rotationMatrixFromQuat(quat_target) # world_to_target
+v_rot = np.dot(np.linalg.inv(pose_current[:3,:3]), rot_target) # current_to_target
+v_euler = eulerFromRotationMatrix(v_rot) # get rotation about world axes
+</code></pre>
+
+<p>Then v_euler is fed into the Jacobian along with v_trans.  I am pretty sure my Jacobian code is fine.  Because i have given it (constant) rotational velocities ok.  </p>
+
+<p>Note, I am not asking you to debug my code.  I only posted code because I figured it would be more clear than converting this all to math.  I am more interested in why this might go unstable.  Specifically, is the math wrong?  And if this is completely off base, please let me know.  I'm sure people must go about this somehow. </p>
+
+<p>So far, I have been giving it a slow linear velocity (0.01 m/s), and zero target rotational velocity.  The arm is in a good spot in the workspace and can easily achieve the desired motion.  The code runs at 200Hz, which should be sufficiently fast enough.  </p>
+
+<p>I can hard-code the angular velocity fed into the Jacobian instead of using the computed <code>v_euler</code> and there is no instability.  So there is something wrong in my math.  This works for both zero and non-zero target angular velocities.  Interestingly, when i feed it an angular velocity of 0.01 rad/sec, the end-effector rotates at a rate of 90 deg/sec.</p>
+
+<p><strong>Update:</strong> If I put the end-effector at a different place in the workspace so that its axes are aligned with the world axes, then everything seems works fine.  If the end-effector is 45 degrees off from the world axes, then some motions seem to work, while others don't move exactly as they should, although i don't think i've seen it go unstable.  At 90 degrees or more off from world, then it goes unstable. </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6617" data-toggle = "popover">
+				<p>user name : Ben</p>
+				<p> user reputation : 3608</p>
+				<p class = "tagcontent" id = "usertaginfo-6617">{'None': 277, 'inverse-kinematics': 3, 'accelerometer': 5, 'calibration': 10, 'kinematics': 14, 'robotic-arm': 8, 'jacobian': 6, 'dh-parameters': 8, 'imu': 5, 'sensors': 5}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-6617">Load Comments</button></br>
+			<div id = "commentsection-6617" class = 'collapse'>
+			<div id = "comment-9536" class = "comment">
+				<p>Does the arm go unstable for simple commanded rotations?</p>
+			</div>
+			<div id = "comment-9540" class = "comment">
+				<p>Is the time step sufficiently short?</p>
+			</div>
+			<div id = "comment-9541" class = "comment">
+				<p>Good questions, I expanded my question with a response.</p>
+			</div>
+			<div id = "comment-17270" class = "comment">
+				<p>Thanks a lot for your post and the answers. I am able to compute the error in the rotation matrices between the desired and the current which are 3x3. I am not able to figure out how to derive the axis angle(r*sin(theta)). Please correct me if i am wrong, i think that the axis and angle are obatined by conversion into the quaternion form. Could you please explain ? Thanks in advance</p>
+			</div>
+			<div id = "comment-17271" class = "comment">
+				<p>Welcome to *robotics* Vikram Sridhar. On Stack exchange *answers* need to answer the question. If you have a related question, it should be asked as a new question (ideally referencing this one). Note that we prefer *[practical, answerable questions based on actual problems that you face](http://robotics.stackexchange.com/help/dont-ask)*. Please take a look at [ask] and [about] for more information on how stack exchange works.</p>
+			</div>
+			</div>
+				<textarea id = "speech-6617" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6617">
+					<img id="start_img-6617" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6617">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-6636"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6636" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The math required to deal with the orientation error (in terms of error with respect to both desired position and desired velocity) is well described in the book of <a href="http://www.kramirez.net/Robotica/Material/Libros/Robotics%20-%20Modelling,%20Planning%20and%20Control.pdf" rel="nofollow">Sciavicco-Siciliano</a>. See section 3.7.3 starting from page 137.</p>
+
+<p>I'm personally employing the axis-angle notation, thus I coded the formula (3.89) given at page 139 with correct results.</p>
+
+<p>In short, given the goal of tracking a 6D trajectory in the Cartesian space both in position and velocity, the inputs are $\left(p_d,\dot{p}_d\right)$ for the translational part and $\left(\theta_d,\omega_d\right)$ for the orientation part (axis-angle). The inputs are meant to be time varying (i.e. $p_d \equiv p_d\left(t\right)$). Then, the dynamics of the error is analyzed (see e.g. section 3.7.1) to come up with a convergence rule whose $\mathbin{K}_P$ and $\mathbin{K}_O$ are the positive definite matrices gains acting on the error itself. These matrices set just the convergence speed.</p>
+
+<p>I didn't go into your code, but this formula, as different versions of it, makes use of the pseudo-inverse of the Jacobian to allow producing step-by-step the joint velocities required to drive the manipulator towards the target position and orientation of the end-effector with approximately the specified Cartesian speed.</p>
+
+<h3>Update</h3>
+
+<p>Following up our discussion below in the comments, to give you a very basic point in the code where to start from, take a glace at <a href="https://github.com/robotology/icub-main/blob/29dae61660f0736991be94d0e3947a7bc21d5ba9/src/libraries/iKin/src/iKinInv.cpp#L102" rel="nofollow">these lines</a>. They are part of a method computing the Cartesian error, which is in turn an important piece of our operational space controller we use with the iCub.</p>
+
+<p>Imagine now that <code>ctrlPose==IKINCTRL_POSE_FULL</code>; all the lines <code>102 =&gt; 118</code> will be then executed. The first block computes the translational error, while the second block implements the formula (3.84) above that deals with the orientation error in axis-angle notation, where the matrix <strong>Des</strong> represents the desired orientation transformed in DCM format (Direction-Cosine-Matrix, i.e. the standard rotation matrix) from the axis-angle and the matrix <strong>H</strong> accounts for the current pose.</p>
+
+<p>Once the $6 \times 1$ error vector $e$ gets correctly populated - being the last three components the orientation error in axis-angle convention - you can then run the control law:</p>
+
+<p>$
+\dot{q}=J_G^+ \cdot e,
+$</p>
+
+<p>where $J_G$ is the $6 \times n$ Geometric Jacobian and $\dot{q}$ the $n \times 1$ vector of joint velocities. In this basic implementation we don't handle the target orientation velocities $\omega_d$, which are zero, neither the target translational velocities $\dot{p}_d$.</p>
+
+<p>Moreover, we know that $e=\left[e_P, e_O\right]^T$, but we can also impose $e=\left[K_P \cdot e_P, K_O \cdot e_O\right]^T$ to play with convergence speed.</p>
+
+<p>The values of $K_P$ and $K_O$ can be even made greater than $I$ to start with but then bear in mind that the pseudo-inverse algorithm is intrinsically unstable due to e.g. singularities in the Jacobian and high values of gain matrices could enhance this problem.</p>
+
+<p>To mitigate such a downside, one can implement a synergy between the Jacobian pseudo-inverse (very fast but prone to instabilities) and the Jacobian transposed (much slower but intrinsically stable), ending up with the classical <em>Damped-Least-Squares</em> (DLS) technique, aka Levenberg-Marquardt algorithm.</p>
+
+<p>In the end, also DLS can suffer from reliability, accuracy and speed issues, especially when you want to control at the same time the translation and the orientation for a very redundant manipulator equipped with many degrees of freedom. That's why I finally came up with the use of a nonlinear optimizer capable of solving the inverse kinematics on the fly. Once the desired pose is known also in the configuration space the design of the controller is extremely facilitated.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6636" data-toggle = "popover">
+				<p>user name : Ugo</p>
+				<p> user reputation : 1482</p>
+				<p class = "tagcontent" id = "usertaginfo-6636">{'None': 99}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-6636">Load Comments</button></br>
+			<div id = "commentsection-6636" class = 'collapse'>
+			<div id = "comment-9542" class = "comment">
+				<p>This looks like what I want.  I have the book and am working through it, but could you elaborate on your answer?  I am confused as to why $\omega_d$ appears in equation 3.89.  Because getting angular velocities in the world frame is the whole problem.  And what is $K_O$ and $K_P$?  Also, this doesn't solve the first half of the problem (what i am using quatSLERP for) which computes the incremental target rotation.  This seems to be covered in section 4.3.3, (page 187).  But I can't quite figure that out either.</p>
+			</div>
+			<div id = "comment-9543" class = "comment">
+				<p>I've extended the answer. Hope this will better clarify.</p>
+			</div>
+			<div id = "comment-9549" class = "comment">
+				<p>Probably, your doubt could be solved by looking at equation (3.84), which represents the rotation matrix error between the current orientation and the desired one. From the matrix you can then get the corresponding axis-angle. The axis part (3 components) will remain unchanged over time, while the angle (1 component) will vary, e.g. linearly with time.</p>
+			</div>
+			<div id = "comment-9566" class = "comment">
+				<p>OK, I think it is becoming more clear. Two quick questions though. I am a little confused regarding your change of notation. In the book $\vartheta$ is angle and $\boldsymbol{r}$ is axis, whereas you wrote $\theta$ for angle and $\omega$ for axis. The book specifies $\boldsymbol\omega$ as angular velocity about each axis. Which I always thought was Euler angles with a non-rotating frame, but perhaps I am wrong.  What do you use for $\boldsymbol\omega$? Is it $\vartheta\boldsymbol{r}$? Also, is something like $0.9I$ sufficient for the $K$ matrices?</p>
+			</div>
+			<div id = "comment-9568" class = "comment">
+				<p>In my answer I somehow abused of notation: with $\theta_d$ I meant the axis-angle $\left(a_x,a_y,a_z,\theta\right)$ with $\|a\|=1$ corresponding to the target rotation matrix $R_d$, whereas $\omega_d$ is the target angular velocity of the frame $R\left(t\right)$ described at page 107 to identify its derivative (here appears the famous skew matrix). $0.9I$ is ok. However I'll expand a bit further directly into the answer.</p>
+			</div>
+			</div>
+				<textarea id = "speech-6636" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6636">
+					<img id="start_img-6636" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6636">Comment</button>
+			<br><div id = "ans-6645"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6645" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>So I looked into the quatSlerp function and it seems like you are passing t_elapsed incorrectly. It looked like that argument is supposed to be the the interpolation value, where if t = 0, the rotation returned is the identity, and if t = 1 the rotation returned is the full rotation between first two quaternion arguments passed. </p>
+
+<p>If this code is inside a while loop, and t_elapsed is getting larger than 1, the arm will go unstable. </p>
+
+<p>This doesn't explain why the unstable behavior would be affected by position. </p>
+
+<p>Hopefully this isn't what you meant by debugging your code.</p>
+
+<p><a href="http://openrave.org/docs/latest_stable/coreapihtml/geometry_8h_source.html#l00988" rel="nofollow">quatSlerp</a></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6645" data-toggle = "popover">
+				<p>user name : holmeski</p>
+				<p> user reputation : 1338</p>
+				<p class = "tagcontent" id = "usertaginfo-6645">{'pose': 3, 'None': 101, 'computer-vision': 3, 'kalman-filter': 3}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-6645">Load Comments</button></br>
+			<div id = "commentsection-6645" class = 'collapse'>
+			<div id = "comment-9550" class = "comment">
+				<p>I *think* quatSlerp can be used in this way.  You are right that I am effectively extrapolating instead of interpolating if `t_elapsed` is greater than 1.  (I did some quick tests and it appears that quatSlerp allows this with the proper behavior.)  So  `velocity_transform` is angular velocity in rad/sec, and `quat_t1` is therefore the desired rotation 1 second after start.  After getting some comments, I realized that it might be better if I pass in the goal pose and time to reach it instead of velocity.  This would then only interpolate, but I don't think it changes anything much.</p>
+			</div>
+			</div>
+				<textarea id = "speech-6645" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6645">
+					<img id="start_img-6645" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6645">Comment</button>
+			<br><div id = "ans-12152"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-12152" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p><a href="https://robotics.stackexchange.com/a/6636">Ugo's answer</a> refers to <a href="http://www.springer.com/de/book/9781846286414" rel="nofollow noreferrer">"Sciavicco-Siciliano"</a> which is a good book I'll quote as well.</p>
+
+<p>Chapter 3.6 introduces the so-called analytical Jacobian which is not the same as the so called geometrical Jacobian as it shows up in:
+$
+\omega=J_{geom} \cdot \dot{q},
+$
+but has to be obtained from $J_{geom}$ with the help of the transformation matrix $T_A$:</p>
+
+<p>$
+J_{analytical}=T_A \cdot J_{geom}
+$</p>
+
+<p>or even more informative:</p>
+
+<p>$
+\dot{\phi}=J_{analytical} \cdot \dot{q}    
+$</p>
+
+<p>I allow myself one quotation from this chapter:</p>
+
+<blockquote>
+  <p>From a physical viewpoint, the meaning of $\omega_e$ is more intuitive
+  than that of $\dot{\phi}_e$. The three components of  e represent the
+  components of angular velocity with respect to the base frame.
+  Instead, the three elements of $\dot{\phi}_e$ represent nonorthogonal
+  components of angular velocity defined with respect to the axes of a
+  frame that varies as the end-effector orientation varies. On the other
+  hand, while the integral of $\dot{\phi}_e$ over time gives $\phi_e$,
+  the integral of $\omega_e$ does not admit a clear physical
+  interpretation...</p>
+</blockquote>
+
+<p>So the good news is that we can work with $\phi_e$ -- orientation of the end effector expressed in Euler angles, the bad news is that the transformation matrix $T_A$ introduces singularities which makes the authors of <a href="http://www.springer.com/de/book/9781846286414" rel="nofollow noreferrer">2</a> abandon
+the concept of analytical Jacobian.</p>
+
+<p>But here comes OpenRave:</p>
+
+<pre><code>manip=robot.GetManipulators()[0]
+# we calculate the rotational Jacobian in quaternion space
+quatJ = manip.CalculateRotationJacobian()
+quatManip0 = manip.GetTransformPose()[0:4]
+# order of multiplication may be wrong in the next line
+quatManipTarget = qmult(quatManip0, deltaQuat) # 
+wSol=np.linalg.lstsq(quatJ, quatManipTarget)
+</code></pre>
+
+<p><s>So by using the analytical Jacobian in quaternion space you avoid the singularities of the transformation matrix $T_A$. Your Jacobian can still have numeric instability, but this is something different. </s></p>
+
+<p><strong>UPDATE</strong>:
+I thought again about the singularities of $T_A$ and possible numeric instabilities of the analytical Jacobian in quaternion space. Indeed my previous claim about the singularities in $\mathbb{R}^3$ being not the same as numeric instabilities in quaternion space is too "strong".  </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12152" data-toggle = "popover">
+				<p>user name : sirop</p>
+				<p> user reputation : 61</p>
+				<p class = "tagcontent" id = "usertaginfo-12152">{'None': 6}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-12152" class = 'collapse'>
+			</div>
+				<textarea id = "speech-12152" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12152">
+					<img id="start_img-12152" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12152">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

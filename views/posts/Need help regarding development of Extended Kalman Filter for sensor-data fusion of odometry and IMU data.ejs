@@ -1,0 +1,450 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Need help regarding development of Extended Kalman Filter for sensor-data fusion of odometry and IMU data
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-10382" class = "post">
+			<h2>Question</h2>
+			<div id="vote-10382" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 248</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Need help regarding development of Extended Kalman Filter for sensor-data fusion of odometry and IMU data</h2>
+<p>I'm trying to develop an Extended Kalman Filter (EKF) for the positioning of a wheeled vehicle. I have a '<a href="http://www.dfrobot.com/index.php?route=product/product&amp;product_id=261#.V53MFvmLSUk" rel="nofollow noreferrer">Baron</a>' robot frame with 4 static wheels, all driven by a motor. On the 2 rear wheels I have an encoder. I want to fuse this odometry data with data from an '<a href="https://www.sparkfun.com/products/retired/11486" rel="nofollow noreferrer">MPU9150</a>' 9 DOF IMU. </p>
+
+<p>This is my mathlab code for the what I call <strong>'medium-size' EKF</strong>. This uses data from encoders, accelerometer in x and y axis and gyroscope z-axis.</p>
+
+<h1>Medium-size EKF</h1>
+
+<blockquote>
+  <p><strong>Inputs:</strong>   x: "a priori" state estimate vector (8x1)<br/>
+           t: sampling time [s]<br/>
+           P: "a priori" estimated state covariance vector (8x8)<br/>
+           z: current measurement vector (5x1) (encoder left; encoder right; x-acceleration, y-acceleration, z-axis gyroscope)<br/>
+  <strong>Output:</strong>   x: "a posteriori" state estimate vector (8x1)<br/>
+           P: "a posteriori" state covariance vector (8x8)<br/></p>
+  
+  <p><strong>State vector x:</strong> a 8x1 vector $\begin{bmatrix} x \rightarrow X-Position In Global Frame \\ \dot x \rightarrow Speed In X-direction Global Frame \\ \ddot x \rightarrow Acceleration In X-direction Global Frame \\ y \rightarrow Y-Position In Global Frame \\ \dot y \rightarrow Speed In Y-direction Global Frame \\ \ddot y \rightarrow Acceleration In Y-direction Global Frame \\ \theta \rightarrow Vehicle Angle In Global Frame \\ \dot \theta \rightarrow Angular Speed Of The Vehicle \end {bmatrix}$</p>
+  
+  <p><strong>Measurement vector z:</strong> <br/>
+  a 5x1 vector $\begin{bmatrix} \eta_{left} \rightarrow Wheelspeed Pulses On Left Wheel \\ \eta_{right} \rightarrow Wheelspeed Pulses On Right Wheel \\ \dot \theta_z \rightarrow GyroscopeMeasurementInZ-axisVehicleFrame \\ a_x \rightarrow AccelerometerMeasurementX-axisVehicleFrame \\ a_y \rightarrow AccelerometerMeasurementY-axisVehicleFrame \end {bmatrix}$</p>
+</blockquote>
+
+<pre><code>function [x,P] = moodieEKFmedium(x,t,P,z,sigma_ax,sigma_ay,sigma_atau,sigma_odo,sigma_acc,sigma_gyro)
+
+% Check if input matrixes are of correct size
+[rows columns] = size(x);
+if (rows ~= 8 &amp;&amp; columns ~= 1)
+    error('Input vector size incorrect')
+end
+[rows columns] = size(z);
+if (rows ~= 5 &amp;&amp; columns ~= 1)
+    error('Input data vector size incorrect')
+end
+
+% Constants
+n0 = 16;
+r = 30;
+b = 50;
+
+Q = zeros(8,6);
+Q(3,3) = sigma_ax;
+Q(6,6) = sigma_ay;
+Q(8,8) = sigma_atau;
+%[Q(1,8),Q(3,6),Q(6,3)] = deal(small);
+
+dfdx = eye(8);
+[dfdx(1,2),dfdx(2,3),dfdx(4,5),dfdx(5,6),dfdx(7,8)] = deal(t);
+[dfdx(1,3),dfdx(4,6)] = deal((t^2)/2);
+
+dfda = zeros(6,6);
+[dfda(3,3),dfda(6,6),dfda(8,8)] = deal(1);
+
+dhdn = eye(5,5);
+
+R = zeros(5,5);
+[R(1,1),R(2,2)] = deal(sigma_odo);
+R(3,3) = sigma_gyro;
+[R(4,4),R(5,5)] = deal(sigma_acc);
+%[R(2,1),R(1,2)] = deal(small);
+
+
+% Predict next state
+% xk = f(xk-1)
+xtemp = zeros(8,1);
+xtemp(1) = x(1) + t*x(2)+((t^2)/2)*x(3);
+xtemp(2) = x(2) + t*x(3);
+u1 = normrnd(0,sigma_ax);
+xtemp(3) = x(3) + u1;
+
+xtemp(4) = x(4) + t*x(5)+((t^2)/2)*x(6);
+xtemp(5) = x(5) + t*x(6);
+u2 = normrnd(0,sigma_ay);
+xtemp(6) = x(6) + u2;
+
+xtemp(7) = x(7) + t*x(8);
+u3 = normrnd(0,sigma_atau);
+xtemp(8) = x(8) + u3;
+
+x = xtemp
+
+% Predict next state covariance
+% Pk = dfdx * Pk-1 * transpose(dfdx) + dfda * Q * transpose(dfda)
+P = dfdx * P * transpose(dfdx) + dfda * Q * transpose(dfda);
+
+% Calculate Kalman gain
+% Kk = P * transpose(dhdx) [dhdx * P + dhdn * R * transpose(dhdn)]^-1
+dhdx = zeros(5,8);
+if(x(2) == 0 &amp;&amp; x(5) == 0)
+    [dhdx(1,2),dhdx(2,2)] = deal(0);
+    [dhdx(1,4),dhdx(2,4)] = deal(0);
+else
+    [dhdx(1,2),dhdx(2,2)] = deal(((t*n0)/(2*pi*r))*(x(2)/sqrt(x(2)^2+x(5)^2)));
+    [dhdx(1,4),dhdx(2,4)] = deal(((t*n0)/(2*pi*r))*(x(5)/sqrt(x(2)^2+x(5)^2)));
+end
+%[dhdx(1,2),dhdx(2,2)] = deal(((t*n0)/(2*pi*r))*(x(2)/sqrt(x(2)^2+x(5)^2)));
+%[dhdx(1,4),dhdx(2,4)] = deal(((t*n0)/(2*pi*r))*(x(5)/sqrt(x(2)^2+x(5)^2)));
+dhdx(1,6) = (t*n0*b)/(2*pi*r);
+dhdx(2,6) = -(t*n0*b)/(2*pi*r);
+
+dhdx(4,3) = sin(x(7));
+dhdx(4,6) = -cos(x(7));
+dhdx(4,7) = (x(3)*cos(x(7)))+(x(6)*sin(x(7)));
+
+dhdx(5,3) = cos(x(7));
+dhdx(5,6) = sin(x(7));
+dhdx(5,7) = (-x(3)*sin(x(7)))+(x(6)*cos(x(7)));
+
+Kk = P * transpose(dhdx) * (dhdx * P * transpose(dhdx) + dhdn * R * transpose(dhdn))^(-1)
+
+% Update state
+H = zeros(5,1);
+n1 = normrnd(0,sigma_odo);
+H(1) = (((t*n0)/(2*pi*r))*sqrt(x(2)^2+x(4)^2))+(((t*n0*b)/(2*pi*r))*x(6)) + n1;
+n2 = normrnd(0,sigma_odo);
+H(2) = (((t*n0)/(2*pi*r))*sqrt(x(2)^2+x(4)^2))-(((t*n0*b)/(2*pi*r))*x(6)) + n2;
+n3 = normrnd(0,sigma_gyro);
+H(3)= x(8) + n3;
+n4 = normrnd(0,sigma_acc);
+H(4)=(x(3)*sin(x(7))-(x(6)*cos(x(7))))+n4;
+n5 = normrnd(0,sigma_acc);
+H(5)=(x(3)*cos(x(7))+(x(6)*sin(x(7))))+n5;
+
+x = x + Kk*(z-H)
+
+% Update state covariance
+P = (eye(8)-Kk*dhdx)*P;
+</code></pre>
+
+<p>end</p>
+
+<p>This is the filter in schematic :
+<a href="https://i.stack.imgur.com/hwxer.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/hwxer.jpg" alt="enter image description here"></a></p>
+
+<p>These are the state transition equations I use : 
+$$\ x_{t+1} = x_{t} + T \cdot \dot x_{t} + \frac{T^{2}}{2} \cdot \ddot x_{t}$$
+$$\ \dot x_{t+1} = \dot x_{t} + T \cdot \ddot x_{t} $$
+$$\ \ddot x_{t+1} = \ddot x_{t} + u_{1} $$
+$$\ y_{t+1} = y_{t} + T \cdot \dot y_{t} + \frac{T^{2}}{2} \cdot \ddot y_{t}$$
+$$\ \dot y_{t+1} = \dot y_{t} + T \cdot \ddot y_{t} $$
+$$\ \ddot y_{t+1} = \ddot y_{t} + u_{2} $$
+$$\ \dot \theta_{t+1} = \dot \theta_{t} + T \cdot \ddot \theta_{t} $$
+$$\ \ddot \theta_{t+1} = \ddot \theta_{t} + u_{3} $$</p>
+
+<p>These are the observation equations I use :</p>
+
+<p>$$\ \eta_{left} = \frac{T \cdot n_{0}}{2 \cdot \pi \cdot r} \cdot \sqrt{\dot x^{2} + \dot y^{2}} + \frac{T \cdot n_{0} \cdot b}{2 \cdot \pi \cdot r} \cdot \dot \theta + n_{1}$$
+$$\ \eta_{right} = \frac{T \cdot n_{0}}{2 \cdot \pi \cdot r} \cdot \sqrt{\dot x^{2} + \dot y^{2}} - \frac{T \cdot n_{0} \cdot b}{2 \cdot \pi \cdot r} \cdot \dot \theta + n_{2}$$
+$$\ \dot \theta_{z} = \dot \theta + n_{3}$$
+$$\ a_{x} = \ddot x \sin \theta - \ddot y \cos \theta + n_{4}$$
+$$\ a_{y} = \ddot x \cos \theta + \ddot y \sin \theta + n_{5}$$</p>
+
+<h1>Small-size EKF</h1>
+
+<p>I wanted to test my filter, therefore I started with a smaller one, in which I only give the odometry measurements as input. This because I know that if I always receive the same amount of pulses on the left and right encoder, than my vehicle should be driving a straight line. </p>
+
+<blockquote>
+  <p><strong>Inputs:</strong>   x: "a priori" state estimate vector (6x1)<br/>
+           t: sampling time [s]<br/>
+           P: "a priori" estimated state covariance vector (6x6)<br/>
+           z: current measurement vector (2x1) (encoder left; encoder right)<br/>
+  <strong>Output:</strong>   x: "a posteriori" state estimate vector (6x1)<br/>
+           P: "a posteriori" state covariance vector (6x6)<br/></p>
+  
+  <p><strong>State vector x:</strong> a 6x1 vector $\begin{bmatrix} x \rightarrow X-Position In Global Frame \\ \dot x \rightarrow Speed In X-direction Global Frame  \\ y \rightarrow Y-Position In Global Frame \\ \dot y \rightarrow Speed In Y-direction Global Frame \\  \theta \rightarrow Vehicle Angle In Global Frame \\ \dot \theta \rightarrow Angular Speed Of The Vehicle \end {bmatrix}$</p>
+  
+  <p><strong>Measurement vector z:</strong>
+  a 2x1 vector $\begin{bmatrix} \eta_{left} \rightarrow Wheelspeed Pulses On Left Wheel \\ \eta_{right} \rightarrow Wheelspeed Pulses On Right Wheel \end {bmatrix}$</p>
+</blockquote>
+
+<pre><code>% Check if input matrixes are of correct size
+[rows columns] = size(x);
+if (rows ~= 6 &amp;&amp; columns ~= 1)
+    error('Input vector size incorrect')
+end
+[rows columns] = size(z);
+if (rows ~= 2 &amp;&amp; columns ~= 1)
+    error('Input data vector size incorrect')
+end
+
+% Constants
+n0 = 16;
+r = 30;
+b = 50;
+
+Q = zeros(6,6);
+Q(2,2) = sigma_ax;
+Q(4,4) = sigma_ay;
+Q(6,6) = sigma_atau;
+%[Q(1,8),Q(3,6),Q(6,3)] = deal(small);
+
+dfdx = eye(6);
+[dfdx(1,2),dfdx(3,4),dfdx(5,6)] = deal(t);
+
+dfda = zeros(6,6);
+[dfda(2,2),dfda(4,4),dfda(6,6)] = deal(1);
+
+dhdn = eye(2,2);
+
+R = zeros(2,2);
+[R(1,1),R(2,2)] = deal(sigma_odo);
+%[R(2,1),R(1,2)] = deal(small);
+
+
+% Predict next state
+% xk = f(xk-1)
+xtemp = zeros(6,1);
+xtemp(1) = x(1) + t*x(2);
+u1 = normrnd(0,sigma_ax);
+xtemp(2) = x(2) + u1;
+xtemp(3) = x(3) + t*x(4);
+u2 = normrnd(0,sigma_ay);
+xtemp(4) = x(4) + u2;
+xtemp(5) = x(5) + t*x(6);
+u3 = normrnd(0,sigma_atau);
+xtemp(6) = x(6) + u3;
+
+x = xtemp
+
+% Predict next state covariance
+% Pk = dfdx * Pk-1 * transpose(dfdx) + dfda * Q * transpose(dfda)
+P = dfdx * P * transpose(dfdx) + dfda * Q * transpose(dfda);
+
+% Calculate Kalman gain
+% Kk = P * transpose(dhdx) [dhdx * P * transpose(dhdx) + dhdn * R * transpose(dhdn)]^-1
+dhdx = zeros(2,6);
+if((x(2) &lt; 10^(-6)) &amp;&amp; (x(4)&lt; 10^(-6)))
+    [dhdx(1,2),dhdx(2,2)] = deal((t*n0)/(2*pi*r));
+    [dhdx(1,4),dhdx(2,4)] = deal((t*n0)/(2*pi*r));
+else
+    [dhdx(1,2),dhdx(2,2)] = deal(((t*n0)/(2*pi*r))*(x(2)/sqrt(x(2)^2+x(4)^2)));
+    [dhdx(1,4),dhdx(2,4)] = deal(((t*n0)/(2*pi*r))*(x(4)/sqrt(x(2)^2+x(4)^2)));
+end
+%[dhdx(1,2),dhdx(2,2)] = deal(((t*n0)/(2*pi*r))*(x(2)/sqrt(x(2)^2+x(4)^2)));
+%[dhdx(1,4),dhdx(2,4)] = deal(((t*n0)/(2*pi*r))*(x(4)/sqrt(x(2)^2+x(4)^2)));
+dhdx(1,6) = (t*n0*b)/(2*pi*r);
+dhdx(2,6) = -(t*n0*b)/(2*pi*r);
+
+Kk = P * transpose(dhdx) * ((dhdx * P * transpose(dhdx) + dhdn * R * transpose(dhdn))^(-1))
+
+% Update state
+H = zeros(2,1);
+n1 = normrnd(0,sigma_odo);
+H(1) = (((t*n0)/(2*pi*r))*sqrt(x(2)^2+x(4)^2))+(((t*n0*b)/(2*pi*r))*x(6)) + n1;
+n2 = normrnd(0,sigma_odo);
+H(2) = (((t*n0)/(2*pi*r))*sqrt(x(2)^2+x(4)^2))-(((t*n0*b)/(2*pi*r))*x(6)) + n2;
+
+x = x + Kk*(z-H)
+
+% Update state covariance
+P = (eye(6)-Kk*dhdx)*P;
+</code></pre>
+
+<p>end</p>
+
+<h2>Odometry observation equations</h2>
+
+<p>If you would wonder how I come to the observation equations for the odometry data: 
+<a href="https://i.stack.imgur.com/owQ2F.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/owQ2F.jpg" alt="odometry observation equations"></a>
+$\ V_{vl} = V{c} + \dot \theta \cdot b \rightarrow V_{vl} = \sqrt{ \dot x^{2} + \dot y^{2}} + \dot \theta \cdot b$</p>
+
+<h1>Problem</h1>
+
+<p>If I try the small-size EKF, using a Matlab user interface, it does seem to drive a straight line, but not under a heading of 0  like I would expect. Eventhough I start with a state vector of $\ x= \begin{bmatrix}0\\0\\0\\0\\0\\0\end{bmatrix}$ meaning starting at position [0,0] in the global coordinate frame, with speed and acceleration of zero and under an angle of 0 .</p>
+
+<p><a href="https://i.stack.imgur.com/SkMiq.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/SkMiq.jpg" alt="enter image description here"></a>
+In the top right corner you can see the measurement data which I give as input, which is 5 wheelspeed counts on every wheel, every sampling period. (Simulating straight driving vehicle)
+In the top left corner you see a plot of the X and Y coordinate (from state vector) at the end of one predict+update cycle of the filter, labeled with the timecycle.
+Bottom left corner is a plot of the angle in the state vector. You see that after 12 cycles the angle is still almost 0  like I would expect.</p>
+
+<p><strong>Could anyone please provide some insights in to what could be wrong here?</strong> </p>
+
+<h1>Solutions I've been thinking on</h1>
+
+<ol>
+<li><p>I could use the 'odometry motion model' like explained in <a href="https://robotics.stackexchange.com/questions/964/extended-kalman-filter-using-odometry-motion-model">this question</a>. The difference is that the odometry data is inserted in the predict step of the filter. But if I would do this, I see 2 problems: 1) I don't see how to make a small-size version of this for testing purposes, because I don't know which measurements to add in the update-step and 2) for the medium-size version I don't know how to make the observation equations as the state vector doesn't imply velocity and acceleration.</p></li>
+<li><p>I could use the 'odometry motion model' and in the update step use the Euler-angle, which can be linked to $\ \theta $. This Euler-angle I can obtain from the Digital Motion Processor (DMP), implemented in the IMU. Then it is no problem that angular velocity is not in the state matrix. But than I still have a problem with the acceleration observation equations. </p></li>
+</ol>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10382" data-toggle = "popover">
+				<p>user name : Eva</p>
+				<p> user reputation : 60</p>
+				<p class = "tagcontent" id = "usertaginfo-10382">{'odometry': 5, 'None': 2, 'noise': 1, 'sensor-fusion': 5, 'wheeled-robot': 1, 'differential-drive': 0, 'imu': 5, 'kalman-filter': 6, 'gps': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10382">Load Comments</button></br>
+			<div id = "commentsection-10382" class = 'collapse'>
+			<div id = "comment-18686" class = "comment">
+				<p>The assumption behind the odometery solution you linked is that odometery pulses are not a measurement of state, but of control inputs. It's a design choice. I'm amazed you coded up the whole filter before testing it.</p>
+			</div>
+			</div>
+				<textarea id = "speech-10382" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10382">
+					<img id="start_img-10382" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10382">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-10395"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10395" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You should first validate your filter is <strong>working</strong> before second-guessing your modelling choices. But I agree both those filters look OK (although I did not double check all the maths) and both of your suggested changes should also work. </p>
+
+<p>There's a process I used to find errors in KF's, which is in no way comprehensive:</p>
+
+<ol>
+<li>Plot the measurement residuals at every update.
+
+<ul>
+<li>They should start large and decrease asymptotically to the noise floor.</li>
+<li>Your residuals should fall within the gates for the usual Gaussian tolerance intervals (68, 95 and 99.7)% of residuals fall within ($1\sigma$, $2\sigma$, $3\sigma$) respectively.</li>
+<li>If this is not the case then your filter is not working properly which is usually due to errors in the actual KF implementation, or a measurement model.</li>
+<li>If it is converging but the quality is poorer than expected, it could simply be a covariance tuning problem</li>
+</ul></li>
+<li>Validate your measurement models and update step by disabling your predict stage
+
+<ul>
+<li>For each predict step, set $x_{k} = x_{k-1}$ but continue to grow $P$</li>
+<li>If the residuals aren't decreasing, your measurement models are probably wrong (since your models make the angle and position observable)</li>
+</ul></li>
+<li>Enable your Predict stage again and now validate your process model in the same way</li>
+</ol>
+
+<p>For a comprehensive set of lecture notes, see <a href="http://www.acfr.usyd.edu.au/pdfs/training/estKalFilter/EstimationSlidesKC1.pdf" rel="nofollow">ACFR's KF Tutorial</a>, specifically after slide 121.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10395" data-toggle = "popover">
+				<p>user name : Gouda</p>
+				<p> user reputation : 632</p>
+				<p class = "tagcontent" id = "usertaginfo-10395">{'control': 0, 'None': 39, 'computer-vision': 1, 'calibration': 1, 'cameras': 1, 'kalman-filter': 0, 'jacobian': 0}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-10395" class = 'collapse'>
+			</div>
+				<textarea id = "speech-10395" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10395">
+					<img id="start_img-10395" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10395">Comment</button>
+			<br><div id = "ans-10403"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10403" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Adding to the above, my favorite way to debug a misbehaving filter is to isolate each step.</p>
+
+<ol>
+<li><p>Make sure your prediction step works before correcting it. Your bot should drive straight right with 0,0,0 as a starting state and constant vel. Otherwise, your measurements are correcting your model, not sensor noise</p></li>
+<li><p>Remove the measurement step and feed residuals by hand. A zero vector residual should produce the same state you started with  (also great for verifying your state transitions, which may be wrong as above). If a zero residual produces a non zero change, your K matrix is usually wrong, and usually because your state transition Jacobian is wonky.</p></li>
+<li><p>If prediction and residuals make sense, then check your measurements separately as well. Feed states and Odom measurements into it to make sure the resulting residuals match what you expect. E.g. 1,1 goes straight, 2,1 right curve, 1,2 left,  1,-1 adjusts only heading, etc.</p></li>
+<li><p>If all that works, and your result still doesn't make sense when you put it together or display it, then the plumbing or display is the problem. I've wasted hours redefining all the equations because of a display bug.</p></li>
+</ol>
+
+<p>In your case I'm not clear about the odometery equations. You seem to be controlling vel in x,y,theta, but use odometery to update that velocity. Is it not the case that you are actually issuing wheel velocity commands? </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10403" data-toggle = "popover">
+				<p>user name : Josh Vander Hook</p>
+				<p> user reputation : 3960</p>
+				<p class = "tagcontent" id = "usertaginfo-10403">{'None': 345}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-10403" class = 'collapse'>
+			</div>
+				<textarea id = "speech-10403" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10403">
+					<img id="start_img-10403" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10403">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

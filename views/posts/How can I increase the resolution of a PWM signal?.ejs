@@ -1,0 +1,231 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How can I increase the resolution of a PWM signal?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8539" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8539" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 99</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How can I increase the resolution of a PWM signal?</h2>
+<p>Say I have a motor and I want it to spin at exactly 2042.8878 revolutions per minute.  Say I have a very precise sensor to detect the RPM of the motor to a resolution of 1/1000th of a revolution per minute.  </p>
+
+<ul>
+<li><p>Can I produce a PWM signal which can match the speed to that degree of 
+precision?  </p></li>
+<li><p>What variables in the signal parameters would I have to adjust to get the precision if possible?  </p></li>
+<li><p>Would I have to use additional circuitry between the motor and the driver?  </p></li>
+<li><p>Would I have to design the signal/circuitry around the specific specifications of the motor?</p></li>
+<li><p>Should I just use a stepper motor?</p></li>
+</ul>
+
+<p>This is assuming I am using a microcontroller to measure the motor's speed and adjust the signal in real-time to maintain a certain speed.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8539" data-toggle = "popover">
+				<p>user name : John Euell</p>
+				<p> user reputation : 6</p>
+				<p class = "tagcontent" id = "usertaginfo-8539">{'None': 0, 'microcontroller': 1, 'stepper-driver': 1, 'motor': 1, 'stepper-motor': 1, 'pwm': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8539">Load Comments</button></br>
+			<div id = "commentsection-8539" class = 'collapse'>
+			<div id = "comment-13820" class = "comment">
+				<p>If your "PWM signal" is the input voltage to the motor and you are trying to control that voltage to regulate the speed, then I think you need to look up [_closed-loop feedback control_](https://en.wikipedia.org/wiki/Control_theory) before really asking this here. And more appropriate for your question, information like [this](https://www.ikalogic.com/closed-loop-speed-and-position-control-of-dc-motors/) or [this](http://www.dprg.org/tutorials/2003-10a/motorcontrol.pdf).</p>
+			</div>
+			</div>
+				<textarea id = "speech-8539" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8539">
+					<img id="start_img-8539" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8539">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8540"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8540" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The PWM signal should not be the limiting factor in achieving the accuracy you seek.  For some applications, PWM signals are chopped > 100 kHz, so, given the correct DSP or microcontroller output to create the PWM, you will have as much control over the power going into the motor as you need.</p>
+
+<p>Most of the motion control system I've built have had PWM amplifiers between the microcontroller and the motor.  If you don't have those amplifiers, then yes, you will need to put additional circuitry between your controller and your motor.  You can get these off-the-shelf, or you can chop a power FET (often using another FET to get the speed) based off of a variable duty-cycle pulsed signal.  It is this chopping signal that you will adjust to drive more, or less, power into your motor.  If your system's load varies greatly, you may need to put a control loop around this signal so you can keep it stable.  See Brian's references about speed control of motors.  Loops similar to those position and speed control loops would be used to dampen the rate of change of your PWM driver.</p>
+
+<p>I think you need to look at your specifications, though.  If your sensor has a shaft rotation resolution of 1/1000 rpm, how will you ever control the shaft to a speed of XXXX.YYYY (1/10,000 rpm accuracy)?</p>
+
+<p>For a continuous-rotation application, a stepper might be a better solution.  It is brushless for long life, easy to control, and has its own type of feedback.  But you need to be sure to get enough pulses per revolution to get the accuracy you're looking for.  If you have a 512 pulse/rev stepper, that is only ~ 30k pulses/min.  With that you can barely achieve a speed accuracy of 1/10k.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8540" data-toggle = "popover">
+				<p>user name : SteveO</p>
+				<p> user reputation : 2960</p>
+				<p class = "tagcontent" id = "usertaginfo-8540">{'None': 222}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8540">Load Comments</button></br>
+			<div id = "commentsection-8540" class = 'collapse'>
+			<div id = "comment-13858" class = "comment">
+				<p>Thank you for taking the question seriously. Your answer helped me to confirm my current understanding of the problem and will help me to look in the right direction for the information that I still need to learn.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8540" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8540">
+					<img id="start_img-8540" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8540">Comment</button>
+			<br><div id = "ans-8541"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8541" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You won't ever get 'exactly' 2042.8878 RPM, so going with your measurement accuracy I will assume you mean 2042.8878 +/- 0.0005 RPM. This is approximately an error of 1 part in 4 million. So let's assume you can set up a timer which counts up to around 4 million and resets, and use that for the PWM. Assuming a two pole motor, 2042 RPM is 34 electrical rotations per second, and you would want to PWM it at with about ten PWM cycles per electrical rotation, so your PWM timer needs to increment (4 million * 10 * 34 ) times per second, equivalent to 1.4 GHz. </p>
+
+<p>There are microcontrollers with that sort of clock frequency, so it is not downright impossible. You'd also have to do the PID control to calculate what the value should be, and doing that to one part in 4 million will take a time to settle. </p>
+
+<p>Stepper motors typically don't run that fast - torque drops to zero around 1200 RPM, though some specialist steppers can run faster ( see SteveO's comment below ).</p>
+
+<p>Brushless motors would require commutation through six phases, and ideally have a several PWM cycles per phase, so would need around six times the timer frequency and so be out the range of simple PWM.</p>
+
+<p>You can also dither the PWM so of the ten per phase energised you stretch n to give one more digit; this would reduce the clock required by a factor of 10 so may make it practical, but it's not trival to control to that level of accuracy.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8541" data-toggle = "popover">
+				<p>user name : Pete Kirkham</p>
+				<p> user reputation : 357</p>
+				<p class = "tagcontent" id = "usertaginfo-8541">{'None': 19}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8541">Load Comments</button></br>
+			<div id = "commentsection-8541" class = 'collapse'>
+			<div id = "comment-13822" class = "comment">
+				<p>Could you elaborate more on why 10 PWM cycle are needed for an electrical rev?</p>
+			</div>
+			<div id = "comment-13823" class = "comment">
+				<p>Typically you'd want enough so the motor, which is behaving somewhat like a low-pass filter, develops a constant torque through the revolution; ten is probably enough for this. If your PWM is too slow compared to the commutation speed, then you can get situations where in a brushless motor turning off some phases completely and others on full, whereby the motor runs very poorly; in a brushed DC motor there's a bit more laxity but you don't want your PWM to be say on for one revolution then off for the next if you're trying to hold a constant speed.</p>
+			</div>
+			<div id = "comment-13832" class = "comment">
+				<p>in a PMSM (Permanant Magnet Syncrouneous Motor) this problem is also less significant then in a BLDC (Brushless Direct Current), right?</p>
+			</div>
+			<div id = "comment-13844" class = "comment">
+				<p>Good answer Pete.  One nit: I've found steppers capable of more than 1200 RPM.  For example, look at Kollmorgen's P2H series, which can produce about 50% of max torque as high as 3000 RPM.</p>
+			</div>
+			<div id = "comment-13857" class = "comment">
+				<p>Thank you for taking the question seriously.  Your answer helped me to confirm my current understanding of the problem and will help me to look in the right direction for the information that I still need to learn.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8541" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8541">
+					<img id="start_img-8541" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8541">Comment</button>
+			<br><div id = "ans-8547"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8547" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Using a hardware PWM system based on a comparison-voltage source, a triangle-wave generator, and a comparator, you can set as many different output levels as your comparison-voltage source can generate.  A charge-transfer system like that diagrammed below can be used to develop almost arbitrarily many different levels.
+<a href="https://i.stack.imgur.com/ieSuW.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/ieSuW.jpg" alt="hardware PWM system"></a></p>
+
+<p>In operation, the voltage on C1 supplies one input to a comparator, via a unity-gain buffer.  A triangle wave oscillator supplies the other input, generating a PWM signal.</p>
+
+<p>The voltage on C1 is set by turning on, turning off, or setting to high-impedance one or more of digital inputs D1...D3, then turning on D4 for a controlled interval, to slightly raise or lower the voltage on C1.  For example, suppose C1 = 0.1  F and V<sub>C1</sub> = 2 V.  Turning on D4 for 1 ms with D1 on will raise V<sub>C1</sub> by .21 V; turning on D4 for 4  s with D3 on will raise V<sub>C1</sub> by 8  V.</p>
+
+<p>If you want to control to about 1 part in 4 million using this method in simplest form, then R3 may need to be larger.  But of course slightly more involved alternative schemes can get by with smaller resistors.  For example, if R2 is 10 M  and R3 is 10.01 M , you could raise V<sub>C1</sub> by a few nV by turning on D2 high for a fraction of a microsecond, then returning it to high impedance and turning on D3 low for the same length of time, or could lower V<sub>C1</sub> by doing vice versa; or could turn on both briefly high, then one briefly low, etc.  Another approach is to have D4 trigger a one-shot that closes S1 for a few nanoseconds, rather than depending on use of a fast microcontroller clock.</p>
+
+<p>If you actually use a system like this, write a program that computes voltage rates of change for all combinations of your digital inputs, at various voltages on C1.  Also analyze the system for stability.</p>
+
+<p>Note, D4 is controlling a JFET switch S1 to isolate C1 from leakage that could occur through D1-D3 if S1 were left out.  For example, the Atmega328 data sheet shows a max leakage of 1  A on typical inputs in high impedance state, which is about a million times the leakage of a good JFET.  However, typical leakages of Atmega inputs   rather than max leakages   might be much less.  One could run experiments to see if S1 is indeed necessary.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8547" data-toggle = "popover">
+				<p>user name : James Waldby - jwpat7</p>
+				<p> user reputation : 1856</p>
+				<p class = "tagcontent" id = "usertaginfo-8547">{'None': 134}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8547">Load Comments</button></br>
+			<div id = "commentsection-8547" class = 'collapse'>
+			<div id = "comment-13859" class = "comment">
+				<p>Thank you for taking the question seriously. Your answer helped me to confirm my current understanding of the problem and will help me to look in the right direction for the information that I still need to learn.</p>
+			</div>
+			<div id = "comment-13860" class = "comment">
+				<p>@JohnEuell, please feel free to upvote or accept useful answers!</p>
+			</div>
+			</div>
+				<textarea id = "speech-8547" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8547">
+					<img id="start_img-8547" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8547">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

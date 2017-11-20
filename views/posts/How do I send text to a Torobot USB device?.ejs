@@ -1,0 +1,217 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How do I send text to a Torobot USB device?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-1787" class = "post">
+			<h2>Question</h2>
+			<div id="vote-1787" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 1067</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How do I send text to a Torobot USB device?</h2>
+<p>I'm trying to get the "Torobot" USB servo controller to work with Angstrom Linux on a Beagle Board XM.</p>
+
+<p>The servo controller registers as a USB device. The device just takes simple text commands, but there is no TTY associated with it. So I'm not sure how to send commands to it.</p>
+
+<p>Can I just send data like this (assuming that 002/005 is the device):</p>
+
+<pre><code>$ cat file.txt &gt;&gt; /dev/bus/usb/002/005
+</code></pre>
+
+<p>Or do I need to associate it with the generic USB device? If so, how do I do that?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1787" data-toggle = "popover">
+				<p>user name : ChronoFish</p>
+				<p> user reputation : 123</p>
+				<p class = "tagcontent" id = "usertaginfo-1787">{'control': 1, 'None': 0, 'usb': 1, 'rcservo': 1, 'python': 0, 'microcontroller': 1, 'wheeled-robot': 3, 'embedded-systems': 1, 'design': 3, 'electronics': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-1787" class = 'collapse'>
+			</div>
+				<textarea id = "speech-1787" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1787">
+					<img id="start_img-1787" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1787">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-1789"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1789" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>you can pyusb for send data <a href="http://pyusb.sourceforge.net/docs/1.0/tutorial.html" rel="nofollow">http://pyusb.sourceforge.net/docs/1.0/tutorial.html</a>
+and your data information is here <a href="http://www.torobot.com/down/usc_en.pdf" rel="nofollow">http://www.torobot.com/down/usc_en.pdf</a>
+i think you python code like this</p>
+
+<pre><code>    import usb.core
+import usb.util
+
+# find our device
+dev = usb.core.find(idVendor=0xfffe, idProduct=0x0001)
+
+# was it found?
+if dev is None:
+    raise ValueError('Device not found')
+
+# set the active configuration. With no arguments, the first
+# configuration will be the active one
+dev.set_configuration()
+
+# get an endpoint instance
+cfg = dev.get_active_configuration()
+interface_number = cfg[(0,0)].bInterfaceNumber
+alternate_settting = usb.control.get_interface(interface_number)
+intf = usb.util.find_descriptor(
+    cfg, bInterfaceNumber = interface_number,
+    bAlternateSetting = alternate_setting
+)
+
+ep = usb.util.find_descriptor(
+    intf,
+    # match the first OUT endpoint
+    custom_match = \
+    lambda e: \
+        usb.util.endpoint_direction(e.bEndpointAddress) == \
+        usb.util.ENDPOINT_OUT
+)
+
+assert ep is not None
+
+# write the data
+ep.write('#1P1500T100\r\n')
+</code></pre>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1789" data-toggle = "popover">
+				<p>user name : amra</p>
+				<p> user reputation : 56</p>
+				<p class = "tagcontent" id = "usertaginfo-1789">{'None': 4}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1789">Load Comments</button></br>
+			<div id = "commentsection-1789" class = 'collapse'>
+			<div id = "comment-3705" class = "comment">
+				<p>cool - I'll have to dust off my (weak) python chops...but will give it a try.  Thanks!</p>
+			</div>
+			<div id = "comment-4227" class = "comment">
+				<p>thanks... there a lot of dependencies that don't come on the Angstrom distribution for this.  I have filled most of those, but still getting errors.  See my latest question: http://robotics.stackexchange.com/questions/2132/what-dependencies-do-i-need-for-usb-programing-in-python-with-pyusb</p>
+			</div>
+			<div id = "comment-4257" class = "comment">
+				<p>I could not get pyUSB to work - but I did find away to access the board directly through the tty</p>
+			</div>
+			</div>
+				<textarea id = "speech-1789" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1789">
+					<img id="start_img-1789" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1789">Comment</button>
+			<br><div id = "ans-2150"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2150" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Finally Success:</p>
+
+<p>I found that the Torobot USB board could be communicated with an Arduino serial driver.  Conveniently this is available through opkg:</p>
+
+<pre><code>opkg install kernel-module-cdc-acm
+</code></pre>
+
+<p>When the board is plugged in, it comes up as</p>
+
+<pre><code>/dev/ttyACM0 
+</code></pre>
+
+<p>From here you can  simply echo commands to the device.  </p>
+
+<pre><code>echo "#8P1500T100" &gt; /dev/ttyACM0
+</code></pre>
+
+<p>This basically says "set servo 8 to position 1500 with speed 100"</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2150" data-toggle = "popover">
+				<p>user name : ChronoFish</p>
+				<p> user reputation : 123</p>
+				<p class = "tagcontent" id = "usertaginfo-2150">{'control': 1, 'None': 0, 'usb': 1, 'rcservo': 1, 'python': 0, 'microcontroller': 1, 'wheeled-robot': 3, 'embedded-systems': 1, 'design': 3, 'electronics': 3}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2150" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2150" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2150">
+					<img id="start_img-2150" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2150">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

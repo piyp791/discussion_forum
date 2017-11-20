@@ -1,0 +1,233 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How can reading a quadrature encoder fail?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-12586" class = "post">
+			<h2>Question</h2>
+			<div id="vote-12586" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 46</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How can reading a quadrature encoder fail?</h2>
+<p><a href="https://i.stack.imgur.com/NK3Dt.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/NK3Dt.jpg" alt="Rubik&#39;s Cube Robot"></a></p>
+
+<p>I am trying to the read the quadrature encoder on a <a href="https://www.servocity.com/624-rpm-premium-planetary-gear-motor-w-encoder" rel="nofollow noreferrer">ServoCity 624 RPM Premium Planetary Gear Motor w/Encoder</a> with a SparkFun ESP32 Thing.</p>
+
+<p>I am supposed to see 228 counts per revolution, but I see 230-232 instead.</p>
+
+<p>Here is my Arduino code:</p>
+
+<pre><code>// Global variables modified by ISR
+int state;
+unsigned int count;
+
+int error;
+
+// ISR called on both edge of quadrature signals
+void handleInterrupt()
+{
+  // Shift old state into higher bits
+  state = ( state &lt;&lt; 2 ) &amp; 15;
+
+  // Get current state
+  if( digitalRead(34) ) state |= 2;
+  if( digitalRead(35) ) state |= 1;
+
+  // Check state change for forward or backward quadrature
+  // Flag any state change errors
+  switch( state )
+  {
+    case 1:
+    case 7:
+    case 14:
+    case 8:
+      count--;
+      break;
+    case 11:
+    case 13:
+    case 4:
+    case 2:
+      count++;
+      break;
+    default:
+      error++;
+  }
+}
+
+void setup()
+{
+  pinMode(33, OUTPUT); // PWM
+  pinMode(32, OUTPUT); // DIR
+
+  pinMode(34, INPUT_PULLUP); // QB
+  pinMode(35, INPUT_PULLUP); // QA
+
+  attachInterrupt( digitalPinToInterrupt(34), handleInterrupt, CHANGE );
+  attachInterrupt( digitalPinToInterrupt(35), handleInterrupt, CHANGE );
+
+  Serial.begin(74880);
+}
+
+void loop()
+{
+  int new_state;
+  int old_state;
+
+  // Start motor
+  digitalWrite(32, HIGH); // clockwise
+  digitalWrite(33, HIGH);
+
+  // 57*4-17 found by trial and error to make a complete revolution
+  for( int i = 0; i &lt; (57*4-17); i++ )
+  {
+    // Busy wait for change
+    do
+    {
+      // Get current state
+      new_state = 0;
+      if( digitalRead(34) ) new_state |= 2;
+      if( digitalRead(35) ) new_state |= 1;
+    }
+    while( old_state == new_state );
+    old_state = new_state;
+  }
+
+  // Stop motor
+  digitalWrite(33, LOW);
+  delay( 1000 );
+
+  Serial.print( " state=" );
+  Serial.print( state );
+  Serial.print( " count=" );
+  Serial.print( count % 228 );
+  Serial.print( " error=" );
+  Serial.println( error );
+}
+</code></pre>
+
+<ol>
+<li>On my scope, quadrature signals are very clean</li>
+<li>I instrumented the code to look at interrupts and they appear to be in the right places and not too close together.</li>
+<li>I don't see mechanical slipping, and it would be obvious because
+over 100 revs, the count slips an entire revolution.</li>
+</ol>
+
+<p>But the bottom line is: How can this be failing?  If the CPU is missing transitions, I would get illegal transitions and errors.  Noise would also cause errors.  But I am not getting any errors at all (except a single error at startup).</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12586" data-toggle = "popover">
+				<p>user name : Alan Nishioka</p>
+				<p> user reputation : 21</p>
+				<p class = "tagcontent" id = "usertaginfo-12586">{'None': 1, 'quadrature-encoder': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-12586">Load Comments</button></br>
+			<div id = "commentsection-12586" class = 'collapse'>
+			<div id = "comment-22071" class = "comment">
+				<p>How are you measuring a revolution? Could it be that you are rotating by an extra 3 degrees?</p>
+			</div>
+			<div id = "comment-22072" class = "comment">
+				<p>How are you determining that it has actually gone a full revolution? It looks like you have a magic number, and I totally suspect that's to blame. How did you arrive at that number?</p>
+			</div>
+			<div id = "comment-22083" class = "comment">
+				<p>I am determining a full revolution visually observing the rubik's cube the motor is attached to.  the loop() turns a full rev, stops for a second and then loops.  After about 100 loops, the counter has returned to the same value, but i'm pretty sure i didn't miss seeing an entire revolution.</p>
+			</div>
+			</div>
+				<textarea id = "speech-12586" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12586">
+					<img id="start_img-12586" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12586">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-12609"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-12609" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>ServoCity 624 RPM Premium Planetary Gear Motor w/Encoder has the encoder on the motor and a 19:1 gear reduction on the output shaft.</p>
+
+<p>Mechanical tolerance in the gearbox accounts for the difference between 228 counts per revolution that I expected and 230.7 counts per revolution that I measured.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12609" data-toggle = "popover">
+				<p>user name : Alan Nishioka</p>
+				<p> user reputation : 21</p>
+				<p class = "tagcontent" id = "usertaginfo-12609">{'None': 1, 'quadrature-encoder': 2}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-12609" class = 'collapse'>
+			</div>
+				<textarea id = "speech-12609" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12609">
+					<img id="start_img-12609" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12609">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

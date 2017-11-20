@@ -1,0 +1,241 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Will two 8-bit microcontrollers running in parallel perform similarly to a single 16-bit microcontroller?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-12522" class = "post">
+			<h2>Question</h2>
+			<div id="vote-12522" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 61</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Will two 8-bit microcontrollers running in parallel perform similarly to a single 16-bit microcontroller?</h2>
+<p>Let's say I have multiple (8 bit) sensors which are sending signals to two microcontrollers simultaneously. In this case, I am looking to harness the parallel processing capability of the two microcontrollers to process the signals at the same time.</p>
+
+<p>However, I am curious whether I can substitute the above setup by using only one 16-bit microcontroller? Then, would sending two 8-bit signals simultaneously be possible, using the 16-bit bus on the microcontroller?</p>
+
+<p>Assuming in both cases above, they are running at the same clock speed (MHz).</p>
+
+<p>Edited</p>
+
+<p>Sorry, this is all still new to me. </p>
+
+<p>One aspect that I'd like to understand is: Can we make two 8-bit signals from two different 8-bit sensors share the 16-bit bus at the same time?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12522" data-toggle = "popover">
+				<p>user name : goddar</p>
+				<p> user reputation : 76</p>
+				<p class = "tagcontent" id = "usertaginfo-12522">{'control': 3, 'None': 2, 'power': 0, 'arduino': 0, 'battery': 2, 'microcontroller': 0, 'wheeled-robot': 0, 'imu': 1, 'sensor-fusion': 1, 'mobile-robot': 4, 'electronics': 0, 'sensors': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-12522">Load Comments</button></br>
+			<div id = "commentsection-12522" class = 'collapse'>
+			<div id = "comment-21981" class = "comment">
+				<p>While trying to understand the question I thought You might want to give some more info on the higher level of architecture. Is there another interface to these micro controllers? Like actuators or another device?</p>
+			</div>
+			<div id = "comment-21996" class = "comment">
+				<p>to Edited part - no simply way - the bus is like variable - how would you effectively share `int` for computing with two different `byte`s (both arriving at different time probably)? There are some ways, but usually not easy and not fast. You would understand better, if you try to write even easier program to manage two sensors at the same time in one variable - your result (if you would not drop it before) would be probably totally unreadable, long and prone to errors. And much slower, than doing it sequentially and independantly. Just try it with any non-totally-trivial task :)</p>
+			</div>
+			</div>
+				<textarea id = "speech-12522" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12522">
+					<img id="start_img-12522" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12522">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-12526"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-12526" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Your question is really missing critical informations about your setup, so answer cannot catch all possibilities.</p>
+
+<p>But if we assume the typical Arduino setup, than the sensors would not use 8 wires, but some serial protocol (Serial, I2C,...). Especially if you mentioned multiple of them. </p>
+
+<p>Also usually processor asks sensor for data and sensor reply with values, not that sensor is spamming the processor on its own (or not more, than sends interrupt, when data are collected)</p>
+
+<p>Also they would probably not send data to both processors simultaneously, as it would mean, that both processors would be blocked by reading one pice of data - better setup is to send half sensors to one processor, second half to other and synchronise only minimum of processed data between processors.</p>
+
+<p>So the speed of the protocol would be one of very limiting facts here (400&nbsp;kbit/s ~ 50&nbsp;kbyte/sec for fast I2C on 16&nbsp;MHz Arduino means, that while receiving one byte=8bits, your processor is able to do like 16.000.000/50.000 = 320 instructions, for asking sensor for value you address the sensor and send register number, so at least 3 bytes are transferred, also there are some kinds of handshaking - so we have more like 960 instructions per byte) and the transfers usually cannot go in parallel, as they are using the same wires.</p>
+
+<ul>
+<li>two processors would be able serve more data, as each of them can have its own data line and so two sensors can be questioned in paralel. 900 instructions may be enough to do some simple data manipulation over collected values.</li>
+<li>16-bit processor cannot generally process two independent data in one instruction, even if it have 2x longer registers. So the there would not be gain from longer word in this way</li>
+<li>on the other hand 16-bit processor can make computations faster if it comes to bigger data types, like int/long/real (to contrast only bytes), many times more than 2x faster. But jumps, loops and so are not such faster, as well as 8-bit calculation. So it deeply depends on how you process the data (how much computation and what kind you do).</li>
+<li>if the sensors would send data only occasionally (as many sensors need a time to collect something) and you would do a lot of complicated computations over them, and those computations would need (nearly) raw data from all sensors (not just average over half second or so), then the 16-bit can win with sheer computing power and lack of need to synchronize data over more units</li>
+<li>if there would be too much data from sensors and such data could be computed independently and mainly in 8-bit logic (<code>if (dist &lt;128) near=true;</code>), the 8-bits can win with two communication lines to sensors and two computing units (so 2x number of instruction/sec) - but in robotic it is not so simple usually (left half of robot is not independent from right).</li>
+<li>for many cases also the size of disposable RAM is factor</li>
+<li>complexity of programming differs in single-unit(16-bit) and two or more networked units (8-bit)</li>
+<li>Many Arduino libraries and examples are not very excellent, when it comes to parallel processing more inputs at the same time (first of all you must have forgot, that something like <code>delay()</code> exists, then lot of communications (like Wire for i2C) happily waits for the full request fulfilled (so waste a lot of instructions just waiting for communication be completed))
+
+<ul>
+<li>so you can spend more time in inefficient library implementation than in the rest of program. This is not problem for simple scratches, for which Arduino is planned, but is serious limitation in more complex computations </li>
+<li>so you may use different approach to the same HW and use AVR rather then Arduino way (but it needs a lot more skills and knowledge).</li>
+</ul></li>
+<li>Lots of 16-bit processors have a faster clock, more RAM and more and more elaborated HW build in devices, so they can do even more work faster. Some have two or more I2C subsystems, so they can communicate with two buses at the same time and share the results inside without transferring them around
+
+<ul>
+<li>so usually you have two different architectures which cannot be simply compared with just "it has the same clock, but 16-bits"</li>
+</ul></li>
+</ul>
+
+<p>So your question cannot be answered simply, without knowing what sensors you are going to use, how many, which processors you are considering, how you want process your data and what peripherals you want to manipulate.</p>
+
+<hr>
+
+<p>If you are all confused now, then simply start with the processor you currently have and just few sensors and try to solve only small part of final project. You will learn a lot along the way. </p>
+
+<ul>
+<li>If it works with one sensor but not two, you have problem in your programming and you have the simplest case to learn, how to solve it.</li>
+<li>If it works with four sensors but not five, you are probably hitting some limits
+
+<ul>
+<li>try to measure, where you spend more time, if in the logic, or the communication
+
+<ul>
+<li>if communication is the main problem, try other libraries or more independent processors</li>
+<li>if logic is the limit, use better algorithm or faster processor, or split it in net, if everything else fails</li>
+</ul></li>
+<li>if you hit RAM limit reconsider the algorithm, or use processor with more RAM or try to split it to two cooperating units, each with half of sensors</li>
+</ul></li>
+</ul>
+
+<p>But first of all - start playing and having fun, usually it is much faster way to some results, then theorising over all possible details of the Death Star Project at one time before you manage even driving straight with two wheels.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12526" data-toggle = "popover">
+				<p>user name : gilhad</p>
+				<p> user reputation : 362</p>
+				<p class = "tagcontent" id = "usertaginfo-12526">{'control': 0, 'mobile-robot': 0, 'None': 18, 'arm': -1, 'robotic-arm': -1}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-12526">Load Comments</button></br>
+			<div id = "commentsection-12526" class = 'collapse'>
+			<div id = "comment-21988" class = "comment">
+				<p>Also some sensors reuse their serial address for i2c making strict limit on number of sensors per i2c port of the same type.</p>
+			</div>
+			<div id = "comment-21992" class = "comment">
+				<p>Thanks @gilhad for the extensive explanations. I would need some time to digest them all. I will edit my question for better clarification.</p>
+			</div>
+			<div id = "comment-21994" class = "comment">
+				<p>If you refer to the edited question above, the second bullet point of your answer kinda answer my question, am I right? Is there no way at all to force them to share the 16bit bus?</p>
+			</div>
+			<div id = "comment-21995" class = "comment">
+				<p>There is some way, but it is not common and is not easy. On the other hand if you do a lot of computations in more than 8 bits, the 16-bit processor may be a lot faster than two 8-bit processors anyway. (and that may include even such simple things as average) - see also answer from marshal craft</p>
+			</div>
+			</div>
+				<textarea id = "speech-12526" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12526">
+					<img id="start_img-12526" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12526">Comment</button>
+			<br><div id = "ans-12528"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-12528" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>It really depends on the problem, ideally two 8 bit processors work in parallel while one 16 bit processor works by itself. What if the problem is add three 3bit numbers (a+b+c). Can two 8 bit processors take advantage or maybe the single 16 bit? Now if we add three 8bit numbers the single 16 bit processor will be quicker. Alternatively if we ask to add four 3bit numbers (a+b+c+d) then the two 8 bit processors will be superior because one can compute x=a+b and another y=c+d in one instruction time then z=x+y in a second instruction requiring only two instruction time periods while the 16bit would need three.</p>
+
+<p>Now consider the last problem but if there are allowed abcd to be 8bits then its not even clear, we need more information and the same is for your problem. Clearly there is no simple rule or way to answer your question as you na vely hoped. So do some studying and figure it out for yourself. Or at least provide a coherent question.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12528" data-toggle = "popover">
+				<p>user name : marshal craft</p>
+				<p> user reputation : 148</p>
+				<p class = "tagcontent" id = "usertaginfo-12528">{'control': 1, 'stepper-driver': 1, 'None': 4, 'microcontroller': 1}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-12528">Load Comments</button></br>
+			<div id = "commentsection-12528" class = 'collapse'>
+			<div id = "comment-21987" class = "comment">
+				<p>Also inter processor communication can easily be very costly and completely remove any advantage. You have to consider the capabilities of the processor.</p>
+			</div>
+			<div id = "comment-21993" class = "comment">
+				<p>Thanks @marshal, I understood those aspects of the microcontroller that you described above. Sorry if the question was not clear. Please refer to the edited version above.</p>
+			</div>
+			<div id = "comment-22002" class = "comment">
+				<p>Oh so you knew all that, funny then how you asked exactly something you already knew. I'll assume you know the answer two the second question as well.</p>
+			</div>
+			<div id = "comment-22003" class = "comment">
+				<p>Sorry @marshal, I admit that the question was poorly pharased to convey my  message. But I edited the question. Maybe I should rephrase the question as well. I am still new in this microcontroller thing.</p>
+			</div>
+			<div id = "comment-22004" class = "comment">
+				<p>I would ask an entirely knew question once you've figured out what it is you are trying to ask. It should be something specific and that can be decided what the answer is given a specific technology like microcontroller, type of sensor, the type of bus (I'm not familar with too many 16 or 8 bit bus, usually the sensors are serial bus like spi or i2c). What is your goal here what are you trying to achieve in the case you dont know any of these things?</p>
+			</div>
+			</div>
+				<textarea id = "speech-12528" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12528">
+					<img id="start_img-12528" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12528">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

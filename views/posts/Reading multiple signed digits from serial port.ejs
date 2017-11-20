@@ -1,0 +1,318 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Reading multiple signed digits from serial port
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11244" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11244" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 170</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Reading multiple signed digits from serial port</h2>
+<p>I'm using simulink support package for arduino to read serial data from port2 in Arduino due. My plan is to read signed integers (-415 for example) representing motor speed and feed it to the pid controllers as in the image.<a href="https://i.stack.imgur.com/QDlA1.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/QDlA1.jpg" alt="enter image description here"></a></p>
+
+<p>from the far end i'm sending delimited data in the following shape . The matlab function in sumlink is supposed to read the received ASCII characters and add them to a variable until it reaches the end character '>'. I'm using the following simple code just to give the output on both the Right and Left to check if I'm receiving the correct data, However I'm not. </p>
+
+<pre><code>    function [Right ,Left] = fcn(data,status)
+
+
+SON = '&lt;';
+EON = '&gt;';
+
+ persistent receivedNumber;
+ receivedNumber = 0;
+
+ persistent negative;
+ negative = false;
+
+
+ if(status ==1)
+
+    switch(data)
+
+    case EON
+        if (negative)
+            receivedNumber = -1*receivedNumber;
+
+
+        else
+            receivedNumber = 1*receivedNumber;
+        end
+
+
+    case SON
+        receivedNumber = 0;
+        negative = false;
+
+
+    case {'0','1','2','3','4','5','6','7','8','9'}
+        receivedNumber = 10*receivedNumber;
+        receivedNumber = receivedNumber + double((data - 48));
+
+
+    case '-'
+        negative = true;  
+
+
+
+    end       
+
+ end
+
+    Right = receivedNumber;
+    Left = receivedNumber;
+
+
+
+end
+</code></pre>
+
+<p>Can anybody tells if there are any other approaches to read multiple signed digits in simulink? Taking into consideration that I have to use the support package for Arduino since my pid controllers are already configured in Simulink and interfaced with port2 in Arduino (which will be connected to BeagleBone black)    </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11244" data-toggle = "popover">
+				<p>user name : DieDen</p>
+				<p> user reputation : 45</p>
+				<p class = "tagcontent" id = "usertaginfo-11244">{'quadcopter': 0, 'kuka': 0, 'None': 2, 'walking-robot': 1, 'line-following': 0, 'power': 1, 'arduino': 3, 'battery': 1, 'pid': 0, 'servomotor': 1, 'python': 0, 'matlab': 1, 'beagle-bone': 0, 'serial': 3, 'ultrasonic-sensors': 0, 'inverse-kinematics': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11244" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11244" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11244">
+					<img id="start_img-11244" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11244">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-11246"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11246" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>It looks like you're doing this in a very round-about manner. You said, </p>
+
+<blockquote>
+  <p>The matlab function in sumlink is supposed to read the received ASCII characters and add them to a variable until it reaches the end character '>'.</p>
+</blockquote>
+
+<p>It looks like you are thinking the "signed numbers" are coming in as a string that you'll read one digit at a time, where the entire string is delimited by a start and stop <a href="https://en.wikipedia.org/wiki/Magic_number_(programming)" rel="nofollow noreferrer">magic number</a> (the '&lt;' and '>' symbols).</p>
+
+<p>A couple of things I would point out:</p>
+
+<ol>
+<li>First and foremost, typically a signed integer is just sent as a byte or (more typically) a series of bytes. For example, a 16-bit signed integer (short signed integer) is composed of two 8-bit bytes. To convert to the signed 16-bit integer, just use the Matlab function <a href="https://www.mathworks.com/help/matlab/ref/int16.html" rel="nofollow noreferrer">int16</a>. You're doing it the especially long and painful way of sending a string, with delimiters, then reading that string in one digit at a time, converting the characters to numbers, then multiplying the current number by 10 every time you want to concatenate a new digit. </li>
+<li>Probably where you're running into more trouble code-wise is that you're not using the Matlab <code>persistent</code> function correctly. <a href="https://www.mathworks.com/help/matlab/ref/persistent.html" rel="nofollow noreferrer">From the documentation</a></li>
+</ol>
+
+<blockquote>
+  <p>If the persistent variable does not exist the first time you issue the persistent statement, <strong>it is initialized to the empty matrix.</strong></p>
+</blockquote>
+
+<p>This is the check you should be making. If the variable you want to be persistent is empty, then initialize it to zero. <strong>You are currently declaring it persistent and then immediately setting it to zero every function call!</strong></p>
+
+<p>Your code is:</p>
+
+<pre><code>persistent receivedNumber;
+receivedNumber = 0;
+</code></pre>
+
+<p>when it <strong>should</strong> be:</p>
+
+<pre><code>persistent receivedNumber;
+if isempty(receivedNumber)
+    receivedNumber = 0;
+end
+</code></pre>
+
+<p>This way, <code>receivedNumber</code> only gets set to zero IF IT IS EMPTY (meaning it was just created). In all other cases it should be retaining the value it had and thus would be NOT empty. For the record, you need to do the same thing for <code>negative</code>; they're both being implemented incorrectly. </p>
+
+<p>Now, about your other question,</p>
+
+<blockquote>
+  <p>Can anybody tells if there are any other approaches to read multiple signed digits in simulink?</p>
+</blockquote>
+
+<p>Yes, there are a couple things you could do. First, you could just concatenate the string and convert to double when you're done. That would look something like the following:</p>
+
+<pre><code>if(status ==1)
+    switch(data)
+        case EON
+            output = str2double(receivedNumber);
+        case SON
+            receivedNumber = char;
+        otherwise
+            receivedNumber(end+1) = data;
+    end
+end
+</code></pre>
+
+<p>This code creates <code>output</code> by converting the running <code>receivedNumber</code> to a 'double' format when you hit the end of number delimiter. On receiving the start of number delimiter, output is reinitialized to an empty character array. Any other input appends whatever the current character is to the string.</p>
+
+<p>In going through the code looking for your output variable, I noticed that you have <code>Left</code> and <code>Right</code>, which output your current <code>receivedNumber</code>. I'd point out that, generally speaking, <code>receivedNumber</code> is an intermediate result. I would create a persistent variable called <code>output</code> instead, assign <code>Left</code> and <code>Right</code> to the output, and then only update <code>output</code> when you have a full number to report. </p>
+
+<p>You could further "bulletproof" the function by checking that the output of the <code>str2double</code> command is, in fact, a number, and that you didn't pick up a mis-transmitted byte somewhere along the way that would look something like <code>-1Q65</code>. </p>
+
+<p>Right now you don't have any error checking in your inputs; if you get a mis-transmitted byte that is not a valid digit then you just skip handling it <em>and then treat the next valid digit as correct</em>. This is probably not what you should be doing; if, for example, you should have gotten <code>-1065</code> and got <code>-1Q65</code> instead, your code would output:</p>
+
+<pre><code>0;
+1;
+1;
+16;
+165;
+-165;
+</code></pre>
+
+<p>The first zero is the output when you get '&lt;', then you output 1 when you receive it, then you output 1 again because you don't handle <code>Q</code>, then you output 16, then 165, then you apply the negative sign when you hit the end delimiter <code>&gt;</code>. The way I would suggest doing it instead would be:</p>
+
+<pre><code>persistent output;
+persistent receivedNumber;
+if isempty(output)
+    output = 0;
+    receivedNumber = char;
+end
+if status == 1
+    switch(data)
+        case '&lt;'
+            receivedNumber = char;
+        case '&gt;'
+            tempResult = str2double(receivedNumber);
+            if ~isnan(tempResult)
+                output = tempResult;
+            end
+        otherwise
+            receivedNumber(end+1) = data;
+    end
+end
+</code></pre>
+
+<p>Now your output is all zeros until the number is done being parsed, then it's the output number. The <em>more important thing</em> here is that, when you start receiving the next number, <em>the output continues to be the previous number</em> until the current number is done being parsed. If there is a misformed byte somewhere, the <code>str2double</code> conversion will output a <code>NaN</code> (Not A Number), and the <code>~isnan()</code> (not isnan; Matlab uses <code>~</code> instead of <code>!</code>) check catches the mis-created number and the result is discarded. </p>
+
+<p>Consider your previous code getting <code>-1065</code>, <code>-1Q65</code>, and then <code>-1064</code>. There's almost no difference there, so I wouldn't expect much response from your PID controller, but the way you're handling your feedback will give you nothing but headaches. You would get:</p>
+
+<pre><code>0;
+1;
+10;
+106;
+1065;
+-1065;
+0;
+1;
+1;
+16;
+165;
+-165;
+0;
+1;
+10;
+106;
+1064;
+-1064;
+</code></pre>
+
+<p>There are 18 numbers there, only three of them have the correct sign, and only two of them are actually correct. Granted you were given a faulty input, but <em>what should your system do in that circumstance</em>? Error out, discard the input, or pass the faulty input as truth?</p>
+
+<p>Whatever your decision on how an error should be handled, <em>for control purposes</em>, you should only be releasing complete and valid data.</p>
+
+<h2>:EDIT:</h2>
+
+<p>I just re-read my answer, and thought I'd reiterate that the persistent function isn't being used correctly. All of my examples of what your output would be are assuming you fix that. Otherwise, you code would output only whatever the current digit is.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11246" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-11246">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11246">Load Comments</button></br>
+			<div id = "commentsection-11246" class = 'collapse'>
+			<div id = "comment-20340" class = "comment">
+				<p>Great answer! I would add a further warning, that the order in which the characters are sent from the device connected to the serial port has to match the assumptions that data is sent in the Most Significatn Digit -> Least Significant Digit order.</p>
+			</div>
+			<div id = "comment-20343" class = "comment">
+				<p>@50k4 - I agree, but [endianness](https://en.wikipedia.org/wiki/Endianness) is always something that should be checked. OP is receiving the data in an unusual manner (as a string, one digit at a time vs. regular signed integers), so I'm assuming he/she has full control over what is being sent from the Arduino. Totally a valid point, though.</p>
+			</div>
+			<div id = "comment-20362" class = "comment">
+				<p>@Chuck Thanks a lot for your explanation. I had to work around this problem and make a step forward in processing from the sending side (BeagleBone in my case) and send them directly. I have tried your code and faced some problems regarding the index of the output in the last case. However, thank you for your specified answer :)</p>
+			</div>
+			<div id = "comment-20363" class = "comment">
+				<p>@DieDen - Sorry, just re-read the code and realized I wrote the wrong variable in the third case. I'll fix it now.</p>
+			</div>
+			<div id = "comment-20364" class = "comment">
+				<p>@DieDen - Fixed the problem. I originally wrote `output(end+1) = data`, which is wrong because `output` is the output variable; `receivedNumber` is the intermediate result. I changed it to `receivedNumber(end+1) = data`, which should fix the indexing problem.</p>
+			</div>
+			</div>
+				<textarea id = "speech-11246" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11246">
+					<img id="start_img-11246" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11246">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

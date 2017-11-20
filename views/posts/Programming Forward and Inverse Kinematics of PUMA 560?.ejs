@@ -1,0 +1,331 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Programming Forward and Inverse Kinematics of PUMA 560?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11653" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11653" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 676</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Programming Forward and Inverse Kinematics of PUMA 560?</h2>
+<p>I am currently coding a Forward and Inverse Kinematics solver for a PUMA 560 robot. For the Inverse Kinematics part I am using the closed for solution given in this <a href="https://deepblue.lib.umich.edu/bitstream/handle/2027.42/6192/bac6709.0001.001.pdf" rel="nofollow noreferrer">paper</a>. But my issue is, my solution for IK for a given set of (x,y,z) does not return the same values returned by my FK values. The reason I am doing this is to verify my code accurately computes the FK and IK.</p>
+
+<p>These are the DH parameters for my robot (These are Python code, since I was testing my algorithm on Spyder IDE before implementing on C++).</p>
+
+<p><b>DH Parameters </b></p>
+
+<blockquote>
+  <p>Link lengths <br>
+   <code>a = [0, 650, 0, 0, 0, 0]</code></p>
+  
+  <p>Link offsets<br>
+  <code>d = [0, 190, 0, 600, 0, 125]</code></p>
+  
+  <p>Link twist angle<br>
+  <code>alpha = [-pi/2, 0, pi/2, -pi/2, pi/2, 0]</code></p>
+</blockquote>
+
+<p>So basically I finding the <code>T</code> transformation matrix for each link from the the <code>base frame {B}</code> to <code>wrist frame {W}</code>. This is my code;</p>
+
+<p><b> Function to compute Forward Kinematics</b></p>
+
+<pre><code>def forwardK(q):
+
+#T06 is the location of Wrist frame, {W}, relative to Base frame, {B} 
+T01 = genT(q[0],0,d[0],0)
+T12 = genT(q[1],a[0],d[1],alpha[0])
+T23 = genT(q[2],a[1],d[2],alpha[1])
+T34 = genT(q[3],a[2],d[3],alpha[2])
+T45 = genT(q[4],a[3],d[4],alpha[3])
+T56 = genT(q[5],a[4],d[5],alpha[4])
+
+#Tool frame {T}
+#T67 = genT(0,0,d[5],0)
+
+T03 = matmul(T01,T12,T23)
+T36 = matmul(T34,T45,T56)
+T06 = matmul(T03,T36)    
+#T07 = matmul(T06,T67)
+
+x = T[0][3]
+y = T[1][3]
+z = T[2][3]
+
+print("X: ",x)
+print("Y: ",y)
+print("Z: ",z,"\n")
+print("T: ",T,"\n")
+
+return T06  
+</code></pre>
+
+<p><b> The function to compute </b> <code>T Matrix</code> </p>
+
+<pre><code>def genT(theta, a, d, alpha):
+T =  array([[cos(theta), (-sin(theta)), 0, a],
+    [sin(theta)*cos(alpha), (cos(theta)*cos(alpha)), -sin(alpha), (-   d*sin(alpha))],
+    [sin(theta)*sin(alpha), cos(theta)*sin(alpha), cos(alpha), cos(alpha)*d],
+    [0, 0, 0, 1]])
+
+return T
+</code></pre>
+
+<p>from the <code>T Matrix</code> relating the <code>{B} frame to the {W} frame</code> position vector of the <code>{w}</code> <code>[x y z]</code> is extracted. <code>R Matrix</code> (orientation) of the <code>{W}</code> relative to the <code>{B}</code> is obtained by the following piece of code;</p>
+
+<pre><code>T = forwardK([30,-110,-30,0,0,0])
+x = T[0][3]
+y = T[1][3]
+z = T[2][3]
+R = T[0:3,0:3]
+</code></pre>
+
+<p>Where <code>T</code> is the transformation matrix relating <code>{W}</code> to <code>{B}</code>. Then this information is fed in to the <code>invK(x,y,z,R,ARM,ELOBOW,WRIST)</code> function to check if the algorithm returns the same set of angles fed to the <code>forwardK(q1,q2,q3,q4,q5,q6)</code> function. </p>
+
+<blockquote>
+  <p>In the <code>invK(x,y,z,R,ARM,ELOBOW,WRIST)</code>
+      - <code>ARM, ELBOW, WRIST</code> are orientation specifiers to describe various possible configurations of the manipulator. Each of these parameters are either <code>{+1,-1}</code>. These values are then used in the closed form geometrical solution presented by the afore-mentioned paper.<br></p>
+</blockquote>
+
+<p><strong><em>I did not post the code for the</em></strong> <code>invK(x,y,z,R,ARM,ELOBOW,WRIST)</code> <strong><em>since it is a direct implementation of the closed form solution presented in the paper and also it significantly long hence making it highly unreadable.</em></strong> </p>
+
+<p>What do you think I am doing wrong? I am quite sure the way I am computing the FK is correct but I could be wrong. The matrix multiplications of my <code>Python</code> code are correct since I double checked them with <code>Matlab</code>. Any advice is appointed. </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11653" data-toggle = "popover">
+				<p>user name : Vino</p>
+				<p> user reputation : 75</p>
+				<p class = "tagcontent" id = "usertaginfo-11653">{'control': 1, 'robotic-arm': 1, 'pid': 1, 'slam': 0, 'motor': 1, 'linux': 5, 'mobile-robot': 0, 'ros': 5, 'forward-kinematics': 5, 'manipulator': 1, 'robotics-library': 0, 'mechanism': 1, 'opencv': 0, 'cnc': 2, 'machine-learning': 0, 'None': 2, 'inverse-kinematics': 5, 'artificial-intelligence': 0, 'automation': 1, 'industrial-robot': 0, 'quadcopter': 0, 'computer-vision': 2, 'c++': 5, 'circuit': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11653">Load Comments</button></br>
+			<div id = "commentsection-11653" class = 'collapse'>
+			<div id = "comment-20854" class = "comment">
+				<p>I am not sure if this is relevant, because it might be used correctly later in the code, but shouldn't R = T[0:3,0:3] be R = T[0:2,0:2]?</p>
+			</div>
+			<div id = "comment-20855" class = "comment">
+				<p>the 4x4 T Matrix seems to be the modified Denavit Hartenberg transformation matrix. Make sure that the IK you are using is also ment for the modified DH parameter set. For differences see: https://en.wikipedia.org/wiki/Denavit%E2%80%93Hartenberg_parameters</p>
+			</div>
+			<div id = "comment-20869" class = "comment">
+				<p>I understand what you mean; but its the weirdness of python indexing. According to python syntax, the value following the `:` should represent the column following the actual traction point. In our case of `0:x`, `x` should be 3, even though, by proper logical syntax should be `2` (like in C++). Python is bit weird. I couldn't still get a proper answer to my question. Can you pls help?</p>
+			</div>
+			<div id = "comment-20897" class = "comment">
+				<p>Did you check my seconf comment? DH vs. modified DH?</p>
+			</div>
+			</div>
+				<textarea id = "speech-11653" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11653">
+					<img id="start_img-11653" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11653">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-11655"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11655" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Take a look at the DH matrices on the <a href="https://en.wikipedia.org/wiki/Denavit%E2%80%93Hartenberg_parameters" rel="nofollow noreferrer">Wikipedia page</a>. I think, at a minimum, you have some sign errors. It also looks like maybe you use the same T matrix in both directions; from the base to the end effector and the other way. You can't do that. The way it's (almost) written, you have a T matrix that goes from the link coordinates backward; it doesn't go forward, but you're still using it in your forward kinematics calculations.</p>
+
+<p>Try using one known set of parameters and invoke your genT function. Verify that the result gets you moved correctly, but I don't think it will. </p>
+
+<p>:EDIT:</p>
+
+<p>Your matrix is <strong>not</strong> the same. The matrix $^{n-1}T_n$ is:</p>
+
+<p>$$
+\left[
+\begin{array}{cccc}
+\cos{\theta} &amp; -\sin{\theta}\cos{\alpha} &amp; \sin{\theta}\sin{\alpha} &amp; r\cos{\theta} \\
+\sin{\theta} &amp; \cos{\theta}\cos{\alpha} &amp; -\cos{\theta}\sin{\alpha} &amp; r\sin{\theta} \\
+0 &amp; \sin{\alpha} &amp; \cos{\alpha} &amp; d \\
+0 &amp; 0 &amp; 0 &amp; 1
+\end{array}
+\right]
+$$</p>
+
+<p>which can be viewed as a conglomeration of the rotation matrix and translation vector:</p>
+
+<p>$$
+\left[
+\begin{array}{c|c}
+R &amp; T \\ \hline
+0 &amp; 1
+\end{array}
+\right]
+$$
+The inverse of that, $^nT_{n-1}$, is:
+$$
+\left[
+\begin{array}{cccc}
+\cos{\theta} &amp; \sin{\theta} &amp; 0 &amp; -r \\
+-\sin{\theta}\cos{\alpha} &amp; \cos{\theta}\cos{\alpha} &amp; \sin{\alpha} &amp; -d\sin{\alpha} \\
+\sin{\theta}\sin{\alpha} &amp; -\cos{\theta}\sin{\alpha} &amp; \cos{\alpha} &amp; -d\cos{\alpha} \\
+0 &amp; 0 &amp; 0 &amp; 1 
+\end{array}
+\right]
+$$</p>
+
+<p>which is the same as:</p>
+
+<p>$$
+\left[
+\begin{array}{c|c}
+R^{\mbox{T}} &amp; -RT \\ \hline
+0 &amp; 1
+\end{array}
+\right]
+$$</p>
+
+<p>The inverse of a rotation matrix is the same as the transpose of the rotation matrix. The $\sin{\theta}$ term in the rotation matrix (at 2,1 or 1,2) is positive in both cases; yours is negative. That alone leads me to think your formulation is wrong. The signs on the other terms seem incorrect also.</p>
+
+<p>As I mentioned before, try using a basic setup that you know the answer to, plug that into your T matrix function, and verify it gives you the correct output.</p>
+
+<p>With software especially, any time you create a function you should try to perform a "<a href="https://en.wikipedia.org/wiki/Unit_testing" rel="nofollow noreferrer">Unit Test</a>" to ensure that you are getting valid outputs from every sub-function you write.</p>
+
+<p>My preference would be to do something graphically (hand-drawn), where maybe you have a link with a length of 1, and you rotate it 30, 45, 60, and 90 degrees. Verify that the resulting frames are all located in the correct places. You should consider also trying locations in all four quadrants - atan is the devil. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11655" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-11655">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11655">Load Comments</button></br>
+			<div id = "commentsection-11655" class = 'collapse'>
+			<div id = "comment-20866" class = "comment">
+				<p>Hello, I think my T matrix is correct; I checked the Wikipedia page and it lists the same T matrix as I have coded. As you have mentioned, should use the inv(T) when doing the inverse kinematics, since T is one-directional?</p>
+			</div>
+			<div id = "comment-20896" class = "comment">
+				<p>@Vino - Sorry had typed out the edit but never submitted for some reason. If you can link to the matrix you used in the Wikipedia page, please do so. I didn't see the version you used in your code.</p>
+			</div>
+			</div>
+				<textarea id = "speech-11655" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11655">
+					<img id="start_img-11655" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11655">Comment</button>
+			<br><div id = "ans-13916"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-13916" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You can't really make progress until you are sure the FK calculations are correct.</p>
+
+<p>Think about the angles you are setting the joints to and where you expect the robot to be, and how you expect it to look. It is worth working through the DH transformations and drawing out all the frames in your own diagram.</p>
+
+<p>Make sure you know whether you are using DH or Modified DH notation, as 50k4 mentions, and use one approach consistently. Make sure the link parameters match with the method.</p>
+
+<p>If using DH you should have:<br>
+<br>  </p>
+
+<p><a href="https://i.stack.imgur.com/U0kpp.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/U0kpp.png" alt="DHtransformation"></a><br>
+<br>
+For Modified DH your reference is:
+<br>
+<br>
+<a href="https://i.stack.imgur.com/zspwh.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/zspwh.png" alt="modDHtransformation"></a>
+<br>
+<br>
+It looks like Lee and Zeigler are using DH so I would stick with that if you are wanting to use their solution.
+<br>
+<br>
+To code up the FK and IK, these are the steps I normally use:</p>
+
+<ol>
+<li>Split up your matrix multiplications and calculate the joint positions, joint by joint and test with known angles to check you have the correct positions.</li>
+<li>Using the above calculations, plot your links using matplotlib or matlab. This will give you a visual reference.</li>
+<li>Code up the solution for the FK and IK using the equations in Lee and Ziegler. You can test against this.</li>
+<li>Generate a large range of angle inputs and output positions from your code</li>
+<li>Write unit tests for your solvers using the output of 4</li>
+</ol>
+
+<p>Once you have done this, work through the joints systematically trying different poses. Also once you have the FK solution correct, this will give you a test for your IK as you can then solve forwards and back and you should get to your original joint inputs.</p>
+
+<p>If you are still stuck after doing this, then you will be in a better position to ask more specific questions here.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-13916" data-toggle = "popover">
+				<p>user name : drexiya</p>
+				<p> user reputation : 111</p>
+				<p class = "tagcontent" id = "usertaginfo-13916">{'None': 1}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-13916" class = 'collapse'>
+			</div>
+				<textarea id = "speech-13916" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-13916">
+					<img id="start_img-13916" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-13916">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

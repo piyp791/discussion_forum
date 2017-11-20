@@ -1,0 +1,154 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Is there a list of maneuvers related to control of a tracked platform?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-338" class = "post">
+			<h2>Question</h2>
+			<div id="vote-338" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 60</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Is there a list of maneuvers related to control of a tracked platform?</h2>
+<p>I have a platform with two tracks and two motors. Each one uses an electronic speed control with "double tap to reverse". Each ESC takes an input pulse train frequency from at 1500 neutral +/-700.</p>
+
+<p><strong>I'm interested in learning if there are algorithms or a list of commands I can use to control how such platform executes maneuvers.</strong> For example:</p>
+
+<ul>
+<li>Lock one thread and have the platform rotate by using the other one</li>
+<li>Have two treads rotate in opposite directions</li>
+<li>Execute a U turn</li>
+</ul>
+
+<p>I'm struggling with expressing in code how such maneuvers should be executed. There's a "dead" zone around the 1500 pulse train frequency where the ESC output is too weak to cause the platform to move. The double tap to reverse also makes it tough to understand for how long each track should be turned off.</p>
+
+<p>Thank you for your input</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-338" data-toggle = "popover">
+				<p>user name : Alex Stone</p>
+				<p> user reputation : 104</p>
+				<p class = "tagcontent" id = "usertaginfo-338">{'control': 0, 'None': 0, 'motion-planning': 0, 'tracks': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-338">Load Comments</button></br>
+			<div id = "commentsection-338" class = 'collapse'>
+			<div id = "comment-379" class = "comment">
+				<p>List questions are generally discouraged on this site. Is there any chance you can edit your question to solicit less discussion and opinion and phrase it in a way that there can be *correct* answers?</p>
+			</div>
+			<div id = "comment-382" class = "comment">
+				<p>The correct answer to this question would be a link to a website that lists either an algorithm or a table of tracked platform maneuvers.</p>
+			</div>
+			<div id = "comment-385" class = "comment">
+				<p>I have to be honest. I've read this question a few times now, and I don't really understand what you're asking. Or what this platform looks like.</p>
+			</div>
+			</div>
+				<textarea id = "speech-338" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-338">
+					<img id="start_img-338" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-338">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-368"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-368" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I think you're caught up in trying to build high-level behavior (maneuvers) from low-level motor functionality, when in reality you should be attempting to decouple them somewhat.  </p>
+
+<p>So you're asking 3 questions.</p>
+
+<ol>
+<li>How do the high level behaviors work?</li>
+<li>What low-level API do I want?</li>
+<li>How should the low-level API be implemented on my ESC?</li>
+</ol>
+
+<p>So, working backwards: the relevant information on implementation is most likely in your ESC's manual, on their website, or some such.  Call them up if it's unclear, sometimes they'll be familiar with the programming gotchas and can point you in the right direction.</p>
+
+<p>I'd focus on writing a motor controller API that accepts desired velocity for each tread.  You'll have to fake it in the dead zone, most likely by varying the motor speed so on average it's the speed you want (probably some sort of PID here).  But, your controller should maintain a desired velocity (0%-100% + direction) for each motor until it's handed a new desired velocity.</p>
+
+<p>The high level behaviors just set desired velocity for each tread.  So, a U-turn is any setting where the velocities are equal and opposite; a turn is anything where velocities are unequal but aligned.  Your path planner (or whatever tells the platform where it should go) will be the one to decide how tightly to turn to get wherever it's going (another PID, most likely).</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-368" data-toggle = "popover">
+				<p>user name : Ian</p>
+				<p> user reputation : 9640</p>
+				<p class = "tagcontent" id = "usertaginfo-368">{'planning': 10, 'None': 809, 'power': 1, 'algorithm': 10, 'battery': 1, 'slam': 7, 'coverage': 10, 'mobile-robot': 9, 'sensors': 9}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-368" class = 'collapse'>
+			</div>
+				<textarea id = "speech-368" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-368">
+					<img id="start_img-368" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-368">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

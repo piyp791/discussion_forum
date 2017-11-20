@@ -1,0 +1,161 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>using Li-Ion batteries in parallel
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-12436" class = "post">
+			<h2>Question</h2>
+			<div id="vote-12436" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 41</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>using Li-Ion batteries in parallel</h2>
+<p>Looking at the Li-Ion battery packs from Servocity, part #605056, 12V, 6000maH battery pack. Any reason I shouldn't put these in parallel with each other? Any idea on what these might weigh? I've got a robot project going, currently running on a very heavy 12V lead acid RV battery, essentially a small car battery.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12436" data-toggle = "popover">
+				<p>user name : stevereine</p>
+				<p> user reputation : 6</p>
+				<p class = "tagcontent" id = "usertaginfo-12436">{'battery': 1, 'None': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-12436" class = 'collapse'>
+			</div>
+				<textarea id = "speech-12436" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12436">
+					<img id="start_img-12436" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12436">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-12438"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-12438" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Hoo boy, let's tackle this one part at a time.</p>
+
+<h1>Weight</h1>
+
+<p>You're in luck! Lithium-based batteries are some of the lightest in the business! Obviously you could go lighter if you had Lithium Polymer instead of Lithium Ion but that's beside the point. This would certainly weight a fraction of what your RV battery weighs. Unfortunately, because your listed part doesn't have very good datasheets I can't tell if it actually is a Li-Ion since there isn't much to go on and the voltages are a little odd (more on that later).</p>
+
+<h1>Parallel</h1>
+
+<p>Again, easy as cake. Simply connect any group of batteries of the same values and you'll be golden. Though those odd voltages... anyways see below for a lil' demonstration.<a href="https://i.stack.imgur.com/KQHb0.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/KQHb0.png" alt="Multiple AA batteries in parallel."></a>
+As you can see, if we add together a bunch of batteries in parallel, they're voltage will remain the same, and the total capacity for this would become 8000 mAh. However, try to keep the specifications for the batteries exactly the same, else you could have problems (see <a href="https://robotics.stackexchange.com/questions/11521/parallel-connection-of-batteries-with-equal-voltage-but-different-ah/11522#11522">here</a> for an explanation). Though I will warn you, be mindful of the difficulties of charging an array of Li-Ion batteries. There are specialized chargers but it might be safest to charge them all seperately.</p>
+
+<h1>The battery itself</h1>
+
+<p>Ah yes, now we must look at the problems I see with your choice of battery. First, the "datasheet": <a href="https://i.stack.imgur.com/uVcv4.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/uVcv4.png" alt="Selected battery&#39;s datasheet."></a>
+That is, first of all, not a datasheet. That is a user manual. Why is this a problem? We don't know how many batteries are in there, what kind actually are in there, and what their characteristics are. In reality, it could be a NiMH battery and that would ruin everybody's day (also, they're heavier). Normally, LiPo and Li-Ion batteries have a nominal voltage of 3.7v. However, these listed voltages are not divisible by the nominal voltage values slapped onto Lithium-based batteries (multiples would give us the number of cells). Say we take nominal voltage with it's 3.7v, 7.4v, 11.1v, or 14.8v. Neither 12.6v or 8.4v fits. Let's try the maximum voltage at 4.2v, 8.4v, and 12.6v. Ah, a match. It would appear that this might be listing the range, which would mean that 8.4v is the voltage you would be able to pull from the battery before permanently damaging it. So it's definitely a 3-cell 6Ah Li-Ion. HOWEVER, its nominal voltage is 11.1v, which means that 90% of the time you will be getting less than 12v, which I assume is not what you want.</p>
+
+<h1>In summary</h1>
+
+<p>No problem, it'll be lighter; make sure you account for possible issues charging arrays, and you'll be fine. However, this battery may not be quite what you are looking for with a nominal voltage of 11.1v compared to your SLA's 12v.</p>
+
+<p>Sorry some of it got long, I got carried away. Credit to SparkFun for the parallel battery image.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12438" data-toggle = "popover">
+				<p>user name : Bakna</p>
+				<p> user reputation : 116</p>
+				<p class = "tagcontent" id = "usertaginfo-12438">{'None': 10}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-12438" class = 'collapse'>
+			</div>
+				<textarea id = "speech-12438" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12438">
+					<img id="start_img-12438" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12438">Comment</button>
+			<br><div id = "ans-12452"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-12452" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Thanks Bakna! I got a response back from Servo City that this would be OK, I ordered a couple of these battery packs. I've got a project going where I took my daughter's old kiddy car and turned it into our own mars-rover type vehicle. I control it via wi-fi to a raspberry pi mounted on the vehicle and a Python GUI I run from a pc in the house. The raspberry pi controls an h bridge I built out of relays, with a big FET on the bottom that is driven by the PWM output on the raspberry pi for speed control. The real problem with the weight of the SLA battery is that I have a steep driveway, and with any speed at all, the momentum with the weight of the heavy SLA battery means that there is just no stopping the thing going downhill. This ought to solve that problem as well as help with overall load on the motors. Take care, thanks again! </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12452" data-toggle = "popover">
+				<p>user name : stevereine</p>
+				<p> user reputation : 6</p>
+				<p class = "tagcontent" id = "usertaginfo-12452">{'battery': 1, 'None': 0}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-12452" class = 'collapse'>
+			</div>
+				<textarea id = "speech-12452" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12452">
+					<img id="start_img-12452" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12452">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -158,7 +158,9 @@ module.exports = {
       title = title.replace(/"/g,"")
       console.log('title-->' +title)
 
-      var query = "Replace into Highlights set Title = \"" +title + "\", Text = \"" + text + "\", NumOfHighlights = NumOfHighlights + 1"; 
+      var query = "INSERT INTO Highlights (Title, Text, NumOfHighlights) VALUES (\"" + title + "\", \"" + text +"\", 1) ON DUPLICATE KEY UPDATE NumOfHighlights = NumOfHighlights + 1"
+
+      //var query = "Replace into Highlights set Title = \"" +title + "\", Text = \"" + text + "\", NumOfHighlights = NumOfHighlights + 1"; 
 
       //query = "insert into Highlights(Title, Text) values(\"" + title + "\",\"" + text + "\")"
       console.log('query-->' +query)

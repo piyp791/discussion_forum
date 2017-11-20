@@ -1,0 +1,155 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Arduino Lightsensor Blocking Code
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-4875" class = "post">
+			<h2>Question</h2>
+			<div id="vote-4875" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 156</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Arduino Lightsensor Blocking Code</h2>
+<p>I have a <a href="http://smart-prototyping.com/GY-31-TCS230-TCS3200-Color-Sensor-Recognition-Module-for-Arduino.html" rel="nofollow">GY-31 Light sensor</a> and I am trying to make a skittle sorting machine. There is a little wheel skittles can drop into then they are turn to 90 degrees read by the light sensor then dropped out the bottom. The problem is the code seems to get stuck after reading the light sensor (it still flows through but won't execute the moving of the servo). As soon as I take out the ReadSensor line the servo works like normal. Do I have to dispose of the Color Sensor some how?</p>
+
+<pre><code>#include &lt;Servo.h&gt;
+#include &lt;MD_TCS230.h&gt;
+#include &lt;FreqCount.h&gt;
+
+#define  S2_OUT  2
+#define  S3_OUT  3
+MD_TCS230  CS(S2_OUT, S3_OUT);
+
+Servo myservo;  // create servo object to control a servo 
+                // a maximum of eight servo objects can be created 
+
+void setup() 
+{ 
+  myservo.attach(11);  // attaches the servo on pin 9 to the servo object 
+  Serial.begin(57600);
+  Serial.println("[TCS230 Simple BLOCKING Example]");
+  Serial.println("Move the sensor to different color to see the value");
+  Serial.println("Note: These values are being read in without sensor calibration");
+  Serial.println("and are likely to be far from reality");
+
+  CS.begin();
+  CS.setFilter(TCS230_RGB_X);
+  CS.setFrequency(TCS230_FREQ_HI);
+  CS.setSampling(100); 
+} 
+
+ void readSensor()
+{
+  uint32_t v;
+  v = CS.readSingle();
+  Serial.print("Simple value = ");
+  Serial.println(CS.readSingle());
+
+}
+
+void loop() 
+{ 
+  Serial.println("Start");
+  myservo.write(0);
+  delay(1000);
+  myservo.write(90);
+  delay(1000);
+ readSensor();
+  myservo.write(180);
+  delay(1000);
+} 
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4875" data-toggle = "popover">
+				<p>user name : Kuzon</p>
+				<p> user reputation : 101</p>
+				<p class = "tagcontent" id = "usertaginfo-4875">{'None': 0, 'rcservo': 0, 'sensors': 0, 'arduino': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-4875">Load Comments</button></br>
+			<div id = "commentsection-4875" class = 'collapse'>
+			<div id = "comment-7574" class = "comment">
+				<p>Some possible errors:
+"myservo.attach(11);  // attaches the servo on pin 9 to the servo object "
+Comment says to pin 9, code says to pin 11. You have attached to the right pin.
+You have the right "freqcount.h" ??
+Why you call contructor with minimum config "MD_TCS230  CS(S2_OUT, S3_OUT);"
+you sure you don't need the other pins?</p>
+			</div>
+			<div id = "comment-7581" class = "comment">
+				<p>Not related to the problem at hand, but why do you bother with setting `v`  in `readSensor()` since you never use it?</p>
+			</div>
+			</div>
+				<textarea id = "speech-4875" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4875">
+					<img id="start_img-4875" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4875">Comment</button>
+
+<h1>Answers</h1>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

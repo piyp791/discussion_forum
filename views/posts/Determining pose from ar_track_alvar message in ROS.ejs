@@ -1,0 +1,300 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Determining pose from ar_track_alvar message in ROS
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8223" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8223" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">-1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 1967</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Determining pose from ar_track_alvar message in ROS</h2>
+<p>I am using the ar_track_alvar package in Indigo to detect AR Tags and determine their respective poses. I am able to run the tracker successfully as I can visualize the markers in RViz. I give the following command to print the pose values</p>
+
+<blockquote>
+  <p>rostopic echo /ar_pose_marker</p>
+</blockquote>
+
+<p>and I get the following output indicating that the poses are determined.</p>
+
+<blockquote>
+<pre><code>header: 
+  seq: 0
+  stamp: 
+    secs: 1444430928
+    nsecs: 28760322
+  frame_id: /head_camera
+id: 3
+confidence: 0
+pose: 
+  header: 
+    seq: 0
+    stamp: 
+      secs: 0
+      nsecs: 0
+    frame_id: ''
+  pose: 
+    position: 
+      x: 0.196624979223
+      y: -0.238047436646
+      z: 1.16247606451
+    orientation: 
+      x: 0.970435431848
+      y: 0.00196992162831
+      z: -0.126455066154
+      w: -0.205573121457
+</code></pre>
+</blockquote>
+
+<p>Now I want to use these poses in another ROS node and hence I need to subscribe to the appropriate ROS message('ar_pose_marker"). But I am unable to get enough information on the web on the header files and functions to use in order to extract data from the published message. It would be great if somebody can point to a reference implementation or documentation on handling these messages. It might be useful to note that ar_track_alvar is just a ROS wrapper and hence people who have used ALVAR outside of ROSmay also give their inputs.</p>
+
+<p><strong>UPDATE:</strong></p>
+
+<p>I tried to write code for the above task as suggested by @Ben in the comments but I get an error. The code is as follows</p>
+
+<pre><code>#include &lt;ros/ros.h&gt;
+#include &lt;ar_track_alvar_msgs/AlvarMarker.h&gt;
+#include &lt;tf/tf.h&gt;  
+#include &lt;tf/transform_datatypes.h&gt;
+
+void printPose(const ar_track_alvar_msgs::AlvarMarker::ConstPtr&amp; msg)
+{   
+    tf::Pose marker_pose_in_camera_;    
+
+    marker_pose_in_camera_.setOrigin(tf::Vector3(msg.pose.pose.position.x,
+                             msg.pose.pose.position.y,
+                             msg.pose.pose.position.z));
+
+}
+
+int main(int argc, char **argv)
+{
+    ros::init(argc, argv, "pose_subscriber");
+
+    ros::NodeHandle nh;
+
+    ros::Subscriber pose_sub = nh.subscribe("ar_pose_marker", 1000, printPose);
+
+    ros::spin();
+
+    return 0;
+
+}
+</code></pre>
+
+<p>And I get the following error</p>
+
+<pre><code>/home/karthik/ws_ros/src/auto_land/src/pose_subscriber.cpp: In function  void printPose(const ConstPtr&amp;) :
+/home/karthik/ws_ros/src/auto_land/src/pose_subscriber.cpp:17:53: error:  const ConstPtr  has no member named  pose 
+    marker_pose_in_camera_.setOrigin(tf::Vector3(msg.pose.pose));
+                                                     ^
+make[2]: *** [auto_land/CMakeFiles/pose_subscriber.dir/src/pose_subscriber.cpp.o] Error 1
+make[1]: *** [auto_land/CMakeFiles/pose_subscriber.dir/all] Error 2
+make: *** [all] Error 2
+</code></pre>
+
+<p>Any suggestions?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8223" data-toggle = "popover">
+				<p>user name : Nagsaver</p>
+				<p> user reputation : 6</p>
+				<p class = "tagcontent" id = "usertaginfo-8223">{'None': 0, 'ros': 0, 'cameras': 1, 'pose': -1, 'calibration': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8223">Load Comments</button></br>
+			<div id = "commentsection-8223" class = 'collapse'>
+			<div id = "comment-13176" class = "comment">
+				<p>What language are you using?  C or Python?</p>
+			</div>
+			<div id = "comment-13471" class = "comment">
+				<p>Where exactly is your problem? The pose-member of the message is a geometry_msgs/Pose that contains the information you need. How does your callback look like?</p>
+			</div>
+			</div>
+				<textarea id = "speech-8223" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8223">
+					<img id="start_img-8223" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8223">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8238"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8238" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>If you do a <code>rostopic type /ar_pose_marker</code> you should see something like:</p>
+
+<pre><code>ar_track_alvar_msgs/AlvarMarker
+</code></pre>
+
+<p>Then if you do a <code>rosmsg show ar_track_alvar_msgs/AlvarMarker</code> you should see something like:</p>
+
+<pre><code>std_msgs/Header header
+  uint32 seq
+  time stamp
+  string frame_id
+uint32 id
+uint32 confidence
+geometry_msgs/PoseStamped pose
+  std_msgs/Header header
+    uint32 seq
+    time stamp
+    string frame_id
+  geometry_msgs/Pose pose
+    geometry_msgs/Point position
+      float64 x
+      float64 y
+      float64 z
+    geometry_msgs/Quaternion orientation
+      float64 x
+      float64 y
+      float64 z
+      float64 w
+</code></pre>
+
+<p>So now you can subscribe to the <code>/ar_pose_marker</code> topic which is of type <code>ar_track_alvar_msgs/AlvarMarker</code>.  (Follow the <a href="http://wiki.ros.org/roscpp/Overview/Publishers%20and%20Subscribers#Subscribing_to_a_Topic" rel="nofollow">cpp</a> or <a href="http://wiki.ros.org/rospy/Overview/Publishers%20and%20Subscribers#Subscribing_to_a_topic" rel="nofollow">python</a> tutorials for the syntax).  Then in your callback, you can get the pose out of the message by simply doing <code>msg.pose.pose</code>.  </p>
+
+<p>Keep in mind that this is the pose in message format.  It doesn't support the normal mathematical operations that you would expect.  For that, you must convert it to another type such as an <a href="http://eigen.tuxfamily.org/dox/group__TutorialMatrixClass.html" rel="nofollow">Eigen matrix</a>, <a href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.matrix.html" rel="nofollow">Numpy matrix</a>, or <a href="http://docs.ros.org/hydro/api/orocos_kdl/html/classKDL_1_1Frame.html" rel="nofollow">KDL Frame</a>.  <a href="http://wiki.ros.org/tf_conversions" rel="nofollow">tf_conversions</a> has some code for that.  Or you can use some external library like <a href="https://bitbucket.org/benkehoe/tfx" rel="nofollow">tfx</a>.  Or just do it yourself.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8238" data-toggle = "popover">
+				<p>user name : Ben</p>
+				<p> user reputation : 3608</p>
+				<p class = "tagcontent" id = "usertaginfo-8238">{'None': 277, 'inverse-kinematics': 3, 'accelerometer': 5, 'calibration': 10, 'kinematics': 14, 'robotic-arm': 8, 'jacobian': 6, 'dh-parameters': 8, 'imu': 5, 'sensors': 5}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8238">Load Comments</button></br>
+			<div id = "commentsection-8238" class = 'collapse'>
+			<div id = "comment-13195" class = "comment">
+				<p>Thanks!! I tried your solution but I get an error that pose is not a member of msg. Am I doing somehting drastically wrong here?  I have updated the post to add my code and the error.</p>
+			</div>
+			<div id = "comment-13224" class = "comment">
+				<p>You need to use the [-> operator](http://en.cppreference.com/w/cpp/language/pointer) when accessing an element of a pointer.  So it should be: ```msg->pose.pose.position.x```</p>
+			</div>
+			</div>
+				<textarea id = "speech-8238" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8238">
+					<img id="start_img-8238" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8238">Comment</button>
+			<br><div id = "ans-10727"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10727" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>may be this would be useful to you,</p>
+
+<pre><code>#include &lt;ros/ros.h&gt;
+#include &lt;tf/transform_datatypes.h&gt;
+#include &lt;ar_track_alvar_msgs/AlvarMarkers.h&gt;
+
+void cb(ar_track_alvar_msgs::AlvarMarkers req) {
+    if (!req.markers.empty()) {
+      tf::Quaternion q(req.markers[0].pose.pose.orientation.x, req.markers[0].pose.pose.orientation.y, req.markers[0].pose.pose.orientation.z, req.markers[0].pose.pose.orientation.w);
+      tf::Matrix3x3 m(q);
+      double roll, pitch, yaw;
+      m.getRPY(roll, pitch, yaw);
+      ROS_INFO("roll, pitch, yaw=%1.2f  %1.2f  %1.2f", roll, pitch, yaw);
+      // roll  --&gt; rotate around vertical axis
+      // pitch --&gt; rotate around horizontal axis
+      // yaw   --&gt; rotate around depth axis
+    } // if
+}
+
+int main(int argc, char **argv) {
+  ros::init(argc, argv, "arlistener");
+  ros::NodeHandle nh;
+  ros::Subscriber sub = nh.subscribe("ar_pose_marker", 1, cb);
+  ros::spin();
+  return 0;
+
+}
+</code></pre>
+
+<p>Thanks to <a href="http://ros-robotics.blogspot.de/" rel="nofollow">http://ros-robotics.blogspot.de/</a></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10727" data-toggle = "popover">
+				<p>user name : Mahe Sirius</p>
+				<p> user reputation : 121</p>
+				<p class = "tagcontent" id = "usertaginfo-10727">{'None': 0, 'computer-vision': 4, 'c++': 0, 'opencv': 4, 'machine-learning': 4, 'ros': 4, 'point-cloud': 4}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-10727" class = 'collapse'>
+			</div>
+				<textarea id = "speech-10727" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10727">
+					<img id="start_img-10727" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10727">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

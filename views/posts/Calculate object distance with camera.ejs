@@ -1,0 +1,153 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Calculate object distance with camera
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-4296" class = "post">
+			<h2>Question</h2>
+			<div id="vote-4296" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 591</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Calculate object distance with camera</h2>
+<p>Firstly I'm unsure whether this question belongs here or on another SE site (but I'll wing it for now).</p>
+
+<p>I've recently been given the job of connecting up a 'smart camera' to a setup where a robotic arm will pick and place objects from point A to point B. The <em>real</em> application for the camera is to check if the objects are out of alignment to their supposed positions.</p>
+
+<p>However I am curious to see if there is any way I can calculate the distance of an object given that I already know the objects actual size. Naturally the camera will see the object as bigger when closer and smaller when farther away but how can I turn this information into depth/distance from the camera?</p>
+
+<p>I have not yet started using the camera. For now it is just an idea. I will assume that I can calculate what percentage of the view frame is taken up by the object.</p>
+
+<p>For example if I have an object of uniform shape, I know that from dist1 it takes up 75% of the view frame and from dist2 it takes up 45% of the view frame.
+<img src="https://i.stack.imgur.com/WiWTh.png" alt="Basic concept"></p>
+
+<p>Should this prove to be possible I imagine that it could have a number of different applications. /Anyway any feedback is appreciated. Thanks! ( :</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4296" data-toggle = "popover">
+				<p>user name : Robert English</p>
+				<p> user reputation : 148</p>
+				<p class = "tagcontent" id = "usertaginfo-4296">{'None': 4, 'calibration': 1, 'cameras': 1, 'localization': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-4296">Load Comments</button></br>
+			<div id = "commentsection-4296" class = 'collapse'>
+			<div id = "comment-6876" class = "comment">
+				<p>You might have better luck at the [OpenCV Q&A](http://answers.opencv.org/questions/scope:all/sort:relevance-desc/query:distance%20to%20object/page:1/)</p>
+			</div>
+			<div id = "comment-6928" class = "comment">
+				<p>How controlled are the conditions that you plan to work in?</p>
+			</div>
+			</div>
+				<textarea id = "speech-4296" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4296">
+					<img id="start_img-4296" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4296">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-4298"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4298" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Think of it this way, cameras measure angles. Each pixel tells you the angle between the camera's central axis and the object/corner/etc shown at that pixel. So if you know real-world dimensions of the object, and are able to find the pixel locations for points on that object, then yes it is possible to extract the camera distance.</p>
+
+<p>For example, suppose the camera (with focal length $f$) was looking at a ruler of length $l$ with the 0 end at pixel (0,0) and the other end at pixel ($u_x$,0). From trig you get
+$$
+\begin{align}
+  tan(\theta) &amp;= \frac{u_x}{f}
+\\
+  &amp;= \frac{l}{d}
+\\
+  d &amp;= \frac{l}{tan(\theta)}
+\\
+&amp;= \frac{l f}{u_x}
+\end{align}
+$$</p>
+
+<p>where $d$ is the distance from the camera to the ruler. (someone please double check my math)</p>
+
+<p>Note that things start to get more complicated when you consider full 3D objects (not each point is the same distance to the camera) and camera rotation relative to the object. But the idea is the same: cameras measure angles.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4298" data-toggle = "popover">
+				<p>user name : ryan0270</p>
+				<p> user reputation : 1814</p>
+				<p class = "tagcontent" id = "usertaginfo-4298">{'None': 133}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-4298" class = 'collapse'>
+			</div>
+				<textarea id = "speech-4298" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4298">
+					<img id="start_img-4298" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4298">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

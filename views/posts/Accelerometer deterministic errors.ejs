@@ -1,0 +1,181 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Accelerometer deterministic errors
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-10784" class = "post">
+			<h2>Question</h2>
+			<div id="vote-10784" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 49</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Accelerometer deterministic errors</h2>
+<p>I am working on MEMS accelerometers, and I want to understand the difference between, </p>
+
+<ol>
+<li>Cross axis sensitivity</li>
+<li>Axis Misalignment</li>
+<li>Non Orthogonality</li>
+</ol>
+
+<p>In literature, people use it interchangeably. </p>
+
+<p>These physical parameters cause deterministic errors, which I want to correct during calibration</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10784" data-toggle = "popover">
+				<p>user name : Nithin G A</p>
+				<p> user reputation : 64</p>
+				<p class = "tagcontent" id = "usertaginfo-10784">{'None': 0, 'accelerometer': 11, 'algorithm': 2, 'calibration': 1, 'integration': 3, 'gyroscope': 5, 'orientation': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-10784" class = 'collapse'>
+			</div>
+				<textarea id = "speech-10784" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10784">
+					<img id="start_img-10784" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10784">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-10787"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10787" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">6</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><ol>
+<li>Cross-axis sensitivity: A reading on one axis creates a false reading on another axis. This could be because the signal traces are close together and capacitive coupling induces a voltage on the adjacent trace. </li>
+<li>Axis misalignment: The x-axis of the <em>sensor</em> is not aligned with the x-axis of the <em>package</em>, so when you are expecting an x-axis reading because you moved the package along <em>its</em> x-axis, you instead get readings of not-quite-full scale on x and a smaller reading on the y- and/or z-axes. </li>
+<li>Non-orthogonality: The sensor is deformed and the portion of the sensor that is supposed to detect acceleration on the y-axis is instead "bent" and "leans" toward the x- and/or z-axes. Same goes for the other axes. </li>
+</ol>
+
+<p>So, let's use the example of sliding the accelerometer purely along the x-axis. You take measurements and find that you're getting a non-zero, positive reading on the y-axis in addition to a "roughly correct" reading on the x-axis. What is the cause?</p>
+
+<ol>
+<li>Cross-axis sensitivity - could be the y-axis signal line is coupled to the x-axis signal line and the x-axis reading induces a voltage that is read by the y-axis ADC and returned.</li>
+<li>Axis misalignment - The z-axis is reading zero (in this example), so it is pointing in the correct direction, but the sensor could be rotated <em>about</em> the z-axis relative to the package (an angle $\theta$), such that the y-axis points a little in the direction of the +x-axis. When the package is slid along the <em>package's</em> x-axis, the <em>sensor's</em> x-axis reads $\ddot{x}_{\mbox{package}}\cos{\theta}$ and the <em>sensor's</em> y-axis reads $\ddot{x}_{\mbox{package}}\sin{\theta}$.</li>
+<li>Non-orthogonality - The sensor's x-axis is actually pointing correctly in the package's x-axis and the sensor's z-axis is correctly pointing in the package's z-axis, but the sensor's y-axis is "bent" and it's not perpendicular to the x- and z-axes. Now the x-axis is reading the correct value, but the y-axis is incorrectly reading some value because it's bent <em>towards</em> the x-axis. </li>
+</ol>
+
+<p>Why do people use them interchangeably? Because you can't see behind the scenes and see what's causing the y-axis to incorrectly report readings. It could be any one of the three, or all three, or any other permutation. </p>
+
+<h2>:EDIT:</h2>
+
+<p>OP asked about mathematical modelling of the errors, and while I don't have any resources on these exactly, I can offer a couple things to think about that you could consider as "guidelines" for designing the tests to differentiate these errors:</p>
+
+<ol>
+<li>Cross-axis sensitivity. Here the assumption is that there's some coupling between sensor axes internally. With the (almost certainly capacitive) coupling, there's an associated <em>time constant</em>. That is, if you could get the sensor to maintain a constant acceleration on one axis, if there is cross-axis sensitivity, the reading on the other axis should be <em>time-dependent</em> and should display a familiar <a href="http://cds.linear.com/image/ExpVoltageSourceParameters.png" rel="nofollow">shark fin shape</a>. Keep in mind that a object on a circular path always needs a constant acceleration towards the axis of rotation (centripetal force), so a turntable would be an easy way to set this up. </li>
+<li>Axis misalignment. If the reading on the un-actuated axis does <em>not</em> change with time (and know that the capacitance between those sensor lines could be very, very small - very fast time constant!), then check that the readings affect <em>both axes</em> equally. That is, when accelerating on the x-axis, you might get $\ddot{x}_{\mbox{package}}\cos{\theta}$ on the sensor's x-axis and $\ddot{x}_{\mbox{package}}\sin{\theta}$ on the sensor's y-axis. You have no way of knowing what $\theta$ is because it's <em>supposed</em> to be zero. BUT, when you re-orient the sensor and accelerate along the <strong>y-axis</strong>, you should now expect the sensor to read $\ddot{y}_{\mbox{package}}\cos{\theta}$ on the sensor's y-axis and $\ddot{y}_{\mbox{package}}\sin{\theta}$ on the sensor's x-axis. If the y-axis reading when testing the x-axis the same as the x-axis reading when testing the y-axis, then both axes are skewed and the sensor is rotated with respect to the package. Going back to the example where we're testing on the x-axis, the y-axis value should be smaller, and if you divide the y-axis reading by the x-axis reading, you get: $(\ddot{y}/\ddot{y})(\sin{\theta}/\cos{\theta})$, which is equal to $\tan{\theta}$. Now take the inverse tangent of the y/x reading and you'll get the rotation angle. </li>
+<li>Non-orthogonality. This error is where one or more axes are bent such that they're not perpendicular. In this case, let's assume the sensor x- and z-axes are correctly aligned with respect to the package, but the y-axis is bent. In this case, in the same test as #2 above, you should find that when you accelerate the package along its x-axis, the y-axis is bent so it has a reading, but when you accelerate the package along its y-axis, the x-axis does <strong>not</strong> have a reading. This is because the sensor's x-axis is orthogonal to the package's y-axis, so there's nothing to sense. The sensor's y-axis is <strong>not</strong> orthogonal to the package's x-axis, though, which is why you <em>do</em> get a reading when moving along that axis. </li>
+</ol>
+
+<p>To summarize: </p>
+
+<p>If the false reading is time-dependent, it's a coupling issue. The rise and fall times give you the time constant, which in turn should allow you to model the coupling. Note that these rise/fall times might be very fast.</p>
+
+<p>If a y-axis acceleration causes a reading on the x-axis that's symmetric to the y-axis reading caused during an x-axis acceleration, the sensor is rotated with respect to the package. Take the arctangent of the readings to get the rotation angle. </p>
+
+<p>If the readings aren't symmetric, one (or more) axes are bent. Here you'd use the arcsine (or arccosine, depending on your definition) to get the bend angle, because the unaffected axis should read the full value.</p>
+
+<p>You'll find this to be more complex in reality, because you could have all three problems on all three axes. A time-dependent coupling that doesn't start at zero indicates problem #1 with (#2 and/or #3). A related but not perfectly symmetric set of readings when swapping axes indicates problems #2 and #3 together. This should give you enough to get started designing your own tests. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10787" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-10787">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10787">Load Comments</button></br>
+			<div id = "commentsection-10787" class = 'collapse'>
+			<div id = "comment-19414" class = "comment">
+				<p>Thank you Chuck....The used case here is to get position accuracy within +-2mm error range...Hence modelling these errors become crucial...Is there any reference where these errors are mathematically modeled??</p>
+			</div>
+			<div id = "comment-19417" class = "comment">
+				<p>@NithinGA - Hate to be the bearer of bad news, but you will probably never get the position accuracy that low. The probability goes (quickly) to zero as the amount of time since calibration increases. The problem you're going to have is that position is the (double) *integral* of acceleration, meaning any errors in the accelerometer reading *accumulate* and cause a *permanent position error* because you don't have any mechanism to remove those errors.</p>
+			</div>
+			<div id = "comment-19418" class = "comment">
+				<p>Even if your accelerometer were perfect, 100% correct, with no errors or flaws anywhere, you are still not sampling at an infinitely small time sample, so you'll introduce errors simply because you're not sampling fast enough (it's not possible to ever sample fast enough). Numeric integration is going to assume some form of trapezoidal/triangle rule, but the fact is that accelerations don't change linearly between time samples. Your readings will only ever *approximate* the true acceleration values, so even with perfect sensors and high sample rates, position will eventually diverge.</p>
+			</div>
+			<div id = "comment-19419" class = "comment">
+				<p>@NithinGA - I also edited the answer to add more content than I could squeeze in a content, outlining tests you could run and what you would expect to see in each case.</p>
+			</div>
+			<div id = "comment-19449" class = "comment">
+				<p>Thank you for the edit.                                                                                    Here in the used case, the movement duration is not more than 4 seconds and the Sampling rate is 1KHz. I think we can achieve it with these constraints.                                                                                                    One more used case I am working on is getting the angles continously  for may be half hour using two accelerometers using this paper as http://absynth-project.org/Papers/bsn10.pdf</p>
+			</div>
+			<div id = "comment-19450" class = "comment">
+				<p>@ Chuck - Hence the calibration becomes very critical.</p>
+			</div>
+			</div>
+				<textarea id = "speech-10787" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10787">
+					<img id="start_img-10787" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10787">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

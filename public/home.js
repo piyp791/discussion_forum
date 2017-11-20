@@ -43,14 +43,30 @@ function getHomeLinks(homePageContent, div){
 
         //console.log('home page content ->' +JSON.stringify(homePageContent[i]));
 
-        var link = homePageContent[i].Title;
+        if(div == 'recommended-content'){
+            var link = homePageContent[i]['_source']['title']
+        }else{
+            var link = homePageContent[i].Title;
+        }
+        
         console.log('link-->', link);
         link = link.replace("?", "%3F")
 
-        var date = homePageContent[i].CreationDate;
+        if(div == 'recommended-content'){
+            var date = '---'
+        }else{
+            var date = homePageContent[i].CreationDate;
+        }
+        
         console.log('date-->', date)
 
-        var views = homePageContent[i].ViewCount;
+
+        if(div == 'recommended-content'){
+             var views = '---'
+        }else{
+            var views = homePageContent[i].ViewCount;
+        }
+       
         console.log('views-->', views)
 
         var a = document.createElement('a');
@@ -86,6 +102,7 @@ function getHomeLinks(homePageContent, div){
     //document.getElementById('trendingcontent').innerHTML = homePageContent
 }
 
+
 //handles population of latest tab by requesting /getlatest api when clicked on latest tab
 $(document).ready(function(){
     $('input[name="tab-group"]').change(function(){
@@ -112,6 +129,8 @@ $(document).ready(function(){
 
                 $.get( "/getrecommended/"+loggedInUser , function( data ) {
                     console.log(JSON.stringify(data));
+                    $('#recommended-content').html("");
+                    getHomeLinks(data, 'recommended-content');
                     //$('#latest-content').html("")
                     //getHomeLinks(data, 'latest-content')
                     //$('#latest-content').html(JSON.stringify(data))
@@ -119,13 +138,13 @@ $(document).ready(function(){
 
             }else{
 
-                 $.get( "/getrecommended/-1" , function( data ) {
+                 /*$.get( "/getrecommended/-1" , function( data ) {
                     console.log('response from recommendation api->' +JSON.stringify(data));
                     $('#recommended-content').html("");
                     getHomeLinks(data, 'recommended-content');
                     //$('#latest-content').html(JSON.stringify(data))
-                 });
-
+                 });*/
+                 alert('No recommendation since not logged in...');
             }
         }
     });

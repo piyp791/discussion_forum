@@ -1,0 +1,162 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to obtain stereo correspondences and what exactly is a disparity map?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-1117" class = "post">
+			<h2>Question</h2>
+			<div id="vote-1117" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 444</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to obtain stereo correspondences and what exactly is a disparity map?</h2>
+<p>I am currently reading into the topic of stereo vision, using the book of Hartley&amp;Zimmerman alongside some papers, as I am trying to develop an algorithm capable of creating elevation maps from two images.</p>
+
+<p>I am trying to come up with the basic steps for such an algorithm. This is what I think I have to do:</p>
+
+<p>If I have two images I somehow have to find the fundamental matrix, F, in order to find the actual elevation values at all points from triangulation later on. If the cameras are calibrated this is straightforward if not it is slightly more complex (plenty of methods for this can be found in H&amp;Z).</p>
+
+<p>It is necessary to know F in order to obtain the epipolar lines. These are lines that are used in order to find image point x in the first image back in the second image.</p>
+
+<p>Now comes the part were it gets a bit confusing for me: Now I would start taking a image point x_i in the first picture and try to find the corresponding point x_i  in the second picture, using some matching algorithm. Using triangulation it is now possible to compute the real world point X and from that it s elevation. This process will be repeated for every pixel in the right image.</p>
+
+<p>In the perfect world (no noise etc) triangulation will be done based on</p>
+
+<pre><code>x1=P1X 
+x2=P2X
+</code></pre>
+
+<p>In the real world it is necessary to find a best fit instead.</p>
+
+<p>Doing this for all pixels will lead to the complete elevation map as desired, some pixels will however be impossible to match and therefore can't be triangulated.</p>
+
+<p>What confuses me most is that I have the feeling that Hartley&amp;Zimmerman skip the entire discussion on how to obtain your point correspondences (matching?) and that the papers I read in addition to the book talk a lot about disparity maps which aren t mentioned in H&amp;Z at all. However I think I understood correctly that the disparity is simply the difference x1_i- x2_i?</p>
+
+<p>Is this approach correct, and if not where did I make mistakes?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1117" data-toggle = "popover">
+				<p>user name : Svenja Woicke</p>
+				<p> user reputation : 125</p>
+				<p class = "tagcontent" id = "usertaginfo-1117">{'stereo-vision': 4, 'None': 0, 'computer-vision': 2, 'raspberry-pi': 2, 'arduino': 2, 'slam': 2, 'mobile-robot': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-1117" class = 'collapse'>
+			</div>
+				<textarea id = "speech-1117" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1117">
+					<img id="start_img-1117" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1117">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-1118"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1118" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p><strong>How to obtain your point correspondences</strong></p>
+
+<p>There are many ways to do it, which can basically be classified into two categories: feature-based and dense matching.</p>
+
+<p>Feature-based methods include using corner detectors, SIFT/SURF/ORB descriptors and other similar feature detectors that provide point to point correspondences. A few of those methods that are implemented in OpenCV are compared <a href="http://computer-vision-talks.com/2011/07/comparison-of-the-opencvs-feature-detection-algorithms-ii/" rel="nofollow noreferrer">here</a>.</p>
+
+<p>Dense-matching methods usually involve some kind of comparison between sliding windows in both images. The most used approach is SSD or variants. A few of these variants are listed <a href="http://siddhantahuja.wordpress.com/tag/sum-of-squared-differences/" rel="nofollow noreferrer">here</a>.</p>
+
+<p><strong>What are disparity maps</strong></p>
+
+<p>Your intuition is right: disparity, in a rectified image, is defined as the difference between the x coordinate of a point in two images. It had a neat relationship from projective geometry: disparity = 1/depth. <a href="https://stackoverflow.com/questions/7337323/definition-of-a-disparity-map">This stackoverflow answer</a> has a few pointers about it. Disparity maps are basically images where each pixel value is the disparity of that point, so it gives you a sense of depth - the further away from the camera, the darker.</p>
+
+<p><strong>EDIT:</strong> Yes, in general terms your approach is correct AFAIK. Your description lacks detail, but as you mentioned you can find out how to do each of these pieces in H&amp;Z.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1118" data-toggle = "popover">
+				<p>user name : georgebrindeiro</p>
+				<p> user reputation : 1266</p>
+				<p class = "tagcontent" id = "usertaginfo-1118">{'computer-vision': 9, 'None': 98, 'slam': 9}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1118">Load Comments</button></br>
+			<div id = "commentsection-1118" class = 'collapse'>
+			<div id = "comment-2612" class = "comment">
+				<p>Thank you for your answer! It clarified most of what I was unsure aout, however in order to fully answer my question could you add to your answer if or not the approach I explained (thus the steps I explained I would take in order to solve the entire problem)</p>
+			</div>
+			<div id = "comment-2643" class = "comment">
+				<p>The steps you mentioned seem pretty straightforward: find the epipolar line for each pixel and use it to reduce your search space for correspondences, then use that to compute the disparity map and/or 3D coordinates for the points. All the math, as you said, can be found in H&Z. What else do you need?</p>
+			</div>
+			<div id = "comment-2654" class = "comment">
+				<p>As part of my question was "Is this approach correct, and if not where did I make mistakes?" it would be nice if you could a yes the approach is correct (or so) to you answer as by adding this your answer it will be compleet  and I will be able to mark your answer as THE correct answer :)</p>
+			</div>
+			</div>
+				<textarea id = "speech-1118" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1118">
+					<img id="start_img-1118" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1118">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

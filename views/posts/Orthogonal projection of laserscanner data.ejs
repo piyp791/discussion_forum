@@ -1,0 +1,149 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Orthogonal projection of laserscanner data
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7966" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7966" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 47</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Orthogonal projection of laserscanner data</h2>
+<p>I recently discovered this ROS-package: <a href="http://wiki.ros.org/laser_ortho_projector" rel="nofollow noreferrer">http://wiki.ros.org/laser_ortho_projector</a> .
+Which is basically exactly what I need. However I am not using ROS, so I need to do what is been done in this package myself.</p>
+
+<p>Basically the information I have is the range measurement r and the angle theta for every measurement point of a 360 degree laserscan + I have the orientation in roll, pitch, yaw angles of the laserscanner. However yaw is not important for me and could be ignored.</p>
+
+<p>I really can't get my head around how to project those points to the ground plane. I mean it is easy for the measurement point which align with the roll and pitch axes, but I don't know what to do with the points in between.</p>
+
+<p>One solution I thought of is this:</p>
+
+<ol>
+<li>Convert the measurement point (r, theta) in cartesian coordinates (x,y,z) - vector</li>
+<li>Use rotations matrices: create rotation matrix for rotation around roll axis with roll angle, and adequately for the pitch axis. Multiplay bot matrices and then multiply it with (x,y,z) - vector.</li>
+<li>Now the orthogonal projection of the of the measurement would be the (x,y,z) - vector with z=0.</li>
+<li>Convert (x,y) - vector back to polar coordinates (r, theta).</li>
+</ol>
+
+<p>However, especially step 2 is very complicated, because the rotation matrices change according to the sign of the roll and pitch angles, right?</p>
+
+<p>I would like to note that the absolute value of role and pitch angles will always be &lt; 90 , so there should not be an unambiguity with rotations..</p>
+
+<p>Is there an easier (or maybe more elegant) way to solve my problem?</p>
+
+<p>My guess is that this problem must have been solved basically for every robot application which uses a 2D-laserscanner that is not fixed to one axis. 
+But I can not find the solution anywhere.</p>
+
+<p>So I would be very glad if anyone of you could point me in the right direction.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7966" data-toggle = "popover">
+				<p>user name : user10497</p>
+				<p> user reputation : 11</p>
+				<p class = "tagcontent" id = "usertaginfo-7966">{'quadcopter': 2, 'None': 0, 'slam': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7966" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7966" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7966">
+					<img id="start_img-7966" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7966">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7967"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7967" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Use the location and attitude measurements of your craft to develop a <a href="https://en.wikipedia.org/wiki/Transformation_matrix" rel="nofollow">4x4 transform matrix</a>, then take the inverse of that matrix to put the points you measure back in terms of world coordinates. Then, if you want a projection just set the respective measurement to zero. </p>
+
+<p>If you want a projection on the XY plane, set all Z coordinates to zero, set X to zero for a projection on the YZ plane, etc. </p>
+
+<p>There are lots of ways to build the rotation matrix required for the transform matrix. You need to consult your IMU documentation to see how it is interpreting/outputting angle information to build the rotation matrix correctly. </p>
+
+<p>As a final note, even if you don't need yaw information don't discard it. Depending on the IMU configuration yaw may not mean what you think it means and thus could have an impact on your transform matrix. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7967" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-7967">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7967" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7967" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7967">
+					<img id="start_img-7967" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7967">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

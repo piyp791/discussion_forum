@@ -1,0 +1,229 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Extended Kalman Filter with Laser Scan + Known Map
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2149" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2149" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">6</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 859</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Extended Kalman Filter with Laser Scan + Known Map</h2>
+<p>I am currently working on a project for school where I need to implement an extended Kalman Filter for a point robot with a laser scanner. The Robot can rotate with 0 degree turn radius and drive forward. All motions are piecewise linear (drive,rotate,drive).</p>
+
+<p>The simulator we are using does not support acceleration, all motion is instantaneous. </p>
+
+<p>We also have a known map (png image) that we need to localize in. We can ray trace in the image in order to simulate laser scans. </p>
+
+<p>My partner and I are little confused as to the motion and sensor models we'll need to use. </p>
+
+<p>So far we are modelling the state as a vector $(x,y,\theta)$.</p>
+
+<p>We are using the update equations as follows</p>
+
+<pre><code>void kalman::predict(const nav_msgs::Odometry msg){
+    this-&gt;X[0] += linear * dt * cos( X[2] ); //x
+    this-&gt;X[1] += linear * dt * sin( X[2] ); //y
+    this-&gt;X[2] += angular * dt; //theta
+
+    this-&gt;F(0,2) = -linear * dt * sin( X[2] ); //t+1 ?
+    this-&gt;F(1,2) =  linear * dt * cos( X[2] ); //t+1 ?
+
+    P = F * P * F.t() + Q;
+
+    this-&gt;linear = msg.twist.twist.linear.x;
+    this-&gt;angular = msg.twist.twist.angular.z;
+    return;
+}
+</code></pre>
+
+<p>We thought we had everything working until we noticed that we forgot to initialize <code>P</code> and that it was zero, meaning that there was no correction happening. Apparently our propagation was very accurate as we haven't yet introduced noise into the system.</p>
+
+<p>For the motion model we are using the following matrix for F:</p>
+
+<p>$F = \begin{bmatrix}1 &amp; 0 &amp; -v*\Delta t*sin(\theta)  
+\\ 0 &amp; 1 &amp; v*\Delta t*cos(\theta)   
+\\ 0 &amp; 0 &amp; 1 
+\end{bmatrix}$</p>
+
+<p>As its the Jacobian of our update formulas. Is this correct?</p>
+
+<p>For the sensor model we are approximating the Jacobian (H) by taking finite differences of the robots $x$, $y$ and $\theta$ positions and ray tracing in the map. We talked to the TA who said that this would work but I'm still unsure it will. Our prof is away so we can't ask him unfortunately. We are using 3 laser measurements per correction step so H is a 3x3. </p>
+
+<p>The other issue where having how to initialize P. We tried 1,10,100 and they all place the robot outside the map at (-90,-70) when the map is only 50x50.</p>
+
+<p>The code for our project can be found here: <a href="https://github.com/en4bz/kalman/blob/master/src/kalman.cpp">https://github.com/en4bz/kalman/blob/master/src/kalman.cpp</a></p>
+
+<p>Any advice is greatly appreciated.</p>
+
+<p>EDIT:</p>
+
+<p>At this point I've gotten the filter to stabilize with basic movement noise but no actual movement. As soon as the robot starts to move the filter diverges quite quickly and exits the map. </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2149" data-toggle = "popover">
+				<p>user name : en4bz</p>
+				<p> user reputation : 151</p>
+				<p class = "tagcontent" id = "usertaginfo-2149">{'mobile-robot': 6, 'None': 2, 'ros': 6, 'kalman-filter': 6, 'ekf': 6}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2149" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2149" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2149">
+					<img id="start_img-2149" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2149">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-3084"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-3084" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><ul>
+<li>Using EKF for localisation based on laser scans and a known map is a bad idea and will not work because one of EKF's main assumptions is not valid: <strong>The measurement model is not differentiable.</strong> </li>
+</ul>
+
+<p>I would suggest looking into Monte Carlo Localization (Particle Filters). This will not only solve the problem with your measurement model, but also allow global localization (initial pose within the map completely unknown).</p>
+
+<p>Edit: I am sorry I forgot to mention another important point:</p>
+
+<ul>
+<li>If you want to apply EKF, your measurement model as well as your motion <strong>model may only include Gaussian noise</strong>. This means you need be able to write down your measurement model as $z_t = h(x_t) + N(0, Q_t)$.
+This is is a severe limitation, since it does not allow a slightly more complex model like the beam_range_finder_model in Probabilistic Robotics, which also considers dynamic objects in front of the robot, invalid (max) measurements and completely random readings. You would be stuck with casting rays for the $h(x_t)$ part and adding Gaussian noise.</li>
+</ul>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-3084" data-toggle = "popover">
+				<p>user name : sebsch</p>
+				<p> user reputation : 404</p>
+				<p class = "tagcontent" id = "usertaginfo-3084">{'control': 6, 'quadcopter': 2, 'None': 15, 'sensor-error': 4, 'sensor-fusion': 4, 'localization': 16, 'ekf': 9, 'pose': 1, 'errors': 8, 'kalman-filter': 17, 'mobile-robot': 8, 'sensors': 4, 'navigation': 8}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-3084">Load Comments</button></br>
+			<div id = "commentsection-3084" class = 'collapse'>
+			<div id = "comment-6592" class = "comment">
+				<p>^^"Using EKF for localisation based on laser scans and a known map is a bad idea" who said that? Please provide the references. EKF is the most successful estimator and many papers suggest using EKF for localization problem. Actually, I'm surprised about you are saying. The main assumptions of EKF are the motion and observation models are linear and the noise is Gaussian. I don't know what do you mean by "The measurement model is not differentiable."</p>
+			</div>
+			<div id = "comment-6593" class = "comment">
+				<p>The original poster mentioned raytracing which means he intends to use a measurement model similar to the "beam model of range finders" in probabilistic robotics. This measurement model exhibits jumps (Imagine a laser beam barely hitting an obstacle and missing it: It only takes a tiny rotation for a jump which is not differentiable.)</p>
+			</div>
+			</div>
+				<textarea id = "speech-3084" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-3084">
+					<img id="start_img-3084" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-3084">Comment</button>
+			<br><div id = "ans-3087"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-3087" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>First of all, you mentioned nothing about which kind of localization you are using. Is it with known or unknown correspondences? </p>
+
+<p>Now to acquire the Jacobian in Matlab you may do the following </p>
+
+<pre><code>&gt;&gt; syms x y a Vtran Vrotat t
+&gt;&gt; f1 = x + Vtran*t*cos(a);
+&gt;&gt; f2 = y + Vtran*t*sin(a);
+&gt;&gt; f3 = a + Vrotat*t;
+&gt;&gt; input  = [x y a];
+&gt;&gt; output = [f1 f2 f3];
+&gt;&gt; F = jacobian(output, input)
+</code></pre>
+
+<p>The result </p>
+
+<pre><code>F =
+[ 1, 0, -Vtran*t*sin(a)]
+[ 0, 1,  Vtran*t*cos(a)]
+[ 0, 0,               1]
+</code></pre>
+
+<p>Extended Kalman Filter requires the system to be linear and the noise to be Gaussian. The system here means the motion and observation models must be linear. Laser sensors give the range and the angle toward a landmark from the robot's frame, so the measurement model is not linear. About <code>P</code>, if you assume it to be large then your EKF estimator will be poor at the beginning and it relies on the measurements because the previous state vector is not available. However, once your robot starts moving and sensing, EKF will be getting better because it uses the motion and measurement models to estimates the robot's pose.  If your robot is not sensing any landmarks, the uncertainty increases drastically. Also, you need to be careful about the angle. In C++, <code>cos and sin</code>, the angle should be in radian. There is nothing in your code about this issue. If you are assuming the angle's noise in degree while your calculation in radian, then you might get weird results because one degree as a noise while the calculations in radian is considered huge. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-3087" data-toggle = "popover">
+				<p>user name : CroCo</p>
+				<p> user reputation : 1040</p>
+				<p class = "tagcontent" id = "usertaginfo-3087">{'control': 18, 'pid': 4, 'slam': 16, 'manipulator': 3, 'mobile-robot': 14, 'dynamics': 6, 'errors': 2, 'data-association': 1, 'kinematics': 3, 'matlab': 6, 'kalman-filter': 21, 'motion-planning': 3, 'None': 41, 'noise': 24, 'theory': 1, 'localization': 14, 'microcontroller': 5, 'mapping': 5, 'sensor-error': 1, 'sensors': 7, 'quadcopter': 8, 'ekf': 26, 'simulation': 1, 'motion': 3}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-3087" class = 'collapse'>
+			</div>
+				<textarea id = "speech-3087" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-3087">
+					<img id="start_img-3087" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-3087">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

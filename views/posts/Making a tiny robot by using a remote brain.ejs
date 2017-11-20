@@ -1,0 +1,221 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Making a tiny robot by using a remote brain
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2158" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2158" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">7</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 294</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Making a tiny robot by using a remote brain</h2>
+<p>I'd like to build a robot as small as possible and with as few "delicate" parts as possible (the bots will be bashing into each other).</p>
+
+<p>I was wondering if it was possible to use a small chip that could receive bluetooth/IR/wifi commands to move the motors, and in turn, send back feedback based on sensors such as an accelerometer (to detect impact).</p>
+
+<p>I can probably achieve something like this with the <a href="http://www.piborg.org/picypack" rel="nofollow noreferrer">PiCy</a> </p>
+
+<p><a href="https://i.stack.imgur.com/vjVzf.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/vjVzfm.jpg" alt="picy"></a></p>
+
+<p>however this is slightly bigger than I'd like (due to the size of the Pi) and I'm not sure how long the Pi would last taking continuous impacts.</p>
+
+<p>I'd therefore like to try to offset the brain (the Pi) to the side of the arena and just use a small chip to receive move commands, and send back data from the accelerometer.</p>
+
+<p>Do you have any recommendations for such a chip? Wifi would be my choice but if it impacts the size I could try BT</p>
+
+<p>Edit: After further research it seems an Arduino nano with a WiFi RedBack shield might do the job along with something like this for the motors: <a href="http://www.gravitech.us/2mwfecoadfor.html" rel="nofollow noreferrer">http://www.gravitech.us/2mwfecoadfor.html</a></p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2158" data-toggle = "popover">
+				<p>user name : Titan</p>
+				<p> user reputation : 180</p>
+				<p class = "tagcontent" id = "usertaginfo-2158">{'h-bridge': 2, 'raspberry-pi': 9, 'accelerometer': 7, 'rcservo': 11, 'None': 0, 'motor': 4}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2158" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2158" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2158">
+					<img id="start_img-2158" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2158">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-2162"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2162" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>There are two approaches to build the robots you describe.</p>
+
+<p>The first, as you suggest, is to decouple the processing power from the rest of the robot which holds the sensors and actuators. To do that you need some communication between the processing unit (PC/RPi/Other microcontroller) and your robot. A low-cost solution for this is to use cheap Bluetooth modules (search ebay for 'Serial Bluetooth Module', they should't cost more than $5). On the robot side you will need a microcontroller as well since you need to receive the data from the Bluetooth, process it and convert it to control signals for the motors. Additionally, the same microcontroller will be responsible for reading the sensors and transmitting the data back to the remote processing unit.</p>
+
+<p>The second approach is to have a single processing unit which is located on the robot. The same controller will read the sensors, provide the intelligence and control the motors. Because the robot you describe it simple, this controller could be implemented on simple microcontroller. You can create your own controller (using PIC/AVR/ARM) or you can use a ready solution like an Arduino, BasicStamp etc. Optionally you can have Bluetooth connection with a PC for telemetry (observing the sensors values and/or manually controlling the robot).</p>
+
+<p>For your project, the second approach seems more appealing. It will cost much less and robots will react faster since the processing is done directly on the robot. Also since the first approach requires a processing unit on the robot as well it seems like an overkill to use a second unit for processing. On the other hand, the first approach allows you to develop your robot controller in a higher level system (PC/RPi) which depending on your experience, may be a more comfortable environment.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2162" data-toggle = "popover">
+				<p>user name : Demetris</p>
+				<p> user reputation : 414</p>
+				<p class = "tagcontent" id = "usertaginfo-2162">{'None': 24}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2162">Load Comments</button></br>
+			<div id = "commentsection-2162" class = 'collapse'>
+			<div id = "comment-4265" class = "comment">
+				<p>Yer the main reason not to put a large controller on the robot was to avoid damage after impacts. If I went for the remote controller approach I would only need a single main controller for multiple robots (identify commands/feedback with a unique ID for each). I may be able to achive the "brain on the bot" solution with an Adriuno nano which looks small enough with a Wifi shield (to send and receive socketio comms for control and feedback with remote server).</p>
+			</div>
+			<div id = "comment-4267" class = "comment">
+				<p>What are you suggesting exactly? To have an arduino nano with WiFi on the robot and an additional remote processing unit? Which unit will do the control calculations?</p>
+			</div>
+			<div id = "comment-4270" class = "comment">
+				<p>Well I'm still unsure haha. The nano could do it all I guess!</p>
+			</div>
+			<div id = "comment-4271" class = "comment">
+				<p>Yes, for the purpose of your project, the single on-board processing unit seems like the better choice! As I mentioned in the answer, if you do need to have some communication with the robot you can do it through cheap Bluetooth modules. Alternatively you can use (even cheaper!) nrf24l01+ modules if you need to establish a network, since you have multiple robots.</p>
+			</div>
+			</div>
+				<textarea id = "speech-2162" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2162">
+					<img id="start_img-2162" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2162">Comment</button>
+			<br><div id = "ans-2164"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2164" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You might find that the rPI boards are more durable than you expected.  There isn't much mass to them, so a small amount of rubber or foam padding (to reduce rattling around) should be sufficient to protect them -- provided that your robots aren't bashing together with enough force to crack the plastic casing around them.</p>
+
+<p>Offloading the processing onto a remote (and likely more powerful) system will give you a few advantages, like the ones you've noted -- less weight, less to break, less battery required to move the thing around.</p>
+
+<p>The downsides will be the bandwidth limitations, and the latency.  Once you introduce the delay of wireless transmissions, you go from a hardware-based loop that can handle in the ballpark of thousands of iterations per second to a networking-based loop that can handle only dozens of iterations per second.  </p>
+
+<p>For best results, your design should do as much control processing as possible on the local hardware, and use the remote connection for higher-level planning decisions that only will need to be received a few times per second.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2164" data-toggle = "popover">
+				<p>user name : Ian</p>
+				<p> user reputation : 9640</p>
+				<p class = "tagcontent" id = "usertaginfo-2164">{'planning': 10, 'None': 809, 'power': 1, 'algorithm': 10, 'battery': 1, 'slam': 7, 'coverage': 10, 'mobile-robot': 9, 'sensors': 9}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2164">Load Comments</button></br>
+			<div id = "commentsection-2164" class = 'collapse'>
+			<div id = "comment-4276" class = "comment">
+				<p>Yer control would via be through webcam over the internet regardless so a slight delay will be expected anyway.</p>
+			</div>
+			</div>
+				<textarea id = "speech-2164" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2164">
+					<img id="start_img-2164" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2164">Comment</button>
+			<br><div id = "ans-2166"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2166" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I think I may have found the perfect controller for this project:</p>
+
+<p><a href="http://www.robotshop.com/en/dagu-micro-magician-robot-controller.html" rel="nofollow">http://www.robotshop.com/en/dagu-micro-magician-robot-controller.html</a></p>
+
+<p>The Micro Magician will allow me to control 2 simple DC motors, detect impacts and crashes with the accelerometer AND receive move commands from the IR receiver! Pretty awesome for the size. </p>
+
+<p>The only piece left in the puzzle is sending back the data to the remote controller (accelerometer data). I'm not sure if I could attach an IR transmitter or maybe BT/Wifi? </p>
+
+<p>Edit: looks like this could do the job! <a href="http://www.dawnrobotics.co.uk/dagu-arduino-bluetooth-module/" rel="nofollow">http://www.dawnrobotics.co.uk/dagu-arduino-bluetooth-module/</a></p>
+
+<p>Now to find small motors...</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2166" data-toggle = "popover">
+				<p>user name : Titan</p>
+				<p> user reputation : 180</p>
+				<p class = "tagcontent" id = "usertaginfo-2166">{'h-bridge': 2, 'raspberry-pi': 9, 'accelerometer': 7, 'rcservo': 11, 'None': 0, 'motor': 4}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2166">Load Comments</button></br>
+			<div id = "commentsection-2166" class = 'collapse'>
+			<div id = "comment-4293" class = "comment">
+				<p>Synapse RF266PC1 are interesting devices. They are small, easy to program, and python based. The ADC's on them are not that good, but in combination with an ATmega328 (chip used in Arduino UNO) you may get enough processing power to send data back and forth. I've also used Wixels, but their rx/tx distance leaves a lot to be desired. These RF266PC1 can do mesh networking out of the box, Wixels can't do that at all.</p>
+			</div>
+			</div>
+				<textarea id = "speech-2166" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2166">
+					<img id="start_img-2166" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2166">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

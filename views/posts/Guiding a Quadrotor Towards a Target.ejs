@@ -1,0 +1,240 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Guiding a Quadrotor Towards a Target
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-726" class = "post">
+			<h2>Question</h2>
+			<div id="vote-726" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">8</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 752</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Guiding a Quadrotor Towards a Target</h2>
+<p>I am working on a quadrotor.  I know its position -- $a$, where I would like to go -- target position $b$, and from that I calculate a vector $c$ -- a unit vector that will take me to my target:</p>
+
+<pre><code>c = b - a
+c = normalize(c)
+</code></pre>
+
+<p>Since a quadrotor can move in any direction without rotation, what I have tried to do is </p>
+
+<ol>
+<li>rotate $c$ by the robots yaw angle</li>
+<li>split it into its $x, y$ components </li>
+<li>pass them to the robot as roll and pitch angles.  </li>
+</ol>
+
+<p>The problem is that if the yaw is 0&deg; &plusmn;5 then this works, but if the yaw is near +90 or -90 it fails and steers to wrong directions. My question is am I missing something obvious here?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-726" data-toggle = "popover">
+				<p>user name : Hamza</p>
+				<p> user reputation : 41</p>
+				<p class = "tagcontent" id = "usertaginfo-726">{'quadcopter': 8, 'None': 0, 'navigation': 8, 'uav': 8}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-726">Load Comments</button></br>
+			<div id = "commentsection-726" class = 'collapse'>
+			<div id = "comment-919" class = "comment">
+				<p>How are you calculating the yaw angle? Also, what controller are you using and how do you send it data?</p>
+			</div>
+			<div id = "comment-920" class = "comment">
+				<p>Interesting question @Hamza, welcome to *Robotics*.</p>
+			</div>
+			<div id = "comment-947" class = "comment">
+				<p>@Hamza, What language and system are you using? Im also working on a quadcopter with Atmega328 and Ada programming language. If you have a blog about the project please share.</p>
+			</div>
+			<div id = "comment-3280" class = "comment">
+				<p>You are correct @MarkBooth, I had two tabs open and was intending to mark the other post as a duplicate. I marked this one by mistake and saw no way to undo it. Given that it takes more than one vote to close it I figured this wouldn't be a problem. I did not realize however that it posted a comment on my behalf.</p>
+			</div>
+			<div id = "comment-3285" class = "comment">
+				<p>No problem @DaemonMaker these things happen. Close as duplicate votes now automatically post comments, which I think is a useful feature as it prompts people to review the other question before casting a close vote themselves.</p>
+			</div>
+			</div>
+				<textarea id = "speech-726" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-726">
+					<img id="start_img-726" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-726">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-727"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-727" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Re-implementing your solution, I get this:</p>
+
+<h1>Angle Between Vectors</h1>
+
+<p>First, you want the angle between points $A$ and $B$ -- not specifically the unit vector.
+<a href="https://i.stack.imgur.com/m7CLt.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/m7CLtm.jpg" alt="Angle between 2 points"></a></p>
+
+<p>(<a href="http://fxprogramming.blogspot.com/2011/01/angle-between-2-points-in-2d-space.html" rel="nofollow noreferrer">via Fx Programming</a>):
+$\theta = math.atan2(B_{x}-A_{x}, B_{y}-A_{y})$</p>
+
+<h1>Vehicle Yaw Angle</h1>
+
+<p>Next (and I suspect this is your problem), you need to <em>subtract</em> the vehicle's yaw angle $\psi$ from your calculated $\theta$.  </p>
+
+<h2>Heading vs Yaw</h2>
+
+<p>If you're using a compass for the "yaw angle" of your vehicle, this could also be your mistake; <strong>heading and yaw are not the same</strong>. 
+Compass heading is zero along the positive $y$ axis, increasing as it turns <em>clockwise</em>:</p>
+
+<p><a href="http://ccphysics.us/henriques/a105l/compass.gif" rel="nofollow noreferrer">Compass rose http://ccphysics.us/henriques/a105l/compass.gif</a></p>
+
+<p>Yaw is zero along the positive $x$ axis, increasing as it turns <em>counterclockwise</em>:</p>
+
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Polar_graph_paper.svg/300px-Polar_graph_paper.svg.png" alt="Polar graph"> </p>
+
+<p>The 90 degree overlap between these measurements, combined with adding (instead of subtracting) the vehicle yaw from the desired yaw, may be why things worked when your target was within &plusmn;5&deg; and behaved badly at &plusmn;90&deg;.</p>
+
+<h1>Conversion to Component X and Y</h1>
+
+<p>From there, you say that you are converting this result $(\theta-\psi)$ into its $x$ and $y$ components, passing them to the robot as the roll and pitch angles.  With the above corrections, you should get the desired result at this point.  However, directly mapping these components to tilt angles might be problematic since you are only considering the difference in position, and not the velocity (really, the momentum) of the vehicle.</p>
+
+<h1>PID Control</h1>
+
+<p>You may be best served by using PID control loops for the roll and pitch of the vehicle.  That is, once you fix your code and are able to hit your target, my guess is that you'll start overshooting it instead -- oscillating back and forth.  A correctly-tuned PID will prevent that from happening while still allowing you to approach the target quickly.  </p>
+
+<p>Instead of plugging your $x$ and $y$ into roll and pitch, consider them to be the <em>error</em> values that the roll and pitch PIDs accept as input.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-727" data-toggle = "popover">
+				<p>user name : Ian</p>
+				<p> user reputation : 9640</p>
+				<p class = "tagcontent" id = "usertaginfo-727">{'planning': 10, 'None': 809, 'power': 1, 'algorithm': 10, 'battery': 1, 'slam': 7, 'coverage': 10, 'mobile-robot': 9, 'sensors': 9}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-727">Load Comments</button></br>
+			<div id = "commentsection-727" class = 'collapse'>
+			<div id = "comment-928" class = "comment">
+				<p>That's some edit there, over 90% and totally changes the answer (from PID to ATAN2). But your flashy graphic formula skills are beast!</p>
+			</div>
+			<div id = "comment-929" class = "comment">
+				<p>I still recommend the PID (it's there at the bottom), I just worked through the beginning part of the question to make sure that my assumptions were correct.  The graphic formulas are part of Latex formatting, which is worth checking out.</p>
+			</div>
+			<div id = "comment-930" class = "comment">
+				<p>"compass heading starts from the positive y axis and increases clockwise, while yaw starts from the positive x axis and increases counterclockwise" reference?  "converting the x component of ( ) to roll and the y component to pitch" I don't get that at all - more explanation please (i'm missing something).</p>
+			</div>
+			<div id = "comment-931" class = "comment">
+				<p>The original question mentioned "passing [the x and y components] to the robot as roll and pitch angles", which to me indicates that the quadcopter moves side to side by changing the roll angle, and forward and backward by changing the pitch angle.  I'll add some clarity.</p>
+			</div>
+			<div id = "comment-933" class = "comment">
+				<p>neat. I've never seen it done that way. I have seen, and do myself, just flip cos/sin to get the same results. I'll have to think on the roll/pitch some more. Yes, that would cause motion, but i'm not sure how that has anything to do with where you are and where your going, other than the speed at which you get there. Thanks.</p>
+			</div>
+			<div id = "comment-934" class = "comment">
+				<p>OK, it's starting to make some sense to me, but ... I can see where PID would be the way to go but only using fixed values for roll and pitch, approaching zero as you arrive at the target, maybe even negative to come to a stop. I think we were both correct in that compass wrap was an issue, but the solution is still over simplified. Autonomous quads is something I will try someday, but for now I just fly them myself :) Should the complete answer be worked out? or is the question too vague? (ie you do not need to yaw towards you goal, but why woudln't you? 2 different solutions based on choice)</p>
+			</div>
+			</div>
+				<textarea id = "speech-727" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-727">
+					<img id="start_img-727" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-727">Comment</button>
+			<br><div id = "ans-728"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-728" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I'll assume you're talking about a 3D vector here. Can you just generalize <code>normalize()</code> like that? Is it that common (i've never seen it so if it is, then news to me). Otherwise, obvious compass wrap issues apply to each of the X and Y components. Why not call them roll and/or pitch and/or yaw? (mixing 3D and 2D nomenclature confuses the question).</p>
+
+<p>My 2D normalize looks something like this;</p>
+
+<pre><code>int Pilot_QuickestTurnTo(int hdgNow, int hdgNew)
+{
+    hdgNow = Pilot_Hdg360(hdgNow);
+    hdgNew = Pilot_Hdg360(hdgNew);
+    if (hdgNow &lt; hdgNew)
+        hdgNow += 360;
+    int left = hdgNow - hdgNew;
+        return (left &lt; 181 ? -left : 360 - left);
+}
+</code></pre>
+
+<p>If it is indeed a quad, I assume your X and Y components are really YAW, Altitude ( (X, Y) &amp; Z). You'll need to handle the <code>YAW(X, Y)</code> in 2D, and simply drop or gain altitude for Z (and again that's why I suspect normalize is more than you have it as).</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-728" data-toggle = "popover">
+				<p>user name : Spiked3</p>
+				<p> user reputation : 1881</p>
+				<p class = "tagcontent" id = "usertaginfo-728">{'None': 125}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-728" class = 'collapse'>
+			</div>
+				<textarea id = "speech-728" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-728">
+					<img id="start_img-728" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-728">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

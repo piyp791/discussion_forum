@@ -1,0 +1,202 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>AT command in SIM900A GSM~GPRS module to find out originating address of an SMS
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-1743" class = "post">
+			<h2>Question</h2>
+			<div id="vote-1743" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 5569</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>AT command in SIM900A GSM~GPRS module to find out originating address of an SMS</h2>
+<p>I am using SIM900A for some purpose and want to know the number of the sender from where a message comes. I am unable to find the specific AT command related to receiving message which give me number from where latest message comes.</p>
+
+<p>I had used AT+CNMI (it corresponds to notification regarding latest received message), but am unable to find sender number.</p>
+
+<p>I had seen AT+CMGL=&lt;stat&gt;[,&lt;mode&gt;] will give you a string which will have oa i.e. originating address and once that is stored in a string I can easily parse it out, but when I had data format of that string. Need help or any suggestion if somebody can help me out with any other possible solution.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1743" data-toggle = "popover">
+				<p>user name : shailendra</p>
+				<p> user reputation : 82</p>
+				<p class = "tagcontent" id = "usertaginfo-1743">{'None': 2, 'computer-vision': 2, 'cameras': 2, 'arduino': 11, 'communication': 6, 'microcontroller': 5, 'c': 8, 'serial': 6}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-1743" class = 'collapse'>
+			</div>
+				<textarea id = "speech-1743" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1743">
+					<img id="start_img-1743" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1743">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-1744"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1744" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><h3>Text mode vs PDU mode</h3>
+
+<p>The SIM900 module supports both text and PDU mode. Please note that some AT commands have different syntax depending on which mode is currently active. </p>
+
+<p>To check which mode is currently active (0: PDU mode, 1: Text mode):</p>
+
+<pre><code> AT+CMGF?
+</code></pre>
+
+<h3>Retrieving SMS's</h3>
+
+<p>You can use the CMGL command to retrieve unread, read, stored unsent, stored sent, or all messages.</p>
+
+<p>If text mode is currently selected:</p>
+
+<pre><code> AT+CMGL=STAT,MODE
+</code></pre>
+
+<p>Parameters:</p>
+
+<pre><code>STAT:
+   "REC UNREAD"  Received unread messages
+   "REC READ"    Received read messages
+   "STO UNSENT"  Stored unsent messages
+   "STO SENT"    Stored sent messages
+   "ALL"         All messages
+MODE: (OPTIONAL)
+   0 Normal
+   1 Not change status of the specified SMS record
+
+In other words, the following command should print all SMS messages:
+
+   AT+CMGL="ALL"
+</code></pre>
+
+<p>If PDU mode is currently selected:</p>
+
+<pre><code> AT+CMGL=STAT,MODE
+</code></pre>
+
+<p>Parameters:</p>
+
+<pre><code>STAT:
+   0  Received unread messages
+   1  Received read messages
+   2  Stored unsent messages
+   3  Stored sent messages
+   4  All messages
+MODE: (OPTIONAL)
+   0 Normal
+   1 Not change status of the specified SMS record
+
+In other words, the following command should print all SMS messages:
+
+   AT+CMGL=4
+</code></pre>
+
+<h3>Example</h3>
+
+<p>If text mode is currently selected, and a CMGL command is issued, the following is an example of what could be expected (note there's a line break before the actual message starts).</p>
+
+<pre><code>AT+CMGL="ALL"
++CMGL: 1,"REC READ","+85291234567",,"07/05/01,08:00:15+32",145,37
+It is easy to list SMS text messages.
+
+     1                      : Message index
+     "REC READ"             : Message status (it's been read before)
+     "+85291234567"         : Source number (ie the person that sent you the sms)
+     "07/05/01,08:00:15+32" : Service center timestamp
+     145                    : Character set
+     37                     : Length of message
+
+Refer to Section 4.2.3, page 99, of the SIM900 AT command set for more information.
+</code></pre>
+
+<h3>External links</h3>
+
+<ul>
+<li><a href="http://www.cooking-hacks.com/skin/frontend/default/cooking/pdf/SIM900_AT_Command_Manual.pdf" rel="nofollow">SIM900A AT Command set (V1.05: 2011-10-24)</a></li>
+<li><a href="http://www.developershome.com/sms/checkCommandSupport.asp" rel="nofollow">Developers home   Tutorials regarding AT commands</a> (I'd strongly recommend you take some time and go through the tutorials   especially sections 18 to 26)</li>
+</ul>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1744" data-toggle = "popover">
+				<p>user name : EDDY74</p>
+				<p> user reputation : 395</p>
+				<p class = "tagcontent" id = "usertaginfo-1744">{'None': 25}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-1744" class = 'collapse'>
+			</div>
+				<textarea id = "speech-1744" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1744">
+					<img id="start_img-1744" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1744">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

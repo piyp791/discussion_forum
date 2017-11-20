@@ -1,0 +1,174 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to calculate the current consumed by a brushless motor on a quadcopter
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8128" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8128" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 833</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to calculate the current consumed by a brushless motor on a quadcopter</h2>
+<p>I want to create a virtual quadcopter model, but I am struggling to come up with a satisfying model for the brushless motors &amp; props.</p>
+
+<p>Let's take an example, based on the great <a href="http://www.ecalc.ch/xcoptercalc.php?ecalc&amp;lang=en" rel="nofollow noreferrer">eCalc tool</a>:</p>
+
+<p><a href="https://i.stack.imgur.com/LbTmc.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/LbTmc.png" alt="eCalc"></a></p>
+
+<p>Let's say I want to know how much current is consumed by the motor in a hovering state. I know the mass of the quad (1500g), so I can easily compute the thrust produced by each motor:</p>
+
+<pre><code>Thrust = 1.5 * 9.81 / 4 = 3.68 N per motor
+</code></pre>
+
+<p><a href="http://www.wired.com/2014/05/modeling-the-thrust-from-a-quadcopter/" rel="nofollow noreferrer">Thrust is produced by moving a mass of air</a> at an average speed of <code>V</code>:</p>
+
+<pre><code>Thrust = 0.5 * rho * A * V 
+</code></pre>
+
+<p>Where <code>rho</code> (air density) is 1.225kg/m3 and <code>A</code> (propeller disk area) is <code>PI * Radius  = 0.073m </code> (12" props). So I can compute <code>V</code>:</p>
+
+<pre><code>V = sqrt(Thrust / 0.5 / rho / A) = 9.07 m/s
+</code></pre>
+
+<p>All right, now I can calculate the <em>aerodynamic</em> power created by the propeller:</p>
+
+<pre><code>P = Thrust * V = 3.68 * 9.07 = 33.4 W
+</code></pre>
+
+<p>All right, now I can calculate the <em>mechanical</em> power actually produced by the motor. I use the <code>PConst</code> efficiency term from eCalc:</p>
+
+<pre><code>Pmec = Paero * PConst = 33.4 * 1.18 = 39.4W
+</code></pre>
+
+<p>Here, eCalc predicts <strong>37.2W</strong>. It's not too far from my number, I imagine they use more sophisticated hypotheses... Fair enough.</p>
+
+<p>From <a href="http://www.rcgroups.com/forums/showthread.php?t=587549" rel="nofollow noreferrer">this post</a>, I know that this power is also equal to:</p>
+
+<pre><code>Pmec = (Vin - Rm * Iin) * (Iin - Io)
+</code></pre>
+
+<p>Where I know <code>Rm</code> (0.08 Ohms) and <code>Io</code> (0.9 A). So, finally, my question: How do you calculate <code>Vin</code> and <code>Iin</code> from here? Of course, if I knew the rotation speed of the engine I could get <code>Vin</code> from:</p>
+
+<pre><code>n = Kv * Vin
+</code></pre>
+
+<p>Where <code>Kv = 680 rpm/V</code>. But unfortunately I don't know the rotation speed...</p>
+
+<p>(Note that Vin is assumed to be averaged from the <a href="https://en.wikipedia.org/wiki/Pulse-width_modulation" rel="nofollow noreferrer">pulse-width-modulated</a> output produced by the ESC)</p>
+
+<p>Thanks for your help!</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8128" data-toggle = "popover">
+				<p>user name : Eric Leibenguth</p>
+				<p> user reputation : 121</p>
+				<p class = "tagcontent" id = "usertaginfo-8128">{'quadcopter': 2, 'None': 1, 'power': 2, 'brushless-motor': 2, 'motor': 2, 'electronics': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8128" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8128" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8128">
+					<img id="start_img-8128" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8128">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8141"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8141" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The missing piece was the expression of the pitch speed, which relates the parameter <code>V</code> with the rotation speed <code>n</code> and the <code>pitch</code> of the propeller:</p>
+
+<pre><code>V = n x pitch x (0.0254 / 60)
+</code></pre>
+
+<p>(The coefficient passes from in/min to m/s)</p>
+
+<p>Knowing <code>V</code> and <code>pitch</code>, I can evaluate <code>n</code>, then <code>(Vin - Rm * Iin)</code>, and finally <code>Iin</code> (since I know everything else).</p>
+
+<p>By the way, I also recommend <a href="http://www.electricrcaircraftguy.com/2014/04/propeller-static-dynamic-thrust-equation-background.html" rel="nofollow">this link</a>, which contains theoretical propeller formulas, corrected empirically.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8141" data-toggle = "popover">
+				<p>user name : Eric Leibenguth</p>
+				<p> user reputation : 121</p>
+				<p class = "tagcontent" id = "usertaginfo-8141">{'quadcopter': 2, 'None': 1, 'power': 2, 'brushless-motor': 2, 'motor': 2, 'electronics': 2}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8141" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8141" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8141">
+					<img id="start_img-8141" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8141">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

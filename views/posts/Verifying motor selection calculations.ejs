@@ -1,0 +1,237 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Verifying motor selection calculations
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-6890" class = "post">
+			<h2>Question</h2>
+			<div id="vote-6890" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 132</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Verifying motor selection calculations</h2>
+<p>I'm trying to select a brushed DC motor for a project. I tried following the advice on <a href="http://www.scribd.com/doc/38698/Sizing-Electric-Motors-for-Mobile-Robotics" rel="nofollow noreferrer">sizing electric motors</a>, mentioned in <a href="https://robotics.stackexchange.com/questions/913/are-power-and-torque-required-related-in-some-way">this question</a>, but a few details were missing, and I'm unsure if I properly followed the procedure.</p>
+
+<p>For my application, I need:</p>
+
+<ul>
+<li>Nm = number of motors = 2</li>
+<li>Wd = wheel diameter = 12 cm</li>
+<li>Wp = estimated weight of platform = 5 kg</li>
+<li>Minc = maximum incline under load = 5 degrees</li>
+<li>Vmax = maximum velocity under load = 5 km/hr</li>
+<li>Fpush = maximum pushing force = 1.25 kg</li>
+<li>Ur = coefficient of rolling friction = 0.015</li>
+</ul>
+
+<p>These are my calculations:</p>
+
+<p>Step 1: Determine total applied force at worst case.</p>
+
+<pre><code>Ftotal = Wp * (Ur*cos(Minc) + sin(Minc)) + Fpush = 1.7604933161 kilogram
+</code></pre>
+
+<p>Step 2: Calculate power requirement.</p>
+
+<pre><code>Vradps = maximum velocity under load in radians/second = 23.1481481481 radian / second
+
+Pmotor = required power per motor = (Ftotal * Vradps * Wd/2)/Nm = 1.22256480284 kilogram * meter * radian / second
+</code></pre>
+
+<p>Step 3: Calculate torque and speed requirement.</p>
+
+<pre><code>Tmotor = required torque per motor = Pmotor/Vradps = 5281.47994829 centimeter * gram = 73.345953832 inch * ounce
+RPMmin = required revolutions per minute per motor = Vradps / 0.104719755 = 221.048532325 rev / minute
+</code></pre>
+
+<p>Are my calculations correct? Intuitively, the final <code>Tmotor</code> and <code>RPMmin</code> values seem right, but my calculation for <code>Pmotor</code> doesn't exactly match the one used in the link, which doesn't explicitly do the conversion to radians / second and therefore doesn't result in the proper units.</p>
+
+<p>Here's my Python script for reproducing the above calculations:</p>
+
+<pre><code>from math import *
+#http://pint.readthedocs.org/en/0.6/tutorial.html
+from pint import UnitRegistry
+
+ureg = UnitRegistry()
+
+def velocity_to_rpm(v, r):
+    kph = v.to(kilometer/hour)
+    r = r.to(kilometer)
+    d = r*2
+    rpm = (kph / (2*pi*r)) * ((1*hour)/(60.*minute)) * rev
+    return rpm
+
+def velocity_to_radps(v, r):
+    return velocity_to_rpm(v, r).to(radian/second)
+
+# Units
+km = kilometer = ureg.kilometer
+meter = ureg.meter
+newton = ureg.newton
+cm = centimeter = ureg.centimeter
+hr = hour = ureg.hour
+mm = millimeter = ureg.millimeter
+rev = revolution = ureg.revolution
+minute = ureg.minute
+sec = second = ureg.second
+kg = kilogram = ureg.kilogram
+gm = gram = ureg.gram
+deg = degree = ureg.degree
+rad = radian = ureg.radian
+oz = ureg.oz
+inch = ureg.inch
+
+# Conversions.
+km_per_mm = (1*km)/(1000000.*mm)
+hour_per_minute = (1*hour)/(60.*minute)
+minute_per_second = (1*minute)/(60*sec)
+minute_per_hour = 1/hour_per_minute
+gm_per_kg = (1000*gm)/(1*kg)
+cm_per_km = (100000*cm)/(1*km)
+
+# Constraints
+target_km_per_hour = (5*km)/(1*hour) # average walking speed
+estimated_platform_weight = 5*kg
+maximum_incline_degrees = 5*deg
+maximum_incline_radians = maximum_incline_degrees * ((pi*rad)/(180*deg))
+maximum_pushing_force = estimated_platform_weight/4.
+maximum_velocity_at_worst_case = (5*km)/(1*hour)
+rolling_friction = 0.015 # rubber on pavement
+velocity_under_max_load = target_km_per_hour
+number_of_powered_motors = 2
+
+# Variables
+wheel_diameter_mm = 120*mm
+wheel_radius_mm = wheel_diameter_mm/2
+wheel_radius_km = wheel_radius_mm * km_per_mm
+rev_per_minute_at_6v_unloaded = 33*rev/(1*minute)
+rev_per_minute_at_6v_loaded = rev_per_minute_at_6v_unloaded/2.
+mm_per_rev = (wheel_diameter_mm * pi)/(1*rev)
+target_rpm = velocity_to_rpm(target_km_per_hour, wheel_radius_mm)
+target_radps = velocity_to_radps(target_km_per_hour, wheel_radius_mm)
+
+# Calculate total applied force at worst case.
+total_applied_force_worst_case = estimated_platform_weight * (rolling_friction*cos(maximum_incline_radians) + sin(maximum_incline_radians)) + maximum_pushing_force
+print 'Ftotal:',total_applied_force_worst_case
+
+# Calculate power requirement.
+vel_in_radps = velocity_to_radps(velocity_under_max_load, wheel_radius_mm)
+print 'Vradps:',vel_in_radps
+required_power = total_applied_force_worst_case * velocity_to_radps(velocity_under_max_load, wheel_radius_mm) * wheel_radius_mm.to(meter)
+required_power_per_motor = required_power/number_of_powered_motors
+print 'Pmotor:',required_power_per_motor
+
+# Calculate torque and speed requirement.
+required_angular_velocity = velocity_under_max_load/wheel_radius_km * hour_per_minute * minute_per_second * rad #rad/sec
+required_rpm = required_angular_velocity / 0.104719755 * (rev/rad) * (sec/minute)
+required_torque_per_motor = (required_power_per_motor/required_angular_velocity).to(gm*cm)
+print 'Tmotor: %s, %s' % (required_torque_per_motor, required_torque_per_motor.to(oz*inch))
+print 'PRMmin:',required_rpm
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6890" data-toggle = "popover">
+				<p>user name : Cerin</p>
+				<p> user reputation : 152</p>
+				<p class = "tagcontent" id = "usertaginfo-6890">{'magnetometer': 0, 'None': 0, 'force': 1, 'motor': 1, 'simulator': 2, 'battery': 1, 'bec': 0, 'cameras': 2, 'torque': 1, 'design': 1, 'mechanism': 0, 'slam': 3, 'rangefinder': 2, 'beagle-bone': 1, 'compass': 0, 'mobile-robot': 1, 'sensors': 3, 'ros': 3, 'navigation': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-6890" class = 'collapse'>
+			</div>
+				<textarea id = "speech-6890" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6890">
+					<img id="start_img-6890" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6890">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-6902"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6902" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I think your Pmotor calculation is correct.  The reason for the difference with the CIRC link is in the P=F*v equation they are referring to the linear velocity.  Your conversion is converting the rotational velocity back into linear velocity.</p>
+
+<p>I don't think the Ftotal calculation is correct because your estimated weight isn't correct.  Kg is a unit of mass, not weight.  To convert to weight, you need to multiply by the gravitational pull of the earth (9.8 m/s^2).  This is also why the units on your power estimate isn't in Watts.  Your torque units should then be N*m or equivalently oz(force)*in.  Note that this is ounce force not the sometimes used ounce mass.  It is important to distinguish between mass and force even though the ounce unit is sometimes abused to ambiguously mean either in one Earth gravity environments.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6902" data-toggle = "popover">
+				<p>user name : DrRoboto</p>
+				<p> user reputation : 151</p>
+				<p class = "tagcontent" id = "usertaginfo-6902">{'None': 12}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-6902" class = 'collapse'>
+			</div>
+				<textarea id = "speech-6902" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6902">
+					<img id="start_img-6902" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6902">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

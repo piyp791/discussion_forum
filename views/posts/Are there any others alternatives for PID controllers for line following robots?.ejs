@@ -1,0 +1,142 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Are there any others alternatives for PID controllers for line following robots?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-10227" class = "post">
+			<h2>Question</h2>
+			<div id="vote-10227" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 683</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Are there any others alternatives for PID controllers for line following robots?</h2>
+<p>Are there any better/ advanced ways of steering a line following robot other than pid controller? If so what are them? </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10227" data-toggle = "popover">
+				<p>user name : Ivantha</p>
+				<p> user reputation : 15</p>
+				<p class = "tagcontent" id = "usertaginfo-10227">{'motor': 0, 'None': 0, 'pid': 2, 'steering': 2, 'line-following': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10227">Load Comments</button></br>
+			<div id = "commentsection-10227" class = 'collapse'>
+			<div id = "comment-18236" class = "comment">
+				<p>LQR is more robust, but more mathematically complicated and probably overkill for this problem.</p>
+			</div>
+			<div id = "comment-18246" class = "comment">
+				<p>What do your states look like? What are your inputs? What are the system dynamics? Are you just interested in following a line or is the desired position in space a function of time or some other aspect of the environment?</p>
+			</div>
+			<div id = "comment-18247" class = "comment">
+				<p>Assume it is your ordinary LFR. I am not trying to program a specific line follower, but rather trying to find a new way to make a LFR with better steering etc. I'm interested in just following the line. If you could give me some pointers, (if there are other ways) I can look them up in the internet and learn on my own. :)</p>
+			</div>
+			<div id = "comment-18251" class = "comment">
+				<p>Welcome to *Robotics* Ivantha, but I'm afraid that *Unbounded Design Questions* are off-topic because there are many ways to solve any given design problem, so **questions that ask for a list of approaches** or a subjective recommendation on a method (for how to build something, **how to accomplish something**, what something is capable of, etc.) are off-topic.</p>
+			</div>
+			<div id = "comment-18256" class = "comment">
+				<p>Oh my bad. I saw a few of these opinion based questions here and assumed that it is okay to ask them without reading the question guidelines properly :/</p>
+			</div>
+			</div>
+				<textarea id = "speech-10227" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10227">
+					<img id="start_img-10227" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10227">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-10232"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10232" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Because you don't have any specific robot in mind, let's assume that you have a two-wheeled differential drive robot (TWDDR). TWDDRs can be modeled with unicycle dynamics of the following form: $$\dot{z}=\left[\begin{matrix}\dot{x}\\ \dot{y} \\ \dot{\theta} \end{matrix}\right] = \left[\begin{matrix}cos(\theta)&amp;0\\sin(\theta)&amp;0\\0&amp;1\end{matrix}\right] \left[\begin{matrix}v\\\omega\end{matrix}\right],$$ where $x$ and $y$ are Cartesian coordinates of the robot, and $\theta \in (-\pi,\pi]$ is the angle between the heading and the $x$-axis. The input vector $\left[v, \omega \right]^T$ consists of linear and angular velocity inputs. For simplicity, I will assume that you can specify these inputs directly, which is reasonable for most off-the-shelf robots--if you want to implement this from scratch, then you have to specify velocities for the left and right wheels.</p>
+
+<p>Following a line is essentially a trajectory tracking problem. For unicycle robots, trajectory tracking is achieved by controlling a point, which is holonomic, some small distance $l$ away from the center of the the two wheels rather than controlling the unicycle robot directly. To do this, we can derive the following rotation matrix to transform the control law of the robot to the control law of the point: $$\dot{p}=\left[\begin{matrix}\dot{p_x}\\\dot{p_y}\end{matrix}\right]=\left[\begin{matrix}\text{cos}(\theta)&amp;-l\text{sin}(\theta)\\\text{sin}(\theta)&amp;l \text{cos}(\theta)\end{matrix}\right]\left[\begin{matrix}v\\\omega\end{matrix}\right]$$</p>
+
+<p>$\dot{p}$ is the velocity of the point being controlled, and it is decomposed into its $x$ and $y$ components. </p>
+
+<p>At this point, control is quite simple; we control the point directly! The dynamics become: $$\dot{z}=\left[\begin{matrix}\dot{x}\\ \dot{y} \\ \dot{\theta} \end{matrix}\right] = \left[\begin{matrix}cos(\theta)&amp;0\\sin(\theta)&amp;0\\0&amp;1\end{matrix}\right] \left[\begin{matrix}v\\\omega\end{matrix}\right]=\left[\begin{matrix}cos(\theta)&amp;0\\sin(\theta)&amp;0\\0&amp;1\end{matrix}\right] \left[\begin{matrix}cos(\theta)&amp;sin(\theta)\\-\frac{sin(\theta)}{l}&amp;-\frac{cos(\theta)}{l}\end{matrix}\right]\left[\begin{matrix}\dot{p}_x\\\dot{p}_y\end{matrix}\right],$$Setting $$\dot{p}=u=r(t)=\left[\begin{matrix}r_x(t)\\r_y(t)\end{matrix}\right],$$ accomplishes this, where $u$ is the input, and $r(t)$ is the reference trajectory that you want, decomposed into its $x$ and $y$ components; this will accomplish movement along the trajectory.</p>
+
+<p>With the controller designed, the last component of building a line-following robot will be to implement some form of perception. If you have a downward facing camera and assume a level surface, consistent lighting, and good contrast between the line and its background, then you can use simple computer vision techniques to measure the error between the point $p$ and the desired trajectory. A simple proportional controller can be used to drive the robot along the line.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10232" data-toggle = "popover">
+				<p>user name : NBCKLY</p>
+				<p> user reputation : 741</p>
+				<p class = "tagcontent" id = "usertaginfo-10232">{'None': 44, 'roomba': 4, 'irobot-create': 4, 'arduino': 2}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-10232" class = 'collapse'>
+			</div>
+				<textarea id = "speech-10232" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10232">
+					<img id="start_img-10232" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10232">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

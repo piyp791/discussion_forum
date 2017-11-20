@@ -1,0 +1,178 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Gazebo joint->SetForce() call applies forces to the whole model. How to circumvent that?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11642" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11642" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 184</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Gazebo joint->SetForce() call applies forces to the whole model. How to circumvent that?</h2>
+<p>The following code applies a force to the joint in an update method call. <strong>The problem is that the force seems to dissipate / is applied consecutively to other parts of the model, specifically the chassis, which holds the rotating laser. How can I circumvent that?</strong> </p>
+
+<p>The chassis shold be a moving vehicle so I can't just fix it to the ground plane, using a fixed joint.</p>
+
+<p>This is my onUpdate() from within the gazebo plugin. Essentially its making the joint rotate back and forth on a specified axis.</p>
+
+<pre><code>public: void OnUpdate(const common::UpdateInfo &amp; /*_info*/){
+
+    rotation = this-&gt;joint-&gt;GetAngle(0);
+    this-&gt;joint-&gt;SetStopDissipation(0,0);
+    double degree = rotation.Degree();
+    if (degree &lt;= -90) {
+            this-&gt;joint-&gt;SetForce(rotationAxis,effort*2);
+    }
+    else if (degree &gt;= 90) {
+            this-&gt;joint-&gt;SetForce(rotationAxis,-effort*2);
+    }
+    std::cerr &lt;&lt; degree &lt;&lt; "\n"; }
+</code></pre>
+
+<p>The definition from the model.sdf is this:</p>
+
+<pre><code>    &lt;joint name="back_and_forth_joint" type="revolute"&gt;
+        &lt;child&gt;laser&lt;/child&gt;
+        &lt;parent&gt;chassis&lt;/parent&gt;
+        &lt;axis&gt;
+            &lt;xyz&gt;1 0 0&lt;/xyz&gt;
+            &lt;limit&gt;
+                &lt;lower&gt;-1.57079633&lt;/lower&gt;
+                &lt;upper&gt;1.57079633&lt;/upper&gt;
+            &lt;/limit&gt;
+        &lt;/axis&gt;
+    &lt;/joint&gt;
+</code></pre>
+
+<p>Thanks.</p>
+
+<p><strong>Update:</strong> </p>
+
+<p>One of the possibilities is to simply add mass to the chassis like so:</p>
+
+<pre><code>        &lt;link name='chassis'&gt;
+        &lt;pose&gt;0 0 .1 0 0 0&lt;/pose&gt;
+        &lt;inertial&gt;
+          &lt;mass&gt;10&lt;/mass&gt;
+        &lt;/inertial&gt;
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11642" data-toggle = "popover">
+				<p>user name : pijemcolu</p>
+				<p> user reputation : 111</p>
+				<p class = "tagcontent" id = "usertaginfo-11642">{'joint': 2, 'None': 0, 'ros': 2, 'gazebo': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11642" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11642" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11642">
+					<img id="start_img-11642" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11642">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-11647"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11647" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>As you mentioned in your update,</p>
+
+<blockquote>
+  <p>One of the possibilities is to simply add mass to the chassis</p>
+</blockquote>
+
+<p>This works because, at some point, you need a <em>reaction</em> force. An applied force (or torque) at any point in a structure will be transmitted through the structure back to a "fixed" object. The fixed object is generally the Earth, and connection to the Earth is through poles or other supports inserted into the Earth (a foundation) or through a friction contact with the surface (such as tires, etc.) </p>
+
+<p>You are correct in that you can't connect a <em>mobile</em> vehicle to the Earth using a <em>fixed</em> joint, but you can use a series of flexible joints to simulate contact with the Earth. How are you simulating motion right now? </p>
+
+<p>What you're experiencing, by the way, is the same behavior you'd see if you <a href="https://www.youtube.com/watch?v=BPMjcN-sBJ4" rel="nofollow noreferrer">applied a force to an object in space</a> where there is no "fixed" object to apply the reaction force. </p>
+
+<p>The Earth is essentially infinitely massive, for the purposes of providing reaction forces for anything you or I would ever do. What you're looking for, if you can't or won't model the connection between the wheels and the ground, is to make the chassis "sufficiently massive" such that it doesn't generate an appreciable acceleration when your external force is applied.</p>
+
+<p>If you've watched Battlebots, then you've probably <a href="https://www.youtube.com/watch?v=CA5tTosVFeo&amp;t=15s" rel="nofollow noreferrer">seen instances where the chassis is NOT sufficiently massive</a> and the robot flips when an actuator is used. There's nothing to absorb the reaction force, so the entire body moves. The effect is more pronounced as ratio of applied force the mass of the "base" body is increased. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11647" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-11647">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11647" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11647" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11647">
+					<img id="start_img-11647" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11647">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

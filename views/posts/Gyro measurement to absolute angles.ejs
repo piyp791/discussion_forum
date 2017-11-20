@@ -1,0 +1,161 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Gyro measurement to absolute angles
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8250" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8250" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 152</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Gyro measurement to absolute angles</h2>
+<p>Let us assume we have a gyro that is perfectly aligned to a global frame ($X,Y,Z$). </p>
+
+<p>From what I know the gyro data give me the angular rate with respect to the gyro axis ($x,y,z$). So let's say I got $\omega_x,\omega_y,\omega_z$. Since I know that the 2 frames are perfectly aligned I perform the following operations:</p>
+
+<ul>
+<li>$\theta_X = dt * \omega_x$</li>
+<li>$\theta_Y = dt * \omega_y$</li>
+<li>$\theta_Z = dt * \omega_z$ </li>
+</ul>
+
+<p>where $\theta_X$ is the rotation angle around $X$ and so on.</p>
+
+<p>My question is: what is this update like in the following steps? Because this time the measurement that I get are no more directly related to the global frame (rotated with respect to the gyro frame).</p>
+
+<p>Thank you!</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8250" data-toggle = "popover">
+				<p>user name : charles</p>
+				<p> user reputation : 266</p>
+				<p class = "tagcontent" id = "usertaginfo-8250">{'None': 9, 'ekf': 3, 'frame': 3, 'slam': 3, 'imu': 4, 'kalman-filter': 3, 'mobile-robot': 4, 'gyroscope': 4}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8250" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8250" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8250">
+					<img id="start_img-8250" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8250">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8251"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8251" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Your first step works because it is implied that your frames are "aligned", meaning that:</p>
+
+<p>$$
+\theta_{X_0} = 0 \\
+\theta_{Y_0} = 0 \\
+\theta_{Z_0} = 0 \\
+$$</p>
+
+<p>In general (as with any integration!), you have some starting angles(initial condition), $\theta_{(X,Y,Z)_0}$, and you proceed to update from there, such that:</p>
+
+<p>$$
+\theta_{X_N} = \theta_{X_{N-1}} + \omega_{X_N} dT \\
+\theta_{Y_N} = \theta_{Y_{N-1}} + \omega_{Y_N} dT \\
+\theta_{Z_N} = \theta_{Z_{N-1}} + \omega_{Z_N} dT \\
+$$</p>
+
+<p>Note that when your initial conditions are as you use in your example, the $\theta_{N-1}$ terms vanish leaving you with the equations you originally stated. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8251" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-8251">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8251">Load Comments</button></br>
+			<div id = "commentsection-8251" class = 'collapse'>
+			<div id = "comment-13201" class = "comment">
+				<p>That's my actual problem. I would do like you've just shown, but where do I get the angular velocities with respect to the global frame (i.e. $\omega_X$)? Because from the gyro I only get $\omega_x$ (with respect to the gyro frame) and so on.</p>
+			</div>
+			<div id = "comment-13206" class = "comment">
+				<p>@charles - that's covered with your [other question](http://robotics.stackexchange.com/q/8247/9720) regarding transforming angular velocities from one frame to another, where my answer is: just use a regular 4x4 transform. If you have questions/comments on this please go to your other question and update the question text or add comments to my answer.</p>
+			</div>
+			<div id = "comment-13207" class = "comment">
+				<p>Thank you, that was clarifying. But the thing is: assuming we have the 3 current angles and we want to find the rotation matrix R. How should I do? I thought about RPY, is that correct? And in case, why the rotation composition is in this exact sequence and not PRY for example? Thank you again</p>
+			</div>
+			<div id = "comment-13209" class = "comment">
+				<p>@charles - Finding the rotation matrix $R$ *is* hard because, as you mention, multiplication order matters. This is why some people might prefer to use [unit quaternions](https://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation) for rotation instead. This question of "why order matters" is more complicated than can be answered in a comment, but you could read more [here](http://math.stackexchange.com/q/788951/240336) or [here](https://en.wikipedia.org/wiki/Rotation_matrix#Sequential_angles), but, basically, order matters because it changes your point of reference for the next rotation.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8251" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8251">
+					<img id="start_img-8251" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8251">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

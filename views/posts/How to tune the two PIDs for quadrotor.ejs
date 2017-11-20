@@ -1,0 +1,203 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to tune the two PIDs for quadrotor
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7043" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7043" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 405</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to tune the two PIDs for quadrotor</h2>
+<p>I'm trying to implement two PIDs for stabilizing quadrotor for position tracking. The inputs are $x_{d}(t), y_{d}(t), z_{d}(t)$ and $\psi_{d}(t)$. For position tracking, usually the small angle assumption is assumed. This assumption allows for acquiring $\theta_{d}$ and $\phi_{d}$. These are the results </p>
+
+<p><img src="https://i.stack.imgur.com/TOsgv.png" alt="enter image description here"></p>
+
+<p>The x-axis position is driving me crazy. After alot of attempts for tuning the PIDs, I felt something wrong is going on. Is this a normal behavior for PID controller? Also, what I've noticed is that once $\psi$ reaches to zero, the platform starts oscillating (after 1.5 second in the figure).   </p>
+
+<p>For solving ODEs and computing the derivatives for the velocities, I use Euler methods. </p>
+
+<hr>
+
+<p>It is simulation in Matlab. </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7043" data-toggle = "popover">
+				<p>user name : CroCo</p>
+				<p> user reputation : 1040</p>
+				<p class = "tagcontent" id = "usertaginfo-7043">{'control': 18, 'pid': 4, 'slam': 16, 'manipulator': 3, 'mobile-robot': 14, 'dynamics': 6, 'errors': 2, 'data-association': 1, 'kinematics': 3, 'matlab': 6, 'kalman-filter': 21, 'motion-planning': 3, 'None': 41, 'noise': 24, 'theory': 1, 'localization': 14, 'microcontroller': 5, 'mapping': 5, 'sensor-error': 1, 'sensors': 7, 'quadcopter': 8, 'ekf': 26, 'simulation': 1, 'motion': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7043">Load Comments</button></br>
+			<div id = "commentsection-7043" class = 'collapse'>
+			<div id = "comment-10025" class = "comment">
+				<p>Explain in more detail how you tuned your PID controller.</p>
+			</div>
+			<div id = "comment-10027" class = "comment">
+				<p>@Paul, do you want to know the actual values of the gains?</p>
+			</div>
+			<div id = "comment-10029" class = "comment">
+				<p>Not the values, just the steps you took to arrive at those values.</p>
+			</div>
+			<div id = "comment-10032" class = "comment">
+				<p>@Paul, after a deep thinking, I believe these results are good (not perfect). I've double checked the trajectory, it seems from 0 sec to 1.5 sec, the trajectory is fixed. After 1.5 sec, the trajectory starts varying. I've implemented backstepping controller and the results are perfect. Thank you.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7043" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7043">
+					<img id="start_img-7043" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7043">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7046"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7046" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>is it real or simulation application?</p>
+
+<p>If simulation there is good examples in matlab codes/models you can look deeper </p>
+
+<p>If real:</p>
+
+<p>1- filter the sensor data</p>
+
+<p>2- use tan2 function for angular error calculations</p>
+
+<p>3- begin PID calculations with all P, I and D constants. if you use just one of them stabilization is not possible. PI or PD control is possible. Be carefefull first constants P>I>D than you can use :</p>
+
+<p><a href="http://sts.bwk.tue.nl/7y500/readers/.%5CInstellingenRegelaars_ExtraStof.pdf" rel="nofollow">http://sts.bwk.tue.nl/7y500/readers/.%5CInstellingenRegelaars_ExtraStof.pdf</a></p>
+
+<p>or</p>
+
+<p><a href="http://www.expertune.com/tutor.aspx" rel="nofollow">http://www.expertune.com/tutor.aspx</a></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7046" data-toggle = "popover">
+				<p>user name : acs</p>
+				<p> user reputation : 838</p>
+				<p class = "tagcontent" id = "usertaginfo-7046">{'stereo-vision': 4, 'control': 1, '3d-printing': 2, 'simulator': 8, 'multi-agent': 0, 'pid': 1, 'slam': 2, 'robotic-arm': 1, 'mobile-robot': 10, 'ros': 8, 'battery': 0, 'swarm': 2, 'cameras': 4, 'lidar': 4, '3d-model': 2, 'imu': 3, 'kalman-filter': 3, 'gazebo': 1, 'gps': 2, 'None': 34, 'localization': 4, 'sensors': 7, '3d-reconstruction': 2, 'quadcopter': 0, 'computer-vision': 2, 'algorithm': 1, 'sensor-fusion': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7046">Load Comments</button></br>
+			<div id = "commentsection-7046" class = 'collapse'>
+			<div id = "comment-10028" class = "comment">
+				<p>simulation in matlab. yes there are a lot of matlab codes, but the majority of them use simulink. I'm using script.</p>
+			</div>
+			<div id = "comment-10030" class = "comment">
+				<p>[This](http://www.control.lth.se/documents/2008/5823.pdf) is a good thesis I did simulink model from this and works fine. Also be carefull about using tan2 in angular calculations. also If you can send or share the code may be(if familiar language) I can help/fix your code</p>
+			</div>
+			<div id = "comment-10033" class = "comment">
+				<p>@cagdasecking, after a deep thinking, I believe these results are good (not perfect). I've double checked the trajectory, it seems from 0 sec to 1.5 sec, the trajectory is fixed. After 1.5 sec, the trajectory starts varying. I've implemented backstepping controller and the results are perfect. Thank you.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7046" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7046">
+					<img id="start_img-7046" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7046">Comment</button>
+			<br><div id = "ans-7094"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7094" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The controller has a definite performance problem after t=1.5sec. [This can be due to the system model or some other coding error.]</p>
+
+<p>The system (model + controller) behaves smooth until t=1.5sec. It is best to magnify and debug the code at that region. The controller behaves as expected until then. Only the X has no error from T0, which makes assessing the X-axis controller impossible. </p>
+
+<p>Another point also worth noting is that, the Y and Z errors should have caused some error in X, but we don't see this. So the simulation model could be simplified (like decoupled in X direction from others maybe?)</p>
+
+<p>Euler angles sometimes cause computational errors in attitudes (for exact zero, or pi or pi/2's). That might be the reason.</p>
+
+<p>For an understanding of the maths behind euler representation singularities, and their solutions, please refer to textbooks or articles, one example is: 
+<a href="http://lairs.eng.buffalo.edu/pdffiles/pconf/C10.pdf" rel="nofollow">http://lairs.eng.buffalo.edu/pdffiles/pconf/C10.pdf</a></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7094" data-toggle = "popover">
+				<p>user name : G rkan  etin</p>
+				<p> user reputation : 284</p>
+				<p class = "tagcontent" id = "usertaginfo-7094">{'None': 13}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7094">Load Comments</button></br>
+			<div id = "commentsection-7094" class = 'collapse'>
+			<div id = "comment-10066" class = "comment">
+				<p>The problem was with the trajectory. From 0-1.5 sec, the trajectory is fixed. This explains why the error decays, after 1.5 sec, the trajectory started varying and hence the error doesn't decay, therefore I just hoped to reduce the error which I've done. I've implemented backstepping controller and the results are much better than PID but still PID is a valid choice.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7094" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7094">
+					<img id="start_img-7094" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7094">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

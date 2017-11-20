@@ -1,0 +1,130 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>What kind of performance can I expect when using an Extended Kalman Filter for calibration and localization?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-359" class = "post">
+			<h2>Question</h2>
+			<div id="vote-359" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">6</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 157</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>What kind of performance can I expect when using an Extended Kalman Filter for calibration and localization?</h2>
+<p>Currently I have a tricycle style robot that uses an extended kalman filter in order to track 6 state variables. The inputs to the system are a steer encoder, a distance encoder, and a rotating laser that returns bearing only information to known landmarks. Currently both encoders are located on the main wheel (The one that steers, and is also powered).</p>
+
+<p>The 6 variables tracked by the Kalman Filter are X, Y, Heading, Distance Scaling (calibration of the distance encoder), Steer Calibration (offset of the steer encoder), and finally a bearing calibration of a rotating laser. </p>
+
+<p>With this kind of system we put together a vehicle give it a known good location with plenty of landmarks, drive it around a bit, and end up with a well calibrated vehicle that can drive extended distances reliably with few landmarks. Its simple and it works great. Over time if an encoder drifts it will automatically follow the drift and adjust. </p>
+
+<p>We are now attempting to apply the same principles to a robot with multiple steer and drive wheels. In this case the vehicle will be able to move in any direction, spin in place, etc. . Each steer/drive wheel will have its own steer and distance encoder that each need to be calibrated. </p>
+
+<p>Can I expect to get the same kind of reliability and performance out of the more complex system? Are there any common pitfalls to look out for when expanding a kalman filter to include more variables? Is there a risk of it settling on sub-optimal values?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-359" data-toggle = "popover">
+				<p>user name : ApockofFork</p>
+				<p> user reputation : 188</p>
+				<p class = "tagcontent" id = "usertaginfo-359">{'control': 1, 'None': 15, 'motor': 1, 'kalman-filter': 6, 'localization': 6}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-359" class = 'collapse'>
+			</div>
+				<textarea id = "speech-359" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-359">
+					<img id="start_img-359" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-359">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-362"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-362" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>In my opinion (based on my limited experience using the EKF for navigation):</p>
+
+<p>The performance of the EKF can be hugely improved by a good kinematic model. You did right by including bias in your steering and odometry models for the tricycle system. If you can derive and apply a detailed kinematics model for your more complicated system, then you should do quite well. If not, then the EKF must also account for your errors in modelling, in addition to your sensor errors and linearization errors. This is the danger: including a source of error that is <em>not</em> accounted for will make your filter inconsistent very quickly.</p>
+
+<p>If things get out of hand (your filter isn't converging nicely), you can try multiple model methds (IMM).  So my advice is to model the system as well as possible. The EKF has a very good track record for these tasks. Good luck.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-362" data-toggle = "popover">
+				<p>user name : Josh Vander Hook</p>
+				<p> user reputation : 3960</p>
+				<p class = "tagcontent" id = "usertaginfo-362">{'None': 345}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-362" class = 'collapse'>
+			</div>
+				<textarea id = "speech-362" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-362">
+					<img id="start_img-362" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-362">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,229 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>rock~syskit: How to add multiple instances of same component into a network
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-4370" class = "post">
+			<h2>Question</h2>
+			<div id="vote-4370" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 68</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>rock~syskit: How to add multiple instances of same component into a network</h2>
+<p>I've been going through Syskit tutorials at rock-robotics.org. In the tutorials e.g. <a href="http://rock-robotics.org/stable/documentation/system_management_tutorials/200_first_composition.htm" rel="nofollow">First composition</a>, there are two different components declared with:</p>
+
+<pre><code> add Controldev::JoystickTask, :as =&gt; "cmd"
+ add RockTutorial::RockTutorialControl, :as =&gt; "rock"
+</code></pre>
+
+<p>I was wondering how could I add an additional <code>RockTutorialControl</code> into the composition, so that the instantiation would then create two separate instances of the same component?</p>
+
+<p>I've tried something like</p>
+
+<pre><code>add RockTutorial::RockTutorialControl, :as =&gt; "foo"
+</code></pre>
+
+<p>but this apparently isn't the way to go. <code>syskit instanciate</code> command shows only one instance of RockTutorialControl, but gives two roles to it (rock and foo). What is the meaning of "role" in this context?</p>
+
+<p>I've noticed that the tutorial explains how to make multiple instances of the same component when we're declaring our components as <a href="http://rock-robotics.org/stable/documentation/system_management_tutorials/800_devices.html" rel="nofollow">Devices</a>. But how to do this with components that should not be concerned as devices?</p>
+
+<p>BR,
+Mathias</p>
+
+<p><strong>EDIT:</strong></p>
+
+<p>This was my first question to StackExchange, and I don't know what's the policy for adding additional information to the original question, but here we go:</p>
+
+<p>It seems that both the deployment and configuration need to be different when there are two instances of the same component. I did a small scale testing with two components:</p>
+
+<pre><code>using_task_library 'foobar_user'
+using_task_library 'foobar_proxy'
+
+module FooModule
+  class FooControl &lt; Syskit::Composition
+
+  add FoobarUser::Task, :as =&gt; "producer" 
+  add FoobarProxy::Task, :as =&gt; "proxy"
+  add FoobarUser::Task, :as =&gt; "consumer" 
+
+  producer_child.connect_to proxy_child
+  proxy_child.connect_to consumer_child
+  end
+end
+</code></pre>
+
+<p>where <code>FoobarUser::Task</code> has an input &amp; output port of /std/string. <code>FoobarProxy::Task</code> has corresponding i&amp;o ports. <code>FoobarUser::Task</code> has also two configurations called 'default' and 'other'. It also has two deployments 'foo_depl' and 'bar_depl'.</p>
+
+<p>In order to create a "pipeline" where data flows producer ==> proxy ==> consumer, I made define line:</p>
+
+<pre><code>define 'conf_and_depl', FooModule::FooControl.use('producer' =&gt; FoobarUser::Task.use_conf('other').prefer_deployed_tasks(/foo_depl/), 'consumer' =&gt; FoobarUser::Task.use_conf('default').prefer_deployed_tasks(/bar_depl/))
+</code></pre>
+
+<p>and then instanciated the network with </p>
+
+<pre><code>syskit instanciate scripts/03-nwtest.rb conf_and_depl_def!
+</code></pre>
+
+<p>The component instanciation failed if either <code>use_conf</code> or <code>prefer_deployed_tasks</code> clause was left out. In both cases the produced error was "cannot deploy the following tasks... ...multiple possible deployments, choose one with #prefer_deployed_tasks". </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4370" data-toggle = "popover">
+				<p>user name : Mathias von Essen</p>
+				<p> user reputation : 13</p>
+				<p class = "tagcontent" id = "usertaginfo-4370">{'None': 0, 'syskit': 2, 'rock': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-4370" class = 'collapse'>
+			</div>
+				<textarea id = "speech-4370" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4370">
+					<img id="start_img-4370" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4370">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-4372"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4372" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>This is what syskit should do,
+in the end syskit decides about the amount of modules.
+If you simply add the Requirement a second time syskit recognizes that they can be merged together and removes during instanciation the second one. (to be more precise it merges them together).</p>
+
+<p>You have to add different confiugations and/or build up connections that differ from the usage of the first one.</p>
+
+<p>Hope this clarifies.</p>
+
+<p>Best,
+Matthias</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4372" data-toggle = "popover">
+				<p>user name : Matthias Goldhoorn</p>
+				<p> user reputation : 148</p>
+				<p class = "tagcontent" id = "usertaginfo-4372">{'None': 11, 'syskit': 1, 'rock': 1}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-4372">Load Comments</button></br>
+			<div id = "commentsection-4372" class = 'collapse'>
+			<div id = "comment-6952" class = "comment">
+				<p>Thanks! I edited the original question and it now claims that both, the configuration and the deployment need to be unique. Is this correct, or just wrong interpretation of an inexperienced user?</p>
+			</div>
+			</div>
+				<textarea id = "speech-4372" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4372">
+					<img id="start_img-4372" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4372">Comment</button>
+			<br><div id = "ans-4377"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4377" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>There are basically two types of components in a network from the point of view of syskit, functional components and device drivers.</p>
+
+<p>Functional components behave as pure functions. It means that two components whose inputs are connected to the same source and that have the same configuration should produce the exact same output. Most components are like this, and that's how syskit works: it is able to find out which components are identical and merge them.</p>
+
+<p>Devices are there to provide entry/exit points for the data, i.e. they tell syskit that the component is not functional but pulls, push or both pushes and pulls data from "the outside world". In a robot, these are provided by hardware which is where the name comes from. Note that for instance a random generator would also need to be declared as a device even though there is no real "device" below.</p>
+
+<p>If you want to force syskit to instanciate the same component twice even though they have the same input connections, you therefore have to either make them device drivers and tie them to different devices, or assign different configurations. Note that they can be dummy configurations, i.e.</p>
+
+<pre><code>--- name:default
+# Real configuration goes there
+--- name:foo
+# Empty dummy configuration to force double-instance
+--- name:bar
+# Empty dummy configuration to force double-instance
+
+define 'foo', Composition.use(Component.use_conf('foo', 'default'))
+define 'bar', Composition.use(Component.use_conf('bar', 'default'))
+</code></pre>
+
+<p><strong>About the deployments</strong>: what I have described so far is how two components get merged or not. Another issue is that, once two instances of the same component model end up in the final network, they have to be deployed. Since they are from the same component model, syskit cannot choose for you (see P.S. below for more details). There is actually a tutorial on that later on in the tutorial series you are currently doing.</p>
+
+<p>P.S.: actually syskit <strong>could</strong> choose for you. The issue then is that you would not be able to easily understand what each component does when you look at rock-display. Indeed, the same component instance (let's say task1) could have different rols in the same network, depending on e.g. the order in which syskit would have assigned the tasks. Looking at a running system in rock-display and/or at logs with rock-replay would be hell. An integration of Syskit and Rock live display / log tools would solve that nicely, but we're not there yet.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4377" data-toggle = "popover">
+				<p>user name : sylvain.joyeux</p>
+				<p> user reputation : 363</p>
+				<p class = "tagcontent" id = "usertaginfo-4377">{'None': 20, 'kalman-filter': 0}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-4377" class = 'collapse'>
+			</div>
+				<textarea id = "speech-4377" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4377">
+					<img id="start_img-4377" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4377">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

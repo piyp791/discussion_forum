@@ -1,0 +1,192 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How do I accurately calculate the speed of a rotary encoder at a high sample rate?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7474" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7474" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 3169</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How do I accurately calculate the speed of a rotary encoder at a high sample rate?</h2>
+<p>I'm aiming to control a motorized joint at a specific speed. To do this, I'm planning on attaching a rotary encoder to do this.</p>
+
+<p>I'll be controlling the motor with a PID controller. With this PID controller, I need to control the joints based on their velocity.</p>
+
+<p>Since:</p>
+
+<pre><code>speed = distance / time
+</code></pre>
+
+<p>It would make sense to do something like this:</p>
+
+<pre><code>double getCurrentSpeed() {
+    return (currentAngle - lastAngle) / samplingRate;
+}
+</code></pre>
+
+<p>However, there's an issue; the encoder doesn't provide a high enough resolution to accurately calculate the speed (the sample rate is too high). I want to have updated data every 5-15 ms (somewhere in that range as my current motors seem to be able to respond to a change in that range)</p>
+
+<p>Some more information:</p>
+
+<ul>
+<li>14 bit precision (roughly 0.0219726562 degrees per "step" of encoder</li>
+<li>I'd like to be able to calculate as small of speed differences as possible</li>
+<li>As the motors will be going fairly fast (120+ degrees/second at highly variable speeds and directions), so the feedback has to be accurate and not delayed at all</li>
+</ul>
+
+<p>So, a couple of ideas:</p>
+
+<ul>
+<li>I can find encoders that I can sample at a very high rate. I was thinking about sampling the time between the changes of the encoder's value. However, this seems finicky and likely to be noise-prone</li>
+<li>I could do some sort of rolling average, but that would cause the data values to "lag" because the previous values would "hold back" the output of the calculations somewhat and this would play with my PID loop some</li>
+<li>Noise filter of some sort, although I don't know if that would work given the rapidly changing values of this application</li>
+</ul>
+
+<p>However, none of these seem ideal. Is my only option to get a 16 bit (or higher!) encoder? Or is there another method/combination of methods that I could use to get the data I need?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7474" data-toggle = "popover">
+				<p>user name : Anonymous Penguin</p>
+				<p> user reputation : 299</p>
+				<p class = "tagcontent" id = "usertaginfo-7474">{'stepper-driver': 2, 'None': 1, 'algorithm': 1, 'arduino': 3, 'pid': 1, 'rcservo': 21, 'torque': 3, 'current': 3, 'cnc': 9, 'motor': 15, 'stepper-motor': 19}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7474">Load Comments</button></br>
+			<div id = "commentsection-7474" class = 'collapse'>
+			<div id = "comment-10683" class = "comment">
+				<p>You might consider that for greater accuracy at high speeds, measure distance traveled in a given time (for example encoder pulses counted per ms), while for greater accuracy at lower speeds, measure elapsed time for a given distance (for example timer count between encoder pulses, or for moderate speeds timer count between n encoder pulses). For greater dynamic range, do both.</p>
+			</div>
+			<div id = "comment-10688" class = "comment">
+				<p>A possible implementation on the above: 1) Measure the time between every encoder pulse; 2) Count the number of complete encoder pulses in say 10ms = n; 3) From your pulse timer data, sum the times taken between the last n+1 encoder pulses = T ie: the sum of n periods; 4) Your speed is calculated using (n*distance_per_pulse)/T</p>
+			</div>
+			<div id = "comment-10693" class = "comment">
+				<p>Just to clarify: are you using an absolute or incremental encoder (do you read position from it or just ticks)?</p>
+			</div>
+			<div id = "comment-10694" class = "comment">
+				<p>@mactro absolute</p>
+			</div>
+			<div id = "comment-10695" class = "comment">
+				<p>Can you interrupt on change of the lsb of your encoder?</p>
+			</div>
+			</div>
+				<textarea id = "speech-7474" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7474">
+					<img id="start_img-7474" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7474">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7478"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7478" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I think you're getting a little confused - you mention a 14b encoder that you have, then ask if you should get a 16b encoder to sample faster. While resolution and the time it takes to query a device can be somewhat related, the electronic interface has a lot more to do with how quickly you can sample than the sensor resolution. For instance, an I2C protocol requires the master to call the sensor by "name" (address), so the time you spend transmitting that information means you can't sample as quickly as you could with SPI, where you use a chip select and start getting data immediately. Both methods transmit data one bit at a time,  so both take longer than would a sensor with a parallel interface, where you read each bit simultaneously. </p>
+
+<p>:EDIT: on my phone, pushed enter on accident. </p>
+
+<p>Regarding sampling speed, 120deg/s is 0.6deg/5ms, which means your encoder should increment nearly 30 times (0.02 to 0.6) in that interval. You should always consider filtering the signal, because resolution isn't just some number that's exact. It's better to think of it as wedges. Anywhere in a particular wedge will give you the same reading. This means that, if you were perfectly centered on a bit (wedge), you are likely to get 30 increments per sample, but if you start a little to one side you might get 29 or the other side may give 31. </p>
+
+<p>You can generally watch this behavior on a per sample basis - you may get increments of 29 29 29 30 30 31 29 29... You can watch the measurements change slowly because you are essentially strobing a rotating shaft and if you don't hit a multiple of speed exactly you'll get a phase roll. If you don't filter this signal then your robot will think you're actually going those speeds.</p>
+
+<p>Every filter is going to, uh, filter your signal, so then it's up to you how to handle that alteration to your signal. I would suggest a simple lag filter as they are effective, exceedingly simple to implement, and <a href="http://my.execpc.com/~steidl/robotics/first_order_lag_filter.html" rel="nofollow">there are really straightforward design guidelines</a> to help you maintain whatever level of responsiveness you would like. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7478" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-7478">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7478">Load Comments</button></br>
+			<div id = "commentsection-7478" class = 'collapse'>
+			<div id = "comment-10684" class = "comment">
+				<p>Re: 1st paragraph--you're misunderstanding the issue here. The issue is that the change in the value of the rotary encoder is so small at my sampling rate that it causes the acceleration values to jump around. A greater resolution would mean that it would give me a greater difference of value in that small timeframe, giving me more accurate values.</p>
+			</div>
+			<div id = "comment-10686" class = "comment">
+				<p>@Annonomus Penguin - to clarify, are you saying that at one step you have a "speed" or movement of just one encoder tick, then several steps with zero, then another with one tick again?  (In other words a very low speed.)  And this is why you ask about a higher resolution encoder?</p>
+			</div>
+			<div id = "comment-10689" class = "comment">
+				<p>@AnnonomusPenguin, I'm not misunderstanding. As I stated, you are looking at approximately 30 increments per 5ms sample time at your top speed. You will always get inconsistent samples because you are probably not going to rotate and sample exactly in synch with the bits of the encoder. A higher resolution encoder *will* get you *better* velocities, but you will **always** get the random accelerations because of sampling inadequacies. The lag filter guidelines I linked to will show you how to design a filter that meets arbitrary response criteria.</p>
+			</div>
+			<div id = "comment-10691" class = "comment">
+				<p>So how about an example. $2^{14}$ gives 0.02197 deg/bit. 120 degrees per second at a 5ms sample period is 0.6 degrees per sample. 0.6 deg divided by the samples of 0.02197 gives a reading of 27.3. Your sensor doesn't do fractions, so you're going to get 27 or 28 (presumably). This corresponds to an increment of 0.5932 or 0.6152 degrees, divided by your sample time of 5ms, gives a speed of 118.7 or  123 deg/s.</p>
+			</div>
+			<div id = "comment-10692" class = "comment">
+				<p>$2^{16}$ gives 0.00549 deg/bit, with the same 0.6 deg/sample. Here you'll get 109.22, but again, you'll only get 109 or 110. This gives you an increment of 0.5988 or 0.6042, for speeds of 119.8 or 120.85. Again, your samples here are *better* than the $2^{14}$ encoder is, but you will **never** get one that is absolutely correct. You will always get sporadic acceleration bumps due to sampling inadequacies, so **you need to filter your encoder output**.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7478" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7478">
+					<img id="start_img-7478" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7478">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

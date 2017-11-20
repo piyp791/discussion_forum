@@ -1,0 +1,164 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Can a Jacobian be used to determine required joint angles for end effector velocity~position?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-6382" class = "post">
+			<h2>Question</h2>
+			<div id="vote-6382" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">7</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 1904</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Can a Jacobian be used to determine required joint angles for end effector velocity~position?</h2>
+<p>I'm in the early stages of working with a simple robot arm, and learning about the Jacobian and inverse kinematics.</p>
+
+<p>From my understanding, the Jacobian can be used to determine the linear and angular velocity of the end effector, given the angular velocity of all joints in the arm. Can it also be used to determine the Cartesian position of the end effector, given the angles and/or positions of the joints?</p>
+
+<p>Furthermore, suppose that I want to determine the required angular velocities of the joints, in order to bring about a desired linear velocity of the end effector. Can this be done by simply inverting the Jacobian and plugging in the desired parameters?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6382" data-toggle = "popover">
+				<p>user name : Karnivaurus</p>
+				<p> user reputation : 328</p>
+				<p class = "tagcontent" id = "usertaginfo-6382">{'control': 10, 'walking-robot': 4, 'simulator': 0, 'torque': 4, 'slam': 0, 'robotic-arm': 20, 'mobile-robot': 0, 'dynamics': 17, 'forward-kinematics': 7, 'manipulator': 10, 'accelerometer': 4, 'kinematics': 29, 'jacobian': 16, 'policy': 1, 'actuator': 4, 'None': 0, 'inverse-kinematics': 18, 'localization': 0, 'mapping': 0, 'sensors': 4, 'simulation': 0, 'navigation': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-6382" class = 'collapse'>
+			</div>
+				<textarea id = "speech-6382" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6382">
+					<img id="start_img-6382" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6382">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-6393"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6393" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">6</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Yes, the Jacobian relates the joint velocities to end-effector velocity through this equation:</p>
+
+<p>$$
+\mathbf{v}_e = \mathbf{J}(\mathbf{q}) \dot{\mathbf{q}}
+$$</p>
+
+<p>Where $\mathbf{q}$ is the joint angles, $\dot{\mathbf{q}}$ is the joint velocities, and $\mathbf{v}_e$ is the end-effector velocity.  As you can see, the Jacobian, $\mathbf{J}$, is configuration dependant.  So plug in some joint angles and velocities then you will get the velocity of the end-effector.  </p>
+
+<p>To get the Cartesian position of the end-effector, given the joint angles, you use the <em>direct kinematics function</em> also called <em>forward kinematics</em>.  There are various methods to do this.  Geometric analysis if your arm is simple enough e.g. a planar 2 link arm.  Product-of-exponentials is another method. But the Denavit-Hartenberg method is probably the most widely used.  I am not going to go into the details of this here.  But basically you will get a transformation matrix for each joint: $\mathbf{A}_i^{i-1}(q_i)$.  That when you plug in the joint angle, you get the pose of joint $i$ relative to joint $i-1$.  These can be combined in a recursive fashion to get the pose of the end-effector relative to the base of the arm:</p>
+
+<p>$$
+\mathbf{T}_n^0(\mathbf{q})=\mathbf{A}_1^{0}(q_1) \mathbf{A}_2^{1}(q_2) ... \mathbf{A}_n^{n-1}(q_n)
+$$</p>
+
+<p>Note that you can differentiate $\mathbf{T}_n^0(\mathbf{q})$ to get the <em>analytical Jacobian</em>.  But people typically use the <em>geometric Jacobian</em> which is not as hard to compute.</p>
+
+<p>Now to compute the required joint velocities to achieve a desired end-effector velocity, you must invert the Jacobian.  But this only works if the number of DOFs equals the number of dimensions of your space:</p>
+
+<p>$$
+\dot{\mathbf{q}} = \mathbf{J}^{-1}(\mathbf{q}) \mathbf{v}_e
+$$</p>
+
+<p>(Note that there are some arm configurations (such as singularities) where the Jacobian will not be invertable.)  If you have more DOFs, you are under-constrained.  (i.e. there is more than one solution).  Typically, people use the <em>right pseudo-inverse</em> of the Jacobian which locally minimizes the norm of joint velocities.  </p>
+
+<p>$$
+\dot{\mathbf{q}}=\mathbf{J}^{\dagger}\mathbf{v}_{e}
+$$
+where:
+$$
+\mathbf{J}^{\dagger} = \mathbf{J}^T(\mathbf{J}\mathbf{J}^T)^{-1}
+$$</p>
+
+<p>Note that J is still dependant on q, but (q) is dropped for clarity.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6393" data-toggle = "popover">
+				<p>user name : Ben</p>
+				<p> user reputation : 3608</p>
+				<p class = "tagcontent" id = "usertaginfo-6393">{'None': 277, 'inverse-kinematics': 3, 'accelerometer': 5, 'calibration': 10, 'kinematics': 14, 'robotic-arm': 8, 'jacobian': 6, 'dh-parameters': 8, 'imu': 5, 'sensors': 5}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-6393">Load Comments</button></br>
+			<div id = "commentsection-6393" class = 'collapse'>
+			<div id = "comment-9234" class = "comment">
+				<p>Nice resume. This survey on Inverse Kinematics might help too: http://www.math.ucsd.edu/~sbuss/ResearchWeb/ikmethods/iksurvey.pdf</p>
+			</div>
+			<div id = "comment-9341" class = "comment">
+				<p>`you must invert the Jacobian. But this only works if the number of DOFs equals the number of dimensions of your space` I think it is also possible that there is no inverse for J, even if the DOF is the same dimensions as workspace. For example, if the desired end-effector position or velocity is physically not possible to achive due to some constraints. Then there is no solution.</p>
+			</div>
+			<div id = "comment-9347" class = "comment">
+				<p>That's true.  At singularities, the Jacobian will not be invertable.</p>
+			</div>
+			</div>
+				<textarea id = "speech-6393" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6393">
+					<img id="start_img-6393" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6393">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

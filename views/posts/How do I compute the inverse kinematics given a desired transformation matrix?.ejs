@@ -1,0 +1,207 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How do I compute the inverse kinematics given a desired transformation matrix?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9776" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9776" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 84</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How do I compute the inverse kinematics given a desired transformation matrix?</h2>
+<p>I am at the moment trying to implement an inverse kinematics function which function is to take a desired transformation matrix, and the current transformation matrix, and compute the Q states that is needed to move my robot arm from current state to end state. </p>
+
+<p>I have already written the code, but since my simulation isn't showing the right path, or what I would expect it to be, this makes me unsure as to whether my implementation is correct.  Could someone comment on my implementation and maybe spot an error?</p>
+
+<pre><code>std::vector&lt;Q&gt; pathPlanning::invKin_largeDisplacement(std::vector&lt;Transform3D&lt;&gt;&gt; t_tool_base_desired_i)
+{
+
+    for(unsigned int i = 0; i&lt;t_tool_base_desired_i.size();  ++i)
+    {
+        Transform3D&lt;&gt; T_tool_base_current_i = device_backup-&gt;baseTframe(this-&gt;toolFrame,state_backup);
+        Eigen::MatrixXd jq(device_backup-&gt;baseJframe(this-&gt;toolFrame,state_backup).e().cols(), this-&gt;device.get()-&gt;baseJframe(this-&gt;toolFrame,state_backup).e().rows());
+        jq =  this-&gt;device.get()-&gt;baseJframe(this-&gt;toolFrame,state_backup).e();
+
+
+        //Least square solver - dq = [j(q)]T (j(q)[j(q)]T) 1 du  &lt;=&gt; dq = A*du
+        Eigen::MatrixXd A (6,6);
+        //A = jq.transpose()*(jq*jq.transpose()).inverse();
+        A = (jq*jq.transpose()).inverse()*jq.transpose();
+
+        Vector3D&lt;&gt; dif_p = t_tool_base_desired_i[i].P()-T_tool_base_current_i.P(); // Difference in position between current_i and desired_i
+
+        Eigen::Matrix3d dif = t_tool_base_desired_i[i].R().e()- T_tool_base_current_i.R().e(); // Difference in rotation between current_i and desired_i
+
+        Rotation3D&lt;&gt; dif_r(dif); //Construct rotation matrix
+        RPY&lt;&gt; dif_rot(dif_r); // compute RPY from rotation matrix
+
+        //Jq*dq = du
+        Eigen::VectorXd du(6);
+        du(0) = dif_p[0];
+        du(1) = dif_p[1];
+        du(2) = dif_p[2];
+
+        du(3) = dif_rot[0];
+        du(4) = dif_rot[1];
+        du(5) = dif_rot[2];
+
+        Eigen::VectorXd q(6);
+        q = A*du; // Compute change dq
+
+        Q q_current;
+        q_current = this-&gt;device-&gt;getQ(this-&gt;state); // Get Current Q
+        Q dq(q);
+        Q q_new = q_current+ dq; // compute new Q by adding dq
+        output.push_back(q_new); // Pushback to output vector
+        device_backup-&gt;setQ(q_new,state_backup); //set current state to newly calculated Q.
+
+    }
+    return output;
+}
+</code></pre>
+
+<p>Example of output: </p>
+
+<pre><code>Q{-1.994910, -94.421754, -123.448429, 15.218864, 6.602184, -13.742988}
+Q{2627.867315, -2048.863588, -51.340574, 287.654959, 270.187026, 258.581800}
+Q{12941.812459, -536.870516, -294.362593, -2145.963577, -31133.660814, -4742.343433}
+Q{32.044799, -14.220020, -14.312226, -12.444921, 12.269179, -24.393637}
+Q{125.537278, 28.626924, -55.646716, -20.945348, 17.536762, -2.656717}
+Q{9.514525, -107.455064, -17.009190, -15.245588, -0.960273, -2.010570}
+Q{8.255582, -3.010934, -4.882207, -1.369533, 0.848644, 1.175172}
+Q{208.655993, -28.443465, -64.413952, -3.129896, 13.063806, -6.042187}
+Q{-73.706483, -20.381540, -5.306434, -1.204419, -4.035149, 21.806934}
+Q{10.003481, 10.867394, 13.256192, -6.491445, -1.711469, 2.896646}
+Q{24.890626, -72.265307, -94.886507, 12.327304, -4.425786, 4.188531}
+Q{7.111258, 31.500732, -0.111033, -20.434697, 5.302118, 1.781690}
+Q{477.993581, 659.221820, 19.819916, -88.627757, 65.850191, -77.267367}
+Q{-30.672145, -53.496243, -18.170871, 83.648574, 48.311796, -28.015005}
+Q{-36.677982, -15.908633, 17.751008, 0.995766, -0.500259, 9.409435}
+Q{114246.358249, -10664.813432, -75.904830, 462.907904, 7992.514723, -18484.319327}
+Q{83.827086, -75.899321, -38.576446, 37.266068, 47.843725, 39.096061}
+Q{-119.682661, -774.773093, -251.969174, 23.212110, -42.662580, 53.247454}
+Q{98.608881, -28.013383, 132.896921, 17.121488, 36.916894, -14.627180}
+Q{-11519.051453, 5761.564318, -364.916044, -1188.567128, -2582.813750, -462.784007}
+Q{54802.605226, 40971.776641, 10204.739981, -654.963987, -244.277958, -8618.970216}
+Q{-21.334047, -14.314134, 17.714174, 2.463993, 0.963385, 5.304530}
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9776" data-toggle = "popover">
+				<p>user name : test</p>
+				<p> user reputation : 36</p>
+				<p class = "tagcontent" id = "usertaginfo-9776">{'None': 0, 'inverse-kinematics': 2, 'c++': 2, 'industrial-robot': 1, 'robotic-arm': 6, 'rotation': 4}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-9776" class = 'collapse'>
+			</div>
+				<textarea id = "speech-9776" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9776">
+					<img id="start_img-9776" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9776">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9782"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9782" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Shouldn't A be   </p>
+
+<pre><code>jq.transpose() * (jq*jq.transpose()).inverse() 
+</code></pre>
+
+<p>instead of </p>
+
+<pre><code>(jq*jq.transpose()).inverse()*jq.transpose()
+</code></pre>
+
+<p>?</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9782" data-toggle = "popover">
+				<p>user name : SteveO</p>
+				<p> user reputation : 2960</p>
+				<p class = "tagcontent" id = "usertaginfo-9782">{'None': 222}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9782">Load Comments</button></br>
+			<div id = "commentsection-9782" class = 'collapse'>
+			<div id = "comment-17427" class = "comment">
+				<p>Nope... it didn't work :(</p>
+			</div>
+			</div>
+				<textarea id = "speech-9782" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9782">
+					<img id="start_img-9782" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9782">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

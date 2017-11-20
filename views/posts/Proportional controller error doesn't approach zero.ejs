@@ -1,0 +1,316 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Proportional controller error doesn't approach zero
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-4793" class = "post">
+			<h2>Question</h2>
+			<div id="vote-4793" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 244</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Proportional controller error doesn't approach zero</h2>
+<p>I'm reading this <a href="http://www-lar.deis.unibo.it/people/cmelchiorri/Files_Robotica/FIR_05_Dynamics.pdf" rel="nofollow noreferrer">pdf</a>. The dynamic equation of one arm is provided which is </p>
+
+<p>$$
+l \ddot{\theta} + d \dot{\theta} + mgL sin(\theta) = \tau
+$$</p>
+
+<p>where </p>
+
+<p>$\theta$ : joint variable. </p>
+
+<p>$\tau$ : joint torque</p>
+
+<p>$m$ : mass</p>
+
+<p>$L$ : distance between centre mass and joint. </p>
+
+<p>$d$ : viscous friction coefficient</p>
+
+<p>$l$ : inertia seen at the rotation axis. </p>
+
+<p><img src="https://i.stack.imgur.com/CvrSY.png" alt="enter image description here"></p>
+
+<p>I would like to use P (proportional) controller for now. </p>
+
+<p>$$
+\tau = -K_{p} (\theta - \theta_{d})
+$$</p>
+
+<p>My Matlab code is </p>
+
+<pre><code>clear all
+clc
+
+t = 0:0.1:5;
+
+x0 = [0; 0];
+
+[t, x] = ode45('ODESolver', t, x0);
+
+e = x(:,1) - (pi/2); % Error theta1
+
+plot(t, e);
+title('Error of \theta');
+xlabel('time');
+ylabel('\theta(t)');
+grid on
+</code></pre>
+
+<p>For solving the differential equation </p>
+
+<pre><code>function dx = ODESolver(t, x)
+
+dx = zeros(2,1);
+%Parameters:
+
+m  = 2;
+d  = 0.001;
+L  = 1;
+I = 0.0023;
+g  = 9.81;
+
+T = x(1) - (pi/2);
+
+
+dx(1) = x(2);
+
+q2dot = 1/I*T - 1/I*d*x(2) - 1/I*m*g*L*sin(x(1));
+
+dx(2) = q2dot;
+</code></pre>
+
+<p>The error is </p>
+
+<p><img src="https://i.stack.imgur.com/TIUNE.png" alt="enter image description here"></p>
+
+<p>My question is why the error is not approaching zero as time goes? The problem is a regulation track, so the error must approach zero. </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4793" data-toggle = "popover">
+				<p>user name : CroCo</p>
+				<p> user reputation : 1040</p>
+				<p class = "tagcontent" id = "usertaginfo-4793">{'control': 18, 'pid': 4, 'slam': 16, 'manipulator': 3, 'mobile-robot': 14, 'dynamics': 6, 'errors': 2, 'data-association': 1, 'kinematics': 3, 'matlab': 6, 'kalman-filter': 21, 'motion-planning': 3, 'None': 41, 'noise': 24, 'theory': 1, 'localization': 14, 'microcontroller': 5, 'mapping': 5, 'sensor-error': 1, 'sensors': 7, 'quadcopter': 8, 'ekf': 26, 'simulation': 1, 'motion': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-4793" class = 'collapse'>
+			</div>
+				<textarea id = "speech-4793" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4793">
+					<img id="start_img-4793" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4793">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-4813"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4813" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">8</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>If you're only using proportional force, then at some point it will be balanced by the force of gravity -- your error will converge on that balance, not zero.</p>
+
+<p>To compensate for the mass of the arm, you'll need to add an <em>integral force</em> term.  This will increase over time to counterbalance the constant force of gravity.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4813" data-toggle = "popover">
+				<p>user name : Ian</p>
+				<p> user reputation : 9640</p>
+				<p class = "tagcontent" id = "usertaginfo-4813">{'planning': 10, 'None': 809, 'power': 1, 'algorithm': 10, 'battery': 1, 'slam': 7, 'coverage': 10, 'mobile-robot': 9, 'sensors': 9}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-4813">Load Comments</button></br>
+			<div id = "commentsection-4813" class = 'collapse'>
+			<div id = "comment-7514" class = "comment">
+				<p>thank you. I got a perfect result with PID controller.</p>
+			</div>
+			</div>
+				<textarea id = "speech-4813" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4813">
+					<img id="start_img-4813" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4813">Comment</button>
+			<br><div id = "ans-4825"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4825" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">6</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><blockquote>
+  <p>I would like to use P (proportional) controller for now.</p>
+</blockquote>
+
+<p>Just a proportional controller will never make your error stay at 0. Your system is not damped and a proportional controller acts like an undamped spring. Look at the controller equation that you wrote:</p>
+
+<blockquote>
+  <p> = K( d)</p>
+</blockquote>
+
+<p>and compare it to a spring equation:</p>
+
+<pre><code>F=Kx or F=K(x1-x2)
+</code></pre>
+
+<p>Your controller is acting like a spring, putting torque on the joint proportionally to it's deviation from the reference. You must use at least a PI (proportional and integrating) controller to get rid of the oscillation. </p>
+
+<p>The integrating part of the controller is what makes the oscillations go away and make the steady state error approach 0. It will make your system a bit slower, but you'll have to tune the controller to behave the way you want, faster response means typically more overshoot and vice versa.</p>
+
+<p>If you really need to use a P controller, you have to include a damper on the system.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4825" data-toggle = "popover">
+				<p>user name : goncalo luis</p>
+				<p> user reputation : 324</p>
+				<p class = "tagcontent" id = "usertaginfo-4825">{'None': 14}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-4825">Load Comments</button></br>
+			<div id = "commentsection-4825" class = 'collapse'>
+			<div id = "comment-7513" class = "comment">
+				<p>you're right. I've implemented PID controller and it solved the problem.</p>
+			</div>
+			</div>
+				<textarea id = "speech-4825" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4825">
+					<img id="start_img-4825" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4825">Comment</button>
+			<br><div id = "ans-8924"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8924" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p><strong>Controllers type</strong></p>
+
+<p>A more mathematical approach to the error.</p>
+
+<p><a href="https://i.stack.imgur.com/e06td.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/e06td.jpg" alt="enter image description here"></a></p>
+
+<p>Suppose you have a close loop system like above. The equation is:</p>
+
+<p>$\hspace{2.5em}$ $Y(s) = \frac{G(s)C(s)}{1+G(s)C(s)} R(s)$ </p>
+
+<p>The error equation is:</p>
+
+<p>$\hspace{2.5em}$ $E(s) = R(s) - Y(s)$ </p>
+
+<p>$\hspace{2.5em}$ $E(s) = \frac{1}{1+G(s)C(s)} R(s)$ $\hspace{2.5em}[1]$</p>
+
+<p>The <a href="https://en.wikipedia.org/wiki/Final_value_theorem" rel="nofollow noreferrer">final value theorem</a> states that:</p>
+
+<p>$\hspace{2.5em}$ $e(\infty) = \lim_{s \rightarrow 0}sE(s)$ $\hspace{2.5em}[2]$</p>
+
+<p>Using $[1]$ in $[2]$:</p>
+
+<p>$\hspace{2.5em}$ $e(\infty) = \lim_{s \rightarrow 0}s\frac{1}{1+G(s)C(s)} R(s)$</p>
+
+<p>Ok! Now, we can conclude some cool stuffs.</p>
+
+<ul>
+<li>Suppose $R(s) = \frac{1}{s}$:</li>
+</ul>
+
+<p>$\hspace{2.5em}$ $e(\infty) = \lim_{s \rightarrow 0}\frac{1}{1+G(s)C(s)}$ $\hspace{2.5em}$ From calculus, is the same as:</p>
+
+<p>$\hspace{2.5em}$ $e(\infty) = \frac{1}{1+\lim_{s \rightarrow 0} (G(s)C(s))}$</p>
+
+<p>$\hspace{2.5em}$ $e(\infty) = \frac{1}{1+G(0)C(0)}$</p>
+
+<p>If $C(s) = K$, where $K$ is a proportional gain, $G(0)$ have a finite DC gain, your system is going to be the responsible for the finite final term. But, however, you can apply a PD control, $C(s) = \frac{K}{s}$. </p>
+
+<p>$\hspace{2.5em}$ $C(0) = \lim_{s \rightarrow 0}\frac{K}{s} = \infty$ </p>
+
+<p>Then:</p>
+
+<p>$\hspace{2.5em}$ $e(\infty) = \frac{1}{1+G(0)(\infty)} = 0$</p>
+
+<p>And that's the resume why you can't get null error only with a proportional gain.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8924" data-toggle = "popover">
+				<p>user name : leCrazyEngineer</p>
+				<p> user reputation : 123</p>
+				<p class = "tagcontent" id = "usertaginfo-8924">{'None': 9}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8924">Load Comments</button></br>
+			<div id = "commentsection-8924" class = 'collapse'>
+			<div id = "comment-14704" class = "comment">
+				<p>The Laplace transform can only be used in linear systems. But, I think is very useful to understand the principle.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8924" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8924">
+					<img id="start_img-8924" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8924">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

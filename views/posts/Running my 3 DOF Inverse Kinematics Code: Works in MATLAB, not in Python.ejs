@@ -1,0 +1,255 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Running my 3 DOF Inverse Kinematics Code: Works in MATLAB, not in Python
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8419" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8419" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 5344</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Running my 3 DOF Inverse Kinematics Code: Works in MATLAB, not in Python</h2>
+<p>I asked a question similar to this earlier, but I believe I have a new problem. I've been working on figuring out the inverse kinematics given an x,y,z coordinate. I've adopted the Jacobian method, taking the derivative of the forward kinematics equations with respect to their angles and input it into the Jacobian. I then take the inverse of it and multiply it by a step towards the goal distance. For more details, look at <a href="http://www.seas.upenn.edu/~meam520/notes02/IntroRobotKinematics5.pdf" rel="nofollow noreferrer">http://www.seas.upenn.edu/~meam520/notes02/IntroRobotKinematics5.pdf</a> page 21 onwards. </p>
+
+<p>For a better picture, below is something:
+<img src="https://i.stack.imgur.com/7mVwI.png" alt="3 DOF Arm"></p>
+
+<p>Below is the code for my MATLAB script, which runs flawlessly and gives a solution in under 2 seconds:</p>
+
+<pre><code>ycurrent = 0; %Not using this  
+xcurrent = 0; %Starting position (x)   
+zcurrent = 0; %Starting position (y)    
+xGoal = .5; %Goal x/z values of (1, 1)   
+zGoal = .5;    
+theta1 = 0.1; %Angle of first DOF    
+theta2 = 0.1; %Angle of second DOF  
+theta3 = 0.1; %Angle of third DOF
+xchange = xcurrent - xGoal %Current distance from goal
+zchange = zcurrent - zGoal
+%Length of segment 1: 0.37, segment 2:0.374, segment 3:0.2295 
+while ((xchange &gt; .02 || xchange &lt; -.02) || (zchange &lt; -.02 || zchange &gt; .02))    
+        in1 = 0.370*cos(theta1); %These equations are stated in the link provided
+        in2 = 0.374*cos(theta1+theta2);
+        in3 = 0.2295*cos(theta1+theta2+theta3);
+        in4 = -0.370*sin(theta1);
+        in5 = -0.374*sin(theta1+theta2); 
+        in6 = -0.2295*sin(theta1+theta2+theta3); 
+        jacob = [in1+in2+in3, in2+in3, in3; in4+in5+in6, in5+in6, in6; 1,1,1];
+        invJacob = inv(jacob); 
+        xcurrent = .3708 * sin(theta1) + .374 * sin(theta1+theta2) + .229 * sin(theta1+theta2+theta3) 
+        zcurrent = .3708 * cos(theta1) + .374 * cos(theta1+theta2) + .229 * cos(theta1+theta2+theta3)        
+        xIncrement = (xGoal - xcurrent)/100; 
+        zIncrement = (zGoal - zcurrent)/100; 
+        increMatrix = [xcurrent; zcurrent; 1]; %dx/dz/phi 
+        change = invJacob * increMatrix; %dtheta1/dtheta2/dtheta3  
+        theta1 = theta1 + change(1)  
+        theta2 = theta2 + change(2)  
+        theta3 = theta3 + change(3)
+        xcurrent = .3708 * sin(theta1) + .374 * sin(theta1+theta2) + .229 * sin(theta1+theta2+theta3)  
+        zcurrent = .3708 * cos(theta1) + .374 * cos(theta1+theta2) + .229 * cos(theta1+theta2+theta3)          
+        xchange = xcurrent - xGoal
+        zchange = zcurrent - zGoal
+end        
+</code></pre>
+
+<p>Below is my Python code, which goes into an infinite loop and gives no results. I've looked over the differences between it and the MATLAB code, and they look the exact same to me. I have no clue what is wrong. I would be forever grateful if somebody could take a look and point it out.</p>
+
+<pre><code>def sendArm(xGoal, yGoal, zGoal, right, lj):
+    ycurrent = xcurrent = zcurrent = 0
+    theta1 = 0.1
+    theta2 = 0.1
+    theta3 = 0.1
+    xcurrent, zcurrent = forwardKinematics(theta1, theta2, theta3)
+    xchange = xcurrent - xGoal
+    zchange = zcurrent - zGoal
+    while ((xchange &gt; 0.05 or xchange &lt; -0.05) or (zchange &lt; -0.05 or zchange &gt; 0.05)):
+        in1 = 0.370*math.cos(theta1) #Equations in1-6 are in the pdf I linked to you (inv kinematics section)
+        in2 = 0.374*math.cos(theta1+theta2)
+        in3 = 0.2295*math.cos(theta1+theta2+theta3)
+        in4 = -0.370*math.sin(theta1)
+        in5 = -0.374*math.sin(theta1+theta2)
+        in6 = -0.2295*math.sin(theta1+theta2+theta3)
+        jacob = matrix([[in1+in2+in3,in2+in3,in3],[in4+in5+in6,in5+in6,in6], [1,1,1]]) #Jacobian
+        invJacob = inv(jacob) #inverse of jacobian
+        xcurrent, zcurrent = forwardKinematics(theta1, theta2, theta3)
+        xIncrement = (xGoal - xcurrent)/100 #dx increment
+        zIncrement = (zGoal - zcurrent)/100 #dz increment
+        increMatrix = matrix([[xIncrement], [zIncrement], [1]])
+        change = invJacob*increMatrix #multiplying both matrixes
+        theta1 = theta1 + change.item(0)
+        theta2 = theta2 + change.item(1)
+        theta3 = theta3 + change.item(2)
+        xcurrent, zcurrent = forwardKinematics(theta1, theta2, theta3)
+        xchange = xcurrent - xGoal
+        zchange = zcurrent - zGoal
+        print "Xchange: %f ZChange: %f" % (xchange, zchange)
+    print "Goals %f %f %f" % (theta1, theta2, theta3)
+    right.set_joint_positions(theta1) #First pitch joint
+    right.set_joint_positions(theta2) #Second pitch
+    right.set_joint_positions(theta3) #Third Pitch joint
+
+
+def forwardKinematics(theta1, theta2, theta3):
+    xcurrent = .3708 * math.sin(theta1) + .374 * math.sin(theta1+theta2) + .229 * math.sin(theta1+theta2+theta3)
+    zcurrent = .3708 * math.cos(theta1) + .374 * math.cos(theta1+theta2) + .229 * math.cos(theta1+theta2+theta3)            
+    return xcurrent, zcurrent
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8419" data-toggle = "popover">
+				<p>user name : Iche</p>
+				<p> user reputation : 114</p>
+				<p class = "tagcontent" id = "usertaginfo-8419">{'planning': 1, 'None': 6, 'computer-vision': 1, 'mobile-robot': 1, 'inverse-kinematics': 4, 'localization': 2, 'python': 0, 'forward-kinematics': 0, 'cameras': 1, 'kinect': 2, 'joint': 0, 'slam': 1, 'kinematics': 0, 'matlab': 0, 'robotic-arm': 3, 'jacobian': 0, 'dh-parameters': 0, 'motion-planning': 1, 'gazebo': 2, 'rrt': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8419">Load Comments</button></br>
+			<div id = "commentsection-8419" class = 'collapse'>
+			<div id = "comment-13588" class = "comment">
+				<p>Does matrix multiplication work in python the same way as in Matlab? change = invJacob*increMatrix #multiplying both matrixes</p>
+			</div>
+			<div id = "comment-13590" class = "comment">
+				<p>is operator priority working in Matlab and in python the same way? xcurrent = .3708 * math.sin(theta1) + .374 * math.sin(theta1+theta2)</p>
+			</div>
+			<div id = "comment-13591" class = "comment">
+				<p>By "gives no results" are you saying the 'print' statement is never evaluated? If not, then what is the output for xchange and zchange?</p>
+			</div>
+			<div id = "comment-13609" class = "comment">
+				<p>The Python code prints the xchange and zchange correctly but doesn't exit the while loop. It goes on forever. And thank you 50k4 I will verify them both</p>
+			</div>
+			<div id = "comment-13617" class = "comment">
+				<p>You could also try adding mre parantheses to your while cndition. I do not knowmoperator precedence in pyton...</p>
+			</div>
+			</div>
+				<textarea id = "speech-8419" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8419">
+					<img id="start_img-8419" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8419">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8431"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8431" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I found out what was wrong. The pdf I linked (as well as many others) state that you need to multiply your inverse jacobian matrix by a <strong>step</strong> x/y/z distance, but that results in an infinite loop. Multiplying the inverse jacobian matrix by the <strong>overall</strong> change in distance from x/zcurrent to the goals made the python code work smoothly. I'll keep this question up in case anybody wants to see the code.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8431" data-toggle = "popover">
+				<p>user name : Iche</p>
+				<p> user reputation : 114</p>
+				<p class = "tagcontent" id = "usertaginfo-8431">{'planning': 1, 'None': 6, 'computer-vision': 1, 'mobile-robot': 1, 'inverse-kinematics': 4, 'localization': 2, 'python': 0, 'forward-kinematics': 0, 'cameras': 1, 'kinect': 2, 'joint': 0, 'slam': 1, 'kinematics': 0, 'matlab': 0, 'robotic-arm': 3, 'jacobian': 0, 'dh-parameters': 0, 'motion-planning': 1, 'gazebo': 2, 'rrt': 1}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8431">Load Comments</button></br>
+			<div id = "commentsection-8431" class = 'collapse'>
+			<div id = "comment-13634" class = "comment">
+				<p>Could you explain the difference between step and overall change a bit more clearly?</p>
+			</div>
+			<div id = "comment-13653" class = "comment">
+				<p>Sure. When I finished calculating the inverse Jacobian, I needed to multiply it by a certain distance (x,y,z) toward the goal in order to arrive at theta values. What the link I provided implies is that it is required to multiply the inverse Jacobian by a very small change, (dx, dy, dz). When I did that (denoted by:  xIncrement = (xGoal-xCurrent)/100, same for zIncrement), it just lead to an infinite loop. I was able to arrive at a direct solution by just saying xIncrement = xGoal, no need for a small step value.</p>
+			</div>
+			<div id = "comment-21915" class = "comment">
+				<p>On stack exchange, it is better to edit your answer to add information requested in comments, rather than adding more comments. Comments are for helping to improve questions and answers, and are distracting, so we try to keep them to a minimum. If all of the information needed to answer the question is contained within it, the comments can be tidied up (deleted).</p>
+			</div>
+			</div>
+				<textarea id = "speech-8431" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8431">
+					<img id="start_img-8431" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8431">Comment</button>
+			<br><div id = "ans-12456"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-12456" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The problem is not with the code, but with the point you want to send the arm in the simulation. Whats going is the goal's points constitute a cartesian distance larger than the manipulator can catch. It occurs cause in python may have some numerical errors when the simulation is running.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12456" data-toggle = "popover">
+				<p>user name : Felipe Stark</p>
+				<p> user reputation : 1</p>
+				<p class = "tagcontent" id = "usertaginfo-12456">{'None': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-12456">Load Comments</button></br>
+			<div id = "commentsection-12456" class = 'collapse'>
+			<div id = "comment-21916" class = "comment">
+				<p>Welcome to *Robotics* Felipe Stark. Thanks for your answer but we are looking for comprehensive answers that provide some explanation and context. Very short answers cannot do this, so please edit your answer to explain why it is right. Answers that don't include explanations may be removed.</p>
+			</div>
+			</div>
+				<textarea id = "speech-12456" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12456">
+					<img id="start_img-12456" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12456">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

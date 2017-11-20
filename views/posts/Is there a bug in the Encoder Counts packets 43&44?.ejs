@@ -1,0 +1,164 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Is there a bug in the Encoder Counts packets 43&44?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7251" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7251" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 262</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Is there a bug in the Encoder Counts packets 43&44?</h2>
+<p>I think I have just found another bug - there was one that was mentioned in another post about the <a href="https://robotics.stackexchange.com/questions/7062/create2-angle-packet-id-20">angle</a> and <a href="https://robotics.stackexchange.com/questions/6869/roomba-create-2-problem-reading-distance-traveled">distance</a>. This one is about reading the encoder's counts. I was using them as a workaround for the other bugs but what I found in one instance is that the counts I was reading from the right encoder were incorrect. I was reading in a loop sleeping for 100msec while turning the create2. Here is part of the counts where it definitely shows a problem:</p>
+
+<pre><code>32767
+-32763
+32766
+-32768
+</code></pre>
+
+<p>This kept on going until I stopped. It seems that it has a problem when it reaches the max.</p>
+
+<p>Has anyone else ran into this or can explain or provide another workaround? </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7251" data-toggle = "popover">
+				<p>user name : Jack</p>
+				<p> user reputation : 24</p>
+				<p class = "tagcontent" id = "usertaginfo-7251">{'c': -1, 'python': 1, 'None': 0, 'c++': -1, 'irobot-create': 4, 'software': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7251">Load Comments</button></br>
+			<div id = "commentsection-7251" class = 'collapse'>
+			<div id = "comment-10304" class = "comment">
+				<p>Can you clarify the problem?  Are you turning the create by hand or commanding it to turn?  What do those numbers mean, is the encoder jumping between these numbers every 100ms, or rolling over like normal?  Can you post some simplified code that demonstrates the bug?</p>
+			</div>
+			<div id = "comment-10307" class = "comment">
+				<p>You mentioned another post, about angle and distance... could you provide a link to it? Is it [iRobot Create 2: Encoder Counts](http://robotics.stackexchange.com/questions/7229/irobot-create-2-encoder-counts) or an earlier post?</p>
+			</div>
+			<div id = "comment-10339" class = "comment">
+				<p>links added to question</p>
+			</div>
+			</div>
+				<textarea id = "speech-7251" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7251">
+					<img id="start_img-7251" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7251">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7253"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7253" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Jack,</p>
+
+<p>I have been working on determining the angle from the encoders. I recall running up against a similar problem to the one that you are facing.</p>
+
+<p>First off, unless you are spinning the wheels <em>really</em> fast, the encoders should not give readings like that (508.8 counts per revolution means that you would be spinning the wheels ~130 revolutions in 100 ms--practically light speed for the Create 2). For this reason, I suspect that there is something odd going on inside the Create 2. <strong>I would suggest resetting the Create 2 using Op code [7]</strong>, then trying again; this fixed my problem.</p>
+
+<p>When you try again, you should do the following:</p>
+
+<ol>
+<li>Connect to a computer and setup using RealTerm, or some other simlar program.</li>
+<li>Reset the Create 2 with [7].</li>
+<li>Send the following string of commands: [128 131 149 2 43 44]. This will print the encoder counts of each wheel each time you send the commands.</li>
+</ol>
+
+<p>If this does not work, try taking out the battery and putting it back in, then repeating steps 1 and 3 above.</p>
+
+<p>In addition, there are some things that you should keep in mind. From an earlier post (<a href="https://robotics.stackexchange.com/questions/7229/irobot-create-2-encoder-counts/7246?iemail=1&amp;noredirect=1#7246">iRobot Create 2: Encoder Counts</a>) and the updated OI specs, the encoders are square wave and do not keep track of the direction of spin directly, so you should see only positive increases in the encoder count, regardless of spin direction.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7253" data-toggle = "popover">
+				<p>user name : NBCKLY</p>
+				<p> user reputation : 741</p>
+				<p class = "tagcontent" id = "usertaginfo-7253">{'None': 44, 'roomba': 4, 'irobot-create': 4, 'arduino': 2}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7253">Load Comments</button></br>
+			<div id = "commentsection-7253" class = 'collapse'>
+			<div id = "comment-10303" class = "comment">
+				<p>To clarify, the encoder can and does count down, but only when the wheel is commanded to drive in reverse.</p>
+			</div>
+			<div id = "comment-10305" class = "comment">
+				<p>NBCKLY, thanks for the reply. First, I am not spinning the wheels that fast at all - in fact very low - 50mm which is an order of magnitude lower than the max specified in the spec. Second, you mention that these counts are positives? the updated spec say otherwise - they 16 bit signed numbers so which is it? what happens to the counts after issuing the command reset (7)? are they rest to 0? there are very serious issues with the Create2 which makes it very hard to work with. any firmware updates coming? thanks</p>
+			</div>
+			<div id = "comment-10309" class = "comment">
+				<p>Jack, as Ben clarified, the encoder counts will always be positive if you push the Create 2 rather than drive it with the motors; driving the wheels with the motors allows the Create 2 to keep track of direction and will give appropriate encoder counts. When you use Op code [7], you are resetting the Create 2 completely, not just resetting the encoder counts. Resetting will cause the encoder counts to start back from 0.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7253" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7253">
+					<img id="start_img-7253" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7253">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

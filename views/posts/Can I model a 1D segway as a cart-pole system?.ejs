@@ -1,0 +1,197 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Can I model a 1D segway as a cart-pole system?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11766" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11766" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 70</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Can I model a 1D segway as a cart-pole system?</h2>
+<p>The equations of motion for a cart-pole (inverted pendulum) system are given as  </p>
+
+<p>$$(I+ml^2)\ddot{\theta}+mglsin(\theta)+ml\ddot{x}cos(\theta)=0$$  </p>
+
+<p>$$(M+m)\ddot{x}+ml\ddot{\theta}cos(\theta)-ml\dot{\theta}^2sin(\theta)=F$$  </p>
+
+<p>However, I want to model a two wheeled segway-like robot with motion constrained to only forward and backward actions (effectively restricting motion in 1D).  I initially thought that I could model such a constrained segway robot by modeling a cart-pole system with a massless cart (M=0).  Is this the right approach to model the dynamics of a 1D segway robot?  Or is there a better model for the dynamics of such a robot in 1D?  </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11766" data-toggle = "popover">
+				<p>user name : Paul</p>
+				<p> user reputation : 704</p>
+				<p class = "tagcontent" id = "usertaginfo-11766">{'control': 6, 'occupancygrid': 1, 'pid': 3, 'slam': 14, 'design': 0, 'motor': 5, 'dynamics': 11, 'probability': 1, 'accelerometer': 4, 'mechanism': 3, 'differential-drive': 1, 'kalman-filter': 6, 'actuator': 1, 'reference-request': 8, 'None': 30, 'inverse-kinematics': 3, 'mapping': 1, 'sensors': 10, 'quadcopter': 4, 'motion': 3, 'particle-filter': 4, 'sonar': 4, 'balance': 12, 'automatic': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11766" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11766" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11766">
+					<img id="start_img-11766" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11766">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-11789"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11789" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Let's start by defining some of the quantities in the equations you gave:</p>
+
+<ul>
+<li>$I$ Inertia of the pendulum about its center of gravity</li>
+<li>$M$ Mass of the cart</li>
+<li>$m$ Mass of the pendulum</li>
+<li>$l$ Distance between pendulum CG and its pivot</li>
+<li>$x$ Displacement of the cart</li>
+<li>$\theta$ Angle between a vertical axis and the pendulum</li>
+<li>$F$ Driving force acting on the cart</li>
+<li>$g$ Acceleration due to gravity</li>
+</ul>
+
+<p>Note that I chose a different sign convention for gravity than in the original question.  In my answer, $g$ has a positive value, while in the original question $g$ must be negative.</p>
+
+<p>Now let's compare this system and to a "segway-like" balancing robot.  The balancing robot's wheels are analogous to the cart, but in addition to translating, they also rotate.  This rotation means that for a given mass $M$, the balancing robot will require more energy to accelerate, since it needs to translate and also rotate.  So instead of zero cart mass, we expect an <strong>additional</strong> term that corresponds to this additional required effort.</p>
+
+<p>Another difference is that instead of a linear force acting on the cart, we have a moment applied to the wheels, <strong>and an equal and opposite moment applied to the pendulum</strong>.</p>
+
+<p>To derive the equations for the balancing robot, we need an additional two quantities, and we'll use $T\!\left( t \right)$ for the driving torque in place of $F$:</p>
+
+<ul>
+<li>$r$ Radius of the wheels</li>
+<li>$I_D$ Inertia of the rotating components in the drivetrain</li>
+</ul>
+
+<p>And we end up with
+$$
+\left(I + m l^2\right) \ddot{\theta} - m g l \sin \left( \theta \right) + m l \ddot{x} \cos \left( \theta \right) = - T\!\left( t \right)
+$$
+$$
+\left( \frac{I_D}{r^2} + M + m \right) \ddot{x} + m l \ddot{\theta} \cos \left( \theta \right) - m l \dot{\theta}^2 \sin \left( \theta \right) = \frac{T\!\left( t \right)}{r}
+$$</p>
+
+<h2>EDIT:</h2>
+
+<p>Since the real system isn't as simple as two bodies connected with a revolute joint, here is some guidance on where to "count" the mass and inertia of system components.</p>
+
+<p>If we can assume we've already decided to model the system as two bodies (i.e. wheels/drivetrain and pendulum), then for each component, you need to ask "with which body does this component move?"  Let's say there are two wheels which are secured to the pendulum by bearings.  Let's also say that the wheels are driven by motors acting through gearboxes and there are couplings connecting the motors and wheels to the gearboxes (we'll call the couplings between the wheels and gearboxes "low-speed" and the couplings between the motors and gearboxes "high-speed").</p>
+
+<p>It's fairly obvious that the wheels and low-speed couplings move as a unit.  And it doesn't take much more thought to see that the inner race of the bearings, the internals of the gearbox and the motor rotors all move with the wheels as well.  In your question, you constrain the robot to linear travel, so we will assume that the two wheels move as a unit, too.  When there is a gearbox involved, the inertia of the motor and high-speed coupling (and sometimes the gearbox, depending on the convention used on the datasheet -- read carefully!) needs to be reflected to the opposite side of the gearbox.  The relationship is given by</p>
+
+<p>$$
+I_{low-speed} = R^2 I_{high-speed}
+$$</p>
+
+<p>So the drivetrain inertia would look something like this:</p>
+
+<p>$$
+I_D = 2 \left( I_{wheel} + I_{low-speed coupling} + I_{gearbox} + R^2 \left( I_{high-speed coupling} + I_{motor} \right) \right)
+$$</p>
+
+<p>I would treat the mass similarly.  The gearbox housing, motor stator and outer race of the bearing move with the pendulum, so their masses should add to $m$, while the wheels, all four couplings, gearbox internals and motor rotors should add to $M$.  In practice, I've never seen the mass of the gearbox internals on a datasheet, and I doubt that it's significant anyway.  But it is likely that the mass and inertia of the motors and at least the high-speed couplings are important, if not also the low-speed couplings.  For bearings, I usually assign half of the mass and inertia to each body and assume that it's close enough.</p>
+
+<p>It's also worth mentioning that we have kind of a funny case where both the gearbox housing and the output shaft can be moved while keeping the other stationary.  The motor will rotate in response to both of these motions.  I haven't put much thought into the "correct" way to account for this effect (possibly adding a small additional term to the pendulum inertia?), but with my engineering hat on, I would feel comfortable neglecting this effect and assuming the controller will compensate anyway.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11789" data-toggle = "popover">
+				<p>user name : Kerry</p>
+				<p> user reputation : 86</p>
+				<p class = "tagcontent" id = "usertaginfo-11789">{'None': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11789">Load Comments</button></br>
+			<div id = "commentsection-11789" class = 'collapse'>
+			<div id = "comment-21000" class = "comment">
+				<p>I'm implicitly assuming g to be negative, so I think the original equations that I posted are valid.</p>
+			</div>
+			<div id = "comment-21001" class = "comment">
+				<p>@Paul Fair enough - we chose different sign conventions.  I'll update my answer.</p>
+			</div>
+			<div id = "comment-21002" class = "comment">
+				<p>Also, I think "I" is the moment of inertial around its center of mass, not the pivot point in contact with the cart.</p>
+			</div>
+			<div id = "comment-21003" class = "comment">
+				<p>Also correct - one more edit coming...</p>
+			</div>
+			<div id = "comment-21004" class = "comment">
+				<p>So, even though there is no cart, could we still model the mass 'M' as the total mass of the wheels (and perhaps motors)?  Also, how does one account for the entire drivetrain to estimate $I_D$?  What exactly goes into computing $I_D$?  I think the moment of inertia of the wheels is one part of it, but what else goes into it?</p>
+			</div>
+			<div id = "comment-21018" class = "comment">
+				<p>@Paul - good question - I'll expand on that with another edit</p>
+			</div>
+			</div>
+				<textarea id = "speech-11789" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11789">
+					<img id="start_img-11789" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11789">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

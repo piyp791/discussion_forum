@@ -1,0 +1,165 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Instantaneous velocity calculation from accelerometer?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9988" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9988" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 559</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Instantaneous velocity calculation from accelerometer?</h2>
+<p>I am trying derive velocity from accelerometer (MPU9250 in sensor-tag board). I saw lot of blogs which talk about noise and exact estimation problems. I started seeing velocity derivation (integration of accelerometer data over time) yielding me towards ramp because of noise presence in MPU9250.</p>
+
+<p>Is the velocity can be estimated only by accelerometer or we need assistance of another sensor such as GPS or gyroscope, etc..</p>
+
+<p>Please let me know as I see my velocity calculations never converge at all.
+Also I have limitation in compute power, so Kalman filter kind of estimation techniques is difficult to implement. Can you please suggest whether I am in right direction or not.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9988" data-toggle = "popover">
+				<p>user name : Vinay</p>
+				<p> user reputation : 20</p>
+				<p class = "tagcontent" id = "usertaginfo-9988">{'sensor-fusion': 3, 'None': 0, 'sensors': 0, 'accelerometer': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9988">Load Comments</button></br>
+			<div id = "commentsection-9988" class = 'collapse'>
+			<div id = "comment-17821" class = "comment">
+				<p>This is *almost*, but not quite (in my opinion) a duplicate of [this question](http://robotics.stackexchange.com/q/8680/9720), which asks more about rotations (quaternions).</p>
+			</div>
+			<div id = "comment-17851" class = "comment">
+				<p>What is your platform?</p>
+			</div>
+			<div id = "comment-17860" class = "comment">
+				<p>Its SensorTag board from TI(CC2650 sensortag).</p>
+			</div>
+			</div>
+				<textarea id = "speech-9988" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9988">
+					<img id="start_img-9988" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9988">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9990"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9990" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">7</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The only way to get a velocity from an accelerometer is to <a href="https://en.wikipedia.org/wiki/Numerical_integration" rel="nofollow">numerically integrate</a> the output of the accelerometer. That is,</p>
+
+<p>$$
+v = v_0 + a*dT \\
+$$</p>
+
+<p>where $dT$ is the elapsed time between accelerometer readings. This means that <strong>you</strong> need to find the initial velocity $v_0$, and that an accelerometer <strong>cannot</strong> give an absolute velocity reading, only <em>relative</em>.</p>
+
+<p>Further, all accelerometers have some sensor bias. If we call this term $a_{\mbox{bias}}$, then the accelerometer-based velocity "measurement" is actually:</p>
+
+<p>$$
+v = v_0 + (a + a_{\mbox{bias}})dT \\
+$$</p>
+
+<p>or</p>
+
+<p>$$
+v = v_0 + (a_{\mbox{bias}}*dT) + a*dT \\
+$$</p>
+
+<p>The bias term becomes a false speed reading. Further, the bias is prone to change over time, both with sensor age, orientation, temperature, etc. This means that it's not generally possible to (permanently) cancel that bias by simply measuring the accelerometer while it's known to be stationary, though this can be a technique you use to minimize the effect of the bias. </p>
+
+<p>So, when you say the sensor is "noisy", that is technically true - there will always be some noise, but it is the fact that the noise is <strong>not</strong> zero-mean that introduces the trouble you're having. If the only issue were noise, then you could use filtering to remove it, but the fact that the bias exists means that <em>no amount of filtering or averaging will <strong>ever</strong> give you the correct velocity</em>. </p>
+
+<p>The only way to get an absolute velocity is to incorporate an absolute velocity sensor. This could be done with GPS, a wheel speed sensor (assuming no tire slip), radar, etc. Generally you can combine (<a href="https://en.wikipedia.org/wiki/Sensor_fusion" rel="nofollow">fuse</a>) a sensor that is noisy in the short-term and accurate in the long-term (like GPS) with a sensor that is accurate short-term but drifts in the long-term, like an accelerometer, and get quality readings in both the short- and long-term. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9990" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-9990">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9990">Load Comments</button></br>
+			<div id = "commentsection-9990" class = 'collapse'>
+			<div id = "comment-17861" class = "comment">
+				<p>Thanks Chuck for your detailed analysis. This is useful.
+Can you also please let me know where these accelerometer alone can be used?</p>
+			</div>
+			<div id = "comment-17866" class = "comment">
+				<p>The accelerometer alone would generally be used when you only cared about short-term performance. The bias error (in velocity) is $v_{\mbox{err}} =\int a_{\mbox{bias}}dT$, which means, assuming a stable bias (it's not), the total drift is $v_{\mbox{err}} = a_{\mbox{bias}}(t_f - t_0)$. In the short term, the drift could be manageable, but the more time that elapses the less useful your measurements become.</p>
+			</div>
+			</div>
+				<textarea id = "speech-9990" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9990">
+					<img id="start_img-9990" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9990">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,206 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Click button short vs long button presses Arduino
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2828" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2828" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 350</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Click button short vs long button presses Arduino</h2>
+<p>I am using the <a href="https://code.google.com/p/clickbutton/wiki/Usage" rel="nofollow">clickbutton</a> library from Arduous and am having some problems implementing it. As it stand now the code just runs the servo clockwise and I'm not sure what I did wrong. Basically I want the servo if pressed for a short period of time to move according to an exponential function, and if pressed according to a long period of time to move at a regular pace.</p>
+
+<pre><code>#include &lt;Servo.h&gt;
+#include "ClickButton.h"
+
+Servo myservo; // create servo object to control a servo
+
+// CONSTANTS
+
+// PINS
+const int crServo = 12; // sets pin 12 as servo
+const int buttonPinCW = 2; // sets pin 2 as button; CW =&gt; clockwise =&gt; FOCUS FAR
+const int buttonPinCC = 3; // sets pin 3 as button; CC =&gt; counterclockwise =&gt; FOCUS NEAR
+const int ledPinB = 4; // sets pin 10 as LED
+const int ledPinG = 5; // sets pin 10 as LED
+const int ledPinR = 6; // sets pin 10 as LED
+
+const int t = 1;  // slow down
+
+// SERVO PROPERTIES
+const int crSpeedDefault = 100; // is the stay still position, motor should not turn
+const int crSpeedCW = 107; // turns the motor full speed clockwise
+const int crSpeedCC = 87; // turns the motor full speed counter-clockwise
+
+// SET BUTTON STATES
+ClickButton buttonCW(buttonPinCW, LOW);
+ClickButton buttonCC(buttonPinCC, LOW);
+
+void setup()
+{
+  myservo.attach(crServo); // attaches the servo on pin 12 to the servo object
+  //pinMode (buttonPinCW, INPUT); // sets button as input
+  //pinMode (buttonPinCC, INPUT); // sets button as input
+  pinMode (ledPinB, OUTPUT); // sets led as output
+  pinMode (ledPinG, OUTPUT); // sets led as output
+  pinMode (ledPinR, OUTPUT); // sets led as output
+  myservo.write(crSpeedDefault); // default servo to crSpeedDefault
+  startup();
+}
+
+int startup() {
+  //blinker(2, ledPinB);
+  //blinker(1, ledPinG);
+  //blinker(1, ledPinR);
+}
+
+void blinker(int count, int pin) {
+  for (int x = 0; x &lt; count; x++)
+  {
+    digitalWrite(pin, HIGH);
+    delay(1000);
+    digitalWrite(pin, LOW);
+    delay(1000);
+  }
+}
+
+void loop()
+{
+  buttonCW.Update();
+  buttonCC.Update();
+  int buttonCWClicks = 0;
+  int buttonCCClicks = 0;
+  if (buttonCW.clicks != 0) buttonCWClicks = buttonCW.clicks;
+  if (buttonCC.clicks != 0) buttonCCClicks = buttonCC.clicks;
+  //buttonStateCW = digitalRead(buttonPinCW);
+  //buttonStateCC = digitalRead(buttonPinCC);
+  // clockwise rotation
+  if (buttonCW.depressed == true) {
+    if (buttonCWClicks == 1) {
+      digitalWrite(ledPinR, HIGH);
+      float speed = crSpeedCW;
+      Serial.print("CLOCKWISE-ROTATION \n");
+      for (int i = 0; i &lt; t * 5; i++) {
+        speed += ((float)crSpeedDefault - speed)/ 10;
+        Serial.print(speed);
+        Serial.print("\n");
+        myservo.write((int)speed);
+        delay(100);
+      }
+      myservo.write(crSpeedCW);
+    } 
+    else if (buttonCWClicks == -1) {
+      digitalWrite(ledPinR, HIGH);
+      myservo.write(crSpeedCW);
+    }
+  } 
+  else if (buttonCC.depressed == true) {
+    if (buttonCCClicks == 1) {
+      digitalWrite(ledPinG, HIGH);
+      float speed = crSpeedCC;
+      Serial.print("COUNTER-CLOCKWISE-ROTATION \n");
+      for (int i = 0; i &lt; t * 5; i++) {
+        speed += ((float)crSpeedDefault - speed) / 10;
+        Serial.print(speed);
+        Serial.print("\n");
+        myservo.write((int)speed);
+        delay(100);
+      }
+      myservo.write(crSpeedCC);
+    } 
+    else if (buttonCCClicks == -1) {
+      digitalWrite(ledPinR, HIGH);
+      myservo.write(crSpeedCW);
+    }
+  } 
+  else {
+    myservo.write(crSpeedDefault);
+    digitalWrite(ledPinR, LOW); 
+    digitalWrite(ledPinG, LOW);     // turn the LED off by making the voltage LOW
+  }
+}
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2828" data-toggle = "popover">
+				<p>user name : Alex</p>
+				<p> user reputation : 128</p>
+				<p class = "tagcontent" id = "usertaginfo-2828">{'None': 1, 'power': 2, 'arduino': 3, 'platform': 0, 'tracks': 0, 'design': 0, 'mobile-robot': 0, 'sensors': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2828" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2828" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2828">
+					<img id="start_img-2828" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2828">Comment</button>
+
+<h1>Answers</h1>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

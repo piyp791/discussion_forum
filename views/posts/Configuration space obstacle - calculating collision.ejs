@@ -1,0 +1,174 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Configuration space obstacle - calculating collision
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9863" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9863" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 103</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Configuration space obstacle - calculating collision</h2>
+<p>I need to calculate the configuration space obstacle to planning a path with a mobile robot. The idea is to divide the obstacles and the robot in triangles and test whether is there any triangle from the robot colliding with any triangle from the obstacles.</p>
+
+<p>The approach to solve this is to test this between two triangles each time so I need to look if any of the 6 edges (3 for each triangle) divide the triangles so 3 vertex from one of them lie in one side and the other 3 vertex lie on the other side of the line.</p>
+
+<p>I wrote some code to calculate the line equation (y = m*x + b) and I think it is correct, but I am having problems when the line is vertical (this means that m = -Inf) because MATLAB gives me a NaN when I calculate the equation for it. I am not sure how to handle this.</p>
+
+<p>Here you can see a snippet from the code where I test the 3 edges from the 
+robot triangle:</p>
+
+<pre><code>for i = 1:1:3
+
+    vertex_x = P1(edge(i,:),1);
+    vertex_y = P1(edge(i,:),2);
+    m = (vertex_y(2) - vertex_y(1))/(vertex_x(2) - vertex_x(1));
+    b = -m*vertex_x(1) + vertex_y(1);
+
+    for j = 1:1:6   % For each vertex...
+        pto = listaVertices(j,:);
+        if (m*pto(1) + b &gt; pto(2))
+            % Vertex lies below the edge...
+            cont1 = cont1 + 1;
+        elseif (m*pto(1) + b &lt; pto(2))
+            % Vertex lies above the edge...
+            cont2 = cont2 + 1;
+        else
+            % Vertex lie inside the edge...
+            % Do nothing
+        end
+    end 
+
+    % 3 vertex on one side and 1 on the others side means they do not
+    % collide. Two of the vertex always lie inside the line (the two vertex 
+    % of each edge).
+
+    if (cont1 == 1 &amp;&amp; cont2 == 3) || (cont1 == 3 &amp;&amp; cont2 == 1)
+        flag_aux = false;   % Do not collide...
+    end
+    % Reset the counters for the 3 next edges...
+    cont1 = 0;
+    cont2 = 0;
+
+end
+</code></pre>
+
+<p>Anyone could help with this issue?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9863" data-toggle = "popover">
+				<p>user name : osuarez</p>
+				<p> user reputation : 128</p>
+				<p class = "tagcontent" id = "usertaginfo-9863">{'control': 5, 'stereo-vision': 2, 'beginner': 3, 'pid': 3, 'uav': 5, 'slam': 3, 'robotic-arm': 0, 'mobile-robot': 7, 'forward-kinematics': 0, 'cameras': 2, 'kinect': 0, 'visual-servoing': 2, 'matlab': 1, 'motion-planning': 4, 'movement': 1, 'odometry': 1, 'None': 2, 'inverse-kinematics': 0, 'raspberry-pi': 7, '3d-reconstruction': 2, 'quadcopter': 9, 'computer-vision': 6, 'geometry': 3, 'c++': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9863">Load Comments</button></br>
+			<div id = "commentsection-9863" class = 'collapse'>
+			<div id = "comment-17560" class = "comment">
+				<p>related: **Computational Geometry**; Algorithms and Applications; by de Berg, van Kreveld, Overmars, Schwarzkopf, especially chapter 13 on construction of configuration space and chapter 2 on boolean operations on polygons.</p>
+			</div>
+			</div>
+				<textarea id = "speech-9863" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9863">
+					<img id="start_img-9863" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9863">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9868"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9868" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>For your particular question about m = Inf, you should first check if 
+vertex_x(2) = vertex_x(1).  Actually, I would implement the check to see if the absolute value of vertex_x(2) - vertex_x(1) &lt; <em>some_very_small_number</em>.  If that condition is true, then the equation for that line segment is y = vertex_x(1) and you just need to see if the other line segment contains that value for x.  If the condition is false then use the check you already have.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9868" data-toggle = "popover">
+				<p>user name : SteveO</p>
+				<p> user reputation : 2960</p>
+				<p class = "tagcontent" id = "usertaginfo-9868">{'None': 222}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9868">Load Comments</button></br>
+			<div id = "commentsection-9868" class = 'collapse'>
+			<div id = "comment-17563" class = "comment">
+				<p>Thanks! This seems to work fine, but now I think I have some problems with the accuracy on the computation. Working with double data seems to be problemating when trying to make a logical '==' operation. In the case when I try to see whether the point lies inside the line (las if-else case) MATLAB doesn't find this expression true although the values (m*pto(1) + b == pto(2))are actually the same, but due to the accuracy the code enter on the '<' case instead of this last one. Do you know how to handle this??</p>
+			</div>
+			<div id = "comment-17564" class = "comment">
+				<p>Yes, you can use that same absolute value trick that I posted in the answer.  Or, since you know you're dealing with straight line segments, you can check if one point is less than x and the next point is greater than x.</p>
+			</div>
+			</div>
+				<textarea id = "speech-9868" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9868">
+					<img id="start_img-9868" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9868">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

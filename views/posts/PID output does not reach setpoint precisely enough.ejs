@@ -1,0 +1,309 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>PID output does not reach setpoint precisely enough
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2800" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2800" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 2088</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>PID output does not reach setpoint precisely enough</h2>
+<p>I'm developing/tuning a software PID for a quadcopter. For now I'm only trying to stabilise the pitch angle using the front and back motors, and I'm only looking at Kp. The motors have a control resolution: input variations need to reach a threeshold to have any effect at all.</p>
+
+<p>The process output does reach the setpoint, but not precisely enough for my requirements. There is no steady-state error (aka droop), the hunting range is centered on the setpoint, just too wide for my requirements. Also the instability is not an oscillation, but more of a random drift which needs to be large enough before the PID attempts to correct it.</p>
+
+<ul>
+<li>With a lower Kp the output needs to diverge from the setpoint significantly before the error is big enough for the PID to attempt to correct it.</li>
+<li>With a higher Kp the PID oscillates.</li>
+</ul>
+
+<p>I could not find a reasonable compromise.</p>
+
+<p>I'm thinking about applying the cuberoot function (or similar) to the error before feeding it to the PID: that way small errors should be significant enough for the PID to attempt to correct them, and large errors would be reduced and might not trigger oscillations. I suppose someone must have been through this before: is this a good solution? Are there any better alternatives?</p>
+
+<p>This is not a steady-state error (aka droop) or oscillation issue as far as I can tell: please don't suggest using Ki or Kd</p>
+
+<p><strong>EDIT</strong>: I have clarified the problem description and suggested using cuberoot rather than logarithm which was a bad idea indeed.</p>
+
+<p>Thanks,
+Marc.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2800" data-toggle = "popover">
+				<p>user name : marcv81</p>
+				<p> user reputation : 408</p>
+				<p class = "tagcontent" id = "usertaginfo-2800">{'None': 22, 'pid': 4}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2800">Load Comments</button></br>
+			<div id = "commentsection-2800" class = 'collapse'>
+			<div id = "comment-5185" class = "comment">
+				<p>It's expected that in PID you will not always reach the setpoint using P only.  That's where the integrator comes in.  It's unclear what you mean when you say "control kicks in" but obviously as you get closer to your setpoint your error signal goes down and the impact of P diminishes.  If you set P too large the system becomes unstable.  That's how PID loops behave. p.s. do not use the logarithm of the error.  Use an integrator.</p>
+			</div>
+			<div id = "comment-5189" class = "comment">
+				<p>Thanks @GuySirton, but I do not believe Ki is the problem: my bad I should have explained better in the question. As far as I understand PIDs, Ki is useful when the process output settles nicely to a value which is slightly above or below the setpoint. Here the process output stays in a range perfectly centered on the setpoint, but the fluctuations above and below it are too large for my requirements.</p>
+			</div>
+			<div id = "comment-5193" class = "comment">
+				<p>FYI, using the log of the error is a bad idea for a couple of reasons. First, the log is only defined for positive numbers; what would you do for a negative error? Secondly, for very small positive numbers the log is very negative. In your ideal case, error=0, the log goes to negative infinity. As Damjen states in his answer, to reduce oscillations increase Kd. Generally speaking, Kp reduces error, Kd improves stability and reduces oscillations, and Ki reduces steady state error while reducing stability.</p>
+			</div>
+			<div id = "comment-5196" class = "comment">
+				<p>Thanks very much for your comment @ryan0270. I'd upvote your comment but I think I'm too low on rep here. Clearly I should get back to school as log it a totally inappropriate function to solve my problem. I meant a function more like cuberoot, which is defined for both positive and negative errors and would reduce the higher errors while keeping the smaller ones.</p>
+			</div>
+			<div id = "comment-5199" class = "comment">
+				<p>@marcv81 don't use a cube root either.  It has to be linear. If the issue is that a small P (i.e. stable) results in a signal too small to have an effect the answer is still to add an integrator.  If you have a physical system you also have steady state error (even if you think you don't) so you'll need an integrator for that reason as well. Also saying that integrator is only for steady-state error is simplistic/wrong.</p>
+			</div>
+			</div>
+				<textarea id = "speech-2800" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2800">
+					<img id="start_img-2800" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2800">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-2805"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2805" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I am unsure of why you said "please don't suggest using Ki or Kd" and will suggest them anyway.
+From the comments from the original post I understood that it is not the problem that you settle near the setpoint but that you oscillate around it.</p>
+
+<p>If that is the case then you need to add Kd to dampen the oscillations.</p>
+
+<p>If your problem is in fact that you settle near the setpoint then you need to add Ki to compensate that error.</p>
+
+<p>This is the reason why there are all three terms in the PID regulator and not just one. Such behavior from using proportional term only is expected. Introducing nonlinearity such that you suggested is not something you should generally do.</p>
+
+<p>Regards</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2805" data-toggle = "popover">
+				<p>user name : Damjan Dakic</p>
+				<p> user reputation : 650</p>
+				<p class = "tagcontent" id = "usertaginfo-2805">{'control': 6, 'None': 32, 'sensor-fusion': 5, 'localization': 5, 'rcservo': 3, 'pid': 6, 'automation': 0, 'servomotor': 3, 'differential-drive': 6, 'design': 3, 'kalman-filter': 5, 'sensors': 5, 'pwm': 3, 'navigation': 6}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2805">Load Comments</button></br>
+			<div id = "commentsection-2805" class = 'collapse'>
+			<div id = "comment-5195" class = "comment">
+				<p>Thanks @DamjanDakic. The PID does not settle near the setpoint nor does it oscillate around it. It hunts randomly in a range around the setpoint which is too large for my requirements. Would you please know if I can use Kd to reduce the hunting range, even if I technically do not have an oscillation problem?</p>
+			</div>
+			<div id = "comment-5200" class = "comment">
+				<p>Yes, adding Kd should dampen your movements even if they're not sinewave oscillations. If the center of that movement is your setpoint then everything will be good like that, if it settles at some other point then adding Ki will shift that point towards the setpoint.</p>
+			</div>
+			</div>
+				<textarea id = "speech-2805" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2805">
+					<img id="start_img-2805" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2805">Comment</button>
+			<br><div id = "ans-2806"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2806" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I'm going to suggest it anyways. Add an integrator.</p>
+
+<p>What you've described is a textbook description of how a proportional only controller would work. If your output is stable, you will never reach your setpoint. From <a href="http://en.wikipedia.org/wiki/PID_controller#Droop" rel="nofollow">Wikipedia</a>:</p>
+
+<blockquote>
+  <p>Because a non-zero error is required to drive it, a proportional
+  controller generally operates with a steady-state error, referred to
+  as droop. Droop is proportional to the process gain and inversely
+  proportional to proportional gain. Droop may be mitigated by adding a
+  compensating bias term to the setpoint or output, or corrected
+  dynamically by adding an integral term.</p>
+</blockquote>
+
+<p>Biasing is typically a static value added to the output based on some known quantity. If the droop is a know stable constant, you can do this. But my personal feeling is that it is usually a hack that requires constant adjustment.</p>
+
+<p>You're attempting to achieve dynamic biasing by using the logarithm of the error. Don't mess with the input to the controller. It will only cause you headaches down the line. You will achieve much better results if you use an integrator.</p>
+
+<p>The alternative is to use a <a href="http://ctms.engin.umich.edu/CTMS/index.php?aux=Extras_Leadlag" rel="nofollow">lead-lag filter</a>:</p>
+
+<blockquote>
+  <p>A lead compensator can increase the stability or speed of reponse[<em>sic</em>] of a
+  system; a lag compensator can reduce (but not eliminate) the
+  steady-state error.</p>
+</blockquote>
+
+<p>But you will achieve the same thing with a lot less math if you <a href="http://en.wikipedia.org/wiki/PID_controller#Manual_tuning" rel="nofollow">manually tune</a> using an integrator.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2806" data-toggle = "popover">
+				<p>user name : embedded.kyle</p>
+				<p> user reputation : 1469</p>
+				<p class = "tagcontent" id = "usertaginfo-2806">{'None': 124}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2806">Load Comments</button></br>
+			<div id = "commentsection-2806" class = 'collapse'>
+			<div id = "comment-5194" class = "comment">
+				<p>Thanks for your answer. Sorry for the poor explanation, but I clearly don't have any steady state error (aka droop). What I have is an unstable output (not oscillating though) in a range centered on the setpoint. I don't believe a I term would solve that.</p>
+			</div>
+			<div id = "comment-5197" class = "comment">
+				<p>@marcv81 From your updated description, it now does not sound like it's controlling at all. A controller should not "hunt". Could you perhaps include some code/psuedocode? If plots of the input and the output are available, those would also be helpful.</p>
+			</div>
+			</div>
+				<textarea id = "speech-2806" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2806">
+					<img id="start_img-2806" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2806">Comment</button>
+			<br><div id = "ans-2814"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2814" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>It sounds like the problem stems from your motors.  The motors are fine, but they have a threshold that prevents you from setting their speed to exactly the value you want.  This is a problem because you are attempting to map your PID directly to their output, which has a minimum value.  </p>
+
+<p>You need to alter your motor control code so that if the desired thrust is below the motor's threshold, you pulse the motor so that its average over time is the thrust you need.  There are several ways of accomplishing this, depending on how your control loop works.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2814" data-toggle = "popover">
+				<p>user name : Ian</p>
+				<p> user reputation : 9640</p>
+				<p class = "tagcontent" id = "usertaginfo-2814">{'planning': 10, 'None': 809, 'power': 1, 'algorithm': 10, 'battery': 1, 'slam': 7, 'coverage': 10, 'mobile-robot': 9, 'sensors': 9}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2814">Load Comments</button></br>
+			<div id = "commentsection-2814" class = 'collapse'>
+			<div id = "comment-5210" class = "comment">
+				<p>Given that I found a solution which does not require this, this is not the root of the problem. However this is a very interesting and relevant comment. I'll upvote when I have some rep :)</p>
+			</div>
+			</div>
+				<textarea id = "speech-2814" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2814">
+					<img id="start_img-2814" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2814">Comment</button>
+			<br><div id = "ans-2817"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2817" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Since posting the question I tried to tune the 3 PID parameters a lot but I never reached any acceptable result. I didn't try to modify the error curve as I suggested in the question, but I found an alternative solution which works reasonably well. There might be other good solutions.</p>
+
+<p>I was using a PID as follows:</p>
+
+<ul>
+<li>process setpoint: angle</li>
+<li>process output: difference between motors speed (used in motor mix equation)</li>
+</ul>
+
+<p>While in theory this might very well work, I could not find good values for Kp, Ki, and Kd to obtain satisfying results. I changed my program to use 2 cascaded PIDs as follows:</p>
+
+<p><strong>Outer PID:</strong></p>
+
+<ul>
+<li>process setpoint: angle</li>
+<li>process output: angular rate</li>
+</ul>
+
+<p><strong>Inner PID:</strong></p>
+
+<ul>
+<li>process setpoint: angular rate</li>
+<li>process output: difference between motors speed (used in motor mix equation)</li>
+</ul>
+
+<p>I first tuned the inner PID so as to get no oscillation but a slight resistance against angular change when the target angular rate is zero. I then tuned the outer PID so as to get no oscillation but a reasonably responsive attitude matching the stick inputs. Even with a very basic tuning the results are acceptable.</p>
+
+<p>Thanks again to all the participants, your input encouraged me to learn more about PIDs and avoided me some errors.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2817" data-toggle = "popover">
+				<p>user name : marcv81</p>
+				<p> user reputation : 408</p>
+				<p class = "tagcontent" id = "usertaginfo-2817">{'None': 22, 'pid': 4}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2817">Load Comments</button></br>
+			<div id = "commentsection-2817" class = 'collapse'>
+			<div id = "comment-18774" class = "comment">
+				<p>When you say "motor speed" are you referring to the signal value you're sending to the ESC for a given motor?</p>
+			</div>
+			<div id = "comment-18801" class = "comment">
+				<p>I meant the difference between the PWM signals I am sending to some ESCs. For instance on a + configuration the PID for the roll depends on the PWM difference between the left and right ESCs. This is hopefully close to the difference between the matching motors speed.</p>
+			</div>
+			</div>
+				<textarea id = "speech-2817" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2817">
+					<img id="start_img-2817" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2817">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

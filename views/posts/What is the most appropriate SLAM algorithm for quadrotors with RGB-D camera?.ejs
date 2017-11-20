@@ -1,0 +1,172 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>What is the most appropriate SLAM algorithm for quadrotors with RGB-D camera?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-1946" class = "post">
+			<h2>Question</h2>
+			<div id="vote-1946" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 1072</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>What is the most appropriate SLAM algorithm for quadrotors with RGB-D camera?</h2>
+<p>I have been researching on SLAM. I came across EKF SLAM which uses odometry to measure the robot's initial position in the map and as well as landmarks which helps the robot's position to be more accurate. Based on the SLAM for dummies, it has a problem of loop closure. In another journal, it was compared to fastSLAM and EKF has a big-O function of $O(K^2)$ where $K$ is the number of landmarks while fastSLAM has $O(M\log(K))$.</p>
+
+<p>It was also said that the most promising SLAM algorithm from the journal <a href="http://www.vision.caltech.edu/mariomu/research/papers/vSLAM-krs.pdf" rel="nofollow">"The vSLAM Algorithm for Navigation in Natural Environments"</a>
+ is FastSLAM 
+However, the vSLAM used by an experiment done by the University of Pennsylvania is the occupancy grid SLAM.</p>
+
+<p>I want to ask what would be the most approriate SLAM algorithm for vSLAM given an unmanned aerial vehicle like the quadrotor and RGB-D camera + IMU? Also are there any algorithm that can be extended to support co-operation?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1946" data-toggle = "popover">
+				<p>user name : Xegara</p>
+				<p> user reputation : 63</p>
+				<p class = "tagcontent" id = "usertaginfo-1946">{'quadcopter': 3, 'None': 0, 'localization': 11, 'pid': 2, 'mapping': 10, 'uav': 1, 'slam': 10}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-1946" class = 'collapse'>
+			</div>
+				<textarea id = "speech-1946" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1946">
+					<img id="start_img-1946" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1946">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-4884"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4884" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>There is no the most appropriate SLAM algorithm. You use based on what you have. Every approach has pros and cons. People use cameras because they are so cheap in comparison with Laser sensors. Laser sensors  are extremely expensive however they are so accurate and give more info about the map than cameras.  No matter what kind of sensors you use, the ultimate goal of SLAM is to build a map and estimate the robot in this map. Another problem arises when the sensors are used which is the noise. So to filter the measurements, you need a filter. The most common filter used in SLAM is Extended Kalman filter, hence the name EKF-SLAM. Another one is Particle Filter PF.</p>
+
+<blockquote>
+  <p>EKF SLAM which uses odometry to measure the robot's initial position
+  in the map and as well as landmarks which helps the robot's position
+  to be more accurate.</p>
+</blockquote>
+
+<p>This is actually incorrect. EKF is an optimal estimator. It has nothing to do with odometry. Odometry works as a sensor based on accumulating previous data. As you can see, odometry is an error-prone because it accumulates the noise beside the robot's pose. GPS doesn't work in an indoor environment. This is why SLAM is needed. Given an accurate sensor, say laser, EKF-SLAM for example, the robot is able to estimate its pose in an unknown environment whether indoor or outdoor. Even though cameras are very cheap, the image manipulation is so heavy. Also, a single camera doesn't give the distance to a beacon or landmark. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4884" data-toggle = "popover">
+				<p>user name : CroCo</p>
+				<p> user reputation : 1040</p>
+				<p class = "tagcontent" id = "usertaginfo-4884">{'control': 18, 'pid': 4, 'slam': 16, 'manipulator': 3, 'mobile-robot': 14, 'dynamics': 6, 'errors': 2, 'data-association': 1, 'kinematics': 3, 'matlab': 6, 'kalman-filter': 21, 'motion-planning': 3, 'None': 41, 'noise': 24, 'theory': 1, 'localization': 14, 'microcontroller': 5, 'mapping': 5, 'sensor-error': 1, 'sensors': 7, 'quadcopter': 8, 'ekf': 26, 'simulation': 1, 'motion': 3}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-4884" class = 'collapse'>
+			</div>
+				<textarea id = "speech-4884" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4884">
+					<img id="start_img-4884" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4884">Comment</button>
+			<br><div id = "ans-5060"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-5060" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I assume that your target environment is indoors as you use RGB-D camera.
+When you want to use it with quadrotor, you need high update rate for accurate pose estimation. Some packages that you can look at are</p>
+
+<p><a href="http://vision.in.tum.de/data/software/dvo" rel="nofollow">http://vision.in.tum.de/data/software/dvo</a></p>
+
+<p><a href="http://wiki.ros.org/demo_rgbd" rel="nofollow">http://wiki.ros.org/demo_rgbd</a></p>
+
+<p><a href="https://github.com/ccny-ros-pkg/ccny_rgbd_tools" rel="nofollow">https://github.com/ccny-ros-pkg/ccny_rgbd_tools</a></p>
+
+<p>Next, if you want to use only RGB camera + IMU, you must look at this </p>
+
+<p><a href="http://wiki.ros.org/ethzasl_ptam" rel="nofollow">http://wiki.ros.org/ethzasl_ptam</a></p>
+
+<blockquote>
+  <p>M. Li and A. I. Mourikis,  High-precision, consistent EKF-based visual inertial odometry,  Int. J. Rob. Res., vol. 32, pp. 690 711, 2013.</p>
+</blockquote>
+
+<p>There might be many others but these might be some starting points...</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-5060" data-toggle = "popover">
+				<p>user name : Sai</p>
+				<p> user reputation : 31</p>
+				<p class = "tagcontent" id = "usertaginfo-5060">{'None': 3}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-5060" class = 'collapse'>
+			</div>
+				<textarea id = "speech-5060" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-5060">
+					<img id="start_img-5060" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-5060">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

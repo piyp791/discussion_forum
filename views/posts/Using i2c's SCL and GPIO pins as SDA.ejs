@@ -1,0 +1,168 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Using i2c's SCL and GPIO pins as SDA
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-4815" class = "post">
+			<h2>Question</h2>
+			<div id="vote-4815" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 166</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Using i2c's SCL and GPIO pins as SDA</h2>
+<p>The beaglebone black which I work on has only 2 i2c busses. Say for some crazy reason, i need to use 8 i2c busses. I dont want to chain any of the devices. The idea is to have every device's SDA line separated and use a shared SCL line so i can use the same clock and have as many SDA lines as i want. Since the SCL clock is hardware controlled there wont be any major issues here. The GPIO can do around 2.5mhz of switching so I am happy with that. </p>
+
+<p>If that works out, i can spawn 8 threads to talk on 8 i2c Lines making my solution faster!</p>
+
+<p>Do you think its doable? I would like to hear from you guys as this idea of using 1SCL and GPIO as SDA just popped in my head and i thought of sharing it with you guys. </p>
+
+<p>Cheers!</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4815" data-toggle = "popover">
+				<p>user name : user2967920</p>
+				<p> user reputation : 136</p>
+				<p class = "tagcontent" id = "usertaginfo-4815">{'None': 2, 'microcontroller': 9, 'beagle-bone': 0, 'power': 0, 'battery': 1, 'wifi': 2, 'c': 2, 'wireless': 1, 'imu': 5, 'circuit': 1, 'electronics': 1, 'i2c': 1, 'serial': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-4815" class = 'collapse'>
+			</div>
+				<textarea id = "speech-4815" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4815">
+					<img id="start_img-4815" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4815">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-4818"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4818" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Unless your I2C hardware components have the ability to use an external clock to drive the clock line of the buses (none that I've heard of), you wouldn't be able to do this by hardware.</p>
+
+<p>You <em>could</em> do this by manually driving the buses. This is called <a href="https://en.wikipedia.org/wiki/I%C2%B2C#Example_of_bit-banging_the_I.C2.B2C_Master_protocol" rel="nofollow">bit-banging</a>. If you do that, you can carefully craft your software driving GPIO pins that act as I2C buses and manage all 8 buses in parallel. You would most likely want to do the bit banging by interrupts.</p>
+
+<p>You can have your piece of software having 8 (global) variables (of a <code>struct</code>) that tell if and what needs to be written to each I2C and if and how much needs to be read as response. Regardless of hardware I2C or software-emulated, this step is actually necessary anyway.</p>
+
+<p>In your bit-banging piece of software, here are some things to look out for:</p>
+
+<ul>
+<li>If at least one bus needs to read/write data, drive the clock.</li>
+<li><p>If parallel threads want to write to the variables, make sure to write them in the correct order and take care of synchronization.</p>
+
+<ul>
+<li><p>For example: </p>
+
+<pre><code>/* bus 3 wants to write and read something */
+i2c_data[3].address = some_address;
+memcpy(i2c_data[3].to_write, whatever, 10);
+i2c_data[3].expect_to_read = 5;
+atomic_set(i2c_data[3].new_data);
+</code></pre>
+
+<p>where <code>new_data</code>, a flag that the I2C emulation software checks for to know if there is something new to do, is written last and atomically.</p></li>
+</ul></li>
+<li>If any of the buses wants to start or stop, generate their respective start or stop condition and make sure there is enough setup and hold time before you continue clocking.</li>
+<li>If any bus results in a NACK, make sure to at least note it, if not stopping that particular bus.</li>
+</ul>
+
+<p>Of course, this is to make 8 parallel unrelated I2C buses. If your application needs to talk with 8 of the same kind of device, then your bit-banging software would be simpler, since they all start and stop at the same time, even if their data and ACKs are managed separately.</p>
+
+<p><strong>Note that the I2C emulation software is not replicated per thread, but is one managing all of them at the same time.</strong></p>
+
+<hr>
+
+<p>While I'm always up for using the hardware in ways beyond most people's wildest imagination to get it to do something better or faster, I'd advise you to study your problem a bit more, do some calculations to make sure you actually want to do this.</p>
+
+<p>Emulating hardware through software is very error-prone and slower by an order, there are very many edge cases and needs thorough testing. In short, it's a time-consuming job. Being slower than hardware also means that there is a point where it starts to become beneficial and you need to find that point. Since you have 8 devices and 2 I2C hardware components, you can attach 4 devices to each bus and you need to study if your implementation would actually be faster than that.</p>
+
+<p>You may also think of changing your hardware. A <a href="http://www.cypress.com/psoc/" rel="nofollow">Cypress PSoC</a> for example lets you put as many components as you want (and there is space and resources on the chip) so for example you could put 4 I2C buses (if 8 wasn't possible) and attach 2 devices to each bus. With a PSoC and knowledge in verilog, you can also write your own 8-device I2C bus component implemented in hardware.</p>
+
+<p>Alternatively, you could also think of changing your bus. I2C is a very strict protocol designed to ensure error handling with each byte as well as prevent component cross-talk. You might not need that much restriction and for example you could check the data with CRC so you may not care for intermediate errors.</p>
+
+<p>You could use an SPI bus, which is much simpler and thus easier to emulate. As a bonus, you don't need to be working with an open-drain data bus (as in I2C) which means you can get to speeds that are <em>much</em> higher than I2C. Common support for I2C buses go up to 400Kbps (newer ones go higher) but common devices supporting SPI bus can easily go up to 4Mbps.</p>
+
+<p>That said, talking serially to 8 devices on an SPI bus @4Mbps could indeed be faster than talking to 8 devices in parallel on I2C buses @400Kbps (depending on the protocol). Again, this is something you would need to assess to see which option is more beneficial to you.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4818" data-toggle = "popover">
+				<p>user name : Shahbaz</p>
+				<p> user reputation : 2615</p>
+				<p class = "tagcontent" id = "usertaginfo-4818">{'None': 193, 'usb': 12, 'distributed-systems': 7, 'microcontroller': 1, 'embedded-systems': 7, 'servomotor': 1, 'platform': 18, 'can': 1, 'machine-learning': 12, 'real-time': 18, 'mobile-robot': 1, 'rs232': 12, 'software': 20}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-4818" class = 'collapse'>
+			</div>
+				<textarea id = "speech-4818" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4818">
+					<img id="start_img-4818" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4818">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

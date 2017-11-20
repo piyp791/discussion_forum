@@ -1,0 +1,184 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Lidar problems in a multi-robot setup
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-10294" class = "post">
+			<h2>Question</h2>
+			<div id="vote-10294" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 142</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Lidar problems in a multi-robot setup</h2>
+<p>Consider multiple mobile bases driving around in some area. In order to get meaningful data from the lidar of each base, the sensors should be mounted as horizontal as possible. Due to safety regulations, the lidars should also be mounted at a height of 15 cm from the floor. When I checked the data sheet of SICK lidars, it shows that all models use the wavelength 904 nm. Does that mean that mobile bases equipped with lidars with a coplanar scan lines will end up mutually blinding each other? </p>
+
+<p>If it is the case, how is this problem solved? (I don't consider tilting the lidars a solution as it defeats the purpose of having "2D" lidars where even if the tilting angle is known, what the lidar observes becomes dependent on the robot's pose and distance from eventual obstacles)</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10294" data-toggle = "popover">
+				<p>user name : Mehdi</p>
+				<p> user reputation : 394</p>
+				<p class = "tagcontent" id = "usertaginfo-10294">{'control': 1, 'odometry': 12, 'None': 15, 'computer-vision': 10, 'mobile-robot': 2, 'power': 1, 'battery': 1, 'navigation': 2, 'cameras': 7, 'torque': 1, 'lidar': 5, 'joint': 2, 'slam': 12, 'magnetometer': 2, 'laser': 1, 'speech-processing': 3, 'rangefinder': 4, 'actuator': 1, 'sensors': 4, 'digital-audio': 0, '3d-reconstruction': 5}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10294">Load Comments</button></br>
+			<div id = "commentsection-10294" class = 'collapse'>
+			<div id = "comment-18431" class = "comment">
+				<p>I don't think that you really have a problem. In a lidar unit, both the laser and the sensor scan together. When mobile-base is pointing at the other, the other is likely pointing in a different direction. The only possibility of them "blinding" each other is if they pointed directly at each other at the same instant in time. You should be able to filter that 'glitch' out, on each rare occurrence.</p>
+			</div>
+			<div id = "comment-18453" class = "comment">
+				<p>Those SICK lidars are spinning and cover a range of 270 degrees, so it is tricky to try imagining exactly how they might influence each other. Additionally, the laser beam is not a line as I imagined but a thick pattern that covers few centimeters in height when landing on a wall.</p>
+			</div>
+			</div>
+				<textarea id = "speech-10294" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10294">
+					<img id="start_img-10294" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10294">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-10298"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10298" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I wouldn't recommend using sensors with different laser frequencies either, because that likely means using an entirely different product, with different accuracy and other properties.</p>
+
+<h2>don't tilt, shift</h2>
+
+<p>I think the idea of tilting a laser scanner is very problematic, especially with a height constraint like you have. But what about shifting the scanner up or down in each unit?</p>
+
+<p>Let's say if a scanner does not interfere with another one if it's 1 cm above the other. You can give the scanner on each robot a unique height they can operate on without causing any problems.</p>
+
+<p>This solution is limited to a small number of robots, depending on the height difference necessary between two sensors and the available height on your robots.</p>
+
+<h2>scan sequentially</h2>
+
+<p>Given that you have established communication between the bases, each one could do its scan while the others are not using their sensor. After the scan is finished, a message is sent to the next robot.</p>
+
+<p>This reduces the scanning frequency as they cannot happen in parallel. Depending on the range of the laser scanner, the size of the area and distribution of robots, this could be compensated by the fact that each robot scans the other one as an "obstacle". Each robot could estimate the new positions of all robots it sees and message that information to others after it did its scan. This can be tricky when it comes to identifying the other robots from the scan and if one robot could occlude another one.</p>
+
+<h2>shared pose knowledge</h2>
+
+<p>If each robot knows the poses of all other robots, it can exclude sensor readings from those directions. Depending on the situation, careful sanity checks might be necessary before excluding sensor data.</p>
+
+<p>Otherwise an obstacle that's exactly between two robots would be "seen" by either one because sensor values detecting it were discarded for being "in the shadow" of the other robot.</p>
+
+<h2>give it a try</h2>
+
+<p>I'm not exactly sure how those scanners work in detail. Does both the laser and sensor rotate? Or are they omnidirectional? Or is either one omnidirectional?</p>
+
+<p>Maybe having all sensors on the same height isn't that much of a problem unless two of them face each other exactly, which appears to be unlikely and even in case of failure would only falsify a few measurements. With the strategy of shared knowledge of the poses of the robots mentioned above, it should be possible to filter those measurements out.</p>
+
+<h2>ask sick</h2>
+
+<p>This is not some DIY hack, but product sold by a competent company. If in doubt about possible problems with their products, contact SICK and explain your project in detail with all the requirements and the issue that could arise. I'm sure they are willing to help you with their expertise given that you want to buy (or have bought) several sensor units from them. Even if not, it's definitely worth a try.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10298" data-toggle = "popover">
+				<p>user name : Bending Unit 22</p>
+				<p> user reputation : 1335</p>
+				<p class = "tagcontent" id = "usertaginfo-10298">{'None': 93}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10298">Load Comments</button></br>
+			<div id = "commentsection-10298" class = 'collapse'>
+			<div id = "comment-18454" class = "comment">
+				<p>I think somewhere in the mounting guidelines from SICK they mention the necessity to mount the lidars with a small tilt of 3 degrees or so. But they do not describe what might happen otherwise. I think I will give it a try and put to lidars in front of each other.</p>
+			</div>
+			</div>
+				<textarea id = "speech-10298" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10298">
+					<img id="start_img-10298" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10298">Comment</button>
+			<br><div id = "ans-10375"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10375" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I know that IR has a similar issue. One of the ways it's over come is to have the sensor send the signal in different patterns (ie a duty cycle of 75 verse 50). If you know what your expecting back you know if there was interference. From there you can have it wait a random amount of time and try again.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10375" data-toggle = "popover">
+				<p>user name : Xavier Guay</p>
+				<p> user reputation : 76</p>
+				<p class = "tagcontent" id = "usertaginfo-10375">{'None': 7, 'ros': 1, 'raspberry-pi': 1}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-10375" class = 'collapse'>
+			</div>
+				<textarea id = "speech-10375" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10375">
+					<img id="start_img-10375" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10375">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,262 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>what kp,ki,kd should i keep
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8047" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8047" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 301</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>what kp,ki,kd should i keep</h2>
+<pre><code>  // MPU-6050 Short Example Sketch
+// By Arduino User JohnChi
+// August 17, 2014
+// Public Domain
+#include&lt;Wire.h&gt;
+#include &lt;Servo.h&gt;
+Servo firstESC, secondESC,thirdESC,fourthESC; //Create as much as Servoobject you want. You 
+const int MPU=0x68;  // I2C address of the MPU-6050
+int speed1=2000,speed2=0,speed3=0,speed4;
+int16_t AcX,AcY,AcZ,Tmp,GyX,GyY,GyZ;
+float integ=0,der=0,pidx=0,kp = .5,ki=0.00005 ,kd=.01,prerror,dt=100;
+void setup(){
+  firstESC.attach(3);    // attached to pin 9 I just do this with 1 Servo 
+  secondESC.attach(5);    // attached to pin 9 I just do this with 1 Servo 
+  thirdESC.attach(6);    // attached to pin 9 I just do this with 1 Servo 
+  fourthESC.attach(9);    // attached to pin 9 I just do this with 1 Servo 
+  Wire.begin();
+  Wire.beginTransmission(MPU);
+  Wire.write(0x6B);  // PWR_MGMT_1 register
+  Wire.write(0);     // set to zero (wakes up the MPU-6050)
+  Wire.endTransmission(true);
+  Wire.beginTransmission(MPU);
+  Wire.write(0x1c);  // PWR_MGMT_1 register
+  Wire.write(0&lt;&lt;3);     // set to zero (wakes up the MPU-6050)
+  Wire.endTransmission(true);
+  Serial.begin(9600);
+  firstESC.writeMicroseconds(0);
+  secondESC.writeMicroseconds(0);
+  thirdESC.writeMicroseconds(0);
+  fourthESC.writeMicroseconds(0);
+  firstESC.writeMicroseconds(2000);
+  secondESC.writeMicroseconds(2000);
+  thirdESC.writeMicroseconds(2000);
+  fourthESC.writeMicroseconds(2000);
+  delay(2000);
+  firstESC.writeMicroseconds(700);
+  secondESC.writeMicroseconds(700);
+  thirdESC.writeMicroseconds(700);
+  fourthESC.writeMicroseconds(700);
+  delay(2000);
+}
+void loop(){
+  Wire.beginTransmission(MPU);
+  Wire.write(0x3B);  // starting with register 0x3B (ACCEL_XOUT_H)
+  Wire.endTransmission(false);
+  Wire.requestFrom(MPU,4,true);  // request a total of 14 registers
+  AcX=Wire.read()&lt;&lt;8|Wire.read();  // 0x3B (ACCEL_XOUT_H) &amp; 0x3C (ACCEL_XOUT_L)    
+  AcY=Wire.read()&lt;&lt;8|Wire.read();  // 0x3D (ACCEL_YOUT_H) &amp; 0x3E (ACCEL_YOUT_L) 
+  firstESC.writeMicroseconds(0);
+  secondESC.writeMicroseconds(700-(pidx/10));
+  thirdESC.writeMicroseconds(700+(pidx/10));
+  fourthESC.writeMicroseconds(0);
+  PID();
+  //if(Serial.available()) 
+    //speed1 = Serial.parseInt(); 
+  //Serial.print("AcX = "); Serial.print(AcX);
+  //Serial.print(" | AcY = "); Serial.print(AcY); 
+  //Serial.println();
+  //delay(333);
+}
+
+void PIdD()
+{
+  float error;
+  error = (atan2(AcY,AcZ)*180/3.14);
+  now = millis(); 
+  dt = now-ptime;
+  if(error&gt;0)error=180-error;
+  else error = -(180+error); 
+  error=0-error;
+  integ = integ+(error*dt) ;
+  der = (error - prerror)/dt ;
+  prerror=error;
+  pidx = (kp*error);
+  pidx+=(ki*integ);
+  pidx+=(kd*der);
+  if(pidx&gt;1000)pidx=1000; 
+  if(pidx&lt;-1000)pidx=-1000; 
+  ptime = now; 
+  }
+</code></pre>
+
+<p>the above is my program for my quadcopter, but now i have to tune the PID values, that is kp, ki and kd. my accelome is at 2g. Please point to me what is wrong with the program, is the error signal not appropriate? Please also give me or help me choose correct pid tuning. my limitation is I always have to connect my arduino to pc and change kp ki or kd values, that is i have no remote control available currently.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8047" data-toggle = "popover">
+				<p>user name : Bilal Ayub</p>
+				<p> user reputation : 46</p>
+				<p class = "tagcontent" id = "usertaginfo-8047">{'quadcopter': 6, 'None': 0, 'arduino': 4, 'pid': 5, 'stability': 2, 'esc': 3, 'balance': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8047">Load Comments</button></br>
+			<div id = "commentsection-8047" class = 'collapse'>
+			<div id = "comment-12826" class = "comment">
+				<p>Without a mathematical description of the system that you are trying to control, you cannot predict the optimal controller parameters, hence you need to find them empirically, which is indeed an iterative process. A quick way to modify the parameters is your actual problem, not finding the parameters.</p>
+			</div>
+			<div id = "comment-12827" class = "comment">
+				<p>and what about the error signal, is that correct for quadcopter case,</p>
+			</div>
+			<div id = "comment-12835" class = "comment">
+				<p>(1) Per the N1570 C standard, code from a compliant C compiler can evaluate the operands of | in either order.  See eg  6.5.14.  Thus, `AcX=Wire.read()<<8|Wire.read();` is not well-defined.  (2) Re `atan(az/ay)` mentioned in a comment, instead use `atan2(az, ay)`</p>
+			</div>
+			<div id = "comment-12838" class = "comment">
+				<p>What does this sentence mean: "my accelorem is 2g"? Have you already searched through stab exchange? There are numerous tutorials and example codes doing what you are trying to achieve, 1) control a system, 2) define/find optimum p I d constants . Good luck.</p>
+			</div>
+			<div id = "comment-12842" class = "comment">
+				<p>it means that my accelerometer sensitivity is at +-2g.</p>
+			</div>
+			<div id = "comment-12946" class = "comment">
+				<p>possible duplicate of [What PID values should i keep](http://robotics.stackexchange.com/questions/7968/what-pid-values-should-i-keep)</p>
+			</div>
+			</div>
+				<textarea id = "speech-8047" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8047">
+					<img id="start_img-8047" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8047">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8048"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8048" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Some things that are wrong in your program are:
+<br><br>
+You do not calculate your angular displacement properly, leading to a wrong error for the PID controller <br>
+You are only using one PID controller, for stabilization you need at least two <br>
+You just power two motors, why not all four?
+<br>
+You do not use a sampletime (the delay is commented). Your PID is likely to fail, regardless of the parameters.</p>
+
+<p><br> <br>
+<strong>EDIT:</strong> <br>
+you are trying to implement a digital PID controller. These type of controllers work best, when there is a specific time between the calculation of the controller. This time is usually called sampletime. The better you can keep this time constant the better the controller is able to perform. Usually this sampletime has to be short enought, that the controller is able to "see" distrubances. For your example the controller must be fast enought to see if the quadcopter has been tilted by the wind or similar things.<br><br> 
+So basically for quadcopters you choose a control frequency of 50 Hz. For two reasons: First 20ms is fast enought to see disturbances and react on them. And the other point (a more technical one) ESC cannot be controlled faster then 50Hz, because they need a 20ms control signal (You create them with ESCxxx.WriteMicrosenconds())
+<br> <br>
+The mistake in your implementation is that you do not have this timing factor(it is commented) so the controller is calculating new setpoints as fast as possible. As far as I know Arduinos it should be around 1-10kHz. This frequency is too high for your hardware and it is hard to tell if the timeing stays constant (at least I cannot). The I2C do not have to be constant in time. So your sampling frequency can change from iteration to iteration. This is usually the dead of a PID implementation. We (the team I'm working in in my company) invest a lot of work to keep samplingtime in controller implementation constant. You totally ignored this. <br> <br></p>
+
+<p>The parameters do not have to be multiplied or divided by any value, because they are not tuned at all. At the end: If you get your parameters tuned and you want to change the samplingtime, then you have to adjust those values. But you do not need to do this, in the untuned case.</p>
+
+<p><br><br>
+<strong>EDIT2:</strong></p>
+
+<p>Without using a sampletime your system can be "non-controllable" at all. This depends on lot of different factors like used hardware and quality of the electric connections and the ICs. <br>
+Use the sampletime of 20ms and tune your PID Parameter, those values depend on your hardware setup. There are no: Take these values and it's fine.
+You have to tune them and you there are tons of different methods. I recommend you to use an experimental iterative method (it's the best one, if you got no mathematical model or deeper controls knowledge). So guess some parameters and see how the system behaves. If is doing more or less nothing, then increase P. If it seem not controlled and bouncing up and down, then decrease the I. You will find lot of different (and well written) instructions online, which tell you how to tune PID controllers.  </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8048" data-toggle = "popover">
+				<p>user name : TobiasK</p>
+				<p> user reputation : 1572</p>
+				<p class = "tagcontent" id = "usertaginfo-8048">{'control': 1, 'None': 102, 'communication': 0, 'wireless': 0, 'imu': 0, 'sensor-fusion': 0, 'gps': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8048">Load Comments</button></br>
+			<div id = "commentsection-8048" class = 'collapse'>
+			<div id = "comment-12828" class = "comment">
+				<p>i am now using error signal as the atan(az/ay); that is the angle which finds the correct angle. so the 1st of your rocomendations is corrected i think.
+i am using one PID for debugging on axis only, other will be the same then.
+AND if i use delay of 100ms in pid function, then i will have to multiply integ with 0.01? i am not clear about sample time please help</p>
+			</div>
+			<div id = "comment-12831" class = "comment">
+				<p>mpu6050 gives the accelerometer values of constant sample time, that by burst reading the same time values are given</p>
+			</div>
+			<div id = "comment-12832" class = "comment">
+				<p>and the integral term in your controller this accumulate the error and therefore adjusting the output to the plant</p>
+			</div>
+			<div id = "comment-12833" class = "comment">
+				<p>so what should i do. the error values are taken at same instant. so now what i do.</p>
+			</div>
+			<div id = "comment-12834" class = "comment">
+				<p>if i use no sample time, how will the system effect,</p>
+			</div>
+			<div id = "comment-12844" class = "comment">
+				<p>ok thanks, i have found in google the PID function. i replaced mine with that, please look at that i have edited my pid function in question, if that is wrong then correct me,</p>
+			</div>
+			</div>
+				<textarea id = "speech-8048" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8048">
+					<img id="start_img-8048" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8048">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,176 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Pose-Graph-SLAM: How to create edges if only IMU-odometry is given?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9434" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9434" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 679</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Pose-Graph-SLAM: How to create edges if only IMU-odometry is given?</h2>
+<p>I want to estimate the poses of a vehicle at certain key frames. The only sensor information I can use is from an IMU which yields translational acceleration and orientation measurments. I obtain a 7D pose, i.e. 3D position vector + unit quaternion orientation, if I integrate the translational acceleration twice and propagate the orientation measurements.</p>
+
+<p>If I want to add a new edge to the graph I need a constraint for that edge. In general, for pose graphs this constraint represents a relational transformation $z_{ij}$ between the vertex positions $x_i$ and $x_j$ that are connected by the edge. </p>
+
+<p>Comparing my case to the literature the following questions arised:</p>
+
+<ol>
+<li><p>How do I calculate a prediction $\hat{z}_{ij}$ which I can compare to a measurement $z_{ij}$ when computing the edge error? Initially, I understood that graph slam models the vertex poses as gaussian distributed variables and thus a prediction is simply calculated by $\hat{z}_{ij}=x_i^{-1} x_j$. </p></li>
+<li><p>How do I calculate the information (preferred) or covariance matrix? </p></li>
+<li><p>How and when do I update the information matrices? During optimization? Or only at edge creation? At loop closure?</p></li>
+<li><p>I read about the chi-square distribution and how it relates to the Mahalanobis distance. But how is it involved in the above steps? </p></li>
+<li><p>Studying current implementations (e.g. mrpt-graph-slam or g2o) I didn't really discover how predictions (or any probability density function) is involved. In contrast, I was even more confused when reading the mrpt-graph-slam example where one can choose between raw poses and poses which are treated as means of a probability distribution.</p></li>
+</ol>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9434" data-toggle = "popover">
+				<p>user name : morph</p>
+				<p> user reputation : 37</p>
+				<p class = "tagcontent" id = "usertaginfo-9434">{'None': 0, 'errors': 0, 'ekf': 3, 'pose': 3, 'data-association': 0, 'slam': 6, 'imu': 0, 'jacobian': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-9434" class = 'collapse'>
+			</div>
+				<textarea id = "speech-9434" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9434">
+					<img id="start_img-9434" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9434">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9438"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9438" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>First off, it doesn't sound like you're actually doing SLAM. You didn't mention an exteroceptive sensor (e.g., laser, camera) that actually maps the environment. With just an IMU, you are doing localization, or more specifically, dead-reckoning. With just an IMU, there is no way to actually implement pose-graph SLAM in its usual formulation.</p>
+
+<p>That being said, I'll try to answer your questions pretending you have some exteroceptive sensor that is measuring the environment, with which you can generate pose-transformation measurements.</p>
+
+<ol>
+<li><p>Let's say the nodes in the graph are $x=(x_1,...x_n)$, where $x_i = (p_i, q_i)$ is the position $p_i$ and orientation $q_i$ of the node (6 DOF). Then the predicted observation between them is simply their relative position and relative orientation. For example, if the orientation is parameterized as a unit quaternion, $\hat{z}_{ij} = (p_j - p_i, \log(q^{-1}_i q_j)).$ For an explanation as to why the $\log$ is there, <a href="https://robotics.stackexchange.com/a/9137/4320">see one of my other answers</a>.</p></li>
+<li><p>In pose-graph SLAM, the information matrix is the "Hessian" $J^\top \Sigma J$ (not actually the Hessian, just an approximation), where $J$ is the Jacobian of your errors with respect to your state, and $\Sigma$ is the information matrix of your measurements.</p></li>
+<li><p>The information matrix changes every time you add a node, every time you add an edge, and every time you optimize the pose-graph. You can calculate it at any time by calculating $J^\top \Sigma J$.</p></li>
+<li><p>Your cost function that you are trying to minimize represents the Mahalanobis distance between your predicted and actual measurements, which has a chi-square distribution.</p></li>
+<li><p>Not really sure exactly what you mean here. Note that you are trying to <em>maximize</em> the likelihood of your observations, which means you are trying to find the state the maximizes the PDFs of your measurements. How do we do this? We take the <em>negative log</em> of the Gaussian PDF, which forms our cost function. For example, for a 1-D linear system, the cost of a measurement is the negative log of the PDF of the measurement:</p></li>
+</ol>
+
+<p>$$
+f(z|x,\sigma) = \frac{1}{\sigma\sqrt{2\pi}}\exp\left(-\frac{\left(z-Hx\right)^2}{2\sigma^2}\right)
+$$</p>
+
+<p>$$
+-\ln(f(z|x,\sigma)) = \eta\frac{\left(z-Hx\right)^2}{2\sigma^2}
+$$</p>
+
+<p>Note that $\eta$ is a normalization constant that does not depend on $x$, therefore it has no effect on the optimization. The goal of pose-graph SLAM is to find $x$ that minimizes $-\ln(f(z|x,\sigma))$ for measurements simultaneously. If you consider the measurements independent, then the cost is just the sum of the negative log-likelihoods.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9438" data-toggle = "popover">
+				<p>user name : kamek</p>
+				<p> user reputation : 775</p>
+				<p class = "tagcontent" id = "usertaginfo-9438">{'None': 48}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9438">Load Comments</button></br>
+			<div id = "commentsection-9438" class = 'collapse'>
+			<div id = "comment-16704" class = "comment">
+				<p>I am searching for a solution to determine poses for a kind of free moving camera but without using visual odometry. I thougt a composition of poses related in a graph could be understood as a map. I read that one can construct pose graphs both with poses $x$ and landmarks $l$ or only with poses $x$. That's why I tried to implement the whole SLAM approach. Can you explain why pose graph SLAM won't work? The information I insert into the system (the graph) is always a pose, no matter if I compute it using an imu or visual odometry, isn't it? Is there a difference for the system?</p>
+			</div>
+			<div id = "comment-16705" class = "comment">
+				<p>Another reason for using SLAM is that I want to make use of loop closures to correct my estimates - this time using cross-correlation between images from my camera-like device. If I have to abandon the SLAM approach, is it possible to do localization based on a graph to make use of loop closures?</p>
+			</div>
+			<div id = "comment-16707" class = "comment">
+				<p>a note on my 5th question: in the mrpt-graph-slam implementation I saw that it is possible to either represent edge constraints explicitly as transforms or as means of a PDF (compare classes [CPose3DQuat](http://reference.mrpt.org/stable/classmrpt_1_1poses_1_1_c_pose3_d_quat.html) and [CPose3DQuatPDFGausianInf](http://reference.mrpt.org/stable/classmrpt_1_1poses_1_1_c_pose3_d_quat_p_d_f_gaussian_inf.html))</p>
+			</div>
+			<div id = "comment-16708" class = "comment">
+				<p>and overall I was thinking about how the SLAM frontend to my system acutally looks like if the backend is the optimization you explained in your answer of question 5</p>
+			</div>
+			<div id = "comment-17014" class = "comment">
+				<p>is the jacobian $J$ the same in your answers 2. and 3.? I think in 3. it should be the jacobian of the current state with respect to the last state, shouldn't it?</p>
+			</div>
+			<div id = "comment-17022" class = "comment">
+				<p>@morph It's the same. It's the Jacobian of the error with respect to the state in both cases.</p>
+			</div>
+			<div id = "comment-18452" class = "comment">
+				<p>@morph Implementing a SLAM strategy using only an IMU sensor doesn't sound realistic, since this doesn't give you any information about the environment that the robot operates in (therefore no data available for the mapping procedure).
+Indeed one can implement pose-graph only (without keeping track of landmark positions and covariances) but this involves storing sensor information in the keyframes/nodes of the graph, e.g. keep the 2DRangeScan recorded in each node. Aligning these observations from the prior robot positions (using ICP?) one can add edges between (nearby) nodes/close loops etc.</p>
+			</div>
+			<div id = "comment-20126" class = "comment">
+				<p>SLAM depends on repeatedly measuring the relative location to external objects to use as landmarks.  This allows dead-reckoning error to be taken out over time.  With no external measurements, you are better off just using dead-reckoning directly:  i.e. integrating your IMU gyro angles and double-integrating your accels.  You have to know the starting coordinates and the starting gravity direction, which you will update as your attitude changes and take out of your accel data before you integrate.  Eventually dead-reckoning will badly degrade due to drift, depending on the quality of your IMU.</p>
+			</div>
+			</div>
+				<textarea id = "speech-9438" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9438">
+					<img id="start_img-9438" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9438">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

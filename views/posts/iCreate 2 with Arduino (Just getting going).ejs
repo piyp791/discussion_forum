@@ -1,0 +1,265 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>iCreate 2 with Arduino (Just getting going)
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-10159" class = "post">
+			<h2>Question</h2>
+			<div id="vote-10159" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 140</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>iCreate 2 with Arduino (Just getting going)</h2>
+<p>I am new to the iRobot Create 2 but I do know a thing or two about the Arduino (don't assume too much though). However, in this case, I am beyond stumped over what I am sure is something simple but is somehow not obvious to me. Three people have confirmed my wiring from the Create 2 to the Arduino to be correct and the code I have looks similar to many examples that I have seen on this forum. However, I cannot get my Create 2 to do ANYTHING. I am not at all sure what is wrong and I am starting to wonder if the robot is even receiving commands let alone doing anything with them. Is there anything wrong with this code and can anybody suggest a way to verify that the robot is receiving data (since it does not beep or provide return messages)? Thank you.</p>
+
+<p>EDIT (06/24 01:10 EST); Updated code (with a few notes).</p>
+
+<pre><code>#########################
+#include &lt;SoftwareSerial.h&gt;
+#include &lt;SPI.h&gt;
+
+int baudPin = 17;
+int i;
+int ledPin = 13;
+int rxPin = 19;
+int txPin = 18;
+
+unsigned long baudTimer = 240000; // 4 minutes
+unsigned long thisTimer = 0;
+unsigned long prevTimer = 0;
+
+SoftwareSerial Roomba(rxPin, txPin);
+
+void setup() {
+  pinMode(baudPin, OUTPUT);
+  pinMode(ledPin, OUTPUT);
+  pinMode(rxPin, INPUT);
+  pinMode(txPin, OUTPUT);
+
+  // I have tired communicating with both baud rates (19200 and 115200).
+  // When trying the 115200 baud, I set "i&lt;=0;" in the loop below since
+  // the pulse does not need to be sent.
+  Roomba.begin(19200);
+  Serial.begin(115200);
+  delay(2000);
+
+  // I hooked up an LED in series with the baudPin so that it would turn
+  // off when low thus giving me some kind of visual confirmation that a
+  // pulse is being sent. See additional note in loop() below.
+  for (i = 1; i &lt;= 3; i++) {
+    digitalWrite(baudPin, HIGH);
+    delay(100);
+    digitalWrite(baudPin, LOW);
+    delay(500);
+    digitalWrite(baudPin, HIGH);
+  }
+
+  // I know this might not be the right way to send data to the robot,
+  // but I was fiddling with this while trying to figure out a separate
+  // problem regarding the TX/RX lines which I am putting off until I
+  // get the baud issue straightened out.
+. /*
+    int sentBytes = Roomba.write("128");
+    Serial.print(sentBytes);
+    Serial.print("\n");
+  */
+
+  i = 0;
+}
+
+void loop() {
+  thisTimer = millis();
+
+  // The LED that I have hooked up in series with the baudPin blinks
+  // when the pulse is low, thus indicating that a pulse is being sent.
+  // However, it only seems to wake the robot when it is asleep. If the
+  // robot is already awake when the pulse is sent, it has no affect and
+  // the robot will fall asleep a minute later.
+  if (thisTimer - prevTimer &gt; baudTimer) {
+    prevTimer = thisTimer;
+    i = 10;
+    Serial.print("Sending pulse...\n");
+    digitalWrite(baudPin, LOW);
+    delay(500);
+    digitalWrite(baudPin, HIGH);
+  }
+
+  /*
+    i++;
+    Serial.print(prevTimer);
+    Serial.print(" --&gt; ");
+    Serial.print(thisTimer);
+    Serial.print(" --&gt; ");
+    Serial.print(i);
+    Serial.print("\n");
+    delay(1000);
+  */
+}
+#########################
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10159" data-toggle = "popover">
+				<p>user name : Tony Tzankoff</p>
+				<p> user reputation : 1</p>
+				<p class = "tagcontent" id = "usertaginfo-10159">{'sensors': 0, 'None': 0, 'irobot-create': 0, 'arduino': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10159">Load Comments</button></br>
+			<div id = "commentsection-10159" class = 'collapse'>
+			<div id = "comment-18082" class = "comment">
+				<p>One note that I forgot to add before is that the serial monitor does print the value of thisTimer...but the baudPin does not appear to get a pulse as the robot eventually falls asleep.</p>
+			</div>
+			<div id = "comment-22753" class = "comment">
+				<p>I've been having the exact same issue, we also determined that a pulse had been sent although the Roomba has yet to respond. When we went on the icreate projects website, there was an online program(with inaccessible code) which worked directly from serial to usb. Then, when coding virtually the exact translation into C# in Visual studios again through usb to serial, we were able to control it with no issue whatsoever. Its strange because previously with the same code and setup it was working and just stopped one day. Have you had any success with other methods?</p>
+			</div>
+			</div>
+				<textarea id = "speech-10159" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10159">
+					<img id="start_img-10159" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10159">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-10160"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10160" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>It looks like you're trying to initialize two different baud rates:</p>
+
+<pre><code>Roomba.begin(19200);
+Serial.begin(115200);
+</code></pre>
+
+<p>So, first off I don't think it would work to have your setup using two different rates (though I may be wrong). But, more importantly, from the <a href="https://cdn-shop.adafruit.com/datasheets/create_2_Open_Interface_Spec.pdf" rel="nofollow">manual</a></p>
+
+<blockquote>
+  <p>By default, Roomba communicates at 115200 baud. If you are using a microcontroller that does not support 115200 baud, there are two ways to force Roomba to switch to 19200:</p>
+  
+  <p><strong>Method 1:</strong></p>
+  
+  <p>While powering off Roomba, continue to hold down the Clean/Power button after the light has turned off. After about 10 seconds, Roomba plays a tune of descending pitches. Roomba will communicate at 19200 baud until the processor loses battery power or the baud rate is explicitly changed by way of the OI.</p>
+  
+  <p><strong>Method 2:</strong></p>
+  
+  <p>Use the Baud Rate Change pin (pin 5 on the Mini-DIN connector) to change Roomba s baud rate. After turning on Roomba, wait 2 seconds and then pulse the Baud Rate Change low three times. Each pulse should last between 50 and 500 milliseconds. Roomba will communicate at 19200 baud until the processor loses battery power or the baud rate is explicitly changed by way of the OI. </p>
+</blockquote>
+
+<p>Did you put it in the 19200 mode? Have you tried 115200?</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10160" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-10160">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10160">Load Comments</button></br>
+			<div id = "commentsection-10160" class = 'collapse'>
+			<div id = "comment-18084" class = "comment">
+				<p>Method 2 is what I have tried doing [that is the loop within setup()]  AND  have tired both baud rates (19200 with the loop and 115200 without the loop) with no apparent success...but that is part of my problem. How can I tell if the robot received the baud rate change commands that I send it?</p>
+			</div>
+			<div id = "comment-18085" class = "comment">
+				<p>@TonyTzankoff - Method 1 would be seemingly the easiest way, both to do and confirm. Hold the power button util it plays a tune for you. It stays in 19200 until you pull the battery. *Have you tried setting Serial.begin(19200)*?</p>
+			</div>
+			<div id = "comment-18086" class = "comment">
+				<p>Yes. Method 1 would be easier. However, I will be putting a platform (and subsequent body) on top of the robot and reaching the button will no be the easiest of tasks. Look up "Belvedere robot" on YouTube to see what I am talking about)</p>
+			</div>
+			<div id = "comment-18088" class = "comment">
+				<p>@TonyTzankoff - For the moment, I would try setting *Serial.begin(19200)*, *Roomba.begin(19200)*, and using Method 1 to get the robot in 19200 mode. If that works, then you can try pulling the battery to reset it, then use 115200 for both Serial and Roomba and seeing if that works. Start small and work up.</p>
+			</div>
+			<div id = "comment-18091" class = "comment">
+				<p>I have made something of a discovery over here. It seems that the baud pulse is being sent. However, in some cases, it does not keep the robot awake. For example, I now have the pulse set to be sent every four minutes. At the 4:00 mark, the pulse appears to be sent (as per the serial monitor feedback). At the 5:00 mark, the robot goes to sleep (due to supposed inactivity). Four minutes later, another pulse is sent and the robot wakes up again.</p>
+			</div>
+			<div id = "comment-18092" class = "comment">
+				<p>I believe there is a bug in the Create software that causes the robot to not stay awake when receiving the pulse. It will wake up fine when it receives the pulse though.</p>
+			</div>
+			<div id = "comment-18093" class = "comment">
+				<p>@Jonathan - Hmmm. I did not know that. While the robot does wake up with a pulse, I was hoping to not have it go to sleep by itself. However, since the robot goes to sleep after five minutes of inactivity, I'll try issuing a start command (128) every four minutes in addition to the pulse and see what happens. It cannot hurt, right?</p>
+			</div>
+			<div id = "comment-18094" class = "comment">
+				<p>No good. Darn. :-(</p>
+			</div>
+			<div id = "comment-18095" class = "comment">
+				<p>What OI mode are you using? I believe the robot will not go to sleep in full mode (though I cannot test if that is true atm).</p>
+			</div>
+			<div id = "comment-18096" class = "comment">
+				<p>I believe it starts in Passive mode by default. I do not (yet) specify a mode for it to go into. I am just trying to get the baud pin to do its thing first. After that, I will move on to my TX/RX issue.This is why I need to make sure the baud rate is established correctly because without it the commands I send the robot are not relevant.</p>
+			</div>
+			<div id = "comment-18097" class = "comment">
+				<p>@Jonathan and Chuck First of all, I would like to thank you both for taking time to respond thus far. I'm still not sure what the deal with my setup is but I think I am making some progress. In the meantime, I have updated my code in the original post and will be adding an image later to show my wiring setup (just to make sure that is not an issue).</p>
+			</div>
+			</div>
+				<textarea id = "speech-10160" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10160">
+					<img id="start_img-10160" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10160">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

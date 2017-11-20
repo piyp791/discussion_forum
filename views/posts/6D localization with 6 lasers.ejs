@@ -1,0 +1,231 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>6D localization with 6 lasers
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9267" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9267" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">6</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 76</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>6D localization with 6 lasers</h2>
+<p>I have to know where a multi-rotor is, in a rectangular room, via 6 lasers, 2 on each axis.</p>
+
+<p>The problem is like this: </p>
+
+<h1>Inputs :</h1>
+
+<ul>
+<li>Room : square => 10 meters by 10 meters</li>
+<li>6 positions of the lasers : <strong>Fixed</strong> on the frame</li>
+<li>6 orientations of the lasers : <strong>Fixed</strong> on the frame</li>
+<li>The 6 measurements of the lasers</li>
+<li>The quaternion from the IMU of my flight controller (PixHawk).</li>
+<li>The origin is centered on the gravity center of the multi-rotor and defined as if the walls are perpendicular to each axes (the normal of the wall in X is (-1,0,0)) </li>
+</ul>
+
+<h1>Output :</h1>
+
+<ul>
+<li>Position in 3D (X,Y,Z)</li>
+<li>Angular position (quaternion)</li>
+</ul>
+
+<p>Since I got the angular position of the multi-rotor, I rotated the laser positions and orientations via the quaternion, then extrapolate via the 6 measurements and I got the 3 walls. (orientations of the walls are trivial, then only one point is enough to determine its position.</p>
+
+<p>Badly, I noticed that the <strong>yaw</strong> (rotation about z) measurement from the PixHawk is <strong>unreliable</strong>. Then I should measure the yaw from the lasers, but I do not success to do it. Event if the 2D problem is easy, I am lost in 3D.</p>
+
+<p>Does someone know if it [<em>Algorithm to know XYZ position and quaternion from 6 measurments</em>] exists somewhere ? Or what is the right way to go on this problem ? </p>
+
+<p><strong>The question :</strong> How could I get the yaw from 2 measurements from 2 lasers which I know the original position, orientation and the pitch and roll. </p>
+
+<p>NOTE : Green pointers are the origin position, Red pointers are the "final" position, but could be rotated around the red circle (due to yaw).</p>
+
+<p><a href="https://i.stack.imgur.com/ARr3D.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/ARr3D.png" alt="Representation"></a></p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9267" data-toggle = "popover">
+				<p>user name : Alexis Paques</p>
+				<p> user reputation : 151</p>
+				<p class = "tagcontent" id = "usertaginfo-9267">{'geometry': 6, 'None': 2, 'algorithm': 6}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9267">Load Comments</button></br>
+			<div id = "commentsection-9267" class = 'collapse'>
+			<div id = "comment-16411" class = "comment">
+				<p>We can easily get the orientation via MavLink from the PixHawk. Badly, the yaw, heading, orientation about Z is not stable due to the indoor application, while pitch and roll are stable. I am editing the question to add the setup</p>
+			</div>
+			</div>
+				<textarea id = "speech-9267" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9267">
+					<img id="start_img-9267" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9267">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9272"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9272" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><h1><strong>Solution : Is there another solution without prerotating vectors ?</strong></h1>
+
+<p>I finally got a solution, and here it is.</p>
+
+<p>Python, <a href="https://github.com/ros/geometry/blob/7f1188a1ba35ff4d1b107fd05cc494b2a34f550c/tf/src/tf/transformations.py" rel="nofollow noreferrer">ROS geometry library</a>, numpy</p>
+
+<p>My actual code/maths in short : </p>
+
+<p>1) Rotate the position &amp; orientation of lasers by roll &amp; pitch. The <code>axes='sxyz'</code> means : Static axis, apply roll, pitch, yaw. </p>
+
+<p><code>quaternion_matrix</code> creates a 4x4 transformation matrix from the quaternion.</p>
+
+<pre><code>laser = (1,1,1,0) # laser position
+orientation = (1,0,0,0) # laser orientation
+
+roll, pitch, _ = list(euler_from_quaternion(q, axes='sxyz'))
+q = quaternion_from_euler(roll, pitch, 0, axes="sxyz")
+laser = numpy.dot(quaternion_matrix(q), laser)
+orientation = numpy.dot(quaternion_matrix(q), orientation)
+</code></pre>
+
+<p>2) Algebric solution : Rotation around Z in function of yaw</p>
+
+<p><a href="https://i.stack.imgur.com/rHaS5.gif" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/rHaS5.gif" alt="Rotation around Z"></a></p>
+
+<pre><code>laser       = [-sin(a)*laser[1] + cos(t)*laser[0], 
+                cos(t)*laser[1] + sin(t)*laser[0],
+                laser[2]]
+
+orientation = [-sin(a)*orientation[1] + cos(t)*orientation[0], 
+                cos(t)*orientation[1] + sin(t)*orientation[0],
+                orientation[2]]
+</code></pre>
+
+<p>3) Algebric solution : Extrapolation from the measurments in function of yaw</p>
+
+<p>Important notice : Since the rotation do not scale vectors, the denominator of the K factor is a constant. Then, we can simplify it by precompute length of the orientation vector. </p>
+
+<pre><code>M = 100 # distance
+K = sqrt(M^2 / (orientation[0]^2 + orientation[01]^2 + orientation[1]^2))
+PointOnWall = [ K * orientation[0] + laser[0],
+                K * orientation[1] + laser[1],
+                K * orientation[2] + laser[2]]
+</code></pre>
+
+<p>4) Algebric solution : From this, on two laser, get walls. </p>
+
+<p>The two "PointOnWall" equations should gives enough data to get the yaw. Knowing this is a (-1,0,0) normale, I can find 2 planes from the two points :</p>
+
+<p><a href="https://i.stack.imgur.com/0BqsP.gif" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/0BqsP.gif" alt="Wall equation"></a></p>
+
+<p>5) Algebric solution : Measure the YAW.</p>
+
+<p>One plane in the other (Via XMaxima), we got : </p>
+
+<p><a href="https://i.stack.imgur.com/BLwIf.gif" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/BLwIf.gif" alt="Tan equation"></a></p>
+
+<pre><code>def getYaw(position1, orientation1, measure1, position2, orientation2, measure2):
+    length1 = length(orientation1)
+    length2 = length(orientation2)
+    k1 = measure1/length1
+    k2 = measure2/length2
+    numerator   = -k2*orientation2[0] + k1*orientation1[0] + position1[0] - position2[0]
+    denominator = -k2*orientation2[1] + k1*orientation1[1] + position1[1] - position2[1]
+    return atan(numerator/denominator)
+</code></pre>
+
+<p>As expected, roll &amp; pitch DO NOT interfere, since the positions and orientations are prerotated.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9272" data-toggle = "popover">
+				<p>user name : Alexis Paques</p>
+				<p> user reputation : 151</p>
+				<p class = "tagcontent" id = "usertaginfo-9272">{'geometry': 6, 'None': 2, 'algorithm': 6}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9272">Load Comments</button></br>
+			<div id = "commentsection-9272" class = 'collapse'>
+			<div id = "comment-16418" class = "comment">
+				<p>Is this an answer to your own question, or more detail for the question?</p>
+			</div>
+			<div id = "comment-16419" class = "comment">
+				<p>Incomplete answer :/ Mainly to show how I am doing right now, maybe I am doing it wrong.</p>
+			</div>
+			<div id = "comment-16421" class = "comment">
+				<p>I finally got the complete solution :D</p>
+			</div>
+			</div>
+				<textarea id = "speech-9272" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9272">
+					<img id="start_img-9272" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9272">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,169 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Quadcopter Flight Controller:Why does Using gyroscope data give better results?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9739" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9739" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 345</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Quadcopter Flight Controller:Why does Using gyroscope data give better results?</h2>
+<p>I have succeeded in making my first quadcopter from scratch with a readymade frame. I designed the flight controller myself with help from YMFC-3D youtube series of videos. <a href="https://www.youtube.com/watch?v=2pHdO8m6T7c" rel="nofollow">https://www.youtube.com/watch?v=2pHdO8m6T7c</a></p>
+
+<p>But in the process, I discovered that using the euler angles or the 'ypr' values from the MPU6050 as the feeback to the PID loop makes it super difficult to tune the quadcopter and even then it doesn't fly great. </p>
+
+<p>Whereas although not intuitive to me, using the gyroscope values with a complementary filter instantly made the quad respond much better and the tuning also was not too difficult.</p>
+
+<p>Let me clearly define the response in both cases.</p>
+
+<p>Using ypr values:-
++Always keeps overshooting or 'underreaching'
++Very small range of values that can let the quad fly stable
++Drastic Reactions to extreme values of P (Kp)values</p>
+
+<p>Using gyro values:-
++Reaction is much more stable
++Tuning the PID was also simple
++ Even under high values of P(Kp) the quad might crash due to oscillations but not flip or react extremely</p>
+
+<p>Below is a portion of the PID loop:</p>
+
+<pre><code>//gyrox_temp is the current gyroscope output
+
+gyro_x_input=(gyro_x_input*.8)+(gyrox_temp*0.2);//complementary filter
+
+pidrate_error_temp =gyro_x_input - setpoint;//error value for PID loop
+
+pidrate_i_mem_roll += pidrate_i_gain_roll * pidrate_error_temp;
+//integral portion
+
+pidrate_output_roll = pidrate_p_gain_roll * pidrate_error_temp + pidrate_i_mem_roll + pidrate_d_gain_roll * (pidrate_error_temp - pidrate_last_roll_d_error);
+//output of the pid loop
+/pidrate_p_gain_roll-Kp
+//pidrate_i_gain_roll-Ki
+//pidrate_d_gain_roll-Kd
+//this output is given as the pwm signal to the quad plus throttle
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9739" data-toggle = "popover">
+				<p>user name : Hazkaz</p>
+				<p> user reputation : 56</p>
+				<p class = "tagcontent" id = "usertaginfo-9739">{'quadcopter': 0, 'None': 5, 'microcontroller': 1, 'pid': 0, 'electronics': 1, 'gyroscope': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9739">Load Comments</button></br>
+			<div id = "commentsection-9739" class = 'collapse'>
+			<div id = "comment-17309" class = "comment">
+				<p>Was your controller configured to adjust speed or angle? How are you processing gyro data? Can you provide a block diagram of the before and after code? As it stands, your question is very vague.</p>
+			</div>
+			<div id = "comment-17310" class = "comment">
+				<p>Also, check the units on ypr - are you neglecting a 2*pi factor in the angles?   I know it sounds silly but incorrect units on variables could cause this behavior.</p>
+			</div>
+			<div id = "comment-17317" class = "comment">
+				<p>I added the 2*pi factor @SteveO</p>
+			</div>
+			</div>
+				<textarea id = "speech-9739" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9739">
+					<img id="start_img-9739" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9739">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9749"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9749" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The gyro is a less-noisy sensor with gradual drift, the accelerometer is a noisy sensor with integration error (due to the noise). Using them both in conjunction, with a set ratio of either sensor's information can improve the performance of an IMU (Inertial Measurement Unit) dramatically, as well as tuning the sample rate of either sensor.</p>
+
+<p>The problem with the MEMS accelerometers and gyros you get in cheaper implementations of flight controllers etc is that they're actually so susceptible to noise that their drift is usually measured in <strong>degrees a second</strong>, so the longer they're running the worse they get.</p>
+
+<p>A 'step-up' from complementary filtering is <strong>sensor fusion</strong>, which involves blending in data from sensors external to your IMU, usually GPS, to further combat the issues you've been having.</p>
+
+<p>To further understand the characteristics of these sensors and the constraints I'd recommend <a href="http://www.phidgets.com/docs/Allan_Deviation_Primer" rel="nofollow">this primer on 'Allan Deviation'</a> which shows you how to characterise accelerometers and gyroscopes in order to optimise drift and noise removal, as well as sample rates. There's also <a href="http://www.x-io.co.uk/open-source-imu-and-ahrs-algorithms/" rel="nofollow">this incredible AHRS algorithm</a> developed by Sebastian Madgwick which blows my mind a bit.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9749" data-toggle = "popover">
+				<p>user name : Mr Karoshi</p>
+				<p> user reputation : 61</p>
+				<p class = "tagcontent" id = "usertaginfo-9749">{'None': 6}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-9749" class = 'collapse'>
+			</div>
+				<textarea id = "speech-9749" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9749">
+					<img id="start_img-9749" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9749">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

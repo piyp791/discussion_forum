@@ -1,0 +1,138 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Estimation of Battery Life Time From PWM Signals in a Quadrotor
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7735" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7735" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 69</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Estimation of Battery Life Time From PWM Signals in a Quadrotor</h2>
+<p>Is there any way of estimation the battery life from pwm outputs which goes to motors in <strong>microcontroller level</strong>. I'm planning to estimate path range with this. <em>Microcontroller, sensor and other electronic device should be neglected.</em> </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7735" data-toggle = "popover">
+				<p>user name : acs</p>
+				<p> user reputation : 838</p>
+				<p class = "tagcontent" id = "usertaginfo-7735">{'stereo-vision': 4, 'control': 1, '3d-printing': 2, 'simulator': 8, 'multi-agent': 0, 'pid': 1, 'slam': 2, 'robotic-arm': 1, 'mobile-robot': 10, 'ros': 8, 'battery': 0, 'swarm': 2, 'cameras': 4, 'lidar': 4, '3d-model': 2, 'imu': 3, 'kalman-filter': 3, 'gazebo': 1, 'gps': 2, 'None': 34, 'localization': 4, 'sensors': 7, '3d-reconstruction': 2, 'quadcopter': 0, 'computer-vision': 2, 'algorithm': 1, 'sensor-fusion': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7735" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7735" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7735">
+					<img id="start_img-7735" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7735">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7736"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7736" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Battery life is generally measured in amp hours. From a PWM perspective, you are pulsing current at a constant voltage, so you could estimate current output to be (duty cycle)*(rated current) where rated current is the nominal current draw at your operating voltage. Remember too that P=IV, so you could get a rated current by dividing rated power by operating voltage. </p>
+
+<p>So now that you have an estimate for current draw, you can do a simplistic state of charge estimate called "<a href="https://en.wikipedia.org/wiki/State_of_charge" rel="nofollow">Coulomb counting</a>", which is just current integration. </p>
+
+<p>This means that you take your current and multiply it by whatever your sample time interval is, then add it to the previous measurement. </p>
+
+<pre><code>spentCapacity = spentCapacity + (dutyCycle*maxCurrent)*dT
+</code></pre>
+
+<p>In this manner you accumulate how much current you have "spent" and can compare that to how much you started with. </p>
+
+<p>This is not super accurate by any means, but if you're interested in a basic setup that will get you in the right ballpark this is it. </p>
+
+<p>If you go this route, better current measurements are an easy way to improve accuracy, but Texas Instruments makes some "battery fuel gage" chips that are pretty slick too.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7736" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-7736">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7736">Load Comments</button></br>
+			<div id = "commentsection-7736" class = 'collapse'>
+			<div id = "comment-11240" class = "comment">
+				<p>I'd just like to point out that you need to measure apples to apples. For comparisons, spentCapacity, your current multiplied by your sample time, should be in the same units that your battery capacity is in. The only exception to this might be if the conversion involves division, in which case I would suggest leaving spentCapacity in native units and only converting when you need to poll capacity.</p>
+			</div>
+			<div id = "comment-11241" class = "comment">
+				<p>So if current is measured in mA, but you're sample time is measured in *seconds*, then your spentCapacity is measured in mAs instead of the more common mAh. You could convert every sample to mAh with the following `spentCapacity = spentCapacity + (dutyCycle*maxCurrent)*dT/3600` but then you're dividing by 3600 every time you update spentCapacity (high frequency). Instead, divide by 3600 only when you poll spentCapacity (low frequency) and save yourself the computational cost of all that division.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7736" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7736">
+					<img id="start_img-7736" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7736">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

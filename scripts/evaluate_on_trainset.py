@@ -9,16 +9,18 @@ from __future__ import (absolute_import, division, print_function,
 from surprise import Dataset
 from surprise import SVD
 from surprise import NMF
+from surprise import SVDpp
 from surprise import accuracy
 from surprise.dataset import Reader
 
-file_path = 'ratings.dat'
-reader = Reader(line_format='user item rating', sep=' ')
+file_path = 'ratings_robotics.dat'
+reader = Reader(line_format='user item rating', rating_scale=(1, 5), sep=' ')
 data = Dataset.load_from_file(file_path, reader=reader)
 #data = Dataset.load_builtin('ml-100k')
 
-#algo = SVD()
-algo = NMF()
+algo = SVD()
+#algo = NMF()
+#algo = SVDpp()
 
 trainset = data.build_full_trainset()
 algo.train(trainset)

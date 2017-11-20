@@ -1,0 +1,230 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>The SVD dont give me correct Result?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-10708" class = "post">
+			<h2>Question</h2>
+			<div id="vote-10708" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 41</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>The SVD dont give me correct Result?</h2>
+<p>I work actualy in RGBD Visual Odometry and I have used for this the Dataset of TUM. I used ORB features Extractor and then I match the features between frames. After that I use SVD to recover Rotation Matrix and translation vector. Finnaly, I recover pose by this Equation <code>Pos = R*Pos + T;</code>
+But result is very aleatory like (0,0,0) then (-314,-1000,5) ---(500,8,600 )</p>
+
+<p>Here is the Code:</p>
+
+<pre><code>Matx33f R; //Rotation
+Matx31f T;  //Translation
+cv::Matx31f meanX(0, 0, 0), meanY(0, 0, 0);
+BGR1 = imread("C:/Users/Madali/Downloads/rgbd dataset freiburg2 pioneer 360/rgbd_dataset_freiburg2_pioneer_360/rgb/" + *it, CV_LOAD_IMAGE_ANYCOLOR);
+depth = imread("C:/Users/Madali/Downloads/rgbd dataset freiburg2 pioneer 360/rgbd_dataset_freiburg2_pioneer_360/depth/" + *itdepth, CV_LOAD_IMAGE_ANYCOLOR);
+cvtColor(BGR1, Gray, CV_RGB2GRAY);
+orb-&gt;detectAndCompute(Gray, noArray(), features, descriptors_1);
+
+//drawKeypoints(BGR1, features, BGR1, Scalar(25, 147, 90));
+depth2 = imread("C:/Users/Madali/Downloads/rgbd dataset freiburg2 pioneer 360/rgbd_dataset_freiburg2_pioneer_360/depth/" + *(itdepth+1), CV_LOAD_IMAGE_ANYCOLOR);
+
+BGR1 = imread("C:/Users/Madali/Downloads/rgbd dataset freiburg2 pioneer 360/rgbd_dataset_freiburg2_pioneer_360/rgb/" + *(it+1), CV_LOAD_IMAGE_ANYCOLOR);
+cvtColor(BGR1, Gray, CV_RGB2GRAY);
+orb-&gt;detectAndCompute(Gray, noArray(), features2, descriptors_2);
+
+matcher-&gt;match(descriptors_1, descriptors_2, matches);
+
+double max_dist = 0; double min_dist = 100;
+
+// --Quick calculation of max and min distances between keypoints
+for (int i = 0; i &lt; descriptors_1.rows; i++)
+{
+    double dist = matches[i].distance;
+    if (dist &lt; min_dist) min_dist = dist;
+    if (dist &gt; max_dist) max_dist = dist;
+}
+
+//-- Draw only "good" matches (i.e. whose distance is less than 2*min_dist,
+//-- or a small arbitary value ( 0.02 ) in the event that min_dist is very
+//-- small)
+//-- PS.- radiusMatch can also be used here.
+std::vector&lt; DMatch &gt; good_matches;
+
+for (int i = 0; i &lt; descriptors_1.rows; i++)
+{
+    if (matches[i].distance &lt;= max(2 * min_dist, 0.03))
+    {
+        good_matches.push_back(matches[i]);
+    }
+}
+cv::Mat1f X(good_matches.size(), 3); //N*3 matrix of points
+cv::Mat1f Y(good_matches.size(), 3);; //N*3 matrix
+//-- Draw only "good" matches
+
+for (size_t i = 0; i &lt; good_matches.size(); i++)
+{
+
+    float Z = depth.at&lt;float&gt;(features[good_matches[i].queryIdx].pt.y,
+        features[good_matches[i].queryIdx].pt.x)/5000;
+    (Z&gt;5) ? (Z = 0) : X(i, 2) = Z;
+
+    X(i, 2) = Z;
+    X(i, 0) =Z*(features[good_matches[i].queryIdx].pt.x-cx)/fx;
+    X(i, 1) = Z*(features[good_matches[i].queryIdx].pt.y-cy) / fy;
+    //cout &lt;&lt; Z &lt;&lt; " " &lt;&lt;cx &lt;&lt; endl;
+
+    Z = depth2.at&lt;float&gt;(features2[good_matches[i].trainIdx].pt.y,
+        features2[good_matches[i].trainIdx].pt.x) / 5000;
+    (Z&gt;5) ? (Z = 0) : Y(i, 2) = Z;
+
+    //cout &lt;&lt; Z &lt;&lt; " " &lt;&lt; cx &lt;&lt; endl;
+
+    Y(i, 0) = Z*(features2[good_matches[i].trainIdx].pt.x-cx)/fx;
+    Y(i, 1) = Z*(features2[good_matches[i].trainIdx].pt.y-cy)/fy;
+    Y(i, 2) =Z;
+    line(BGR1, features[good_matches[i].queryIdx].pt, features2[good_matches[i].trainIdx].pt
+        , Scalar(0, 255, 0), 2);
+}
+
+
+for (int i = 0; i &lt; X.rows; i++)
+{
+    meanX(0) += X(i, 0);
+    meanX(1) += X(i, 1);
+    meanX(2) += X(i, 2);
+
+    meanY(0) += Y(i, 0);
+    meanY(1) += Y(i, 1);
+    meanY(2) += Y(i, 2);
+}
+
+meanX *= 1.0f / X.rows;
+meanY *= 1.0f / X.rows;
+
+for (int i = 0; i &lt; X.rows; i++){
+    X(i, 0) -= meanX(0);
+    X(i, 1) -= meanX(1);
+    X(i, 2) -= meanX(2);
+
+    Y(i, 0) -= meanY(0);
+    Y(i, 1) -= meanY(1);
+    Y(i, 2) -= meanY(2);
+}
+cv::Mat1f A;
+
+//Rotation 
+A = Y.t()*X;
+cv::SVD svd(A);
+cv::Mat1f Rmat;
+Rmat = svd.vt.t()*svd.u.t();
+
+if (determinant(Rmat) &lt; 0)
+{
+    Rmat.at&lt;float&gt;(0, 2) *= -1;
+    Rmat.at&lt;float&gt;(1, 2) *= -1;
+    Rmat.at&lt;float&gt;(2, 2) *= -1;
+}
+Rmat.copyTo(R);
+//Translation
+
+T = (-R*meanY )+ meanX;
+system("cls");
+Pos = R*Pos + T;
+cout &lt;&lt; Pos &lt;&lt; endl;
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10708" data-toggle = "popover">
+				<p>user name : namster</p>
+				<p> user reputation : 13</p>
+				<p class = "tagcontent" id = "usertaginfo-10708">{'ransac': 2, 'odometry': 0, 'None': 0, 'computer-vision': 0, 'ekf': 2, 'lidar': 2, 'kinect': 0, 'slam': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10708">Load Comments</button></br>
+			<div id = "commentsection-10708" class = 'collapse'>
+			<div id = "comment-19295" class = "comment">
+				<p>I thought computing R was U*V', not U'*V'.  But it has been awhile since I went through that derivation.</p>
+			</div>
+			<div id = "comment-19296" class = "comment">
+				<p>thanks ,Rotation is given By =U'V  Source http://nghiaho.com/?page_id=671 have you another Idea for Estimate 3D rigide Motion ?</p>
+			</div>
+			<div id = "comment-19297" class = "comment">
+				<p>But your code is transposing both U and V in the Rmat calculation.  Maybe I am misunderstanding it.</p>
+			</div>
+			<div id = "comment-19299" class = "comment">
+				<p>No , Opencv Give me V' i transposed them to have V ,</p>
+			</div>
+			<div id = "comment-19313" class = "comment">
+				<p>How many feature matches do you have, and are you sure the matches are accurate? Also, if you just want the relative pose, why not just use the findEssentialMat() and recoverPose() function provided by OpenCV?</p>
+			</div>
+			</div>
+				<textarea id = "speech-10708" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10708">
+					<img id="start_img-10708" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10708">Comment</button>
+
+<h1>Answers</h1>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

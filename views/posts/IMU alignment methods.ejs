@@ -1,0 +1,208 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>IMU alignment methods
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-12775" class = "post">
+			<h2>Question</h2>
+			<div id="vote-12775" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 69</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>IMU alignment methods</h2>
+<p>I have an IMU that is outputting the following for its measurements:</p>
+
+<pre><code>accelx= 0.000909228 (g's)
+accely= -0.000786797 (g's)
+accelz= -0.999432 (g's)
+rotx= 0.000375827 (radians/second)
+roty= -0.000894705 (radians/second)
+rotz= -0.000896965 (radians/second)
+</code></pre>
+
+<p>I would like to calculate the roll, pitch and yaw and after that the orientation matrix of the body frame relative to the NED frame.</p>
+
+<p>So I do</p>
+
+<pre><code>roll = atan2(-accely,-accelz);
+pitch =atan2(-accelx/sqrt(pow(accely,2)+pow(accelz,2)));
+sinyaw = -rotycos(roll)+rotzsin(roll);
+cosyaw = rotxcos(pitch)+rotysin(roll)sin(pitch)+rotzcos(roll)*sin(pitch);
+yaw = atan2(sinyaw,cosyaw);
+</code></pre>
+
+<p>and I get:</p>
+
+<pre><code>roll = 0.000787244
+pitch = -0.000909744
+yaw = 1.17206
+</code></pre>
+
+<p>in radians.</p>
+
+<p>However the IMU is also outputting what <em>it</em> calculates for roll, pitch and yaw.</p>
+
+<p>From the IMU, I get:</p>
+
+<pre><code>roll: -0.00261682
+pitch: -0.00310018
+yaw: 2.45783
+</code></pre>
+
+<p>Why is there is a mismatch between my roll, pitch and yaw and that of the IMU's?</p>
+
+<p>Additionally, I found this formula for the initial orientation matrix.</p>
+
+<p><a href="https://i.stack.imgur.com/2DrpH.png" rel="nofollow noreferrer" title="Initial orientation matrix formula"><img src="https://i.stack.imgur.com/2DrpH.png" alt="Initial orientation matrix formula" title="Initial orientation matrix formula"></a></p>
+
+<p>Which way of calculating the orientation matrix is more correct.
+<code>R1(roll)*R2(pitch)*R3(yaw)</code>, or the form above?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12775" data-toggle = "popover">
+				<p>user name : rielt12</p>
+				<p> user reputation : 23</p>
+				<p class = "tagcontent" id = "usertaginfo-12775">{'None': 2, 'kalman-filter': 0, 'calibration': 0, 'gnss': 0, 'imu': 0, 'sensor-fusion': 0, 'gps': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-12775">Load Comments</button></br>
+			<div id = "commentsection-12775" class = 'collapse'>
+			<div id = "comment-22427" class = "comment">
+				<p>The present  rol, pitch and yaw as the IMU yields can not depend on the present acceleration as the acceleration impacts only future roll, pitch and yaw values. Try to understand https://en.wikipedia.org/wiki/Euler_angles#Tait-Bryan_angles and use only _rotx, roty, rotz_ for your calculation.</p>
+			</div>
+			<div id = "comment-22428" class = "comment">
+				<p>In the box just below the "So I do", you calculate the pitch as a function of a variable accel_x which doesn't seem to be defined. Is it a typo?</p>
+			</div>
+			<div id = "comment-22429" class = "comment">
+				<p>Are there magnetometer outputs available as well?</p>
+			</div>
+			<div id = "comment-22430" class = "comment">
+				<p>@Christo, Yes that is a typo.</p>
+			</div>
+			<div id = "comment-22431" class = "comment">
+				<p>@Christo. There are also magnetometer ouputs</p>
+			</div>
+			</div>
+				<textarea id = "speech-12775" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12775">
+					<img id="start_img-12775" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12775">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-12780"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-12780" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The roll and pitch angles that you calculate using the accelerometer measurements will only be correct if (1) the IMU is non-accelerating (e.g., stationary), and (2) the accelerometer measurements are perfect. Thus, they can only be used to initialize the tilt (roll and pitch) of the IMU, not to calculate roll and pitch during acceleration. An external measurement of yaw angle is required to initialize the yaw angle.  </p>
+
+<p>See these answers:</p>
+
+<ul>
+<li><a href="https://robotics.stackexchange.com/a/10047/13926">What information an IMU gives to a drone?</a>  </li>
+<li><a href="https://robotics.stackexchange.com/a/12705/13926">Multicopter: What  are Euler angles used for?</a></li>
+</ul>
+
+<p>for some background.</p>
+
+<p>Say the accelerometer measurements are $f_x$, $f_y$, and $f_z$; the gyro measurements are $\omega_x$, $\omega_y$, and $\omega_z$, and the magmetometer measuremenst are $b_x$, $b_y$, and $b_z$.  The roll angle ($\phi$) and pitch ($\theta$) angle can be initialized if the IMU is not accelerating using 
+\begin{eqnarray}
+\phi_0 &amp;=&amp; \tan^{-1}\left(f_y/f_z\right) \\
+\theta_0 &amp;=&amp; \tan^{-1}\left(-f_x/\sqrt{f_y^2+f_z^2}\right)
+\end{eqnarray}
+The yaw angle ($\psi$) can be initialized using the magnetometer measurements. Given the roll and pitch angles, the magnetic heading ($\psi_m$) can be calculated from $b_x$, $b_y$, and $b_z$. Given the magnetic declination at the system location, the true heading (or initial yaw angle, $\psi_o$) can be calculated.   </p>
+
+<p>Once the IMU is initalized in an unaccelerated state, the gyro measurements can be used to calculate the rates of change of the Euler angles while the IMU is moving:
+\begin{eqnarray}
+\dot\phi &amp;=&amp; \omega_x +\tan\theta\sin\phi\,\omega_y +\tan\theta\cos\phi\,\omega_z \\  
+\dot\theta &amp;=&amp; \cos\phi\,\omega_y -\sin\phi\,\omega_z \\ 
+\dot\psi   &amp;=&amp; \sec\theta\sin\phi\,\omega_y +\sec\theta\cos\phi\,\omega_z 
+\end{eqnarray}
+The rates of change of the Euler angles are then numerically integrated to propagate the Euler angles.  The coordinate transformation matrix at each instant of time can then be obtained from the Euler angles.  </p>
+
+<p>This will work if your IMU never pitches up or down to $\pm90^\circ$.  In that case it will be better to calculate and propagate quaternions instead of Euler angles. (Euler angles can always be calculated from the quaternions.)</p>
+
+<p>Alas, the gyros are not perfect.  Say that the gyros have bias errors, then these bias errors will also be integrated with time to result in the Euler angled "drifting".  For this reason, an extended Kalman filter is often used to calculate the orientation of the IMU, aided by other measurements (magnetometer, accelerometer, and a GPS, for example). But that's another topic :) </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12780" data-toggle = "popover">
+				<p>user name : Christo</p>
+				<p> user reputation : 351</p>
+				<p class = "tagcontent" id = "usertaginfo-12780">{'None': 19}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-12780" class = 'collapse'>
+			</div>
+				<textarea id = "speech-12780" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12780">
+					<img id="start_img-12780" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12780">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

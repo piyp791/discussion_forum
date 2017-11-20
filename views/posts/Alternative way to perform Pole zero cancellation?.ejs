@@ -1,0 +1,179 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Alternative way to perform Pole zero cancellation?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-3029" class = "post">
+			<h2>Question</h2>
+			<div id="vote-3029" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 795</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Alternative way to perform Pole zero cancellation?</h2>
+<p>I've read a lot places that making a controller which cancels the unwanted pole or zero is not good designing practice for designing a controller.. </p>
+
+<p>It should make the system uncontrollable which off course isn't wanted. </p>
+
+<p>But what alternatives do i have.. ??</p>
+
+<p>considering i have a system in which all poles and zeros lies on RHP. </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-3029" data-toggle = "popover">
+				<p>user name : confused</p>
+				<p> user reputation : 11</p>
+				<p class = "tagcontent" id = "usertaginfo-3029">{'control': 2, 'None': 0, 'design': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-3029" class = 'collapse'>
+			</div>
+				<textarea id = "speech-3029" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-3029">
+					<img id="start_img-3029" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-3029">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-3030"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-3030" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Pole/zero cancellation is discouraged primarily because in practice it is almost impossible to do perfectly. Real systems have variation and uncertainty so you can't know for sure where the poles/zeros are at. So if you try to cancel them out, but they aren't where you thought they were, you have a potentially unstable pole still active.</p>
+
+<p>Feedback controllers stabilize unstable plants (such as yours) by adding and modifying system dynamics such that all poles move to the LHP. (in this case, we're talking about the <strong>entire</strong> system instead of just the unstable plant being controlled) If you've heard of root locus plots, they show where the system poles move as a function of the controller gain.</p>
+
+<p>--- Edit ---- 
+(add example)</p>
+
+<p>Assume your plant has transfer function $P(s)$ and your controller has transfer function $G(s)$. Using this interconnection</p>
+
+<pre><code>r --&gt;(+/-)--&gt;[G(s)]--&gt;[P(s)] ----&gt; x
+       ^                       |
+       |                       |
+       |&lt;-----------------------
+</code></pre>
+
+<p>you have
+$$
+\begin{align}
+X = G P (R-X)
+\\
+(1+G P)X = G P R
+\\
+\frac{X}{R} = \frac{GP}{1+GP}
+\end{align}
+$$
+where everything is in the Laplace domain but I've dropped the $(s)$ for simplicity. For stability, we are now only concerned with the points where $1+G(s) P(s)=0$. Note that we have not made any assumptions about the specifics of $P(s)$ yet, so the results work for all plants.</p>
+
+<p>Now take a plant such as $P(s) = s-1$ and assume a second order controller. We have
+$$
+\begin{align}
+1+G(s) P(s) &amp;= 1+G (s-1)
+\\
+&amp;= 1+(as^2+bs+c)(s-1)
+\\
+&amp;= as^3 + (b-a) s^2 + (c-b) s + (1-c)
+\end{align}
+$$
+Now you just need to choose $a, b, c$ to give negative roots. For example $a=0.1, b=0.3, c=0.8$ gives roots of $-0.467, -0.767 \pm 1.92$.</p>
+
+<p>As plants become more and more complex, this process gets pretty difficult and you need to either have lots of experience to understand how to shape the locus (which I don't) or use other controller design techniques. One common approach is converting to state-space models and using things like linear quadratic regulators (LQR) to design the feedback controller.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-3030" data-toggle = "popover">
+				<p>user name : ryan0270</p>
+				<p> user reputation : 1814</p>
+				<p class = "tagcontent" id = "usertaginfo-3030">{'None': 133}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-3030">Load Comments</button></br>
+			<div id = "commentsection-3030" class = 'collapse'>
+			<div id = "comment-5525" class = "comment">
+				<p>The problems is though, having a zero in the RHP  will always lead one  close loop pole to stay at the RHP side.  which means  increasing the gain system might move one close loop pole to the left, but the other will be on the right, and thereby still cause instability.</p>
+			</div>
+			<div id = "comment-5526" class = "comment">
+				<p>my idea was to cancel the the zero which lies between the two poles, and then add a zero at LHP. Thereby creating a system which x gain would make the system stable.</p>
+			</div>
+			<div id = "comment-5527" class = "comment">
+				<p>I added an example to the answer.</p>
+			</div>
+			<div id = "comment-8011" class = "comment">
+				<p>@ryan0270, it is not true that the practice of pole/zero cancellation is discouraged: conversely, it is very common to cut down the effect of a stable pole and/or a LHP zero by means of cancellation. It doesn't matter if they don't perfectly match; the fact that they're very close in the Gauss plane is the key point. On the other hand, you cannot never cancel a pole/zero in RHP for the same reason. Then, consider also that the mechanical systems we have in robotics tend to be stable and minimum-phase (all zeros in LHP)</p>
+			</div>
+			<div id = "comment-8012" class = "comment">
+				<p>@confused, a zero in the plant $P$ will not yield any pole in the closed-loop transfer function $GP/(1+GP)$</p>
+			</div>
+			</div>
+				<textarea id = "speech-3030" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-3030">
+					<img id="start_img-3030" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-3030">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

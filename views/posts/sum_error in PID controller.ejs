@@ -1,0 +1,247 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>sum_error in PID controller
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8636" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8636" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 98</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>sum_error in PID controller</h2>
+<p>I'm trying to implement a PID controller by myself and I've a question about the sum_error in I control. Here is a short code based on the PID theory.</p>
+
+<pre><code>void pid()
+{
+  error = target - current;
+
+  pTerm = Kp * error;
+
+  sum_error = sum_error + error * deltaT ;
+  iTerm = Ki * sum_error;
+
+  dTerm = Kd * (error - last_error) / deltaT;
+  last_error = error;
+
+  Term = K*(pTerm + iTerm + dTerm);
+}
+</code></pre>
+
+<p>Now, I start my commands:</p>
+
+<p>Phase 1, If at t=0, I set target=1.0, and the controller begins to drive motor to go to the target=1.0,
+Phase 2, and then, at t=N, I set target=2.0, and the controller begins to drive motor to go to the target=2.0</p>
+
+<p>My question is, in the beginning of phase 1, the error=1.0, the sum_error=0, and after the phase 1, the sum_error is not zero anymore, it's positive. And in the beginning of phase 2, the error=1.0 (it is also the same with above), but the sum_error is positive. So, the iTerm at t=N is much greater than iTerm at t=0.</p>
+
+<p>It means, the curves between phase 2 and phase 1 are different!!!</p>
+
+<p>But to end-user, the command 1, and the command 2 is almost the same, and it should drive the same effort.</p>
+
+<p>Should I set the sum_error to zero or bound it? Can anyone tell me how to handle the sum_error in typical?</p>
+
+<p>Any comment will be much appreciated!!</p>
+
+<p>Kevin Kuei</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8636" data-toggle = "popover">
+				<p>user name : Kevin Kuei</p>
+				<p> user reputation : 18</p>
+				<p class = "tagcontent" id = "usertaginfo-8636">{'None': 0, 'pid': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8636">Load Comments</button></br>
+			<div id = "commentsection-8636" class = 'collapse'>
+			<div id = "comment-14090" class = "comment">
+				<p>Questions: **ONE** Can you post plots of the response and errors? **TWO** You say "sum_error is positive", but that doesn't mean much. Can you provide an actual number? Is it 0.001 or 10000? **THREE** What are the actual targets? You have a phase 1 target of "1.0" and a phase 2 target of "2.0". This should not appear to anyone as "almost the same" because the phase 2 target is *double* the phase 1 target.</p>
+			</div>
+			<div id = "comment-14105" class = "comment">
+				<p>Thanks for your comment. In my case, it's a position controller. So.. to end-users, the curves that motor perform from position 0.0 to 1.0 should be the same from position 1.0 to 2.0. Hope this clearify my question.</p>
+			</div>
+			<div id = "comment-14107" class = "comment">
+				<p>Can you please post plots? You say, "The curves between phase 2 and phase 1 are different", but there are no curves provided. You speculate that integral error is to blame, but you don't provide any plots of PID error terms. Can you provide a simple drawing of your setup? How do you have a motor doing position control? Is this a linear actuator or something else? Basically, you provide a (somewhat) standard block of PID code (ditch the `Term = K*...` line), and then complain that the output isn't what you want, but you give *no other information at all*.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8636" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8636">
+					<img id="start_img-8636" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8636">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8637"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8637" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I would recommend implementing</p>
+
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Integral_windup" rel="nofollow">anti-windup</a></li>
+<li>an averaging (or other) filter for the derivative term (spanning across 2-3-4 timesteps</li>
+</ul>
+
+<p><a href="http://homepages.uni-regensburg.de/~erc24492/PID-Regler/AVR221/IAR/doxygen/pid_8c.html" rel="nofollow">Here</a> is a referece implementation from Atmel in C with integrator reset.</p>
+
+<p>EDIT: 
+Please consider Chucks questions in the comments and his answer, since anti windup prevents unwanted error accumulation only in the case when the system is not able to execute the desired set-point. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8637" data-toggle = "popover">
+				<p>user name : 50k4</p>
+				<p> user reputation : 2800</p>
+				<p class = "tagcontent" id = "usertaginfo-8637">{'geometry': 0, 'None': 193, 'kinematics': 0, 'robotic-arm': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8637">Load Comments</button></br>
+			<div id = "commentsection-8637" class = 'collapse'>
+			<div id = "comment-14089" class = "comment">
+				<p>Agree with @50k4.   Usually I will only enable the integrator when settling around the target point.   Otherwise you are accounting for the accumulated lag in motion for the entire trajectory, and will tend to overshoot.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8637" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8637">
+					<img id="start_img-8637" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8637">Comment</button>
+			<br><div id = "ans-8638"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8638" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>First, please respond to the questions I ask in the comments on your question.</p>
+
+<p>You mention that the device to be controlled is a motor. Bear in mind that rotating power is $P = \tau \omega$, or torque times speed, so you won't get the same response at high speed that you get at low speed because motor torque typically declines with increasing speed. </p>
+
+<p>I'm not sure if this is the cause of your differing responses or not, but I believe it would have a large impact <em>unless</em> you're just using "1.0" and "2.0" as placeholders for some other value, or they are literally 1 and 2 and are very close together percentage-wise in terms of the entire speed band of the motor.</p>
+
+<p>Regarding wind-up, mentioned in 50k4's answer, I wouldn't think it would be an issue unless your process is saturating, which is to say that it shouldn't be an issue unless your motor is hitting some physical limits that would prevent it from responding, like a current limit or something similar. Note however that if you <em>are</em> getting to the point where your response is saturating that you are also likely operating at a point where motor power is limited and thus you are unlikely to get the same response curves no matter what actions you take to tune a standard PID controller. </p>
+
+<p>Ultimately, if I were you, I would evaluate the errors and determine if there is a problem with your error accounting or if you are realizing the physical limitations of a motor. Keep in mind that the <em>entire point</em> of the integral term is to accumulate error - this will speed control response if it is "taking too long". Accumulated error before settling is both normal and desirable <em>as long as</em> the controller output is still able to effect change in the system. Only when the system becomes unresponsive: linear actuators at an end stop; motors at top speed; motor drivers at a current limit; etc., will wind-up become an issue. </p>
+
+<p>I would output integral error, set the motor setpoint to 1.0, then wait until integral error is (effectively) zero, then change the setpoint to 2.0. If the output response is still inconsistent, then you have a problem with the physical limitations of the system (increasing torque required at higher speeds). If you get consistent responses then you are entering "Phase 2" at time "t=N', which is still inside the response time for Phase 1. As the controller is still actively responding it will naturally generate a different response. At that point, consider waiting longer to enter Phase 2 or increasing the gains on your controller to achieve a settled response by time "t=N". </p>
+
+<p>As a final comment, the last line of your code has "Term = <strong>k</strong> * (<code>error terms</code>)". If you are doing everything else correctly (generally, have your sampling time correct), then you should leave $k=1$, or just use the sum of the PID terms as the controller output.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8638" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-8638">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8638">Load Comments</button></br>
+			<div id = "commentsection-8638" class = 'collapse'>
+			<div id = "comment-14091" class = "comment">
+				<p>The way it is implemented right  now, the integral error will never be zero if the motion is always in the same direction. The integral error from yesterday, or last week (literarly) will still effect the actual motions... It is just a question of time when will the intergral part saturate..</p>
+			</div>
+			<div id = "comment-14093" class = "comment">
+				<p>@50k4 - "Integral error will never be zero *if the motion is always in the same direction.*" True, but this would also imply no overshoot, which in turn then also implies that it's not possible for the system to exceed the setpoint. I've never seen a system where this is the case (that has a controller). If the motion is not bi-directional then how could you ever possibly expect to control it? How would you turn it off? How could you go from a setpoint of 2.0 back to 1.0?</p>
+			</div>
+			<div id = "comment-14094" class = "comment">
+				<p>Yes, correction: "Assuming the desired motion is in the same direction". Tho overshot will be smaller then the step it produces it and so the area above the step will most likely not be greater or at least comparable to the area below the step...and so the integral part will never be zero it will keep increasing (or decreasing, depending on the direction of the desired motion) if the setpoints are monotonically increasing (or monotonically decreasing)</p>
+			</div>
+			<div id = "comment-14095" class = "comment">
+				<p>@50k4 - This statement is incorrect. PID controller is *strictly* the sum of the `(gain*error)` terms. Consider a scenario where the controller has perfectly hit the setpoint such that derivative and proportional errors are zero. In this case, the only term that contributes to the output is the integral term. If integral error is positive (reference has been higher than output for some length of time), then the controller output will be higher than it would otherwise need to be - this is called "overshoot".</p>
+			</div>
+			<div id = "comment-14096" class = "comment">
+				<p>After the system has overshot for some period of time accumulated error is negative (output has been higher than reference for some length of time), and so then again, other errors zero, the controller output is *lower* than it should be - this is called "undershoot". This process of repeated over/undershooting is called "oscillation" and it happens until the change it creates becomes negligible, either through controller or physical damping.</p>
+			</div>
+			<div id = "comment-14097" class = "comment">
+				<p>Would you agree, that with the above implementation, if thecontroller is tuned not ot have overshot, or just a very very small one, and the setpoint are ever increasing (1.0 2.0 3.0 ....) the integral error would eventually reach its maximum value (and then probably overflow since it is a microcontroller)?</p>
+			</div>
+			<div id = "comment-14098" class = "comment">
+				<p>Bear in mind that accumulated error is the magnitude of error *multiplied by time*, so it *is possible* (and expected!) to have the system overshoot by a lower *magnitude* (percentage) than the initial step input was, but that the overshoot excursion would last *longer* than the initial rising transient. This oscillatory response, though it does decay, is one of the major drawbacks in reducing system response times.</p>
+			</div>
+			<div id = "comment-14099" class = "comment">
+				<p>@50k4 - No, I do not agree, because the PID controller automatically adjusts its output (input to the system) until *all* error terms are zero. This is how a PID controller works.</p>
+			</div>
+			<div id = "comment-14100" class = "comment">
+				<p>Or you mean that the accumulation in the integrator causes the overshot, and would eventually "self regulate"?</p>
+			</div>
+			<div id = "comment-14101" class = "comment">
+				<p>Let us [continue this discussion in chat](http://chat.stackexchange.com/rooms/32695/discussion-between-chuck-and-50k4).</p>
+			</div>
+			<div id = "comment-14102" class = "comment">
+				<p>But thia is what the original poster wants to avoid...OP wants the same response type for setpoint change, regardless of prevoius accumulation of errors..</p>
+			</div>
+			<div id = "comment-14104" class = "comment">
+				<p>An integral gain for a lagging system will always push the poles to the right.  It will lead to overshoot if not zero'd before settling.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8638" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8638">
+					<img id="start_img-8638" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8638">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,183 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Simple Sensor Fusion for pose estimation
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7870" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7870" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 482</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Simple Sensor Fusion for pose estimation</h2>
+<p>I am currently working on a <a href="https://www.youtube.com/watch?v=oVgBeTJ4OwY" rel="nofollow noreferrer">balancing robot project</a>, which features fairly low-cost sensors such as an 9-Dof IMU with the measurement states</p>
+
+<p>$\textbf{x}_\text{IMU} = \left[a_x, a_y, a_z, g_x, g_y, g_z, m_x,m_y,m_z \right]^\text{T}$.</p>
+
+<p>Currently I use the accelerometer and gyroscope readings, fused by a complimentary filter to get the angular deviation of the robot's upright (stable) position. The magnetometer values are tilt-compensated and yield the robots orientation with respect to the earth-magnetic field (awful when close to magnetic distortion). Furthermore I have pretty decent rotational encoders mounted on the wheels which deliver information on a wheel's velocity.</p>
+
+<p>$\textbf{x}_\text{ENC} = \left[v_l,v_r\right]^\text{T}$.</p>
+
+<p>Given these measurements i want to try to get the robots pose (position + heading).</p>
+
+<p>$\textbf{x}_\text{ROB} = \left[x,y,\theta\right]^\text{T}$</p>
+
+<p>I do have minor theoretical knowledge on EKF or KF, but it is not sufficient for me to actually derive a practical implementation. Note that my computational resources are fairly limited (Raspberry Pi B+ with RTOS) and that I want to avoid using ROS or any other non-std libs. Can anybody help me on how to actually approach this kind of problem?
+<a href="https://i.stack.imgur.com/g0imv.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/g0imv.jpg" alt="overview"></a></p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7870" data-toggle = "popover">
+				<p>user name : Flo Ryan</p>
+				<p> user reputation : 73</p>
+				<p class = "tagcontent" id = "usertaginfo-7870">{'odometry': 3, 'None': 2, 'motion-planning': 2, 'kalman-filter': 3, 'kinematics': 2, 'robotic-arm': 4, 'imu': 3, 'sensor-fusion': 3, 'jacobian': 2, 'mobile-robot': 4, 'sensors': 3, 'ros': 2, 'inverse-kinematics': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7870">Load Comments</button></br>
+			<div id = "commentsection-7870" class = 'collapse'>
+			<div id = "comment-11463" class = "comment">
+				<p>Welcome to *Robotics* Flo Ryan, great first question, I look forward to reading the answers you get.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7870" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7870">
+					<img id="start_img-7870" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7870">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7871"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7871" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>So you have acceleration readings from your IMU (linear and angular), and you get velocity readings (linear only) from wheel encoders.</p>
+
+<p>Get velocity from linear and angular accelerations with</p>
+
+<p>$$
+v = v + a*\mbox{dT}
+$$</p>
+
+<p>Get angular velocity from your wheel encoders by exploiting geometry of the vehicle</p>
+
+<p>$$
+\dot{\theta} = \mbox{atan2}((v_r - v_l) , \mbox{wheel base})
+$$</p>
+
+<p>Now you have two sources of linear and angular velocities - the IMU and the wheel encoders. Get to linear and angular positions with</p>
+
+<p>$$
+x = x + v*\mbox{dT}
+$$</p>
+
+<p>Here I've used $x$ but of course it's just a variable to use for whatever position you're interested in using.</p>
+
+<p>Now you have heading and position from the IMU (via linear x and y accelerations and the z gyro), you have heading and position from the wheel encoders, and heading via the magnetometer. </p>
+
+<p>I would suggest filtering IMU outputs before integration, but you can use whatever filter you want - lag, Kalman, or something more complicated. If computational simplicity is a priority I would highly suggest you check out the <a href="http://my.execpc.com/~steidl/robotics/first_order_lag_filter.html" rel="nofollow">lag filter</a>. It's basically a complimentary filter using the current sample and previous sample instead of two different sensors. </p>
+
+<p>Finally, you can fuse the sensor readings with the complimentary filter. I don't think I can advise you as to which input you should place more emphasis because that will depend primarily on wheel slip (how much you "trust" the wheel encoder).</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7871" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-7871">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7871">Load Comments</button></br>
+			<div id = "commentsection-7871" class = 'collapse'>
+			<div id = "comment-11464" class = "comment">
+				<p>Thanks! The gyroscope gives us angular velocities. I can follow your post but the fact that the Imu's  frame tilts around its x axis makes it a lot harder i guess. Did you leave out the magnetometer readings as they are to imprecise ? I added a small sketch. Hope it helps!</p>
+			</div>
+			<div id = "comment-11465" class = "comment">
+				<p>No, you can use the magnetometer along with the heading estimates from the gyro and wheel encoders. You can use a complimentary filter to combine the three estimates all at once or you can combine the first two and then combine that output with the third (cascade the complimentary filter).</p>
+			</div>
+			<div id = "comment-11466" class = "comment">
+				<p>Regarding the IMU rotation, your robot balances so the rotation should be minimal. You can use small angle approximation for cosine, $1 - \theta^2/2$, where the angle is in radians. However, if you do the math here, 5 degrees is $5*(\pi/180)=0.087$ radians. Squared divided by two gives you 0.0038, so the cosine small angle approximation for 5 degrees is 0.9962. I've found that, unless you need to be super precise, <reading> cos$\theta \approx$ <reading> is generally a safe small angle approximation.</p>
+			</div>
+			<div id = "comment-11467" class = "comment">
+				<p>A final comment on the small angle approximation - compare what I've shown above to the measurement error of the IMU. Allowing $\cos{\theta}=1$ introduces an error of up to 0.4%, which may be negligible compared to measurement error. Additionally, the error is symmetric (same error applied forward and backward), so any error introduced during forward motion will get canceled during backwards motion. You could always do proper trig compensation of course, but I don't know if it's necessary for your application.</p>
+			</div>
+			<div id = "comment-11469" class = "comment">
+				<p>Thanks again. One issue is remaining.The rotation around the x and the y axis calculated by the atan2 of the IMU yields fairly good results, which is due to the constant gravitational force. However estimates for the rotation around the z-Axis which is paralell to the gravitational force vector are not feasible as the forces created by the movement of the robot are too small. I will consider using the magnetometer for this. I do also get your point on the small angular approximation, I don't know why but I feel the urge to over-complicate things. I guess I'll stick with your suggestion, though</p>
+			</div>
+			<div id = "comment-11471" class = "comment">
+				<p>Why calculate rotation with linear accelerometers? Are you using the gyro data?</p>
+			</div>
+			<div id = "comment-11472" class = "comment">
+				<p>Usually you do both and fuse the results such that the accelerometer compensates for the gyro's drift and the gyro compensates for the high frequent noise in acc. readings.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7871" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7871">
+					<img id="start_img-7871" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7871">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,178 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Can a state matrix have a row of zeros?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-12564" class = "post">
+			<h2>Question</h2>
+			<div id="vote-12564" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 66</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Can a state matrix have a row of zeros?</h2>
+<p>While formulating a state matrix of a system, say a system of a typical cruise controller,
+\begin{equation}
+\begin{bmatrix}
+\dot{v}
+\end{bmatrix} = \begin{bmatrix} -\frac{b}{m} \end{bmatrix} \begin{bmatrix} v \end{bmatrix} + \begin{bmatrix} -\frac{1}{m} \end{bmatrix} \begin{bmatrix} u \end{bmatrix}
+\end{equation}
+\begin{equation}
+y = \begin{bmatrix} 1 \end{bmatrix} \begin{bmatrix} v \end{bmatrix}
+\end{equation}
+If we consider $b = 0$ (negligible), then does this state space matrix make sense any more and is it viable? A state matrix without state variable influence in equation?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12564" data-toggle = "popover">
+				<p>user name : Aniket Sharma</p>
+				<p> user reputation : 38</p>
+				<p class = "tagcontent" id = "usertaginfo-12564">{'control': 4, 'self-driving': 4, 'None': 0, 'design': 4, 'dynamics': 4}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-12564" class = 'collapse'>
+			</div>
+				<textarea id = "speech-12564" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12564">
+					<img id="start_img-12564" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12564">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-12565"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-12565" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">8</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Yes, a state matrix with zero rows and/or columns makes sense and is viable.  It typically signify pure integrators in the system.  In the example you give, 
+$$
+\dot{v} = -\frac{b}{m} v +\frac{1}{m} u
+$$
+where $v$ is the speed, $u$ is the externally applied force, and $bv$ is some viscous damping force. Now if the viscous damping coefficient is zero (no retarding force acting on the object of mass $m$, the differential equation becomes 
+$$
+\dot{v} = \frac{1}{m} u
+$$
+The $\dot{v}$ is integrated kinematically to obtain $v$, and your state-space model becomes
+\begin{eqnarray*}
+[\dot{v}] &amp;=&amp; [0][v] + [1/m][u] \\ 
+y &amp;=&amp; [1][v]
+\end{eqnarray*} </p>
+
+<p>Another way to look at it is to obtain the transfer function from $u$ to $y$ (the transfer function of the plant which you want to control), which becomes
+$$
+\frac{Y}{U} = \frac{1}{m}\cdot\frac{1}{s+b/m}
+$$
+which is a constant term ($1/m$) times a first-order lag.  For $b=0$, the transfer function becomes
+$$
+\frac{Y}{U} = \frac{1}{m}\cdot\frac{1}{s}
+$$
+which is simply a constant term ($1/m$) times an integrator ($1/s$).</p>
+
+<h2>Edit: Controllability of the System</h2>
+
+<p>If the externally applied force is zero (i.e., $u=0$) the output of the integrator ($v$) remains constant; if $u&gt;0$, the resulting acceleration ($\dot{v}=u/m$) is integrated "up" and the speed increases; if $u&lt;0$, $\dot{v}$ is integrated "down" and the speed decreases.  Speed, of course, is the state variable in your system.  Thus, it is possible to transfer the system state from any initial state, $v(t_0)$, to any other state, $v(t_f)$, in a finite time by means of the input, <em>irrespective of the value of</em> $b$. So, by purely physical reasoning we can say thet the system is controllable. </p>
+
+<p>Since this is a linear time-invariant system, the controllability matrix 
+$$
+\mathbf{Q} = \left[ 
+\begin{array}{cccc}
+\mathbf{B} &amp; \mathbf{A}\mathbf{B} &amp; \cdots &amp; \mathbf{A}^{n-1}\mathbf{B}
+\end{array}
+\right]
+$$
+where $\mathbf{A}=[-b/m]$ is the state matrix, $\mathbf{B}=[1/m]$ is the input matrix, and $n=1$ is the number of state variables. For your system,
+$$
+\mathbf{Q} = \mathbf{B} = \left[ 
+\begin{array}{c}
+1/m
+\end{array}
+\right]
+$$
+i.e., a non-zero scalar which can be inverted (it is non-singular).  Thus, the rank of $\mathbf{Q}$ is one, and the system is controllable. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12565" data-toggle = "popover">
+				<p>user name : Christo</p>
+				<p> user reputation : 351</p>
+				<p class = "tagcontent" id = "usertaginfo-12565">{'None': 19}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-12565">Load Comments</button></br>
+			<div id = "commentsection-12565" class = 'collapse'>
+			<div id = "comment-22043" class = "comment">
+				<p>I am pretty clear now. Can you comment on the controllability of the system if $b = 0$? I found the rank of controllability matrix is **1**.</p>
+			</div>
+			<div id = "comment-22045" class = "comment">
+				<p>With pleasure, @AniketSharma.  I  have edited by answer to comment on that.</p>
+			</div>
+			</div>
+				<textarea id = "speech-12565" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12565">
+					<img id="start_img-12565" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12565">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

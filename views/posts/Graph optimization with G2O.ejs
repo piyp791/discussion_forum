@@ -1,0 +1,199 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Graph optimization with G2O
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-6849" class = "post">
+			<h2>Question</h2>
+			<div id="vote-6849" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 1900</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Graph optimization with G2O</h2>
+<p>I'm trying to do graph optimization with G2O, mainly in order to perform loop closure. However finding minimal working examples online is an issue (I've found <a href="https://github.com/MiguelAlgaba/KinectSLAM6D/blob/9891798038fe0b693390513d36fb83346988bf91/kinect6DSLAM.cpp" rel="nofollow noreferrer">this</a> project, as well as <a href="https://github.com/jstueckler/mrsmap/blob/2e1c378b3d22520dcc07f650b35b881fbd3e529a/src/slam/slam.cpp" rel="nofollow noreferrer">this one</a>. The second one though has the form of a library, so one cannot really see how the author uses things.)</p>
+
+<p>In contrast to online loop closure, where people update and optimize a graph every time they detect a loop, I'm doing graph optimization only once, after pairwise incremental registration. So in my case, pairwise registration and global, graph-based optimization are two separate stages, where the result of the first is the input for the second.</p>
+
+<p>I already have a working solution, but the way that works for me is quite different from the usual use of g2o:</p>
+
+<ul>
+<li>As nodes I have identity matrices (i.e. I consider that my pointclouds are already transformed with the poses of the pairwise reg. step) and </li>
+<li>as edges, I use the relative transformation based on the keypoints of
+the pointclouds (also the keypoints are transformed). So in this case
+I penalize deviations of the relative pose from the identity matrix.</li>
+<li>As Information matrix (inverse of covariance) I simply use a 6x6
+identity matrix multiplied by the number of found correspondences
+(like <a href="https://github.com/MiguelAlgaba/KinectSLAM6D/blob/9891798038fe0b693390513d36fb83346988bf91/kinect6DSLAM.cpp" rel="nofollow noreferrer">this case</a>). </li>
+<li>The result of the graph is an update matrix,
+i.e. I have to multiply with this the camera poses. </li>
+</ul>
+
+<p>Although this works in many/most cases, it is a quite unusual approach, while one cannot draw the graph for debugging (all nodes are identities in the beginning, and the result after optimization is a 3d path), which means that if something goes wrong getting an intuition about this is not always easy.</p>
+
+<p><img src="https://i.stack.imgur.com/XPvL9.png" alt="enter image description here"> <img src="https://i.stack.imgur.com/BGnxT.png" alt="enter image description here"> <img src="https://i.stack.imgur.com/Kg30b.png" alt="enter image description here"></p>
+
+<p>So I'm trying to follow the classic approach:</p>
+
+<ul>
+<li>The vertices/nodes are the poses of the pairwise registration</li>
+<li>The edges are the relative transformations based on the keypoints/features of the raw pointclouds (i.e. in the camera frame, not transformed by the poses of the pairwise registration)</li>
+<li>The output are the new poses, i.e. one simply replaces the old poses with the new ones</li>
+<li>Drawing the graph in this case makes sense. For example in case of scanning an object with a turntable, the camera poses form a circle in 3d space.</li>
+<li>I'm trying to form all the edges and then optimize only at one stage (this doesn't mean only 1 LM iteration though).</li>
+</ul>
+
+<p>However I cannot make things running nicely with the 2nd approach.
+I've experimented a lot with the direction of the edges and the relative transformation that is used as measurement in the edges, everything looks as expected, but still no luck. For simplicity I still use the information matrix as mentioned above, it is a 6x6 identity matrix multiplied with the number of correspondences. In theory the information matrix is the inverse of covariance, but I don't really do this for simplicity (plus, following <a href="https://github.com/jstueckler/mrsmap/blob/2e1c378b3d22520dcc07f650b35b881fbd3e529a/src/registration/multiresolution_surfel_registration.cpp" rel="nofollow noreferrer">this way</a> to compute the covariance is not very easy).</p>
+
+<p><img src="https://i.stack.imgur.com/Lvmdu.png" alt="enter image description here"> <img src="https://i.stack.imgur.com/LfwqV.png" alt="enter image description here"> <img src="https://i.stack.imgur.com/DYbgw.png" alt="enter image description here"></p>
+
+<p>Are there any minimal working examples that I'm not aware of?
+Is there something fundamentally wrong in what I describe above?
+Are any rules of thumb (e.g. the first node in both approaches above is fixed) that I should follow and I might not be aware of them?</p>
+
+<p><em>Update: More specific questions</em></p>
+
+<ul>
+<li>The nodes hold the poses of the robot/camera. It is unclear though at which reference frame they are defined. If it is the world coordinate frame, is it defined according to the camera or according to the object, i.e. first acquired pointcloud? This would affect the accumulation of the pose matrices during incremental registration (before the g2o stage - I try to form and optimize the graph only once at the end, for all the frames/pointclouds).</li>
+<li>The edge (Src->Tgt) constraints hold the relative transformation from pointcloudSrc to pointcloudTgt. Is it just the transformation based on the features of the two in the local coordinate frame of pointcloudSrc? Is there and tricky point regarding the direction, or just consistency with the relative transformation is enough?</li>
+<li>The first node is always fixed. Does the fixed node affect the direction of the edge that departs/ends_up from/at the fixed node?</li>
+<li>Is there any other tricky point that could hinter implementation?</li>
+<li>I'm working in millimeter instead of meter units, I'm not sure if this will affect the solvers of g2o in any way. (I wouldn't expect so, but a naive use of g2o that was giving some usable results was influenced)</li>
+</ul>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6849" data-toggle = "popover">
+				<p>user name : dim_tz</p>
+				<p> user reputation : 118</p>
+				<p class = "tagcontent" id = "usertaginfo-6849">{'None': 0, 'slam': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-6849" class = 'collapse'>
+			</div>
+				<textarea id = "speech-6849" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6849">
+					<img id="start_img-6849" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6849">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7587"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7587" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p><em>The nodes hold the poses of the robot/camera. It is unclear though at which reference frame they are defined. If it is the world coordinate frame, is it defined according to the camera or according to the object, i.e. first acquired pointcloud? This would affect the accumulation of the pose matrices during incremental registration (before the g2o stage - I try to form and optimize the graph only once at the end, for all the frames/pointclouds).</em></p>
+
+<p>-
+As far as I can tell, they should be in world coordinate frame indeed. So we start with identity, and incrementally carry on moving as we compute the odometry transformations (if visual odometry is used). So basically Pose_1 = Identity, Pose_2 = Poise_1*T_12, ..., Pose_i = Pose_(i-1)*T_(i-1)i. So that's one way.</p>
+
+<h2><em>The edge (Src->Tgt) constraints hold the relative transformation from pointcloudSrc to pointcloudTgt. Is it just the transformation based on the features of the two in the local coordinate frame of pointcloudSrc? Is there and tricky point regarding the direction, or just consistency with the relative transformation is enough?</em></h2>
+
+<p>Say you were in Pose_(i-1) (your previous known pose), and you want to compute the relative transformation between Pose_(i-1) and the current unknown pose Pose_i. Then you get the previous point cloud in coordinate frame of Pose_(i-1), I will call it PC_(i-1), and you also get your current point cloud PC_i and put also with respect to Pose_(i-1).
+More specifically, for all points p belonging to PC_(i-1), you transform them using Pose_(i-1), making p' = Pose_(i-1)*p, same for the points q, obtaining q' = Pose_(i-1)*q.</p>
+
+<p>Given these two point clouds we can compute ICP between them
+src_cloud = PC_(i-1)
+tgt_cloud = PC_i
+T_(i-1)i = ICP( src_cloud, tgt_cloud ).inverse();</p>
+
+<p>--> Note that instead of ICP you could have some other algorithm to align two point clouds, this is just an example.</p>
+
+<p>(we get the inverse of the transform that aligns src_cloud to tgt_cloud because we want the relative motion of the robot/camera, and not the relative motion of the cloud, one is the inverse of the other, just like if you move towards a tree, the tree moves towards you with the same transformation, but inverse).</p>
+
+<p><em>The first node is always fixed. Does the fixed node affect the direction of the edge that departs/ends_up from/at the fixed node?</em></p>
+
+<p>The first node is fixed because of the formulation of the linear system (which the whole graph optimisation equation becomes at the end, you can see g2o paper and also look for "A tutorial on Graph-Based SLAM")</p>
+
+<p><em>Is there any other tricky point that could hinter implementation?</em>
+If you read RGBDSLAM code, and RTABMAP code, you will see that they set the information matrix as the identity multiplied by <em>something</em>. This <em>something</em> can be a proxy that reflects the inverse variance, you can compute the variance itself (average distance between the  aligned points of the point clouds aligned with T_(i-1)i). You can set it as the identity multiplied by the number of inliers in your aligned procedure of choice, the whole point is that your information matrix must say more or less how much certain you are about the correctness of the transformation T_(i-1)i, or how much information it's bringing to the system, that's the main semantic meaning.</p>
+
+<p><em>I'm working in millimeter instead of meter units, I'm not sure if this will affect the solvers of g2o in any way. (I wouldn't expect so, but a naive use of g2o that was giving some usable results was influenced)</em></p>
+
+<p>I don't think it should create problems either, although you should beware of numerical issues such as overflow/underflow, rounding, and such things.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7587" data-toggle = "popover">
+				<p>user name : Little Sheep Balloon</p>
+				<p> user reputation : 11</p>
+				<p class = "tagcontent" id = "usertaginfo-7587">{'None': 1}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7587">Load Comments</button></br>
+			<div id = "commentsection-7587" class = 'collapse'>
+			<div id = "comment-10941" class = "comment">
+				<p>Also, you might not get great results because you are just adding odometry constraints. You need to add also loop closure constraints to lower down your trajectory error (theory).</p>
+			</div>
+			</div>
+				<textarea id = "speech-7587" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7587">
+					<img id="start_img-7587" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7587">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

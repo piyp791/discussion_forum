@@ -1,0 +1,287 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Polling or Timer interrupt?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-1758" class = "post">
+			<h2>Question</h2>
+			<div id="vote-1758" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">8</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 2221</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Polling or Timer interrupt?</h2>
+<p>We hope to build a simple line follower robot and we got a problem when we were discussing about PIC programming.</p>
+
+<p>We planed to write a endless loop, check the sensor panel reading and do the relevant stuff for that reading.</p>
+
+<p>But one of our friends told us to use a timer interrupt to generate interrupts in definite time periods and in each interrupt check the sensor panel reading and do the relevant stuff for that reading.</p>
+
+<p>But we can't figure out which is best: the endless loop in main method OR timer interrupt method.</p>
+
+<p>What is the best way, and why?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1758" data-toggle = "popover">
+				<p>user name : RONEY</p>
+				<p> user reputation : 41</p>
+				<p class = "tagcontent" id = "usertaginfo-1758">{'None': 0, 'microcontroller': 8, 'interrupts': 8, 'sensors': 8}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1758">Load Comments</button></br>
+			<div id = "commentsection-1758" class = 'collapse'>
+			<div id = "comment-3663" class = "comment">
+				<p>You forgot to ask "is there a best way?"  For a simple system it's sometimes best to use the timer hardware to set a flag, then run your control loop when the flag is set.  For a complex system, ISRs (and often some sort of OS kernel or at least a task-switcher) is often best.</p>
+			</div>
+			</div>
+				<textarea id = "speech-1758" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1758">
+					<img id="start_img-1758" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1758">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-1759"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1759" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">8</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The processor has to execute something.  You will always have an "endless" loop even if you're doing some work in an interrupt handler.</p>
+
+<p>The best solution depends on exactly what you're trying to do.</p>
+
+<p>The main advantage of using interrupts is they allow you to service events in real-time while your main program is doing something else.  Timer interrupts specifically allow you to perform some periodic activity on a fairly accurate time-base while doing some other processing.</p>
+
+<p>For most control algorithms it is useful to have some sort of a time-base (or fixed frequency).  If that's all your CPU is doing you can easily do that without interrupts by either controlling the number of cycles/instructions in your control loop or polling the timer.  Both methods would be simpler and more efficient than using interrupts.  Interrupts are more useful in more complex systems doing many things concurrently (I/O, time keeping, scheduling etc.).  </p>
+
+<p>If you go with the endless loop without polling the timer or calibrating the time it takes to run one iteration of the loop you will have to be careful of situations where adding more code in your loop changes the timing and the behavior of your control system.</p>
+
+<p>If you implement your control algorithm in a timer interrupt you will have to be careful you're not trying to perform more work than the CPU can handle in one time "slot" or that will again impact the behavior of your control system.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1759" data-toggle = "popover">
+				<p>user name : Guy Sirton</p>
+				<p> user reputation : 970</p>
+				<p class = "tagcontent" id = "usertaginfo-1759">{'None': 75}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-1759" class = 'collapse'>
+			</div>
+				<textarea id = "speech-1759" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1759">
+					<img id="start_img-1759" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1759">Comment</button>
+			<br><div id = "ans-1761"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1761" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Further to Guy's answer, using a timer interrupt to generate accurate intervals adds determinacy.</p>
+
+<p>For example, at any given time, you know exactly what the processor is doing, and all activities are performed at specified rates.</p>
+
+<p>You also should schedule at determined rates as otherwise you have no basis for time constants and such like, which will be essential in your filtering.</p>
+
+<p>And finally, this means that if you add additional tasks, then the existing tasks are not slowed down.</p>
+
+<hr>
+
+<p>Simple polling is OK if that is all your system has to do - but while time slot scheduling is a minor overhead in a trivial system, adding it from the start allows growth and expansion without having to restructure everything later.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1761" data-toggle = "popover">
+				<p>user name : Andrew</p>
+				<p> user reputation : 570</p>
+				<p class = "tagcontent" id = "usertaginfo-1761">{'None': 41}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1761">Load Comments</button></br>
+			<div id = "commentsection-1761" class = 'collapse'>
+			<div id = "comment-3659" class = "comment">
+				<p>In some situations you can get more deterministic performance out of a loop than you can from interrupts.  Down to a cycle of jitter.  If all you're doing is one thing...</p>
+			</div>
+			</div>
+				<textarea id = "speech-1761" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1761">
+					<img id="start_img-1761" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1761">Comment</button>
+			<br><div id = "ans-1763"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1763" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I would just like to add few points to other posts. My personal opinion is that endless while loop has no sense in systems which read from snsors or write to actuators as both has some physical constrains, eg. There is no point in reading from sensors at 1Mhz if the sensor has stability cycle before meassurent is accurate at 100Hz. Same goes to motor drivers. You can send 1mil instructiins to move motor but it can only witstand its physical limitations in respect of inertia.</p>
+
+<p>What i do in my designs is following. I create timer interrupt which triggers every 1ms or so, and then i decrement some global variables in that interrupt routine. In main while loop i check if variable is 0 and execute command that is defined by that variable. In that case i can drive motor at 125Hz, read sensor at 20Hz, and output leds at 0.5Hz. </p>
+
+<p>I hope you got the point.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1763" data-toggle = "popover">
+				<p>user name : Gossamer</p>
+				<p> user reputation : 311</p>
+				<p class = "tagcontent" id = "usertaginfo-1763">{'None': 18}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-1763" class = 'collapse'>
+			</div>
+				<textarea id = "speech-1763" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1763">
+					<img id="start_img-1763" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1763">Comment</button>
+			<br><div id = "ans-1764"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1764" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I'd also like to stress that the comparison between polling (i.e. checking if a interrupt flag has been set) and interrupt vectors (i.e. an ISR, or function that's loaded when a interrupt has occurred) should be more than just evaluating the efficiency/simplicity of executing a block of reactionary code. The interrupt controllers of most modern micros are capable of so much more, especially when considering inter-peripheral signalling (ie, DMA).</p>
+
+<p>For example, a Texas Instruments TMS320F28335 microcontroller <a href="http://www.ti.com/lit/ug/sprug04a/sprug04a.pdf" rel="nofollow" title="Please refer to Figure 42 on page 64">allows you to trigger your ADC's start of conversion pulse directly from a PWM's rising or falling edge</a>. In addition to this, the micro also has a six channel DMA controller, which for instance can also be programmed to trigger off the same PWM signal (this could allow you to <a href="http://www.ti.com/lit/ug/sprufb8d/sprufb8d.pdf" rel="nofollow" title="Please refer to Section 1 on page 8">start a memory read via the devices' parallel bus</a>, that's for instance connected to a high speed delta sigma converter). The same DMA controller can then be used to buffer the values read from the ADC and external delta sigma to internal RAM. The DMA controller can then be configured to only trigger a normal interrupt service routine after sampling a total of lets say 128 ADC and delta sigma readings. All this would happen without any CPU intervention (freeing you up to do other things).</p>
+
+<p>This type of behind-the-scenes triggering allows you to get a lot more work done compared to when you would have had an ISR controlling all the enable flags or memory reads (due to the overhead associated with <a href="http://en.wikipedia.org/wiki/Interrupt_latency" rel="nofollow">interrupt latency</a>). The vector chained approach would allow you to sample at (let's say) 50 KHz, where an ISR driven approach would only allow you to sample at (let's say) 5 KHz.</p>
+
+<p>Also as Andrew stated, using interrupt vectors are much more deterministic, or repeatable, than polling a status register.</p>
+
+<p>I'd also highly recommend subscribing to <a href="http://betterembsw.blogspot.com/" rel="nofollow">Phil Koopman's blog</a>, or at least reading the following posts:</p>
+
+<ul>
+<li><a href="http://betterembsw.blogspot.com/2013/03/rules-for-using-interrupts.html" rel="nofollow">Rules for using interrupts</a></li>
+<li><a href="http://betterembsw.blogspot.com/2013/04/why-short-interrupt-service-routines.html" rel="nofollow">Why Short Interrupt Service Routines Matter</a></li>
+<li><a href="http://betterembsw.blogspot.com/2013/07/making-main-loop-scheduling-timing-more.html" rel="nofollow">Making Main Loop Scheduling Timing More Deterministic</a></li>
+<li><a href="http://betterembsw.blogspot.com/2012/12/software-timing-loops.html" rel="nofollow">Software Timing Loops</a> (and why you should rather use a hardware timer)</li>
+</ul>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1764" data-toggle = "popover">
+				<p>user name : EDDY74</p>
+				<p> user reputation : 395</p>
+				<p class = "tagcontent" id = "usertaginfo-1764">{'None': 25}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-1764" class = 'collapse'>
+			</div>
+				<textarea id = "speech-1764" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1764">
+					<img id="start_img-1764" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1764">Comment</button>
+			<br><div id = "ans-11659"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11659" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Old post, still answering for other people's reference.</p>
+
+<p>I am working on a similar project. Even to me a friend had suggested to use timer. </p>
+
+<p>Finally my suggestion would be to use as high speed controller as possible (mine is 80MHz). Use 5us Timer Interrupt (Scheduler). Do the following in this  Scheduler Interrupt Routine:</p>
+
+<ol>
+<li>CheckSensors()</li>
+<li>ClockActuators() (if using Steppers then make all the Clk pins low initially  and then high the Clk for whichever motor needs to run)</li>
+<li>StateChange() / ApplicationRoutine() / SwitchContext() (for more info on State Machine refer: <a href="https://barrgroup.com/Embedded-Systems/How-To/State-Machines-Event-Driven-Systems" rel="nofollow noreferrer">https://barrgroup.com/Embedded-Systems/How-To/State-Machines-Event-Driven-Systems</a>) (to be frank, could not digest the ending part of the article but got the idea. I am using simple Switch Case in StateChange().)</li>
+</ol>
+
+<p>In main()'s while(1) loop:</p>
+
+<ol>
+<li>Check Input from Keypad / Touch Screen / Serial Comm etc.</li>
+<li>Update Display (If this is too long and makes Keypad response slow then try to put the above step i.e checking keypad/touch/serial in interrupt.)</li>
+</ol>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11659" data-toggle = "popover">
+				<p>user name : Krishnananda Hegde</p>
+				<p> user reputation : 11</p>
+				<p class = "tagcontent" id = "usertaginfo-11659">{'None': 1}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11659">Load Comments</button></br>
+			<div id = "commentsection-11659" class = 'collapse'>
+			<div id = "comment-20864" class = "comment">
+				<p>Welcome to Robotics, Krishnananda Hegde. It looks like you may have accidentally created two accounts (Krishnananda Hegde & Krishnananda. K. Hegde). Stack Exchange only allows an individual to actively use one account, so please follow the instructions at [I accidentally created two accounts; how do I merge them?](http://robotics.stackexchange.com/help/merging-accounts)
+Sadly moderators [can't merge accounts](http://meta.stackexchange.com/a/272251) for you, but may delete accounts they believe to be [sock puppets](http://meta.stackexchange.com/a/57685/138432).</p>
+			</div>
+			</div>
+				<textarea id = "speech-11659" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11659">
+					<img id="start_img-11659" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11659">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

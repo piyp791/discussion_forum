@@ -1,0 +1,201 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Orocos KDL issue with Rotation (matrix) - Inverse Kinematics
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-12195" class = "post">
+			<h2>Question</h2>
+			<div id="vote-12195" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 66</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Orocos KDL issue with Rotation (matrix) - Inverse Kinematics</h2>
+<p>I have a problem with the Orocos IK solver, especially with the KDL::Rotation matrix input. </p>
+
+<p>I try to call my KDL IK solver with a normal vector and a rotation. If I use the example values for the rotation everything went well. But as I tried to use my "own" orientation, the IK solver didn't find a solution.</p>
+
+<pre><code> KDL::Vector vektor(0.457101 , -0.629513, -0.627317); 
+ KDL::Rotation rotation(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0); //myValues
+ KDL::Frame end_effector_pose(rotation, vektor);
+
+ rc=kdl_solver.CartToJnt(origin,end_effector_pose,result);
+</code></pre>
+
+<p>As you can see it's a simple identity matrix -> no rotation -> in my opinion it should work. Anyway, if I try to call it with any other rotation matrix, it doesn't find a solution.</p>
+
+<p>Just in case of </p>
+
+<pre><code>KDL::Rotation rotation(-0.0921467,0.939391, 0.330232, 0.925128, 0.203433,-0.32055,-0.368302,0.275969,-0.887803);
+</code></pre>
+
+<p>it terminates with a valid solution. These values are test values from my robot.</p>
+
+<p>Do I have a wrong comprehension of the rotation matrix ?</p>
+
+<p>Thank you very much for your time</p>
+
+<p>Devel</p>
+
+<p><strong>EDITE:</strong></p>
+
+<p>With .msg communication it works. I have no idea why ?
+Does anyone know how the following lines construct the rotation matrix ??</p>
+
+<pre><code>geometry_msgs::PoseStamped pose_msg_in = pose_stamp; 
+tf::Stamped&lt;tf::Pose&gt; transform;     
+tf::Stamped&lt;tf::Pose&gt; &gt; transform_root;
+tf::poseStampedMsgToTF(pose_msg_in, transform); 
+
+
+tf_listener.transformPose(root_name, transform, transform_root);
+
+KDL::Frame F_dest;  tf::transformTFToKDL(transform_root, F_dest);
+
+int ik_valid = ik_solver_pos-&gt;CartToJnt(jnt_pos_in, F_dest, jnt_pos_out);
+</code></pre>
+
+<p>Or is the matrix related to something? I get the feeling that I miss a important information.</p>
+
+<hr>
+
+<p><strong>SOLVED:</strong> Sorry, for the delay. Shahbaz answer was totally right. I simply overestimated the capabilities of my robot. The position was not reachable. After using Moveit(visualisation), it became clear that the orientation is not possible for the robot at that position (x,y,z). THANKS</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12195" data-toggle = "popover">
+				<p>user name : R.Devel</p>
+				<p> user reputation : 20</p>
+				<p class = "tagcontent" id = "usertaginfo-12195">{'None': 0, 'inverse-kinematics': 3, 'kinematics': 3, 'robotic-arm': 1, 'rotation': 1, 'ros': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-12195" class = 'collapse'>
+			</div>
+				<textarea id = "speech-12195" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12195">
+					<img id="start_img-12195" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12195">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-12201"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-12201" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The vector and rotation together define the pose of the end-effector, which means its position and orientation. There are 6 degrees of freedom here (presumably), so you can think of the position as a point and the orientation as a direction (I'm avoiding "vector" to avoid confusion):</p>
+
+<pre><code> |
+ |
+ |       P .-----&gt; O
+ |
+ |             
+ +--------------------------
+</code></pre>
+
+<p>Where:</p>
+
+<ul>
+<li><code>P</code> is the position of the end-effector (defined with <code>vector</code> in your example)</li>
+<li><code>O</code> is the orientation of the end-effector (defined with <code>rotation</code> in your example)</li>
+</ul>
+
+<p>So, what does the identity mean for the rotation matrix? It means the end-effector has the same orientation as a predefined original orientation. This could be different per robot. Let's say the original orientation has <code>z</code> upwards and <code>x</code> westwards.</p>
+
+<p>What you are asking the solver is to solve IK for the end-effector at a given position and pointing upwards. As the function fails, it's clear that such a pose is unreachable by the robot.</p>
+
+<blockquote>
+  <p>Do I have a wrong comprehension of the rotation matrix ?</p>
+</blockquote>
+
+<p>Can't tell without knowing what your comprehension of the rotation matrix is! But the rotation matrix as I said defines the orientation based on some original orientation. The identity matrix is not a magic matrix where everything should work.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12201" data-toggle = "popover">
+				<p>user name : Shahbaz</p>
+				<p> user reputation : 2615</p>
+				<p class = "tagcontent" id = "usertaginfo-12201">{'None': 193, 'usb': 12, 'distributed-systems': 7, 'microcontroller': 1, 'embedded-systems': 7, 'servomotor': 1, 'platform': 18, 'can': 1, 'machine-learning': 12, 'real-time': 18, 'mobile-robot': 1, 'rs232': 12, 'software': 20}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-12201">Load Comments</button></br>
+			<div id = "commentsection-12201" class = 'collapse'>
+			<div id = "comment-21557" class = "comment">
+				<p>That's exactly what I thought about position and orientation -> So, that's clear. BTW, my robot arm has 7 DoF. In a previous approach I used the standard IK solver on my robots side. It needed a position and a quaternion, but KDL needs the position and the rotation matrix. The standard "orientation quaternion' for my robot is (1,0,0,0)[w,x,y,z] and the resulting rotation matrix is the identity matrix , isn't it ? So, in my opinion  I should work.</p>
+			</div>
+			<div id = "comment-21562" class = "comment">
+				<p>@R.Devel, have you tried other values for position? There's nothing wrong with the identity matrix, it may just be impossible with the given position.</p>
+			</div>
+			<div id = "comment-21570" class = "comment">
+				<p>No, it didn't work. But now it works...I have no idea why. I use messages to communicate with my IK solver (geometry_msgs/PoseStamped Message). As in my previous approach I send (x,y,z) and a Quaternion via .msg to my IKSolver. -> apparently it constructs the matrix and with that matrix it works.</p>
+			</div>
+			</div>
+				<textarea id = "speech-12201" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12201">
+					<img id="start_img-12201" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12201">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

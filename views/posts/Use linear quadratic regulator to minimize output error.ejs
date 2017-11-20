@@ -1,0 +1,176 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Use linear quadratic regulator to minimize output error
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-4575" class = "post">
+			<h2>Question</h2>
+			<div id="vote-4575" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 159</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Use linear quadratic regulator to minimize output error</h2>
+<p>I would like to create an Infinite-horizon, continuous-time LQR with a cost functional defined as</p>
+
+<p>$$J = \int_{0}^\infty \left( e^T Q e + u^T R u \right) dt$$</p>
+
+<p>where e is the states' error $x-x_d$, but I have trouble concluding to the appropriate Ricatti equation since $x_d$ is a function of time therefore leading to a term of $\dot x_d$ . Is this problem solvable? Any ideas?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4575" data-toggle = "popover">
+				<p>user name : Controller</p>
+				<p> user reputation : 89</p>
+				<p class = "tagcontent" id = "usertaginfo-4575">{'control': 8, 'None': 0, 'cameras': 6, 'algorithm': 5, 'simulator': 0, 'localization': 1, 'torque': 1, 'mapping': 0, 'simulation': 1, 'filter': 5, 'visual-servoing': 13, 'exploration': 1, 'matlab': 5, 'dynamics': 1, 'motion-planning': 1, 'software': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-4575" class = 'collapse'>
+			</div>
+				<textarea id = "speech-4575" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4575">
+					<img id="start_img-4575" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4575">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-5025"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-5025" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I am not familiar with an infinite-horizon formulation for time-varying LQR, but I can supply an answer for a finite-horizon formulation. </p>
+
+<p>For a finite-horizon formulation the Ricccati equation for a time-varying LQR problem (i.e. the equilibrium point $x_d$ changes with time) is called the "Differential Riccati Equation".</p>
+
+<p><strong>Derivation:</strong> Lets assume you want to implement a LQR controller that stabilizes the system: </p>
+
+<p>$$\dot{x} = f(x,u)$$</p>
+
+<p>around some trajectory $\left(x_d(t),u_d(t)\right)$. If you linearize the system around this trajectory you get:</p>
+
+<p>\begin{align}\dot{\bar{x}} &amp;= A(t)\bar{x}(t)+B(t)\bar{u}(t)-\dot{x}_d \\ &amp;\approx A(t)\bar{x}(t)+B(t)\bar{u}(t)\end{align}</p>
+
+<p>where $$\bar{x}(t) = x(t)-x_d(t)$$ $$\bar{u}(t) = u(t)-u_d(t)$$
+and
+$$A(t) = \frac{\partial f}{\partial x}|_{(x,u)=(x_d,u_d)}$$ $$B(t) = \frac{\partial f}{\partial u}|_{(x,u)=(x_d,u_d)}$$</p>
+
+<p>The approximation made in the equation for $\dot{\bar{x}}$ introduces an error into your control law, but yields a tractable problem. The magnitude of the error will depend on the problem, but this approach works in many applications (see reference at end for an example).</p>
+
+<p>Now we want to solve the LQR problem for a finite-horizon cost function given by:</p>
+
+<p>$$\int_{0}^T \left( \bar{x}^T Q \bar{x} + \bar{u}^T R \bar{u} \right) dt,~~~\text{where}~~Q=Q^T\geq 0,~\text{and} ~R=R^T&gt;0$$</p>
+
+<p>We chose a quadratic cost-to-go function of the form:</p>
+
+<p>$$ J(\bar{x},t) = \bar{x}(t)^TS(t)\bar{x}(t),~~~\text{where}~~S(t)=S(t)^T&gt;0$$</p>
+
+<p>such that the Hamilton-Jacobi-Bellman condition for the optimality of our chosen $J(\bar{x},t)$ becomes:</p>
+
+<p>$$0 = \min_{\bar{u}}\left[ \bar{x}^T Q \bar{x} + \bar{u}^T R \bar{u} + \frac{\partial J}{\partial \bar{x}}\left(A(t)\bar{x}(t)+B(t)\bar{u}(t)\right) + \frac{\partial J}{\partial t} \right] $$</p>
+
+<p>The control law that minimizes this expression is found by solving for $\bar{u}$ in </p>
+
+<p>$$0 = \frac{\partial}{\partial \bar{u}}\left[ \bar{x}^T Q \bar{x} + \bar{u}^T R \bar{u} + \frac{\partial J}{\partial \bar{x}}\left(A(t)\bar{x}(t)+B(t)\bar{u}(t)\right) + \frac{\partial J}{\partial t} \right]$$</p>
+
+<p>Hence, the $\bar{u}$ that minimizes the cost-to-go $J(\bar{x},t)$ is:</p>
+
+<p>$$\bar u(t) = -R^{-1}B^T(t)S(t)\bar{x}(t)$$</p>
+
+<p>If we insert this expression for $\bar{u}$ into the Hamilton-Jacobi-Bellman condition, we get:</p>
+
+<p>$$0 = Q-S(t)B(t)R^{-1}(t)B^T(t)S(t) + S(t)A(t)+A^T(t)S(t)+\dot{S}(t)$$</p>
+
+<p>This equation is called the <strong>Differential Riccati equation</strong>, and it consists of the standard LQR algebraic Riccati equation and an additional time-dependent term $\dot{S}(t)$. </p>
+
+<p>You solve for $S(t)$, and consequently $\bar{u}(t)$ and $J(\bar{x},t)$, by setting $S(T) = 0$ and solving the differential equation:</p>
+
+<p>$$-\dot{S}(t) = Q-S(t)B(t)R^{-1}(t)B^T(t)S(t) + S(t)A(t)+A^T(t)S(t)$$</p>
+
+<p>backwards in time.</p>
+
+<p>Reference: Section 3.A in <a href="http://groups.csail.mit.edu/robotics-center/public_papers/Tedrake09a.pdf" rel="nofollow">http://groups.csail.mit.edu/robotics-center/public_papers/Tedrake09a.pdf</a> </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-5025" data-toggle = "popover">
+				<p>user name : Blissett</p>
+				<p> user reputation : 21</p>
+				<p class = "tagcontent" id = "usertaginfo-5025">{'None': 2}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-5025">Load Comments</button></br>
+			<div id = "commentsection-5025" class = 'collapse'>
+			<div id = "comment-7802" class = "comment">
+				<p>Welcome to Robotics.SE and thanks fora comprehensive answer (with citation!)</p>
+			</div>
+			</div>
+				<textarea id = "speech-5025" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-5025">
+					<img id="start_img-5025" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-5025">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,185 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to convert raw Pitot tube readings to air speed in m~s?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-12276" class = "post">
+			<h2>Question</h2>
+			<div id="vote-12276" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 89</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to convert raw Pitot tube readings to air speed in m~s?</h2>
+<p>I'm building a kite flying robot, for which I want to measure air speed. So I combined <a href="https://www.aliexpress.com/item/Ardupilot-Arduplane-Air-Speed-meter-Sensor-Gauge-with-Differential-Pitot-Tube-for-APM-2-5-2/32464559707.html" rel="nofollow noreferrer">a Pitot tube</a> with <a href="https://www.aliexpress.com/item/MCP3008-I-P-MCP3008-I-MCP3008-3008-I-P-3008-2pcs-lot/32761721518.html" rel="nofollow noreferrer">an ADC</a> and connected it to my Raspberry Pi using <a href="https://learn.adafruit.com/raspberry-pi-analog-to-digital-converters/mcp3008" rel="nofollow noreferrer">this tutorial</a>. </p>
+
+<p>It seems to work perfect, in that it receives data, but I'm not sure what this data tells me. </p>
+
+<p>I get a constant stream of numbers, mostly between 502 and 504 when nothing happens. When I blow on the tube the number increases to 550-600, or even up to 1000 when I put my lips on the tube and blow with force. </p>
+
+<p>My question is now; what does this tell me about the air speed in meters per second? 500 seems to be zero air speed, but what does 550 or 600 tell me? Is there some kind of conversion table for this? </p>
+
+<p>All tips are welcome!</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12276" data-toggle = "popover">
+				<p>user name : kramer65</p>
+				<p> user reputation : 227</p>
+				<p class = "tagcontent" id = "usertaginfo-12276">{'wheel': 6, 'None': 5, 'noise': 1, 'usb': 6, 'algorithm': 1, 'encoding': 6, 'battery': 1, 'uav': 5, 'python': 1, 'kalman-filter': 1, 'imu': 1, 'motor': 1, 'raspberry-pi': 4, 'mobile-robot': 4, 'sensors': 6, 'pitot-tube': 1, 'self-driving': 1, 'steering': 1, 'gyroscope': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-12276" class = 'collapse'>
+			</div>
+				<textarea id = "speech-12276" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12276">
+					<img id="start_img-12276" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12276">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-12278"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-12278" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>In a classic pitot tube setup, we make use of a liquid (density $\rho$)in a U tube. One end of the U tube is connected to the dynamic pressure source (front of the pitot) and the other end is connected to the static pressure source (side/ below the pitot).</p>
+
+<p>Now as the air (density $\rho_{air}$) speed increases, the dynamic pressure pushes on the liquid in the U tube and raises the level (by $h$ metres) in the static arm of the U tube. Using Bernoulli's principle, we determine the velocity (in $\frac{m}{s^2}$) by the formula,
+$$v=\sqrt{\frac{2\rho g h}{\rho_{air}}}$$</p>
+
+<p>Looking at your sensor, it is unlikely that it consists of a U tube mechanism. Instead it probably uses a diaphragm of some sort with static and dynamic pressures pushing from opposite sides.</p>
+
+<p>In this situation, unless you can find a calibration graph from the manufacturer, you have very little option but to manually graph the output against known air velocities and then build a look-up table of some sort. You could do this with a variable speed fan and a handheld anemometer.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12278" data-toggle = "popover">
+				<p>user name : vu2aeo</p>
+				<p> user reputation : 11</p>
+				<p class = "tagcontent" id = "usertaginfo-12278">{'None': 1}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-12278" class = 'collapse'>
+			</div>
+				<textarea id = "speech-12278" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12278">
+					<img id="start_img-12278" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12278">Comment</button>
+			<br><div id = "ans-12329"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-12329" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>First, the method you have followed should work quite well. </p>
+
+<p>The pitot setup you mention already gives you differential pressure, which means all you have to do is convert the pressure data (whatever the unit) into airspeed.</p>
+
+<p>The pitot sensor page says that it's already used in APM 2.5 (ardupilot mega). </p>
+
+<p><a href="http://ardupilot.org/plane/docs/airspeed.html" rel="nofollow noreferrer">this is general info for airspeed sensors, from APM web page</a></p>
+
+<p><a href="http://ardupilot.org/plane/docs/calibrating-an-airspeed-sensor.html" rel="nofollow noreferrer">calibration technics and flight test procedures</a></p>
+
+<p>The basic formula is like this: dynamic pressure equals to 0.5 x rho x V^2 ;
+Inversely </p>
+
+<p>V = sqrt (P_dyn / (2x rho))</p>
+
+<ol>
+<li>Check your units of measurement (what is the unit of 504 in your reading?).</li>
+<li>Convert dynamic pressure to Pascals</li>
+<li>use a rough number for air density (1.225 kg/m3 at sea level). </li>
+</ol>
+
+<p>And there you have Airspeed (V) in m/sec. </p>
+
+<p>Good luck. </p>
+
+<p>Sorry for the bad notation. (Typed on mobile). </p>
+
+<blockquote>
+  <p>attention: your readings will be sensor local speed, and this can be quite important if you really want to get accurate results.</p>
+</blockquote>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12329" data-toggle = "popover">
+				<p>user name : G rkan  etin</p>
+				<p> user reputation : 284</p>
+				<p class = "tagcontent" id = "usertaginfo-12329">{'None': 13}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-12329" class = 'collapse'>
+			</div>
+				<textarea id = "speech-12329" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12329">
+					<img id="start_img-12329" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12329">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

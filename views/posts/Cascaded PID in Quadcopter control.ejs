@@ -1,0 +1,163 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Cascaded PID in Quadcopter control
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11191" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11191" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 242</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Cascaded PID in Quadcopter control</h2>
+<p>I'm working on diy flight controller for quadcopter. I have a question for which I can't find a good answer. So perhaps you could help me.
+I'm using a cascaded PID controller for Pitch and Roll regulation. 
+First there is a stabilize PID and rate PID. For the first (stab.) you input desired angle from transmitter and actual angle from IMU. then this output is feed into rate controler. From there it goes to the motors. </p>
+
+<p>In code I'm pooling a function with "data is ready to read from IMU" which happens every 1ms. In this function I'm calculating one regulator and writing to motors. Loop time when this condition is not true is way lower then that. So one regulator should be inside this slow loop and one outside. So which one should be fast and which one slow?
+In my understanding, stabilize PID should be the fastest? Is that correct?
+Also should both regulators be PID? </p>
+
+<p>Thanks for your help!</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11191" data-toggle = "popover">
+				<p>user name : KristjanB</p>
+				<p> user reputation : 6</p>
+				<p class = "tagcontent" id = "usertaginfo-11191">{'quadcopter': 1, 'None': 0, 'pid': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11191" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11191" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11191">
+					<img id="start_img-11191" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11191">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-11222"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11222" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I had some trouble understanding your current setup, But generally you will have an interrupt pin connected to your IMU, and every time the IMU has new data, you process the Rate control loop then the Stabilize control loop, then update the motor output. You want the shortest possible time from the reading of the IMU data to the processing of the rate control loop to the output of the motor commands. Generally you can update the stabilize loop ~5 times slower than the rate loop to save time. I would shoot to run the rate loop as fast as you can update the motors (50Hz for pwm 400+Hz if your using Oneshot or Fast PWM), and to save time you can run the stabilized loop at 10-50Hz.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11222" data-toggle = "popover">
+				<p>user name : Mark Omo</p>
+				<p> user reputation : 1786</p>
+				<p class = "tagcontent" id = "usertaginfo-11222">{'None': 119}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11222">Load Comments</button></br>
+			<div id = "commentsection-11222" class = 'collapse'>
+			<div id = "comment-20422" class = "comment">
+				<p>Check out my reply on the other comment. I understand everything, it's just that my "wrong" approach seems to be working, and I'm confused why.</p>
+			</div>
+			</div>
+				<textarea id = "speech-11222" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11222">
+					<img id="start_img-11222" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11222">Comment</button>
+			<br><div id = "ans-11225"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11225" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>A cascaded PID controller is normally used when multiple sensors are available. In a normal PID controlled system, you have the measurement from your sensor and your setpoint (both used to calculate your error), and your PID controller which acts to reduce the error through the P, I and D gains. A cascaded PID controller is a nested PID controller, meaning it consists of an inner PID loop which supposedly is faster and an outer PID loop. If applied correctly the faster inner PID loop controller can buffer the impact on the slower outer PID controller resulting in a smoother dynamic performace. </p>
+
+<p>Normally in a quadcopter, the inner/faster loop is the rate loop. The rate loop regulates the angular velocity given a setpoint and the rate measurement usually from the gyroscope. The outer loop/slower loop is the stabilize loop which uses angle input setpoints and measurements from fusing the angles computed from the accelerometer and angles integrated from the gyroscope via sensor fusion (eg. kalman, complementary filter, etc.)</p>
+
+<p>Mathematically, in this case a normal/traditional PID controller (PID) would be equivalent to a cascaded PID controller (P-PI). Where your Kp(traditional) is equivalent to Kp(stab), Ki(traditional) is equvalent to Kp(stab)*Ki(rate) and lastly your Kd(traditional) to Kp(stab)*Kp(rate). See Edouard Leurent's easy to understand explanation/comment here: <a href="https://www.quora.com/What-is-rate-and-stabilize-PID-in-quadcopter-control" rel="nofollow noreferrer">https://www.quora.com/What-is-rate-and-stabilize-PID-in-quadcopter-control</a></p>
+
+<p>I'm really sorry because I did not quite understand your question but I hope this helps :)</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11225" data-toggle = "popover">
+				<p>user name : user123456098</p>
+				<p> user reputation : 415</p>
+				<p class = "tagcontent" id = "usertaginfo-11225">{'control': 16, 'stereo-vision': 2, 'communication': 0, 'pid': 19, 'uav': 0, 'stability': 13, 'mobile-robot': 2, 'sensor-error': 0, 'tuning': 2, 'cameras': 0, 'integration': 0, 'opencv': 2, 'differential-drive': 0, 'motion-planning': 0, 'None': 13, 'raspberry-pi': 14, 'localization': 0, 'microcontroller': 0, 'mapping': 0, 'path-planning': 0, 'real-time': 1, 'sensors': 0, 'quadcopter': 19, 'computer-vision': 2, 'vfh': 0, 'c++': 2, 'filter': 0, 'dead-reckoning': 0, 'sensor-fusion': 5, 'sonar': 1}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11225">Load Comments</button></br>
+			<div id = "commentsection-11225" class = 'collapse'>
+			<div id = "comment-20421" class = "comment">
+				<p>Hey! Thank you very much for your answer. So the problem is that if I use rate loop as the fast one and stabilize loop as the slowest one, together, then quadcopter should react to angle change, right? And when I would center my transmitter stick, quadcopter should level itself. But this did not happen. quadcopter drifted in a direction and level itself after about 10 meters. So when I switched the loops, quadcopter reacted to angle change instantly and was infact, leveled.</p>
+			</div>
+			</div>
+				<textarea id = "speech-11225" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11225">
+					<img id="start_img-11225" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11225">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

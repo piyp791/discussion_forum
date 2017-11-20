@@ -1,0 +1,248 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>sendTransform() takes exactly 6 arguments (2 given)
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11985" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11985" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 89</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>sendTransform() takes exactly 6 arguments (2 given)</h2>
+<p>I was trying to run <a href="http://wiki.ros.org/urdf/Tutorials/Using%20urdf%20with%20robot_state_publisher" rel="nofollow noreferrer">this</a> tutorial in python code, but i got above error when i try to run it. My python converted program of given tutorial is:</p>
+
+<pre><code>#!/usr/bin/env python
+
+import rospy
+from sensor_msgs.msg import JointState
+from std_msgs.msg import Header
+import tf
+import geometry_msgs.msg
+import math
+
+def talker():
+    pub = rospy.Publisher('joint_states', JointState, queue_size=1)
+    rospy.init_node('state_publisher')
+
+broadcaster = tf.TransformBroadcaster()   
+rate = rospy.Rate(30) # 10hz 
+M_PI = 3.145
+degree = M_PI/180;
+
+# robot state
+tilt = 0 
+tinc = degree 
+swivel=0 
+angle=0 
+height=0 
+hinc=0.005
+
+# message declarations
+t = geometry_msgs.msg.TransformStamped()
+hello_str = JointState()
+t.header.frame_id = "odom"
+t.child_frame_id = "axis"
+
+while not rospy.is_shutdown():
+    # update joint_state
+    hello_str.header.stamp = rospy.Time.now()
+    hello_str.name = ['swivel','tilt','periscope']
+    hello_str.position = swivel
+    hello_str.velocity = tilt
+    hello_str.effort = height
+
+    t.header.stamp = rospy.Time.now()
+    t.transform.translation.x = math.cos(angle)*2
+    t.transform.translation.y = math.sin(angle)*2
+    t.transform.translation.z = .7
+    #t.transform.rotation = tf.createQuaternionMsgFromYaw(angle+M_PI/2)
+    t.transform.rotation = tf.transformations.quaternion_from_euler(0, 0, angle)
+    # send the joint state and transform
+    pub.publish(hello_str)
+    broadcaster.sendTransform(t)
+
+    # Create new robot state
+    tilt += tinc
+    if (tilt&lt;-.5 or tilt&gt;0):
+       tinc *= -1
+    height += hinc
+    if (height&gt;.2 or height&lt;0):
+      hinc *= -1
+    swivel += degree
+    angle += degree/4
+
+    rate.sleep()
+
+if __name__ == '__main__':
+    try:
+        talker()
+    except rospy.ROSInterruptException:
+        pass
+</code></pre>
+
+<p>How can i remove this, i am using ros indigo. Even if i change that line with :</p>
+
+<p><code>broadcaster.sendTransform((0.5,1.0,0),tf.transformations.quaternion_from_euler(0, 0, angle+M_PI/2),rospy.Time.now(),"odom","axis")</code> 
+Its not working. Than it shows error:</p>
+
+<pre><code> field position must be a list or tuple type
+[state_pub-2] process has died [pid 11654, exit co
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11985" data-toggle = "popover">
+				<p>user name : Dinesh Lama</p>
+				<p> user reputation : 160</p>
+				<p class = "tagcontent" id = "usertaginfo-11985">{'control': 0, 'stability': 1, 'None': 2, 'inverse-kinematics': 0, 'arduino': 4, 'python': 1, 'gazebo': 0, 'lidar': 0, 'servomotor': 0, 'motor': 0, 'real-time': 1, 'actuator': 0, 'serial': 1, 'ros': 2, 'servos': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11985" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11985" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11985">
+					<img id="start_img-11985" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11985">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-11986"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11986" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>"transformations", if I remember right was initially part of an external script, where quaternion_from_euler returns a numpy array of four values. </p>
+
+<p><a href="https://w3.cs.jmu.edu/spragunr/CS354_S14/labs/tf_lab/html/tf.transformations-module.html#quaternion_from_euler" rel="nofollow noreferrer">https://w3.cs.jmu.edu/spragunr/CS354_S14/labs/tf_lab/html/tf.transformations-module.html#quaternion_from_euler</a>  </p>
+
+<p><a href="https://gist.github.com/baalexander/5225140" rel="nofollow noreferrer">https://gist.github.com/baalexander/5225140</a> </p>
+
+<p>sendTransform on the other hand, expects a <strong>list</strong> of values for the rotation argument. The way you're passing the rotation part right now, as the output of quaternion_from_euler would cause a numpy array to be passed instead of a list. You'd probably have to load the numpy array contents manually into a list and pass it to sendTransform.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11986" data-toggle = "popover">
+				<p>user name : HighVoltage</p>
+				<p> user reputation : 398</p>
+				<p class = "tagcontent" id = "usertaginfo-11986">{'stereo-vision': 2, 'probability': 10, 'multi-agent': 4, 'planning': 10, 'manipulator': 2, 'cameras': 1, 'matlab': 1, 'kalman-filter': 7, 'None': 19, 'noise': 3, 'inverse-kinematics': 2, 'localization': 8, 'pose': 4, 'mapping': 0, 'rotation': 1, '3d-reconstruction': 0, 'computer-vision': 8, 'algorithm': 3, 'c++': 3, 'slam': 2, 'exploration': 0, 'path-planning': 3}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11986" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11986" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11986">
+					<img id="start_img-11986" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11986">Comment</button>
+			<br><div id = "ans-11990"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11990" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>That is because in Python, the function <code>sendTransform</code> has interface a but different from the same function in <code>C++</code>.</p>
+
+<p>If you run the following code:</p>
+
+<pre><code>import tf
+br = tf.TransformBroadcaster()
+br.sendTransform?
+</code></pre>
+
+<p>you will see that <code>sendTransform</code> should be called like this:</p>
+
+<p><code>br.sendTransform(translation, rotation, time, child, parent)</code></p>
+
+<p>You may have a look at <a href="http://wiki.ros.org/tf/Tutorials/Adding%20a%20frame%20(Python)" rel="nofollow noreferrer">this page</a> for an example code.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11990" data-toggle = "popover">
+				<p>user name : Petch Puttichai</p>
+				<p> user reputation : 570</p>
+				<p class = "tagcontent" id = "usertaginfo-11990">{'None': 29, 'manipulator': 6, 'inverse-kinematics': 0, 'industrial-robot': 6, 'redundant-robots': 0, 'kinematics': 3, 'robotic-arm': 6, 'singularity': 3}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11990">Load Comments</button></br>
+			<div id = "commentsection-11990" class = 'collapse'>
+			<div id = "comment-21289" class = "comment">
+				<p>ok, thanks, although i tried this method previously also but got some error when i try to echo the /joint_state topic, like now. i can calearly visualize the child frame moving in rviz now as i tried.</p>
+			</div>
+			<div id = "comment-21291" class = "comment">
+				<p>I think that's what I addressed in my answer: you're probably passing a numpy array instead of a list (if you're doing what you showed in the last part of your question)</p>
+			</div>
+			<div id = "comment-21292" class = "comment">
+				<p>Ok, after i changed hello_str.position = swivel with hello_str.position = [swivel,swivel,swivel], i can now see the joints moving.</p>
+			</div>
+			</div>
+				<textarea id = "speech-11990" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11990">
+					<img id="start_img-11990" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11990">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

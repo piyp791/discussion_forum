@@ -1,0 +1,264 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>State estimation of mobile robot
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-10667" class = "post">
+			<h2>Question</h2>
+			<div id="vote-10667" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 519</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>State estimation of mobile robot</h2>
+<p>For a mobile robot - four wheels, front wheel steering - I use the following (bicycle) <strong>prediction model</strong> to estimate its state based on accurate radar measurements only. No odometry or any other input information $u_k$ is available from the mobile robot itself.</p>
+
+<p>$$
+\begin{bmatrix}
+      x_{k+1} \\
+      y_{k+1} \\
+      \theta_{k+1} \\
+      v_{k+1} \\
+      a_{k+1} \\
+      \kappa_{k+1} \\
+    \end{bmatrix} = 
+    f_k(\vec{x}_k,u_k,\vec{\omega}_k,\Delta t) =
+    \begin{bmatrix}
+      x_k + v_k \Delta t \cos \theta_k \\
+      y_k + v_k \Delta t \sin \theta_k \\
+      \theta_k + v_k \kappa_k \Delta t \\
+      v_k + a_k \Delta t \\
+      a_k \\
+      \kappa_k + \frac{a_{y,k}}{v_{x,k}^2}
+    \end{bmatrix}
+    +
+    \begin{bmatrix}
+      \omega_x \\
+      \omega_y \\
+      \omega_{\theta} \\
+      \omega_v \\
+      \omega_a \\
+      \omega_{\kappa}
+ \end{bmatrix}
+$$</p>
+
+<p>where $x$ and $y$ are the position, $\theta$ is the heading and $v$, $a$ are the velocity and acceleration respectively. Vector $\vec{\omega}$ is zero mean white gaussian noise and $\Delta t$ is sampling time. These mentioned state variables $\begin{bmatrix} x &amp; y &amp; \theta &amp; v &amp; a \end{bmatrix}$ are all measured although $\begin{bmatrix} \theta &amp; v &amp; a \end{bmatrix}$ have high variance. The only state that is not measured is curvature $\kappa$. Therfore it is computed using the measured states $\begin{bmatrix} a_{y,k} &amp; v_{x,k}^2\end{bmatrix}$ which are the lateral acceleration and the longitudinal velocity. </p>
+
+<p>My <strong>Question:</strong> </p>
+
+<p>Is there a better way on predicting heading $\theta$, velocity $v$, acceleration $a$, and curvature $\kappa$?</p>
+
+<ul>
+<li><p>Is it enough for $a_{k+1}$ to just assume gaussian noise $\omega_a$ and use the previous best estimate $a_k$ or is there an alternative?</p></li>
+<li><p>For curvature $\kappa$ I also thought of using yaw rate $\dot{\theta}$ as $\kappa = \frac{\dot{\theta}}{v_x}$ but then I would have to estimate the yaw rate too.</p></li>
+</ul>
+
+<hr>
+
+<p>To make my nonlinear filter model complete here is the <strong>measurement model</strong>:</p>
+
+<p>$$
+\begin{equation}
+   \label{eq:bicycle-model-leader-vehicle-h}
+   y_k = h_k(x_k,k) + v_k =
+   \begin{bmatrix}
+     1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+     0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+     0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 \\
+     0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 \\
+     0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 \\
+   \end{bmatrix}
+   \begin{bmatrix}
+     x_k \\
+     y_k \\
+     \theta_k \\
+     v_k \\
+     a_k \\
+     \kappa_k \\
+   \end{bmatrix}
+   +
+   \begin{bmatrix}
+     v_x \\
+     v_y \\
+     v_{\theta} \\
+     v_v \\
+     v_a \\
+   \end{bmatrix}
+ \end{equation}
+$$</p>
+
+<hr>
+
+<p><strong>More Info on the available data</strong>:</p>
+
+<p>The measured state vector is already obtained/estimated using a kalman filter. What I want to achive is a smooth trajectory with the estimate $\kappa$. For this it is a requirement to use another Kalman filter or a moving horizon estimation approach.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10667" data-toggle = "popover">
+				<p>user name : evolved</p>
+				<p> user reputation : 134</p>
+				<p class = "tagcontent" id = "usertaginfo-10667">{'None': 0, 'algorithm': 2, 'motion': 2, 'kalman-filter': 4, 'mobile-robot': 4, 'movement': 4}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10667">Load Comments</button></br>
+			<div id = "commentsection-10667" class = 'collapse'>
+			<div id = "comment-19207" class = "comment">
+				<p>May I ask what is the reason for the downvote?</p>
+			</div>
+			<div id = "comment-19209" class = "comment">
+				<p>Sure, i downvoted the question, because matrix oriented prediction model is based on analog pid-controller which are used in the 1930's before the first computers were invented. It is not state-of-the-art.</p>
+			</div>
+			<div id = "comment-19210" class = "comment">
+				<p>ok this may be the case - that it is not state of the art - but I think this is not a reason to downvote. As this "matrix oriented prediction" is still a possible approach which get's used frequently and I am required to use it.</p>
+			</div>
+			<div id = "comment-19213" class = "comment">
+				<p>"Not state of the art" is wrong.  The IEEE has 20 conference publications, 10 journal articles, and 8 other articles THIS YEAR that discuss both Kalman Filter and State Space control.  This is a proven technique that continues to find broad applicability for very challenging control problems.</p>
+			</div>
+			</div>
+				<textarea id = "speech-10667" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10667">
+					<img id="start_img-10667" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10667">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-10668"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10668" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Kalman filters and other state-estimation techniques are based on analog computing. In most cases differential equations are used. A better solution is based on grammar techniques aka turing-machines. A paper which is using context free grammars for state-estimation is given <a href="https://www.ece.ubc.ca/~vikramk/WK08.pdf" rel="nofollow">here</a>. The idea in short: the measurements are interpreted as a stream of tokens like a computerlanguage  and a parser interprets the sentences. To generate such parser motion primitive are used (simple Finite-States-Machines which describes a possible movement of the robot)</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10668" data-toggle = "popover">
+				<p>user name : Manuel Rodriguez</p>
+				<p> user reputation : 463</p>
+				<p class = "tagcontent" id = "usertaginfo-10668">{'None': 18, 'motion-planning': 0, 'machine-learning': 1, 'algorithm': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10668">Load Comments</button></br>
+			<div id = "commentsection-10668" class = 'collapse'>
+			<div id = "comment-19206" class = "comment">
+				<p>Thanks for your help, I'll try to get some ideas out of the paper. Unfortunately the requeirements are that I use Kalman filters or moving horizon estimation.</p>
+			</div>
+			<div id = "comment-19208" class = "comment">
+				<p>You are welcome, the paper is a declassified version of the "Mercury context free grammar" for radar.</p>
+			</div>
+			<div id = "comment-19216" class = "comment">
+				<p>From the cited paper:  *The more traditional approach such as hidden Markov and state space models are suitable for target modeling [22], [23], but not radar modeling.*  I think the authors of that paper are solving a much more stochastic problem than you present.  If you do not have any other odometry from the mobile robot, then your approach seems reasonable.  You might be able to implement a feedforward model to account for friction, inclines, and other nonlinearities, but without local feedback even that would be a challenge.</p>
+			</div>
+			</div>
+				<textarea id = "speech-10668" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10668">
+					<img id="start_img-10668" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10668">Comment</button>
+			<br><div id = "ans-10947"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10947" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>My solution is to use the following model with disturbance only at acceleration and curvature.</p>
+
+<p>$$
+\begin{bmatrix}
+      x_{k+1} \\
+      y_{k+1} \\
+      \theta_{k+1} \\
+      v_{k+1} \\
+      a_{k+1} \\
+      \kappa_{k+1} \\
+    \end{bmatrix} = 
+    f_k(\vec{x}_k,u_k,\vec{\omega}_k,\Delta t) =
+    \begin{bmatrix}
+      x_k + v_k \Delta t \cos \theta_k \\
+      y_k + v_k \Delta t \sin \theta_k \\
+      \theta_k + v_k \kappa_k \Delta t \\
+      v_k + a_k \Delta t \\
+      a_k + \omega_a \\
+      \kappa_k + \omega_{\kappa}
+    \end{bmatrix}
+$$</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10947" data-toggle = "popover">
+				<p>user name : evolved</p>
+				<p> user reputation : 134</p>
+				<p class = "tagcontent" id = "usertaginfo-10947">{'None': 0, 'algorithm': 2, 'motion': 2, 'kalman-filter': 4, 'mobile-robot': 4, 'movement': 4}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-10947" class = 'collapse'>
+			</div>
+				<textarea id = "speech-10947" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10947">
+					<img id="start_img-10947" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10947">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

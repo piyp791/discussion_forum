@@ -1,0 +1,143 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>PID for Quadcopters
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-5130" class = "post">
+			<h2>Question</h2>
+			<div id="vote-5130" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 199</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>PID for Quadcopters</h2>
+<p>As already mentioned the PID output values that correspond to the error from the desirable error and current error has no units. Let's say we are using only the proportional part of the PID. Is it better to map the output of the PID values to the corresponding thrust values on each motor, or is it better to increase the Proportional coefficient <code>Kp</code> until the output values correspond to the proper thrust value to the motors? </p>
+
+<p>For example if my desired angle is 0 and the angle that the sensor is reading is 40 degrees the difference is multiplied by <code>Kp</code> and the output is added or subtracted from the current thrust depending on the motor.</p>
+
+<p>If I increase <code>Kp</code> too much, then the quadcopter is oscillating and not listening to the controller command that I am sending for the desired degrees from the joystick. If I map the values then it is listening to the joystick commands and not oscillating so much. Why is this happening? Isn't mapping the PID output values to bigger values the same as increasing <code>Kp</code>?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-5130" data-toggle = "popover">
+				<p>user name : Konstantinos Monachopoulos</p>
+				<p> user reputation : 101</p>
+				<p class = "tagcontent" id = "usertaginfo-5130">{'None': 0, 'pid': 0, 'arduino': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-5130">Load Comments</button></br>
+			<div id = "commentsection-5130" class = 'collapse'>
+			<div id = "comment-7888" class = "comment">
+				<p>_Let's say we are using only the proportional part of the PID_, is the quadcopter actually using only the proportional part of the PID?</p>
+			</div>
+			<div id = "comment-7889" class = "comment">
+				<p>Yes it does i checked it..</p>
+			</div>
+			<div id = "comment-7890" class = "comment">
+				<p>What do you mean by mapping "the output of the PID values to the corresponding thrust values" ?</p>
+			</div>
+			<div id = "comment-7891" class = "comment">
+				<p>@EugeneSh., I think he means multiplying the output of the controller by some value. @monakons, it may not be bad to tell us "how" you checked it. If you multiply the output of a P controller, or multiply it's `Kp` both by the same value, nothing should change. So either it's not a P controller, or you are not transforming the values in the same way.</p>
+			</div>
+			<div id = "comment-7892" class = "comment">
+				<p>Well, in this case the result should be exactly the same</p>
+			</div>
+			<div id = "comment-7908" class = "comment">
+				<p>What do you mean by "the output is added or subtracted from the current thrust depending on the motor"?  That seems suspect.</p>
+			</div>
+			</div>
+				<textarea id = "speech-5130" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-5130">
+					<img id="start_img-5130" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-5130">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-5155"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-5155" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I think you have inadvertently created a controller using a Ki only term.
+It appears that your Kp term is used by summing it onto the current (last cycles) output. This is effectively creating an integral output.
+You need to directly output the Kp term and sum it with a separate Ki term if needed.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-5155" data-toggle = "popover">
+				<p>user name : Neomada</p>
+				<p> user reputation : 56</p>
+				<p class = "tagcontent" id = "usertaginfo-5155">{'None': 5, 'computer-vision': 1, 'localization': 0, 'mapping': 0, 'slam': 0, 'motion-planning': 0}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-5155" class = 'collapse'>
+			</div>
+				<textarea id = "speech-5155" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-5155">
+					<img id="start_img-5155" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-5155">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

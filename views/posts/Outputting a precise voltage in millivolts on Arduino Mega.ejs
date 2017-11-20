@@ -1,0 +1,132 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Outputting a precise voltage in millivolts on Arduino Mega
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2891" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2891" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 846</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Outputting a precise voltage in millivolts on Arduino Mega</h2>
+<p>So I need to output a varying voltage off an <a href="http://arduino.cc/en/Main/ArduinoBoardMega2560" rel="nofollow">Arduino Mega</a> in a range of 17 to 32 millivolts, which I've attempted to do by sending a PWM signal off the board into a low-pass filter which steps down the voltage.</p>
+
+<p>This works, but the problem is that Arduino's <a href="http://arduino.cc/en/Reference/AnalogWrite" rel="nofollow">analogWrite</a> function accepts a value of 0 - 255 to represent the duty cycle of the PWM which isn't precise enough. A value of 1 yields around 20 millivolts and a value of 2 yields around 40 millivolts. Is there some way to have a duty cycle that is more precise than the 0 - 255 range like 0 - 1023 (I think even this isn't really precise enough)? Or is there a better way to get precise voltage output?</p>
+
+<p>The mega is running on and outputting a max voltage of 5 volts, and the low pass filter contains an 11 kiloohm resistor and a 1 microfarad capacitor.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2891" data-toggle = "popover">
+				<p>user name : Cains</p>
+				<p> user reputation : 111</p>
+				<p class = "tagcontent" id = "usertaginfo-2891">{'None': 0, 'pwm': 2, 'arduino': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2891">Load Comments</button></br>
+			<div id = "commentsection-2891" class = 'collapse'>
+			<div id = "comment-5299" class = "comment">
+				<p>why not also drop the voltage when you filter it? then you'd have more of the 255 range to use rather than just 1 and 2. a simple voltage divider could do the trick.</p>
+			</div>
+			</div>
+				<textarea id = "speech-2891" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2891">
+					<img id="start_img-2891" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2891">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-2892"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2892" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>analogWrite() does not support a higher range of duty cycle. </p>
+
+<p>However the timers on the AVR chip do support higher precision/resolution, so you can bang the registers directly, especially if you don't need to use the rest of the Arduino libraries. I recommend using avr-gcc with avr-libc and avrdude for programming, and let go of Arduino IDE/libraries entirely.</p>
+
+<p>You have up to 16 bit timers, where the duty cycle can be up to 0-65535. However, at 16 MHz, a 16 bit timer only ticks over 244 times a second, so the filter has to be very low-frequency and thus the lag in the output will be long (although the default PWM frequency for 8-bit timers is only 490 Hz or so, so only twice as good.)</p>
+
+<p>The second thing you can do is output to a resistor divider. If you output to a 9.9k:100ohm divider, the voltage at the 1ohm resistor will vary from 0 to 50 mV even though the voltage across the top will vary from 0 to 5V. Note that the source impedance is kind-of high here, so you might want to re-buffer with an opamp if the load is low-impedance.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2892" data-toggle = "popover">
+				<p>user name : Jon Watte</p>
+				<p> user reputation : 645</p>
+				<p class = "tagcontent" id = "usertaginfo-2892">{'None': 43, 'cooling': 7, 'servos': 7, 'heat-management': 7}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2892" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2892" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2892">
+					<img id="start_img-2892" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2892">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

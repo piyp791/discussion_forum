@@ -1,0 +1,330 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Inter-processor communication for robotic arm
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-736" class = "post">
+			<h2>Question</h2>
+			<div id="vote-736" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">12</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 2427</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Inter-processor communication for robotic arm</h2>
+<p>I'm building a hobby 6-DOF robotic arm and am wondering what the best way is to communicate between the processors (3-4 AVRs, 18 inches max separation). I'd like to have the control loop run on the computer, which sends commands to the microprocessors via an Atmega32u4 USB-to-??? bridge.</p>
+
+<p>Some ideas I'm considering:</p>
+
+<ol>
+<li>RS485
+
+<ul>
+<li>Pros: all processors on same wire, differential signal more robust</li>
+<li>Cons: requires additional chips, need to write (or find?) protocol to prevent processors from transmitting at the same time</li>
+</ul></li>
+<li>UART loop (ie, TX of one processor is connected to RX of next)
+
+<ul>
+<li>Pros: simple firmware, processors have UART built in</li>
+<li>Cons: last connection has to travel length of robot, each processor has to spend cycles retransmitting messages</li>
+</ul></li>
+<li>CANbus (I know very little about this)</li>
+</ol>
+
+<p>My main considerations are hardware and firmware complexity, performance, and price (I can't buy an expensive out-of-box system).</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-736" data-toggle = "popover">
+				<p>user name : mrjogo</p>
+				<p> user reputation : 63</p>
+				<p class = "tagcontent" id = "usertaginfo-736">{'communication': 12, 'None': 0, 'microcontroller': 12, 'electronics': 12, 'arm': 12}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-736" class = 'collapse'>
+			</div>
+				<textarea id = "speech-736" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-736">
+					<img id="start_img-736" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-736">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-737"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-737" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">13</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You want to use USB for communications with the computer. If you have a number of microcontrollers, you will probably only connect one of the microcontrollers directly to the computer. The other microcontrollers will need to get their commands from the main microcontroller.</p>
+
+<p>The communication you choose will depend on a number of factors:</p>
+
+<ul>
+<li>required bandwidth (we will assume you are running them at 16MHz)</li>
+<li>complexity (wiring and coding)</li>
+<li>bi-directional, or master-slave</li>
+</ul>
+
+<p>Almost all options have built-in support on the AVR microcontroller. There is no option you might reasonably prefer over the built-in options which would require additional hardware. Because they have built-in support, the software complexity is all similar, in that you just configure the port (using registers), put the data to transmit in another register, then trigger the transmission by setting a bit in another register. Any data received is found in another register, and an interrupt is triggered so you can handle it. Whichever option you choose, the only difference is the change in register locations, and some changes to the configuration registers.</p>
+
+<hr>
+
+<p><strong>A USART loop has the following features:</strong></p>
+
+<ul>
+<li>Maximum baud rate of CLK/16 = 1MHz (at 16MHz clock) which is a transfer rate of around 90KB/s</li>
+<li>fully bi-directional communications (no master or slave designation)</li>
+<li>requires separate wires between each pair of microcontrollers - the Atmega32u4 supports two USART ports natively, limiting the number of microcontrollers you can connect in a network in practice (or else you end up with a long string of microcontrollers - ie. connected in a linked list manner)</li>
+</ul>
+
+<p><em>Note: this is also what you would use to get RS232 communication, except that because RS232 requires 10V, it requires a driver to get those voltage levels. For communication between microcontrollers, this is not useful (only voltage levels are changed).</em></p>
+
+<p><strong>RS485:</strong></p>
+
+<ul>
+<li>Essentially, you use the USART port in a different mode - there is no advantage in bandwidth, and it may only simplify the wiring slightly, but it also complicates it. This is not recommended.</li>
+</ul>
+
+<p><strong>Two-wire interface:</strong></p>
+
+<ul>
+<li><p>This is also referred to as I2C. This means that all devices share the same two wires.</p></li>
+<li><p>You need a pull-up resistor on both wires</p></li>
+<li><p>It is slow (because the pull-up resistors are limited in value, and there is increasing capacitance as the number of devices increases, and the wire length increases). For this AVR microcontroller, the speed is up to 400 kHz - slower than USART (but this speed depends on limiting your capacitance). The reason is that although a device drives the data wire low, the opposite transition is accomplished by letting the wire float high again (the pull-up resistor).</p></li>
+<li><p>It is even slower when you consider that ALL communication shares the same limited bandwidth. Because all communication shares the same limited bandwidth, there may be delays in communication where data must wait until the network is idle before it can be sent. If other data is constantly being sent, it may also block the data from ever being sent.</p></li>
+<li><p>It does rely on a master-slave protocol, where a master addresses a slave, then sends a command/request, and the slave replies afterwards. Only one device can communicate at a time, so the slave must wait for the master to finish.</p></li>
+<li><p>Any device can act as both a master and/or a slave, making it quite flexible.</p></li>
+</ul>
+
+<p><strong>SPI</strong></p>
+
+<ul>
+<li><p>This is what I would recommend/use for general communication between microcontrollers.</p></li>
+<li><p>It is high speed - up to CLK/2 = 8MHz (for CLK at 16MHz), making it the fastest method. This is achievable because of its separate wire solely for the clock.</p></li>
+<li><p>The MOSI, MISO data, and SCK clock wires are shared across the whole network, which means it has simpler wiring.</p></li>
+<li><p>It is a master-slave format, but any device can be a master and/or slave. However, because of the slave select complications, for shared wiring (within the network), you should only use it in a hierarchical manner (unlike the two-wire interface). IE. if you organise all devices into a tree, a device should only be master to its children, and only a slave to its parent. That means that in slave mode, a device will always have the same master. Also, to do this correctly, you need to add resistors to MISO/MOSI/SCK to the upstream master, so that if the device is communicating downstream (when not selected as a slave), the communications will not affect communications in other parts of the network (note the number of levels you can do this using resistors is limited, see below for better solution using both SPI ports).</p>
+
+<p>The AVR microcontroller can automatically tri-state the MOSI signal when it is slave-selected, and switch to slave mode (if in master).</p>
+
+<p><em>Even though it might require a hierarchical network, most networks can be organised in a tree-like manner, so it is usually not an important limitation</em></p></li>
+<li><p>The above can be relaxed slightly, because each AVR microcontroller supports two separate SPI ports, so each device can have different positions in two different networks.</p>
+
+<p>Having said this, if you need many levels in your tree/hierarchy (more than 2), the above solution using resistors gets too fiddly to work. In this case, you should change the SPI network between each layer of the tree. This means each device will connect to its children on one SPI network, and its parent on the other SPI network. Although it means you only have a single tree of connections, the advantage is that a device can communicate with both one of its children and its parent at the same time and you don't have fiddly resistors (always hard to choose the right values).</p></li>
+<li><p>Because it has separate MOSI and MISO wires, both the master and slave can communicate at the same time, giving it a potential factor of two increase in speed. A extra pin is required for the slave-select for each additional slave, but this is not a big burden, even 10 different slaves requires only 10 extra pins, which can be easily accommodated on a typical AVR microcontroller.</p></li>
+</ul>
+
+<p><strong>CAN</strong> is not supported by the AVR microcontroller you have specified. As there are other good options, it is probably not important in this case anyways.</p>
+
+<hr>
+
+<p>The recommendation is <strong>SPI</strong>, because it is fast, the wiring isn't too complex, and doesn't require fiddly pull-up resistors. In the rare case where SPI doesn't fully meet your needs (probably in more complicated networks), you can use multiple options (eg. use both SPI ports, along with the two-wire interface, as well as pairing some of the microcontrollers using a USART loop!)</p>
+
+<p>In your case, using SPI means that naturally, the microcontroller with the USB connection to the computer can be the master, and it can just forward the relevant commands from the computer to each slave device. It can also read the updates/measurements from each slave and send these to the computer.</p>
+
+<p>At 8MHz, and 0.5m wire length, I don't think it will become a problem. But if it is, try be more careful of capacitance (keep ground and signal wires getting too close, and also be careful of connections between different conductors), and also signal termination. In the unlikely event that it remains a problem, you can reduce the clock rate, but I don't think it is necessary.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-737" data-toggle = "popover">
+				<p>user name : ronalchn</p>
+				<p> user reputation : 2449</p>
+				<p class = "tagcontent" id = "usertaginfo-737">{'None': 187, 'two-wheeled': 20, 'inverse-kinematics': 15, 'interrupts': 5, 'microcontroller': 13, 'wiring': 7, 'c': 8, 'avr': 5, 'brushless-motor': 2, 'joint': 15, 'kinematics': 15, 'hall-sensor': 2, 'mobile-robot': 20, 'arm': 15}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-737">Load Comments</button></br>
+			<div id = "commentsection-737" class = 'collapse'>
+			<div id = "comment-938" class = "comment">
+				<p>Thumbs up for SPI from me</p>
+			</div>
+			<div id = "comment-939" class = "comment">
+				<p>I'm a fan of SPI too, although perhaps I2C is also worth considering (avoids the need of seperate CS lines to each device).  But CAN should not be so easily dismissed - after all, it is the automotive bus of choice, so I'd not rule it out for hobby robotics!</p>
+			</div>
+			<div id = "comment-940" class = "comment">
+				<p>Does the SPI bus really require separate CS lines from the master to each slave? If so, what would you call that *other* bus that requires exactly 4 connections to the master, no matter how many slaves are connected, that is mentioned in the Wikipedia article on [SPI bus](http://en.wikipedia.org/wiki/SPI_bus)?</p>
+			</div>
+			<div id = "comment-941" class = "comment">
+				<p>@DavidCary - I think you're referring to the [Daisy Chain Slave Configurations](http://en.wikipedia.org/wiki/SPI_bus#Daisy_chain_SPI_configuration) - I've never seen that used... and have only used the Independent method myself</p>
+			</div>
+			<div id = "comment-942" class = "comment">
+				<p>+1 For the huge response, I'm old school and I love the 485 and generally  buses with software address, but in this case, speed and resource consumption components, I would choose the SPI. Although you would have much attention to distance and electrical noise, especially if your bus coesisten other IC, with different transmission speed: memories, NIC, etc., which could suffer brownouts and clock loss amplitude</p>
+			</div>
+			<div id = "comment-944" class = "comment">
+				<p>Your comments on CAN are not accurate. CAN is not just any 2-wire bus. I think you are confusing it with I2C, which has a top speed of 400kbps. CAN's top speed is 1Mbps.</p>
+			</div>
+			<div id = "comment-945" class = "comment">
+				<p>@DavidCary - The single SS SPI bus is dependent on the protocol used. For example, it would be impossible to use this for talking to a bunch of SPI ADCs. But if he's going to design his own protocol, then he can define so that the data contents specifies which processor(s) are the subject of the transaction.</p>
+			</div>
+			<div id = "comment-946" class = "comment">
+				<p>@Rocketmagnet: The [ADS1271 datasheet](http://www.ti.com/lit/ds/symlink/ads1271.pdf) shows "a bunch of SPI ADCs" in "Figure 64. Example of SPI-Format, Daisy-Chain Connection for Multiple ADS1271s", so I personally wouldn't be so quick to say it is "impossible".</p>
+			</div>
+			<div id = "comment-959" class = "comment">
+				<p>@Andrew The problem I see with I2C in this case is that I2C is primarily designed for inter-chip communication within a single board. That 18 inches of wire will cause a lot of signaling issues. Not impossible, but it would be a lot of extra effort to debug.</p>
+			</div>
+			<div id = "comment-960" class = "comment">
+				<p>@JoeBaker - agreed. But so (AIUI) is SPI.  For linking standalone modules, I'd be looking at RS485/422 or CAN. Probably 422 because its differential so less prone to EMI.</p>
+			</div>
+			<div id = "comment-962" class = "comment">
+				<p>@Andrew Generally speaking yes, but there's a lot more that can go wrong with I2C that's more difficult to debug. Think arbitration errors and lost ACK bits. You can extend it with buffers to reduce the line capacitance, but then you're adding ICs when you otherwise wouldn't need to. Per http://electronics.stackexchange.com/questions/33125/short-distance-board-to-board-communication , you can do SPI runs of this length with just a terminating resistor if you run into problems.</p>
+			</div>
+			<div id = "comment-963" class = "comment">
+				<p>Good link @JoeBaker, indeed, communication speed is actually quite slow for this cable length, and transmission line effects are unlikely to eventuate for AVRs. If you try to get an AVR to replicate its clock signal, it's actually slightly skewed because of a slow rise time. I've programmed an AVR over a long SPI ribbon cable at high frequency without problems.</p>
+			</div>
+			</div>
+				<textarea id = "speech-737" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-737">
+					<img id="start_img-737" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-737">Comment</button>
+			<br><div id = "ans-743"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-743" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I can highly recommend CAN for inter processor communications. We use it in our robots, with up to 22 processors on the same bus. With good protocol design, you can use up about 90% of the available bandwidth (about 640kbps when you take into account all of the error checking and inter frame spacing). We're able to servo 10 motors at 1000Hz on one CAN bus. This is approaching the limit. You could probably squeeze it to 20 motors if you pack the data very carefully.</p>
+
+<p>Generally CAN needs to have one transceiver chip for each processor (it's just a little 8-pin device). The transceiver gives you the nice differential signal which emits very little interference, and also makes it immune to interference if you're working in an electrically noisy environment (motors, solenoids, and radio transmitters).</p>
+
+<p><img src="https://i.stack.imgur.com/4Tk7n.jpg" alt="CAN Bus connections"></p>
+
+<p>However, in limited circumstances, it's actually possible to use <a href="https://electronics.stackexchange.com/questions/30564/is-a-can-enabled-microcontroller-sufficient-to-drive-a-can-bus/30596#30596">CAN with no transceivers</a>.</p>
+
+<hr>
+
+<p><img src="https://i.stack.imgur.com/rzs1z.gif" alt="EtherCAT"></p>
+
+<p>If you ever feel like implementing a bus with serious bandwidth, I suggest you try <a href="http://en.wikipedia.org/wiki/EtherCAT" rel="nofollow noreferrer">EtherCAT</a>. It's a 100Mb bus, which can be connected to your PC's Ethernet port. There are two important parts to the bus:</p>
+
+<ul>
+<li>The Bridge. This converts the Ethernet physical layer to a simpler, lower cost LVDS physical layer, which doesn't require the large connectors, Phy chip, and many components that Ethernet itself does.</li>
+<li>The nodes. Each node just needs one ET1200 chip and a microcontroller.</li>
+</ul>
+
+<p>The PC can transmit and receive large chunks of data to and from the nodes at 1kHz or faster. You can control <a href="http://www.youtube.com/watch?v=UwP4DCwXoSM" rel="nofollow noreferrer">quite a lot of stuff</a> on a single EtherCAT bus.</p>
+
+<p>Added:</p>
+
+<p>Shadow Robot Company now sell a useful EtherCAT Bus system called <a href="http://www.shadowrobot.com/products/ronex/" rel="nofollow noreferrer">Ronex</a>. It lets you add quite a lot of I/O, and they're going to be introducing lots of other types of board soon, like motor controllers, and high quality ADCs.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-743" data-toggle = "popover">
+				<p>user name : Rocketmagnet</p>
+				<p> user reputation : 4235</p>
+				<p class = "tagcontent" id = "usertaginfo-743">{'control': 31, 'force': 8, 'multi-agent': 5, 'pid': 29, 'air-muscle': 6, 'uav': 52, 'stepper-driver': 3, 'reliability': 5, 'motor': 12, 'esc': 1, 'mobile-robot': 6, 'ros': 35, 'stepper-motor': 3, 'tuning': 12, 'swarm': 10, 'research': 5, 'platform': 17, 'imu': 4, 'kalman-filter': 49, 'hri': 4, 'None': 266, 'raspberry-pi': 24, 'localization': 7, 'python': 7, 'torque': 3, 'brushless-motor': 28, 'failure': 5, 'force-sensor': 15, 'sensors': 20, 'pwm': 10, 'wireless': 10, 'servos': 7, 'wifi': 24, 'simulation': 6, 'servomotor': 11, 'particle-filter': 0, 'sensor-fusion': 4, 'automatic': 12, 'software': 17}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-743">Load Comments</button></br>
+			<div id = "commentsection-743" class = 'collapse'>
+			<div id = "comment-4044" class = "comment">
+				<p>What's the source for that image?  It has `CAN High` for both red and blue wires.</p>
+			</div>
+			</div>
+				<textarea id = "speech-743" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-743">
+					<img id="start_img-743" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-743">Comment</button>
+			<br><div id = "ans-2003"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2003" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I know I'm digging up an old thread and this is sort of off topic, but I don't think you can just get hold of ET1200 chips from Beckhoff. I emailed them a little while back and was advised that I need to join the Ethercat group. To do this I had to demonstrate that I was going to contribute back to the group - ie, by building and selling devices that used the Ethercat stuff. At that (and this) point in time, I am still prototyping my device (a brushless motor controller for robot applications - currently using CAN) so I could not offer anything (I cannot give a solid time for completion - Im still working on my undergrad). I expressed to them my disappointment. They said not to be disappointed!! Pretty funny stuff! 
+I would <em>really</em> like to get into Ethercat, but the ASICs seem to be untouchable to hobbyists or those without a company.
+Also, this is my first post, so apologies if I have angered the gods by digging up an old post!</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2003" data-toggle = "popover">
+				<p>user name : law</p>
+				<p> user reputation : 31</p>
+				<p class = "tagcontent" id = "usertaginfo-2003">{'None': 3, 'torque': 0, 'robotic-arm': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2003">Load Comments</button></br>
+			<div id = "commentsection-2003" class = 'collapse'>
+			<div id = "comment-4113" class = "comment">
+				<p>Welcome. Resurrecting an old post is fine, if the answer is relevant. And your comment seems relevant to me...</p>
+			</div>
+			<div id = "comment-4125" class = "comment">
+				<p>Thanks mate. This is a great forum! Out of interest, do you have any experience with Ethercat? Do you happen to know any other methods of getting a slave device suitable for prototyping on PCBs? I am willing to pay, but at the moment I simply don't meet the requirements to join the group to buy the Bechoff ASICs. Frustrating!</p>
+			</div>
+			<div id = "comment-4126" class = "comment">
+				<p>Not EtherCat, no.  I use CAN (a good option), LIN (not so good IMHO) and can certainly recommend SPI or I2C</p>
+			</div>
+			<div id = "comment-19319" class = "comment">
+				<p>Did you manage to get a hold to the ET1100 or ET1200 chip? If you didnt there is another option available now: microchip LAN9252, it is compatible with the ET1100 and works pretty well. Use the SOES library
+regards</p>
+			</div>
+			</div>
+				<textarea id = "speech-2003" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2003">
+					<img id="start_img-2003" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2003">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

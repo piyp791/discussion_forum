@@ -1,0 +1,149 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Sensors' field of view in car driving
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7580" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7580" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 135</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Sensors' field of view in car driving</h2>
+<p>I want to develop an autonomous driving RC car. For detecting obstacles, I plan to mount 3-5 ultrasonic sensors in the front and in the back the car. What is the  minimum necessary combined field of view of the sensors so the car never hits an obstacle? I.e. what is the minimum angle of detection of the combined sensors the car should have to detect any obstacle in its path?</p>
+
+<p>Some data about the car: (I don't know whether all the data is relevant)</p>
+
+<ul>
+<li>Separation between right and left wheel : 19,5 cm</li>
+<li>Wheelbase (distance between the front and the back wheels):  31,3cm</li>
+<li>Steering axle: front.</li>
+<li>Maximum angle of steering: around 30 degrees. The car uses <a href="https://en.wikipedia.org/wiki/Ackermann_steering_geometry" rel="nofollow">Ackermann steering</a></li>
+</ul>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7580" data-toggle = "popover">
+				<p>user name : kender6</p>
+				<p> user reputation : 25</p>
+				<p class = "tagcontent" id = "usertaginfo-7580">{'None': 0, 'computer-vision': 1, 'wheeled-robot': 3, 'mobile-robot': 3, 'sensors': 4, 'ultrasonic-sensors': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7580" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7580" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7580">
+					<img id="start_img-7580" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7580">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7583"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7583" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>How fast are you driving the car and are you <a href="http://www.youtube.com/watch?v=e-7lsyueC08" rel="nofollow noreferrer">allowing slip during turning</a>?</p>
+
+<p>From <a href="https://engineering.purdue.edu/ABE/People/Krutz/Lecture%201" rel="nofollow noreferrer">this powerpoint</a>, the turning radius is given by:</p>
+
+<p>$$
+R = \frac{L}{\delta}
+$$
+where $R$ is the turning radius, $L$ is the wheelbase length, and $\delta$ is the steering angle. Note that the equation is for <em>low speed</em> driving. </p>
+
+<p>Given this equation, you can generate a circle around which the car will traverse. Now you need to specify a reaction/braking time. Multiply the reaction time (seconds) by the average vehicle stopping speed (meters per second) to get how many meters the vehicle will travel in the time it takes to stop. Note that if you're using a linear deceleration the average vehicle stopping speed will be half of your cruising speed. </p>
+
+<p>Now, the distance around your turning circle is $d = R\theta$, where again, $R$ is the turning radius. This gives your location on the turning circle when you come to a stop to be $\theta = \frac{d}{R}$. </p>
+
+<p>Finally, look at the angle the object makes with the axis of your car at that position. This should be the minimum angle you are looking to see an obstacle. Here's a (crude) image for clarity:
+<img src="https://i.stack.imgur.com/yoqc7.png" alt="object recognition"></p>
+
+<p>Assuming your 30 degree steering angle is actually +/- 15 degrees, then your steering circle might look something like the above. Given your stopping distance, you need to be able to identify something at least at the red 'X'. This means your forward-looking sensor needs to be at an angle of, in this example, 50 degrees off the center line of your car in order to be able to see it in time to stop without collision.</p>
+
+<p>The faster you are going, the longer it will take to stop, so the farther "around" the turning circle you need to be able to see. As alluded to with the link at the opening of this post, though, RC cars generally have a lot of slip, so you will need to ensure that the car operates at probably a painfully slow speed to ensure the Ackerman steering radius equation above remains valid and to ensure that you don't have slip when braking. </p>
+
+<p>While it is probably acceptable to assume that performance in reverse is the same as in forward this may or may not actually be the case. Braking times, speed, and slip could all perform differently in reverse than in the forward direction. </p>
+
+<p>Finally, remember that the guidance I've given gives you the <em>minimum</em> distance for a <em>large</em> object and assumes instantaneous detection and reaction signalling. That is, you should add a margin to what this gives you. You <em>should</em> have full sensor coverage between your turning extremes (that is, sensor coverage of +/- 50 degrees in this example) to ensure you don't hit any objects, but as you probably won't hit any RC-scale light poles, people, or other relatively narrow objects, you can probably skate by with a few gaps in your sensor coverage. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7583" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-7583">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7583" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7583" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7583">
+					<img id="start_img-7583" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7583">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

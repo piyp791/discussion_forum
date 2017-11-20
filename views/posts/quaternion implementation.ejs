@@ -1,0 +1,484 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>quaternion implementation
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-10348" class = "post">
+			<h2>Question</h2>
+			<div id="vote-10348" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 874</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>quaternion implementation</h2>
+<p>I am trying to implement quaternions and i am using CC2650 sensortag board from TI. This board has MPU9250 from invensense which has Digital Motion Processor (DMP) in it. This DMP gives quaternion, but for my understanding i implemented my own quaternion. I used Gyroscope and acceleorometer values coming out of DMP (which are calibrated ) to calculate angle of rotation. I feed this angle, in 3 directions (x,y,z), to my quaternion. I am not able to match my quaternion values with DMP quaternion values. In fact it's way off, so wondering what I have done wrong.</p>
+
+<p>Following are detailed steps that i did :</p>
+
+<p>1)  Tapped Gyro sensor values from function  read_from_mpl .</p>
+
+<p>2)  Converted gyro values in to float by diving by 2^16. As gyro values are in Q16 format.</p>
+
+<p>3)  Now used Gyro values of 3 axis and found out resultant using formula : 
+<em>Gr = sqrt(Gx^2+Gy^2+Gz^2)</em>
+     <em>Where Gx,Gy and Gz are Gyro values along x-axis,y-axis and z-axis respectively.</em></p>
+
+<p>4)  Now Angle is derived using above found resultant Gr by : 
+*Angle = Gr*1/sample_rate*
+       <em>Where sample_rate is found using API call ,mpu_get_sample_rate(&amp;sample_rate)</em></p>
+
+<p>5)  This Angle is fed to angle_to_quater function which basically converts angle to axis and then quaternion multiplication.</p>
+
+<pre><code>/* Angle to axis and quaternion multiplication: */
+temp.w = cos((Angle*1.0/RAD_TO_DEG)/2);
+temp.x = sin((Angle*1.0/RAD_TO_DEG)/2);
+temp.y = sin((Angle*1.0/RAD_TO_DEG)/2);
+temp.z = sin((Angle*1.0/RAD_TO_DEG)/2);
+temp.x = temp.x *gyro_axis[0];//gyro_axis[0]=Gx
+temp.y = temp.x *gyro_axis[1]; //gyro_axis[0]=Gy
+temp.z = temp.x *gyro_axis[2]; //gyro_axis[0]=Gz
+/* quaternion multiplication and normalization */
+res = quat_mul(*qt,temp);
+quat_normalize(&amp;res);
+*qt = res;*   
+</code></pre>
+
+<p>6)  I also added  doing angle calculations from accelerometer as follows : Here also accelerometer is converted to float by dividing by 2^16, as acceleorometer values also in Q16 format.</p>
+
+<pre><code>*//acc_data[0]-&gt;Ax, acc_data[1]-&gt;Ay, acc_data[2]-&gt;Az
+temp = (acc_data[0]*acc_data[0]) + (acc_data[1]*acc_data[1]);
+acc_angle[0]=atan2(acc_data[2],temp)*RAD_TO_DEG;
+temp = (acc_data[1]*acc_data[1]) + (acc_data[2]*acc_data[2]);
+acc_angle[1]=atan2(acc_data[0],temp)*RAD_TO_DEG;
+temp = (acc_data[1]*acc_data[1]) + (acc_data[0]*acc_data[0]);
+acc_angle[2]=atan2(acc_data[1],temp)*RAD_TO_DEG;*
+</code></pre>
+
+<p>*Find resultant angle of this also as :</p>
+
+<pre><code>inst_acc_angle = (sqrt(acc_angle[0]*acc_angle[0] + acc_angle[1]*acc_angle[1] + acc_angle[2]*acc_angle[2]));*
+</code></pre>
+
+<p>7)  Then complimentary filter is :
+*FinalAngle = 0.96*Angle + 0.04*inst_acc_angle;
+This Final Angle is fed to step 5 to get quaternion.*</p>
+
+<p>Quaternion multiplication is done as below and then normailized to get new quaternion (q). </p>
+
+<p>quater_mul :</p>
+
+<pre><code>q3.w = -q1.x * q2.x - q1.y * q2.y - q1.z * q2.z + q1.w * q2.w;
+q3.x =  q1.x * q2.w + q1.y * q2.z - q1.z * q2.y + q1.w * q2.x;
+q3.y = -q1.x * q2.z + q1.y * q2.w + q1.z * q2.x + q1.w * q2.y;
+q3.z =  q1.x * q2.y - q1.y * q2.x + q1.z * q2.w + q1.w * q2.z;
+</code></pre>
+
+<p>quat_normalize:</p>
+
+<pre><code>double mag = pow(q-&gt;w,2) + pow(q-&gt;x,2) + pow(q-&gt;y,2) + pow(q-&gt;z,2);
+mag = sqrt(mag);
+q-&gt;w = q-&gt;w/mag;
+q-&gt;x = q-&gt;x/mag;
+q-&gt;y = q-&gt;y/mag;
+q-&gt;z = q-&gt;z/mag;
+</code></pre>
+
+<p>When i check my quaternion values with DMP, they are WAY off. Can you please provide some insights in to what could be wrong here. </p>
+
+<p><strong>Source code :</strong></p>
+
+<pre><code>acc_data[0]=data[0]/65536.0;
+acc_data[1]=data[1]/65536.0;
+acc_data[2]=data[2]/65536.0;
+double temp = (acc_data[0]*acc_data[0]) + (acc_data[1]*acc_data[1]);
+acc_angle[0]=atan2(acc_data[2],temp)*RAD_TO_DEG;
+temp = (acc_data[1]*acc_data[1]) + (acc_data[2]*acc_data[2]);
+acc_angle[1]=atan2(acc_data[0],temp)*RAD_TO_DEG;
+temp = (acc_data[1]*acc_data[1]) + (acc_data[0]*acc_data[0]);
+acc_angle[2]=atan2(acc_data[1],temp)*RAD_TO_DEG;*
+
+gyro_rate_data[0]=data[0]/65536.0;
+gyro_rate_data[1]=data[1]/65536.0;
+gyro_rate_data[2]=data[2]/65536.0;
+
+float inst_angle = (sqrt(gyro_rate_data[0]*gyro_rate_data[0] +  gyro_rate_data[1]*gyro_rate_data[1] + gyro_rate_data[2]*gyro_rate_data[2]));
+gyro_rate_data[0] = gyro_rate_data[0]/inst_angle;
+gyro_rate_data[1] = gyro_rate_data[1]/inst_angle;
+gyro_rate_data[2] = gyro_rate_data[2]/inst_angle;
+inst_angle = inst_angle *1.0/sam_rate;
+float inst_acc_angle = (sqrt(acc_angle[0]*acc_angle[0] + acc_angle[1]*acc_angle[1] + acc_angle[2]*acc_angle[2]));
+inst_angle = WT*inst_angle + (1.0-WT)*inst_acc_angle;
+
+angle_to_quat(inst_angle,gyro_rate_data,&amp;q);
+
+/* The function for angle to quaterinion and multiplication,normalization */
+void angle_to_quat(float Angle,float *gyro_axis,struct quat *qt)
+{
+    struct quat temp;
+    struct quat res;
+    temp.w = cos((Angle*1.0/RAD_TO_DEG)/2);
+    temp.x = sin((Angle*1.0/RAD_TO_DEG)/2);
+    temp.y = sin((Angle*1.0/RAD_TO_DEG)/2);
+    temp.z = sin((Angle*1.0/RAD_TO_DEG)/2);
+    temp.x = temp.x *gyro_axis[0];
+    temp.y = temp.x *gyro_axis[1];
+    temp.z = temp.x *gyro_axis[2];
+    res = quat_mul(*qt,temp);
+    quat_normalize(&amp;res);
+    *qt = res;
+}
+</code></pre>
+
+<p><a href="https://i.stack.imgur.com/w98QK.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/w98QK.png" alt="enter image description here"></a></p>
+
+<p>This variation is coming when i am keeping my device stationary.</p>
+
+<p>Y-Axis : Resultant of all 3 gyro axis.</p>
+
+<p>X-axis : The number of samples. (have not converted them to time)</p>
+
+<p>Sample_rate is 3Hz.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10348" data-toggle = "popover">
+				<p>user name : Vinay</p>
+				<p> user reputation : 20</p>
+				<p class = "tagcontent" id = "usertaginfo-10348">{'sensor-fusion': 3, 'None': 0, 'sensors': 0, 'accelerometer': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10348">Load Comments</button></br>
+			<div id = "commentsection-10348" class = 'collapse'>
+			<div id = "comment-18548" class = "comment">
+				<p>Could you please check and fix the formatting of your code?</p>
+			</div>
+			<div id = "comment-18613" class = "comment">
+				<p>I have tried to tidy up your code @Vinay but in future, please use the code insert tool **{}** to format your code. Also, on *Robotics* we are fortunate enough to have MathJax support enabled, allowing you to easily create subscripts, superscripts, fractions, square roots, greek letters and more. This allows you to add both inline and block element mathematical expressions in *robotics* questions and answers. For a quick tutorial, take a look at [How can I format mathematical expressions here, using MathJax?](http://meta.robotics.stackexchange.com/q/130/37)</p>
+			</div>
+			<div id = "comment-18614" class = "comment">
+				<p>If you can confirm that the code as it now stands is correct, I will happily re-open this question.</p>
+			</div>
+			<div id = "comment-18615" class = "comment">
+				<p>Also, you say "When i check my quaternion values with DMP, they are WAY off.", so it would be a good idea to give us a table with example input values, the output values calculated from them, and what you expected those outputs to be. We don't know what input values you are using, so they may help us understand what makes the outputs *WAY off*.</p>
+			</div>
+			<div id = "comment-18625" class = "comment">
+				<p>Yes Mark. The code is correct .
+Rather than comparison with DMP results, what i see is my Gyro values are as shown in graph.(i will try to add this behaviour of gyro).
+Just for a note , in case you look for what is WT, its value is 0.96.</p>
+			</div>
+			<div id = "comment-18626" class = "comment">
+				<p>so with gyro behaving with such drastic variations , how can i make it stable the angle so that quaternion rotations are stable.</p>
+			</div>
+			</div>
+				<textarea id = "speech-10348" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10348">
+					<img id="start_img-10348" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10348">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-10374"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10374" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>So, as I mentioned in an earlier comment, it looks like you're using a mashup of methods. You're not applying any one method correctly; instead you're mis-using part of one method, then using the results of that to another mis-applied half-method, and so on.</p>
+
+<p>First, maybe a refresher on rotation matrices. You can rotate about each of the three primary axes - the x-axis ($\phi$ or "roll"), the y-axis ($\theta$ or "pitch"), and the z-axis ($\psi$ or "yaw").</p>
+
+<p>The order in which you do these operations matters - if you pitch then yaw, that gives you a different orientation than if you yaw then pitch. Try with your hand and see, and remember that each rotation happens about the <em>hand's</em> orientation axes, not <em>global</em> axes. </p>
+
+<p>For each rotation, you multiply the rotation matrices together. Conceptually, this is representing a set of successive rotations. For example, if you have:</p>
+
+<p>$$
+\mbox{output} = R(\psi)R(\theta)R(\phi) \mbox{input} \\
+$$
+then you can see that this is equivalent to:
+$$
+\mbox{intermediate}_{\phi} = R(\phi)\mbox{input} \\
+\mbox{intermediate}_{\theta} = R(\theta)\mbox{intermediate}_{\phi} \\
+\mbox{output} = R(\psi)\mbox{intermediate}_{\theta} \\
+$$</p>
+
+<p>This explicitly shows <em>successive</em> rotations, but you can also "collapse" the rotation matrices into one "shortcut" rotation matrix - </p>
+
+<p>$$
+R(\mbox{net}) = R(\psi)R(\theta)R(\phi) \\
+\mbox{output} = R(\mbox{net})\mbox{input} \\
+$$</p>
+
+<h2>First portion of your code.</h2>
+
+<p>That mentioned, take a look at the beginning of your code. I think the MathJax is easier to look at than code, so I'll use that. First, you get the accelerometer data and then "convert to angles" as follows:</p>
+
+<p>$$
+\phi_x = \tan^{-1}{\left(\frac{a_z}{a_x^2 + a_y^2}\right)} \\
+\theta_y = \tan^{-1}{\left(\frac{a_x}{a_y^2 + a_z^2}\right)} \\
+\psi_z = \tan^{-1}{\left(\frac{a_y}{a_y^2 + a_x^2}\right)} \\
+$$</p>
+
+<p>First thing to note about this is that generally you have one axis divided by the other two, <em>except for the last line</em> - there you have y/(y^2+x^2), which breaks your pattern. </p>
+
+<p>Second thing to note about this is that it seems like maybe you're trying to use the same method given in <a href="https://www.nxp.com/files/sensors/doc/app_note/AN3461.pdf" rel="nofollow">this application note from Freescale Semiconductor (Document Number: AN3461)</a> that says (briefly, from Page 10):</p>
+
+<blockquote>
+  <p>Solving for the roll and pitch angles... and using the subscript xyz to denote that <strong>the roll and pitch angles are computed according to the rotation sequence $R_{xyz}$</strong>, gives:</p>
+</blockquote>
+
+<p>$$
+\tan{\phi}_{xyz} = \left(\frac{G_{py}}{G_{pz}}\right) \\
+\tan{\theta}_{xyz} = \frac{-G_{px}}{\sqrt{G_{py}^2 + G_{pz}^2}} \\
+$$</p>
+
+<blockquote>
+  <p>Solving for the roll and pitch angles... and using the subscript yxz to denote that <strong>the angles are computed according to the rotation sequence $R_{yxz}$</strong>, gives: </p>
+</blockquote>
+
+<p>$$
+\tan{\phi}_{xyz} = \frac{G_{py}}{\sqrt{G_{px}^2 + G_{pz}^2}} \\
+\tan{\theta}_{xyz} = \left(\frac{-G_{px}}{G_{pz}}\right) \\
+$$</p>
+
+<p>The document also states (bottom of Page 9) that isn't not possible to get yaw angle without a compass. So, hopefully at this point you can begin to see what I'm calling a "misapplied mashup":</p>
+
+<ol>
+<li>Your method uses $\tan^{-1}\left(a/(b^2 + c^2)\right)$ for each angle. This is missing a square root symbol in the denominator.</li>
+<li><strong>More importantly</strong>, if you use that form for roll and pitch angles, then you're getting roll from one rotation sequence and pitch <em>from a different rotation sequence</em>. </li>
+<li>Also, the sign on that form should change. </li>
+<li>Regardless of points 1-3 above, you <strong>cannot</strong> use this method for yaw angle. </li>
+</ol>
+
+<h2>Second portion of your code.</h2>
+
+<p>Now we move on from here to the gyro section. Remember that a gyroscope outputs angular <em>velocities</em>. It looks like you calculate the "rotational velocity magnitude" as:</p>
+
+<p>$$
+\mbox{inst_angle} = \sqrt{\omega_x^2 + \omega_y^2 + \omega_z^2} \\
+$$</p>
+
+<p>And then you calculate an "axis" as:</p>
+
+<p>$$
+\mbox{x-axis component} = \frac{\omega_x}{\mbox{inst_angle}} \\
+\mbox{y-axis component} = \frac{\omega_y}{\mbox{inst_angle}} \\
+\mbox{z-axis component} = \frac{\omega_z}{\mbox{inst_angle}} \\
+$$</p>
+
+<p>This seems to work out, <strong>except</strong> you calculate the <em>incremental angle</em> that you use to rotate about this axis:</p>
+
+<p>$$
+\mbox{inst_angle} = \mbox{inst_angle}/\mbox{sample rate} \\
+$$
+which, for the record, is equivalent to:
+$$
+\mbox{inst_angle} = \mbox{inst_angle} * \mbox{sample period} \\
+$$</p>
+
+<p>At this point, you get the "mis-applied" portion of the gyro code. The accelerometer-angle equations from the first section should give <em>absolute angles</em> (based on whichever rotation sequence you choose to use*. The gyro-angle equation above gives you an <em>incremental</em> angle. Further, the gyro-angle is the incremental rotation <em>about the axis you calculate</em>, where the accelerometer-angle is the absolute angle <em>relative to the world frame</em>. </p>
+
+<p>However, even though these are different angles (incremental vs. absolute), and even though they're in different frames (<em>about</em> an axis vs. <em>relative</em> to world frame), you proceed to push the two together by smooshing the accelerometer-angles into a "magnitude" (which doesn't make sense) and then add them with a complementary filter:</p>
+
+<p>$$
+\mbox{inst_accel_angle} = \sqrt{\phi_x^2 + \theta_y^2 + \psi_z^2} \\
+\mbox{inst_angle} = \alpha \left(\mbox{inst_angle}\right) + (1-\alpha)\left(\mbox{inst_accel_angle}\right) \\
+$$</p>
+
+<h2>Final portion of your code:</h2>
+
+<p>At this point, you have an "angle" and an "axis", and it looks like you correctly convert the axis/angle set to a quaternion, <em>however</em>, this quaternion is more of an incremental quaternion because the axis is based off of <em>rate</em> (angular velocity) information. The angle is a mash-up of incremental and absolute angles, so it doesn't mean much of anything. </p>
+
+<p>Consider this - if you actively move the sensor to a new orientation, your quaternion will change to some non-zero axis <em>while you're moving it</em> because the axis is based on your <em>angular velocity</em>. When you hold it stead at the new orientation, <em>even though it's pointed in some direction</em> your axis information is now zero because your rate is zero. </p>
+
+<h2>The solution</h2>
+
+<p>Remember that a quaternion represents an <em>orientation</em>, so let's leave out the accelerometers to begin with. Follow these steps to implement a first-pass quaternion representation:</p>
+
+<ol>
+<li>At the beginning of your code, set the starting orientation. Remember, a gyroscope gives a <em>velocity</em> (speed), so you have to tell it where it's starting. I would suggest orienting along a cardinal axis with no rotation. So, for example, if you align along the x-axis with no rotation, then you'd wind up with $Q = [0,1,0,0]$ for w,x,y,z. </li>
+<li>Get your gyro data and build a rate vector (with values in rad/s!) as $S = [0,\omega_x,\omega_y,\omega_z]$. </li>
+<li>Find how quickly this means your quaternion is moving by finding $\frac{dQ}{dt} = \frac{1}{2}Q\otimes S$ where $\otimes$ is the quaternion multiplication as you've defined it in your question. </li>
+<li>Increment your quaternion based on the quaternion rate you calculated in Step 3 above: $Q = Q + \frac{dQ}{dt}/\mbox{sample rate}$ or $Q = Q + \frac{dQ}{dT}*\mbox{sample period}$. </li>
+</ol>
+
+<p>That's it! That's all that you do to get the quaternion. </p>
+
+<p>Now, as I mentioned earlier, the accelerometers give an <em>absolute</em> oriention (in roll and pitch <strong>only</strong>!!), so you can use those values to correct for long-term drift in the results you get from using the gyroscope. For more information on how to do this, try checking out the <a href="https://www.samba.org/tridge/UAV/madgwick_internal_report.pdf" rel="nofollow">Madgwick Filter</a>. (Final comment: I was going to link you directly to Sebastian Madgwick's page, but it looks like it's <a href="http://www.x-io.co.uk/open-source-imu-and-ahrs-algorithms/" rel="nofollow">down</a>. Not sure what happened, but I'd get the paper I linked sooner rather than later if you're interested, if he's taking down his IP.)</p>
+
+<h2>In response to your questions</h2>
+
+<p>OP asks (paraphrased) - "A quaternion $q$ represents a pose, so there is no angular rate information, so how does quaternion multiplication $q\otimes S$ make sense units-wise? If I consider $q$ to have units of rate, then the numeric integration doesn't make sense." </p>
+
+<p>My response - I wish I could explain the physical meaning of the quaternion math, but I can't; I don't know how to. All I can say is, the formula for quaternion rate of change is $dQ/dt = \frac{1}{2}q\otimes S$, and that you then perform numeric integration by $q = q + (dQ/dt)*dt$. </p>
+
+<p>Quaternions are unitless, so that may help your conceptual understanding. Consider the quaternion rate equation to be "scaling" the gyro rates to fit the quaternion format. That is, the term $\frac{1}{2}q\otimes$ converts $S$ to $dQ/dt$.</p>
+
+<p>If you're having stability issues, the very first thing I would check is that you are actually passing your angular rates <em>as radians per second</em> and not degrees per second. Based on your math above, it looks like your gyro outputs in units of deg/s. </p>
+
+<p>The next thing to do would be to use the correct sample_rate. For this, rather than dividing by the sample_rate I would multiply by the sample period. It's important to use the sample period <em>of your software</em> and not of the sensor. For example, if your software is running at 3Hz, but your sensor is running at 30Hz, then your sensor will report a sample period of 33.3ms, when in actuality you're only <em>collecting</em> samples at 3.3ms. This will cause your numeric integration to not work correctly. </p>
+
+<p>Finally, the last to note is that this method of updating the quaternion is used to determine how the world coordinates convert to sensor coordinates. If you are interested in viewing sensor coordinates in world coordinates (for example, if you would like to <a href="https://www.youtube.com/watch?v=gUBjpF7rnww" rel="nofollow">plot a representation of the sensor</a>), then you need to take the quaternion conjugate. This is akin to taking the inverse of a rotation matrix to flip directionality between world/sensor frames. </p>
+
+<pre><code>qConj = QuaternionConjugate(q)
+qConj.w = q.w;
+qConj.x = -q.x;
+qConj.y = -q.y;
+qConj.z = -q.z;
+end;
+</code></pre>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10374" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-10374">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10374">Load Comments</button></br>
+			<div id = "commentsection-10374" class = 'collapse'>
+			<div id = "comment-18633" class = "comment">
+				<p>void angle_to_axis(float *gyro_axis,struct quat *qt,unsigned short sample_rate)
+{
+ struct quat temp;
+ struct quat res;
+
+ temp.w = 0.0;
+ temp.x = gyro_axis[0];
+ temp.y = gyro_axis[1];
+ temp.z = gyro_axis[2];
+
+    qt->w /= 2.0;
+    qt->x /= 2.0;
+    qt->y /= 2.0;
+    qt->z /= 2.0;
+ res = quat_mul(*qt,temp);
+ res.w = res.w;//(float)sample_rate;
+ res.x = res.x/(float)sample_rate;
+ res.y = res.y/(float)sample_rate;
+ res.z = res.z/(float)sample_rate;
+ res = quat_add(*qt,res);
+ quat_normalize(&res);
+    *qt = res;
+}</p>
+			</div>
+			<div id = "comment-18634" class = "comment">
+				<p>I still see huge instability with the approach that you mentioned.
+Is my gyro readings are bad ?. The above function is used newly and i directly pass the gyro readings as angular velocities.
+Please let me know what is still wrong in my approach.</p>
+			</div>
+			<div id = "comment-18637" class = "comment">
+				<p>@Vinay - You're not implementing the method correctly. From the code you post above, you calculate $S$ correctly. BUT, you use "quat_add" instead of multiply. You also need to divide that by two and multiply by the sample period, then accumulate the result. Your code should look like `*qt = *qt + (0.5*quat_mult(*qt, res))/((float)sample_rate);`. I'm not sure where you're getting sample_rate. Just be sure to use the correct term; sample_rate = 1/sample_period.</p>
+			</div>
+			<div id = "comment-18646" class = "comment">
+				<p>'void angle_to_axis(float *gyro_axis,struct quat *qt,unsigned short sample_rate)
+{
+ struct quat temp,res;
+
+ temp.w = 0.0;
+ temp.x = gyro_axis[0];
+ temp.y = gyro_axis[1];
+ temp.z = gyro_axis[2];
+    // temp -->S , *qt--->Q, res--->dQ/dt = 1/2(QxS)
+   // res-->dQ/dt *sample_period
+        res = quat_mul(*qt,temp);
+ res.w = 0.5*res.w/(float)sample_rate;
+ res.x = 0.5*res.x/(float)sample_rate;
+ res.y = 0.5*res.y/(float)sample_rate;
+ res.z = 0.5*res.z/(float)sample_rate;
+ //*qt ---> Q+dQ/dt*sample_period
+ *qt = quat_add(*qt,res);
+ quat_normalize(qt);
+  }'</p>
+			</div>
+			<div id = "comment-18647" class = "comment">
+				<p>Chuck, I am getting sampling rate from motion driver code.
+I got one more doubt on method : I see Q--> is in angle mode (units in terms of radians).
+Whereas dQ/dt = 1/2(Q*S), where i see Q(rad) in Angle mode and S is in angular velocity mode (rad/sec). So how does Quaternion multiplication work here .  Even if i consider Q in rad/sec units mode , then addition results are wrong.
+    Infact even after this implementation as suggested by you i see instability in cube rotation . Please correct my understanding theoretically and practically.</p>
+			</div>
+			<div id = "comment-18650" class = "comment">
+				<p>@Vinay - See my edits above. If you are having more issues, please update your question to include the data. In the future, if you need to post code, please also edit your question to do so.</p>
+			</div>
+			<div id = "comment-18672" class = "comment">
+				<p>Thanks a lot chuck. It was indeed problem of sampling duration. after i corrected sampling instants using time stamping each instants and then using them in code, the rotation really got improved. Thanks for your description about rate of change of quaternion.
+     I still have one more problem, i.e : When stationary i dont see cube showing stability , as i guess this goes back to gyro fluctuations. is this kind of expected ? Any thoughts on this.
+Please see these below 2 videos after i corrected my code with time stamps.
+*https://youtu.be/MyPlwJb9Spk*
+*https://youtu.be/ldrT7NoB6Zg*</p>
+			</div>
+			<div id = "comment-18673" class = "comment">
+				<p>@Vinay - Glad to help! If my answer is what answered your question, please "accept" it by clicking the check mark between the up and down arrows on the left of the answer. The instability when stationary is due to drift. There are a variety of ways to try to correct for drift; the Madgwick filter is a popular method. If you have questions about correcting for drift, please make a new question and ask (this question was about quaternion implementation.)</p>
+			</div>
+			<div id = "comment-18676" class = "comment">
+				<p>Sure chuck. Did you saw the videos?, i felt some thing still can be corrected. Please let me know your thoughts.</p>
+			</div>
+			</div>
+				<textarea id = "speech-10374" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10374">
+					<img id="start_img-10374" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10374">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

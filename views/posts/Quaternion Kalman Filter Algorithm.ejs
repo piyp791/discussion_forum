@@ -1,0 +1,546 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Quaternion Kalman Filter Algorithm
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9608" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9608" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 456</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Quaternion Kalman Filter Algorithm</h2>
+<p>I have been stuck on this for weeks, I really hope that someone can help me with this,thank you in advance.
+I am trying to write an IMU attitude estimation algorithm using quaternion kalman filter. So based on this research paper: <a href="https://hal.archives-ouvertes.fr/hal-00968663/document" rel="nofollow noreferrer">https://hal.archives-ouvertes.fr/hal-00968663/document</a>, I have developed the following pseudo code algorithm:</p>
+
+<p>Predict Stage:</p>
+
+<p>Qk+1/k = Ak * Qk;  where Ak contains the gyro measurement. 
+<a href="https://i.stack.imgur.com/CDjLC.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/CDjLC.png" alt="enter image description here"></a></p>
+
+<p>Pk+1/k = Ak * Pk *Ak.transpose() + Q; where Q is assumed to be zero.</p>
+
+<p>After prediction, we can use this formula to get the supposed gravity measurement of accelerometer Yg in body frame :</p>
+
+<p>Yg = R * G;  // R is the rotation matrix generated from quaternion Qk+1/k and G = (0,0,0,9.81).</p>
+
+<p>This equation then translates to the following equation which allows me to get measurement model matrix H.</p>
+
+<p>H * Qk+1/k = 0; //where H stores value related to (Yg-G).</p>
+
+<p>Update Stage:</p>
+
+<p>K = P * H * (H * P * H.transpose()+R)^(-1); //R should be adaptively adjusted but right now initialized as identity matrix</p>
+
+<p>Qk+1/k+1 = (I-KH)Qk+1/k;</p>
+
+<p>Qk+1/K+1 = (Qk+1/K+1)/|Qk+1/k+1|; //Normalize quaternion</p>
+
+<p>Pk+1/K+1 = (I - KH)Pk+1/k;</p>
+
+<p>The following is the main part of my code. The complete C++ code is at here <a href="https://github.com/lyf44/fcu" rel="nofollow noreferrer">https://github.com/lyf44/fcu</a> if you want to test.</p>
+
+<pre><code>Matrix3f skew_symmetric_matrix(float a, float b, float c, float d){
+    Matrix3f matrix;
+    matrix &lt;&lt; a,d*(-1),c,
+              d,a,b*(-1),
+              c*(-1),b,a;
+    return (matrix);
+}
+
+void Akf::state_transition_matrix(float dt,float gx,float gy, float gz){
+    Vector3f tmp;
+    tmp(0) = gx*PI/180;
+    tmp(1) = gy*PI/180;
+    tmp(2) = gz*PI/180;
+    float magnitude = sqrt(pow((float)tmp(0),2)+pow((float)tmp(1),2)+pow((float)tmp(2),2));
+
+    /*q(k+1) = |  cos(|w|*dt/2)       | quaternion_multiply q(k)
+               |  w/|w|*sin(|w|*dt/2) |
+    */
+    //w/|w|*sin(|w|*dt/2)
+    tmp = tmp/magnitude*sin(magnitude*dt/2);
+    //quaternion multiplication
+    A(0,0) = cos(magnitude*dt/2);
+    A.block&lt;3,1&gt;(1,0) = tmp;
+    A.block&lt;1,3&gt;(0,1) = tmp.transpose()*(-1);
+
+    Matrix3f skew_symmetric;
+    skew_symmetric = skew_symmetric_matrix((float)A(0,0),(float)tmp(0),(float)tmp(1),(float)tmp(2));
+    A.block&lt;3,3&gt;(1,1) = skew_symmetric;
+}
+
+void Akf::observation_model_matrix(Vector3f meas){
+    Vector3f G;
+    Vector3f tmp;
+    G &lt;&lt; 0,0,9.81;
+    /* H = | 0        -(acc-G).transpose     |
+     *     | (acc-G)  -(acc+G).skewsymmetric |
+     */
+    tmp = meas-G;
+    H(0,0) = 0;
+    H.block&lt;3,1&gt;(1,0) = tmp;
+    H.block&lt;1,3&gt;(0,1) = tmp.transpose()*(-1);
+    tmp = tmp+G+G;
+    Matrix3f matrix;
+    matrix = skew_symmetric_matrix(0,(float)tmp(0),(float)tmp(1),(float)tmp(2));
+    H.block&lt;3,3&gt;(1,1) = matrix*(-1);
+    //H = H*(0.5);
+    cout&lt;&lt;"H"&lt;&lt;endl;
+    cout&lt;&lt;H&lt;&lt;endl;
+    cout&lt;&lt;"H*X"&lt;&lt;endl;
+    std::cout&lt;&lt;H*X&lt;&lt;std::endl;
+}
+
+void Akf::setup(){
+    X_prev = Vector4f::Zero(4,1);
+    X_prev(0) = 1;
+    Q = Matrix4f::Zero(4,4);
+    Z = Vector4f::Zero(4,1);
+    R = Matrix4f::Identity(4,4);
+    P_prev = Matrix4f::Identity(4,4);
+    P_prev = P_prev*(0.1);
+    I = Matrix4f::Identity(4,4);
+
+    sum = Vector4f::Zero(4,1);
+    noise_sum = Matrix4f::Zero(4,4);
+    counter=1;
+}
+
+void Akf::predict_state(){
+    cout&lt;&lt;(60*counter%360)&lt;&lt;endl;
+    X = A*X_prev;
+    A_T = A.transpose();
+    P = A*P_prev*A_T+Q;
+}
+
+void Akf::update_state(){
+  Matrix4f PH_T;
+  Matrix4f tmp;
+
+  PH_T = P*H.transpose();
+  S = H*PH_T+R;
+  if (S.determinant()!= 0 )
+  {
+      tmp = S.inverse();
+      K = P*H*tmp;
+      //std::cout&lt;&lt;"K"&lt;&lt;std::endl;
+      //std::cout&lt;&lt;K&lt;&lt;std::endl;
+      X_updated = (I-K*H)*X;
+      X_updated = X_updated /(X_updated.norm());
+      P_updated = (I-K*H)*P;
+  }
+  else{
+      X_updated = X;
+      std::cout&lt;&lt; "error-tmp not inversible!"&lt;&lt;std::endl;
+  }
+  X_prev = X_updated;
+  P_prev = P_updated;
+}
+
+void rotation_matrix(Vector4f q,Matrix3f &amp;rot_matrix){
+    int i;
+    for (i=1;i&lt;4;i++){
+        q(i) = q(i)*(-1);
+    }
+    Matrix3f matrix;
+    matrix(0,0) = pow((float)q(0),2)+pow((float)q(1),2)-pow((float)q(2),2)-pow((float)q(3),2);
+    matrix(0,1) = 2*(q(1)*q(2)-q(0)*q(3));
+    matrix(0,2) = 2*(q(0)*q(2)+q(1)*q(3));
+    matrix(1,0) = 2*(q(1)*q(2)+q(0)*q(3));
+    matrix(1,1) = pow((float)q(0),2)-pow((float)q(1),2)+pow((float)q(2),2)-pow((float)q(3),2);
+    matrix(1,2) = 2*(q(2)*q(3)-q(0)*q(1));
+    matrix(2,0) = 2*(q(1)*q(3)-q(0)*q(2));
+    matrix(2,1) = 2*(q(0)*q(1)+q(2)*q(3));
+    matrix(2,2) = pow((float)q(0),2)-pow((float)q(1),2)-pow((float)q(2),2)+pow((float)q(3),2);
+    rot_matrix = matrix;
+}
+
+Vector3f generate_akf_random_measurement(Vector4f state){
+    int i;
+    //compute quaternion rotation matrix
+    Matrix3f rot_matrix;
+    rotation_matrix(state,rot_matrix);
+    //rot_matrix*acceleration in NED = acceleration in body-fixed frame
+    Vector3f true_value = rot_matrix*G;
+    std::cout&lt;&lt;"true value"&lt;&lt;std::endl;
+    std::cout&lt;&lt;true_value&lt;&lt;std::endl;
+    for (i=0;i&lt;3;i++){
+        noisy_value(i) = true_value(i) + (-1) + (float)(rand()/(float)(RAND_MAX/2));
+    }
+    return (noisy_value);
+}
+
+int main(){
+      float gx,gy,gz,dt;
+      gx =60; gy=0; gz =0; //for testing, let it rotate around x axis by 60 degree  
+      myakf.state_transition_matrix(dt,gx,gy,gz); // dt is elapsed time
+      myakf.predict_state();
+      Vector4f state = myakf.get_predicted_state();
+      Vector3f meas = generate_akf_random_measurement(state);
+      myakf.observation_model_matrix(meas);
+      myakf.measurement_noise();
+      myakf.update_state();
+      q = myakf.get_updated_state();
+</code></pre>
+
+<p>The problem that I face is that my code does not work.The prediction stage works fine but the updated quaternion state is only correct for the first few iterations and it starts to drift away from the correct value. I have checked my code against the research paper multiple times and ensured that it is in accordance with the algorithm proposed by the research paper.</p>
+
+<p>In my test, I am rotating around x axis by 60 degree per iterations. The number below the started is the angle of rotation. state and updated state is the predicted and updated quaternion respectivly while true value, meas, result are acceleration due to gravity in body frame.As the test result indicates, everything is way off after rotating 360 degrees.
+The following is my test result:  </p>
+
+<pre><code>1
+started
+60
+state
+0.866025
+0.5
+0
+0
+true value
+0
+8.49571
+4.905
+meas
+0.314533
+7.97407
+4.98588
+updated state
+0.866076
+0.499913
+-2.36755e-005
+1.56256e-005
+result
+0.000555564
+8.49472
+4.90671
+
+1
+started
+120
+state
+0.500087
+0.865975
+-2.83164e-005
+1.69446e-006
+true value
+0.000306622
+8.4967
+-4.90329
+meas
+-0.532868
+8.79841
+-4.80453  
+updated state
+0.485378
+0.862257
+-0.129439
+-0.064549
+result
+0.140652
+8.37531
+-5.10594
+
+1 
+started
+180
+state
+-0.0107786
+0.989425
+-0.0798226
+-0.12062
+true value
+-2.35843
+-0.0203349
+-9.52226
+meas
+-1.39627
+-0.889284
+-8.74243
+updated state
+-0.0195091
+0.981985
+-0.151695
+-0.110965
+result
+-2.19598
+-0.0456112
+-9.56095 
+
+1
+started
+240
+state
+-0.507888
+0.840669
+-0.0758893
+-0.171946
+true value
+-3.59229
+-8.12105
+-4.16894
+meas
+-4.52356
+-7.73113
+-4.98735
+updated state
+-0.53758
+0.811101
+-0.212643
+-0.0889171
+result
+-3.65783
+-8.18397
+-3.98485
+
+1
+started
+300
+state
+-0.871108
+0.433644
+-0.139696
+-0.183326
+true value
+-3.94732
+-6.909
+5.73763
+meas
+-4.36385
+-6.98853
+5.39759
+updated state
+-0.86404
+0.436764
+-0.102296
+-0.228487
+result
+-3.69216
+-6.94565
+5.86192
+1
+started  
+0
+state
+-0.966663
+-0.0537713
+ 0.0256525
+ -0.249024 
+true value
+0.749243
+0.894488
+9.74036
+meas
+-0.194541
+0.318586
+10.1868
+updated state
+-0.78986
+-0.0594022
+0.0311688
+-0.609607
+result
+1.1935
+0.547764
+9.72171 
+
+1
+started
+60
+state
+-0.654338
+-0.446374
+0.331797
+-0.512351
+true value
+8.74674
+2.39526
+3.74078
+meas
+9.36079
+2.96653
+3.57115
+updated state
+-0.52697
+-0.512048
+0.221843
+-0.64101
+result
+8.73351
+2.50411
+3.70018
+</code></pre>
+
+<p>Can someone help me confirm that my understanding about the theory of this quaternion kalman filter and my pseudo code is correct? Also, if anyone has implemented attitude estimation using maybe a different version of quaternion kalman filter, I would greatly appreciate if you can provide a pseudo code and a little explanation.
+Thank you guys very much!</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9608" data-toggle = "popover">
+				<p>user name : Yunfan Lu</p>
+				<p> user reputation : 6</p>
+				<p class = "tagcontent" id = "usertaginfo-9608">{'quadcopter': 1, 'None': 0, 'kalman-filter': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9608">Load Comments</button></br>
+			<div id = "commentsection-9608" class = 'collapse'>
+			<div id = "comment-17019" class = "comment">
+				<p>How do you know the filter is deviating from the correct value? What code/method are you using to find the correct value?</p>
+			</div>
+			<div id = "comment-17040" class = "comment">
+				<p>I understand that most people use multiplicative quaternion kalman filter out there meaning their last update step is something like Qk+1/k+1 = Qk+1/k * Qkalman. But the linear addictive model is also well proposed in multiple research paper and it is claimed to work better than the multiplicative one. That is why I am trying to make it work</p>
+			</div>
+			<div id = "comment-17057" class = "comment">
+				<p>I must ask; did you consider that you may be accumulating gyro error over time?</p>
+			</div>
+			</div>
+				<textarea id = "speech-9608" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9608">
+					<img id="start_img-9608" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9608">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9614"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9614" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I hope this is / hope it isn't your problem, as it could be a face-palm moment, but I don't think you're calculating your Kalman gain correctly. </p>
+
+<p>I've only used a Kalman filter a couple times in the past, so I'm by no means an expert on it, but I believe that the Kalman gains are calculated:</p>
+
+<p>$$
+K = P H^T (HP H^T + R)^{-1}
+$$</p>
+
+<p>You have, in your pseudo-code <strong>and</strong> in your pasted code:</p>
+
+<p>$$
+K = P H (HP H^T + R)^{-1}
+$$</p>
+
+<p>I believe what you're missing is that $H^T$, or <code>H.transpose()</code> in your code. You define </p>
+
+<pre><code>PH_T = P*H.transpose();
+</code></pre>
+
+<p>but <code>H.transpose()</code> is used a couple times, so I think you would be better off defining</p>
+
+<pre><code>H_T = H.transpose();
+</code></pre>
+
+<p>and using that in the <strong>two</strong> locations you need $H^T$. </p>
+
+<p>That said, I hope this is/isn't your problem - I know how painful it is to waste so much time on a typo. If this <em>doesn't</em> solve your problem, please post more information on how you're getting from the gyro output to the quaternion. I believe this is where you will find your issues. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9614" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-9614">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9614">Load Comments</button></br>
+			<div id = "commentsection-9614" class = 'collapse'>
+			<div id = "comment-17038" class = "comment">
+				<p>Thank you very much for your input, but this is not the problem that I am facing, because this method defined by the research paper defines H in a slightly different way.  I have not thoroughly understand its theory yet but at least in my test multiplying by H can give me correct result in the first few iterations while by H.transpose() just gives me wrong results. I will post more information.</p>
+			</div>
+			<div id = "comment-17039" class = "comment">
+				<p>My prediction stage works fine which means steps from gyro to quaternion should be correct. I have added a picture in my question in the predict stage indicating the equation that I am using.</p>
+			</div>
+			</div>
+				<textarea id = "speech-9614" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9614">
+					<img id="start_img-9614" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9614">Comment</button>
+			<br><div id = "ans-9630"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9630" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Thanks to the comment by Biscuits, in the end I realized that I have been adding random number to the predicted state instead of true state. Therefore, I am essentially accumulating my gyro errors which leads to the wrong results. I hope that other people won't make the same mistakes again.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9630" data-toggle = "popover">
+				<p>user name : Yunfan Lu</p>
+				<p> user reputation : 6</p>
+				<p class = "tagcontent" id = "usertaginfo-9630">{'quadcopter': 1, 'None': 0, 'kalman-filter': 1}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-9630" class = 'collapse'>
+			</div>
+				<textarea id = "speech-9630" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9630">
+					<img id="start_img-9630" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9630">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

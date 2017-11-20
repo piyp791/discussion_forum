@@ -1,0 +1,319 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Problem with acceleration sensor
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7615" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7615" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 121</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Problem with acceleration sensor</h2>
+<p>I m using the BMA020 (<a href="http://www.elv.de/3-achsen-beschleunigungssensor-3d-bs-komplettbausatz.html" rel="nofollow">from ELV</a>) with my Arduino Mega2560 and trying to read acceleration values that doesn t confuse me.
+First I connected the sensor in SPI-4 mode. Means</p>
+
+<p>CSB &lt;-> PB0 (SS)</p>
+
+<p>SCK &lt;-> PB1 (SCK)</p>
+
+<p>SDI &lt;-> PB2 (MOSI)</p>
+
+<p>SDO &lt;-> PB3 (MISO)</p>
+
+<p>Also GND and UIN are connected with the GND and 5V Pins of the Arduino board.</p>
+
+<p>Here is the self-written code I use</p>
+
+<pre><code>#include &lt;avr/io.h&gt;
+#include &lt;util/delay.h&gt;
+
+#define sensor1     0
+typedef int int10_t;
+
+int TBM(uint8_t high, uint8_t low)
+{   
+    int buffer = 0;
+    if(high &amp; (1&lt;&lt;7)) {
+        uint8_t high_new = (high &amp; 0x7F);
+        buffer = (high_new&lt;&lt;2) | (low&gt;&gt;6);
+        buffer = buffer - 512;
+    }
+    else
+        buffer = (high&lt;&lt;2) | (low&gt;&gt;6);
+
+
+    return buffer;
+}
+
+void InitSPI(void);
+void AccSensConfig(void);
+void WriteByteSPI(uint8_t addr, uint8_t Data, int sensor_select);
+uint8_t ReadByteSPI(int8_t addr, int sensor_select);
+void Read_all_acceleration(int10_t  *acc_x, int10_t *acc_y, int10_t *acc_z, int sensor_select);
+
+
+int main(void)
+{
+    int10_t S1_x_acc = 0, S1_y_acc = 0, S1_z_acc = 0;
+    InitSPI();
+    AccSensConfig();
+    while(1) {
+        Read_all_acceleration(&amp;S1_x_acc, &amp;S1_y_acc, &amp;S1_z_acc, sensor1);
+    }
+}
+
+void InitSPI(void) {
+
+    DDRB |= (1&lt;&lt;DDB2)|(1&lt;&lt;DDB1)|(1&lt;&lt;DDB0);
+
+    PORTB |= (1&lt;&lt;PB0);
+
+    SPCR |= (1&lt;&lt;SPE);
+    SPCR |= (1&lt;&lt;MSTR);  
+    SPCR |= (0&lt;&lt;SPR0) | (1&lt;&lt;SPR1);  
+    SPCR |= (1&lt;&lt;CPOL) | (1&lt;&lt;CPHA);  
+}
+
+void AccSensConfig(void) {
+
+    WriteByteSPI(0x0A, 0x02, sensor1);
+    _delay_ms(100);
+
+    WriteByteSPI(0x15,0x80,sensor1);    //nur SPI4 einstellen
+}
+
+void WriteByteSPI(uint8_t addr, uint8_t Data, int sensor_select) {
+
+    PORTB &amp;= ~(1&lt;&lt;sensor_select);   
+    SPDR = addr;                    
+    while(!(SPSR &amp; (1&lt;&lt;SPIF)));     
+
+    SPDR = Data;                    
+    while(!(SPSR &amp; (1&lt;&lt;SPIF)));     
+
+    PORTB |= (1&lt;&lt;sensor_select);    
+}
+
+uint8_t ReadByteSPI(int8_t addr, int sensor_select)
+{
+    int8_t dummy = 0xAA;
+
+    PORTB &amp;= ~(1&lt;&lt;sensor_select);   
+
+    SPDR = addr;                    
+    while(!(SPSR &amp; (1&lt;&lt;SPIF)));     
+    SPDR = dummy;                   
+    while(!(SPSR &amp; (1&lt;&lt;SPIF)));     
+
+    PORTB |= (1&lt;&lt;sensor_select);    
+
+    addr=SPDR;
+    return addr;
+}
+
+void Read_all_acceleration(int10_t  *acc_x, int10_t *acc_y, int10_t *acc_z, int sensor_select)
+{
+    uint8_t addr = 0x82;
+    uint8_t dummy = 0xAA;
+    uint8_t high = 0;
+    uint8_t low = 0;
+
+    PORTB &amp;= ~(1&lt;&lt;sensor_select);   
+
+    SPDR = addr;
+    while(!(SPSR &amp; (1&lt;&lt;SPIF)));
+
+    SPDR = dummy;           
+    while(!(SPSR &amp; (1&lt;&lt;SPIF)));
+    low = SPDR;     
+    SPDR = dummy;   
+    while(!(SPSR &amp; (1&lt;&lt;SPIF)));
+    high = SPDR;                    
+    *acc_x = TBM(high, low);
+
+    SPDR = dummy;       
+    while(!(SPSR &amp; (1&lt;&lt;SPIF)));
+    low = SPDR;     
+    SPDR = dummy;   
+    while(!(SPSR &amp; (1&lt;&lt;SPIF)));
+    high = SPDR;    
+    *acc_y = TBM(high, low);
+
+    SPDR = dummy;       
+    while(!(SPSR &amp; (1&lt;&lt;SPIF)));
+    low = SPDR; 
+    SPDR = dummy;   
+    while(!(SPSR &amp; (1&lt;&lt;SPIF)));
+    high = SPDR;    
+    *acc_z = TBM(high, low);
+
+    PORTB |= (1&lt;&lt;sensor_select);    
+}
+</code></pre>
+
+<p>And now here is what really confuses me. I got 5 of this sensors. One is working with this code perfectly fine. The Data I get is what I expect. I measure earth gravity in z-component if Iay the sensor on the table, if I start turning it I measure the earth gravity component wise in x-, y- and z- direction depending on the angle I turn the sensor.</p>
+
+<p>From the other 4 sensors I receive data that is different. The values jump from -314 (about -1.2 g) to +160 (about 0.5g). With the same code, the same wires and the same Arduino.</p>
+
+<p>I checked the register settings of all sensors, they are all the same. I checked the wire connection to the first component at the sensors, they are all around 0.3 Ohm. I used an Oscilloscope and made sure CSB, SCK and MOSI work properly.</p>
+
+<p>Am I missing something? What causes this similar but wrong behavior of 4 out of 5 sensors?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7615" data-toggle = "popover">
+				<p>user name : solid</p>
+				<p> user reputation : 103</p>
+				<p class = "tagcontent" id = "usertaginfo-7615">{'None': 0, 'accelerometer': 0, 'arduino': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7615">Load Comments</button></br>
+			<div id = "commentsection-7615" class = 'collapse'>
+			<div id = "comment-11003" class = "comment">
+				<p>For those that do not have the Sauerkraut to navigate through that German retailer website, [Here's a direct link to the English data sheet of the BMA020](http://files.elv.de/Assets/Produkte/9/915/91521/Downloads/91521_bma020_data.pdf)</p>
+			</div>
+			</div>
+				<textarea id = "speech-7615" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7615">
+					<img id="start_img-7615" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7615">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7616"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7616" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p><strong>Earlier answer, regarding the self-test</strong></p>
+
+<p>Section 3.3.2 describes how to do the self test, section 3.4.1 describes how to read the result. </p>
+
+<p>There is a note about not overwriting bits 5, 6, and 7 of register 14h at the start of chapter 3, so read that and then check that you have scaling set correctly (bits 0 and 1 of register 14h).</p>
+
+<p>As the chips that are suspect all also fail the self test and voltages on the board are normal, I would blame physical damage (were dropped/thrown during shipping, etc) and ask for an RMA for the parts.</p>
+
+<p><em>A caution</em></p>
+
+<p>While the board linked in the question accepts an input voltage of up to 6V, the board features a regulator and level shifters. The chip itself operates at a much lower voltage. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7616" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-7616">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7616">Load Comments</button></br>
+			<div id = "commentsection-7616" class = 'collapse'>
+			<div id = "comment-11005" class = "comment">
+				<p>I left the register 14h untouched, but I read them out they are all the same.
+Like you said I performed the self_test_0 on every single device. They all failed beside the single sensor that delivers plausible data. What does a negative self-test means? Are my 4 out of 5 sensors broken?</p>
+			</div>
+			<div id = "comment-11006" class = "comment">
+				<p>Note that the instructions for the self test say that you can't move the sensor while you're running the self test, but yes, if the self-test passes on the one that reads as expected and fails on the ones that don't, then I would say that they are broken.</p>
+			</div>
+			<div id = "comment-11007" class = "comment">
+				<p>ACTUALLY I found your problem. See my edit above.</p>
+			</div>
+			<div id = "comment-11008" class = "comment">
+				<p>I disagree, the operating voltage for the chip is 2.0 to 3.6V, this is correct.
+I use the linked above circuit (shown on the German web page I couldn t find an English one with this product) which has the BMA020 built in. The circuit provides a linear regulator to supply the BMA020 with round about 3V. The input at the UIN   pin of the circuit is specified with 2.5V to 6V.</p>
+			</div>
+			<div id = "comment-11013" class = "comment">
+				<p>Can you probe Vin on the BMA020 boards? What voltage is present on the Arduino side on your signal pins when they're high?</p>
+			</div>
+			<div id = "comment-11017" class = "comment">
+				<p>The circuit provides level shifter for the digital input in a range of 2.5V to 6V. The SDO signal is about 2V (measured with an oscilloscope). All devices show this value, the working one and the maybe broken ones.</p>
+			</div>
+			<div id = "comment-11018" class = "comment">
+				<p>I can't find a schematic of the board, so I'm not sure what to say regarding what to check next. I looked like to me from the website that the input voltage is selectable, as it advertised 3, 3v3, and 5v inputs where it advertised a range on the level shifters. All I know to say without more documentation is that the self test failed, and, level shifter or no, you're giving 5V to the board. Even a startup transient could fry the chips, but again, I can't find part numbers or data sheets for the components on the board. Self test failed on the ones that were suspect; they are definitely dead.</p>
+			</div>
+			<div id = "comment-11020" class = "comment">
+				<p>Here is a [link](http://www.emteka.de/WebRoot/StoreLDE/Shops/62398537/4C7B/4E29/455B/848B/EF86/C0A8/29BB/54C5/3D-BS_KM_G_100316.pdf) to the German documentary. On page 4 the schematic of the board is shown.</p>
+			</div>
+			<div id = "comment-11023" class = "comment">
+				<p>What do you have U pull-up connected to? Is J1 bridged or not? As I read it,  Upullup should be connected to what Vhigh is for your arduino, but if J1 is bridged and you have Upullup connected then you have bridged Vhigh to Vin on the chip and you can fry it. If you don't have Upullup connected then you may not be getting signals at the appropriate levels to register clear high/low correctly.</p>
+			</div>
+			<div id = "comment-11026" class = "comment">
+				<p>neither upullup is connected or J1 is bridged. I am using the SPI4 connection not the I2C. Connecting upullup would invert the logic.</p>
+			</div>
+			<div id = "comment-11029" class = "comment">
+				<p>Well, don't know what to tell you. Maybe the chips were dropped, the package was thrown, I don't know, but the self test failed. If all the voltages are correct then I would suspect physical damage. Data sheet for the chip says it can only handle about a 1.5 meter fall onto a hard surface. I would try to return them as DOA.</p>
+			</div>
+			<div id = "comment-11033" class = "comment">
+				<p>Okay, edited down to what we've discussed in the comments, with a caution that the chip operates at a lower voltage than the board accepts as an input.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7616" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7616">
+					<img id="start_img-7616" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7616">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

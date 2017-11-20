@@ -1,0 +1,146 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Low latency control from a laptop
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9801" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9801" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 61</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Low latency control from a laptop</h2>
+<p>Lets say that I needed to send sensor readings in increments of 100 bytes from a micro controller to a laptop with sub 2 ms latencies in real time (the data needs to be processed and acted upon immediately (to control a robot)). What interfaces would one use? </p>
+
+<p>FTDI usb-serial converters aren't an option because they introduce 5-10 ms latencies both ways. PCI cards are an option though.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9801" data-toggle = "popover">
+				<p>user name : daweim0</p>
+				<p> user reputation : 360</p>
+				<p class = "tagcontent" id = "usertaginfo-9801">{'None': 16, 'arduino': 3, 'microcontroller': 3, 'imu': 2, 'beagle-bone': 1, 'untagged': 2, 'i2c': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9801">Load Comments</button></br>
+			<div id = "commentsection-9801" class = 'collapse'>
+			<div id = "comment-17441" class = "comment">
+				<p>Store data in your laptop (e.g. txt file) and delay the receiving process through an independent thread.</p>
+			</div>
+			<div id = "comment-17442" class = "comment">
+				<p>I forgot to mention that it needs to be processed in real time (my bad). I'll update the question.</p>
+			</div>
+			<div id = "comment-17443" class = "comment">
+				<p>The comment is still valid though.</p>
+			</div>
+			<div id = "comment-17444" class = "comment">
+				<p>What kind of sensor data? What processing? Does the 2ms include the transfer of the data to the laptop only or also the processing?</p>
+			</div>
+			<div id = "comment-17446" class = "comment">
+				<p>The sensor data is a fully digitized pwm signal (done by a microcontroller). Transfers are about a hundred bytes. The 2ms target latency only includes transfering the data, processing the data once it's received only takes a hundred microseconds or so.</p>
+			</div>
+			<div id = "comment-17472" class = "comment">
+				<p>Try increasing the baudrate to 900000?</p>
+			</div>
+			<div id = "comment-17490" class = "comment">
+				<p>It actually turns out that most of the latency is added by whatever is converting serial to usb/pci/ect. FTDI usb-serial chips add 5 to 10 ms of latency no mater what the baud rate is (at least with the chips I've experimented with)</p>
+			</div>
+			</div>
+				<textarea id = "speech-9801" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9801">
+					<img id="start_img-9801" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9801">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9806"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9806" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Off the shelf expresscard or cardbus cards for <strong>rs422/485</strong> will do 921Kbit/sec which, depending on the protocol you use and its overhead, should get you more than 100Bytes of data in less than 2ms.</p>
+
+<p>Considering the ease at which you can use RS422 with a microcontroller this is the first thing to try. You can even forgo a protocol and use the raw communications during development to get up and running quickly (though for robustness, a protocol that can handle errors and comms start and stop will be wanted).</p>
+
+<p><strong>Ethercat</strong> is the other option, which can use a standard ethernet card, (if you are lucky your laptop will use a compatible chipset), but you will need to add an Ethercat chip and ethernet phy on the microcontroller side. Additionally, Ethercat uses a robust but complicated communication protocol so it can take some time to learn. The benefit of doing so is that you have fast communications designed for realtime control.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9806" data-toggle = "popover">
+				<p>user name : hauptmech</p>
+				<p> user reputation : 2621</p>
+				<p class = "tagcontent" id = "usertaginfo-9806">{'battery': 2, 'None': 220, 'lithium-polymer': 2}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-9806" class = 'collapse'>
+			</div>
+				<textarea id = "speech-9806" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9806">
+					<img id="start_img-9806" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9806">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

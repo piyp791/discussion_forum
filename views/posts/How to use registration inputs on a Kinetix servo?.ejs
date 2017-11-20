@@ -1,0 +1,139 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to use registration inputs on a Kinetix servo?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-10981" class = "post">
+			<h2>Question</h2>
+			<div id="vote-10981" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 357</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to use registration inputs on a Kinetix servo?</h2>
+<p>I am working with a <a href="http://literature.rockwellautomation.com/idc/groups/literature/documents/um/2198-um001_-en-p.pdf" rel="nofollow noreferrer">Kinetix 5500</a> servo drive with a rotational actuator to locate a keyway on a shaft. The shaft will rotate, and a laser sensor will detect the height difference when the keyway passes in front of the sensor. I need to record the position of the keyway so I can orient it to a known position.</p>
+
+<p>The laser sensor will be wired to Registration Input 1 (see pages 62 and 65 of user manual above), to capture the position of the servo more accurately than using a sensor wired in to the PLC's I/O.</p>
+
+<p>I have been able to find little information about how to actually use a registration input in my PLC program. I know there is some sequence that is required to arm the registration input to look for a transition, and then grab the saved servo position from the drive. </p>
+
+<p>How does this process work? Is there <a href="http://www.rockwellautomation.com/global/literature-library/overview.page?" rel="nofollow noreferrer">documentation from Rockwell</a> that I'm not finding? (I found a programming manual for PowerFlex, but not Kinetix)</p>
+
+<p>Additional information: the PLC is an AB ControlLogix, and the drive is connected via Ethernet. I am familiar with setting up, tuning, and issuing Motion Direct commands for Kinetix drives.</p>
+
+<p>Related nonexistent tags: <code>Allen-Bradley</code>, <code>Kinetix</code>, <code>ControlLogix</code></p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10981" data-toggle = "popover">
+				<p>user name : Dan A.</p>
+				<p> user reputation : 108</p>
+				<p class = "tagcontent" id = "usertaginfo-10981">{'servomotor': 1, 'None': 0, 'plc': 1, 'sensors': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-10981" class = 'collapse'>
+			</div>
+				<textarea id = "speech-10981" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10981">
+					<img id="start_img-10981" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10981">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-11160"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11160" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>There are a few different ways that you can use this input.</p>
+
+<p>One way is to use it in conjunction with homing.  Homing the servo is defining where position zero is located.  You initiate a "Home" by using the MAH (Motion Axis Home) instruction.  The Home function is configured in the Axis properties under the "Homing" tab.  You can get more information about Homing by pressing the Help button while on this tab, but here are a few pointers:</p>
+
+<ul>
+<li>A Home can either be Active or Passive.  When an Active Home is performed, the servo will move until it finds the home position.  A Passive Home, on the other hand, does not initiate any motion; before or after initiating a Passive Home, you would need to initiate motion with another instruction.</li>
+<li>The "Sequence" parameter defines how the drive knows it is in the home position.  In your case, you would choose "Switch," which tells the drive to use the "Home/Registration 1" input on the drive.  You select either "Normally Open" or "Normally Closed" to define what the state of the switch is when it is in the home position.</li>
+</ul>
+
+<p>Another use for this input is in conjunction with the MAR (Motion Arm Registration) instruction.  This is done when you want to control the position of a continually rotating axis relative to something else.  When registration is armed, the drive watches for the next transition of the registration input and then logs the position at that point in the <code>.Registration1Position</code> field in the Axis Tag structure.  You can use this value to speed up or slow down the axis to maintain the relative position you are trying to achieve.  The configuration for this is done right on the MAR instruction; you select which input number to use (1=Registration Input 1), and what type of Trigger Condition you want to look for (0 = trigger on positive transition, 1 = trigger on negative transition).</p>
+
+<p>You can find help for these instructions in the help files inside RSLogix5000, or you can read the <a href="http://literature.rockwellautomation.com/idc/groups/literature/documents/rm/motion-rm002_-en-p.pdf" rel="nofollow noreferrer">Logix5000 Controllers Motion Instructions (motion-rm002)</a> publication.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11160" data-toggle = "popover">
+				<p>user name : Ben Miller</p>
+				<p> user reputation : 166</p>
+				<p class = "tagcontent" id = "usertaginfo-11160">{'None': 5}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11160" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11160" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11160">
+					<img id="start_img-11160" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11160">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

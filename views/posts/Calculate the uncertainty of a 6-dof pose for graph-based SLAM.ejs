@@ -1,0 +1,206 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Calculate the uncertainty of a 6-dof pose for graph-based SLAM
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9926" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9926" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 192</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Calculate the uncertainty of a 6-dof pose for graph-based SLAM</h2>
+<p>This question is strongly related to my other question over <a href="https://robotics.stackexchange.com/questions/9129/how-to-compute-the-error-function-in-graph-slam-for-3d-poses/9137#9137" title="here">here</a>.</p>
+
+<p>I am estimating 6-DOF poses $x_{i}$ of a trajectory using a graph-based SLAM approach. The estimation is based on 6-DOF transformation measurements $z_{ij}$ with uncertainty $\Sigma_{ij}$ which connect the poses. </p>
+
+<p>To avoid singularities I represent both poses and transforms with a 7x1 vector consisting of a 3D-vector and a unit-quaternion:</p>
+
+<p>$$x_{i} = \left( \begin{matrix} t \\ q \end{matrix} \right)$$</p>
+
+<p>The optimization yields 6x1 manifold increment vectors </p>
+
+<p>$$ \Delta \tilde{x}_i = \left( \begin{matrix} t \\ log(q) \end{matrix} \right)$$</p>
+
+<p>which are applied to the pose estimates after each optimization iteration:</p>
+
+<p>$$ x_i \leftarrow x_i \boxplus \Delta \tilde{x}_i$$</p>
+
+<p>The uncertainty gets involved during the hessian update in the optimization step:</p>
+
+<p>$$ \tilde{H}_{[ii]} += \tilde{A}_{ij}^T \Sigma_{ij}^{-1} \tilde{A}_{ij} $$</p>
+
+<p>where </p>
+
+<p>$$ \tilde{A}_{ij} \leftarrow A_{ij} M_{i} = \frac{\partial e_{ij}(x)}{\partial x_i} \frac{\partial x_i \boxplus \Delta \tilde{x}_i}{\partial \Delta x_i} |_{\Delta \tilde{x}_i = 0}$$</p>
+
+<p>and</p>
+
+<p>$$ e_{ij} = log \left( (x_{j} \ominus x_{i}) \ominus z_{ij} \right) $$</p>
+
+<p>is the error function between a measurement $z_{ij}$ and its estimate $\hat{z}_{ij} = x_j \ominus x_i$. Since $\tilde{A}_{ij}$ is a 6x6 matrix and we're optimizing for 6-DOF $\Sigma_{ij}$ is also a 6x6 matrix.</p>
+
+<hr>
+
+<p>Based on IMU measurements of acceleration $a$ and rotational velocity $\omega$ one can build up a 6x6 sensor noise matrix</p>
+
+<p>$$ \Sigma_{sensor} = \left( \begin{matrix} \sigma_{a}^2 &amp; 0 \\ 0 &amp; \sigma_{\omega}^2 \end{matrix} \right) $$</p>
+
+<p>Further we have a process model which integrates acceleration twice and rotational velocity once to obtain a pose measurement.</p>
+
+<p>To properly model the uncertainty both sensor noise and integration noise have to be considered (anything else?). Thus, I want to calculate the uncertainty as</p>
+
+<p>$$ \Sigma_{ij}^{t} = J_{iterate} \Sigma_{ij}^{t-1} J_{iterate}^T + J_{process} \Sigma_{sensor} J_{process}^T$$</p>
+
+<p>where $J_{iterate} = \frac{\partial x_{i}^{t}}{\partial x_{i}^{t-1}}$ and $J_{process} = \frac{\partial x_{i}^{t}}{\partial \xi_{i}^{t}}$ and current measurement $\xi{i}^{t} = [a,\omega]$.</p>
+
+<p>According to this formula $\Sigma_{ij}$ is a 7x7 matrix, but I need a 6x6 matrix instead. I think I have to include a manifold projection somewhere, but how?</p>
+
+<hr>
+
+<p>For further details take a look at the following publication, especially at their algorithm 2:</p>
+
+<p>G. Grisetti, R. K mmerle, C. Stachniss, and W. Burgard,  A tutorial on graph-based SLAM,  IEEE Intelligent Transportation Systems Maga- zine, vol. 2, no. 4, pp. 31 43, 2010.</p>
+
+<hr>
+
+<p>For a similar calculation of the uncertainty take a look at the end of section III A. in:</p>
+
+<p>Corominas Murtra, Andreu, and Josep M. Mirats Tur. "IMU and cable encoder data fusion for in-pipe mobile robot localization." Technologies for Practical Robot Applications (TePRA), 2013 IEEE International Conference on. IEEE, 2013.</p>
+
+<hr>
+
+<p>.. or section III A. and IV A. in:</p>
+
+<p>Ila, Viorela, Josep M. Porta, and Juan Andrade-Cetto. "Information-based compact Pose SLAM." Robotics, IEEE Transactions on 26.1 (2010): 78-93.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9926" data-toggle = "popover">
+				<p>user name : morph</p>
+				<p> user reputation : 37</p>
+				<p class = "tagcontent" id = "usertaginfo-9926">{'None': 0, 'errors': 0, 'ekf': 3, 'pose': 3, 'data-association': 0, 'slam': 6, 'imu': 0, 'jacobian': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9926">Load Comments</button></br>
+			<div id = "commentsection-9926" class = 'collapse'>
+			<div id = "comment-17648" class = "comment">
+				<p>Each edge in the graph has an error function associated with a measurement. In your question, what is the error function, and what is the measurement? Are you integrating the IMU data for a while to get a change in pose, and then using that as the measurement? That is, what is $z_{ij}$ in your question?</p>
+			</div>
+			<div id = "comment-17653" class = "comment">
+				<p>@kamek I updated the question: $z_{ij}$ is a measurement of the pose. And yes, it is calculated based on an odometry measurement $\xi_{i}$ of acceleration and rotaional velocity which is integrated twice or once, respectively.</p>
+			</div>
+			<div id = "comment-17658" class = "comment">
+				<p>Still not sure I understand. Is there a new $z_{ij}$ each time there is an IMU measurement? If so, what is $\Sigma_{ij}^{t-1}$? Put differently, at what point do you add a new node to the graph? Are you integrating the IMU data for, say, a few seconds and then adding a node to the graph? If so, are you resetting the covariance back to zero each time after you add a node? Do you have another sensor or are you just integrating IMU data. If that's all your doing graph-based SLAM isn't going to improve the dead-reckoning uncertainty (i.e., without loop closures).</p>
+			</div>
+			<div id = "comment-17659" class = "comment">
+				<p>@kamek good question! since I estimate the pose of an imaging device I create a new $z_{ij}$ for every new image frame. During the frames I integrate a pose $x^t$ based on the IMU measurements in between (IMU@100 Hz, images@25 Hz). The $z_{ij}$ is the transformation between $x^t$ and the current reference pose $x_{ref}$. $x_{ref}$ is initialized with $0$ and replaced with $x^t$ after a new $z_{ij}$ was calculated. $\Sigma_{ij}^{t}$ is updated with every new IMU measurement, just like $x^t$ and thereby also describes the covariance of a measurement $z_{ij}$ calculated from $x^t \ominus x_{ref}$</p>
+			</div>
+			<div id = "comment-17660" class = "comment">
+				<p>@kamek and yes, basically this behavior won't improve the dead-reckoning, until I detect a loop closure using the image data. And that's exactly what I'm doing.</p>
+			</div>
+			<div id = "comment-17661" class = "comment">
+				<p>@kamek as described in my other question I calculate the uncertainty based on a running covariance (initialized with zero) and the sensor covariance: $$\Sigma_{ij}^{t} = J_{iterate} \Sigma_{ij}^{t-1} J_{iterate}^T + J_{integrate} \Sigma_{sensor} J_{integrate}^T$$ with $J_{iterate} = \frac{\partial x^t}{\partial x^{t-1}}$ and $J_{integrate} = \frac{\partial x^t}{\partial \xi_t}$</p>
+			</div>
+			</div>
+				<textarea id = "speech-9926" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9926">
+					<img id="start_img-9926" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9926">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9934"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9934" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Because a the pose has six degrees-of-freedom, the covariance matrix representing its uncertainty should be $6 \times 6$. To determine how the covariance matrix propagates after each new IMU measurement, you must determine the <em>error state</em> propagation equation, where the error is a minimal parameterization of the error in your state. How to do this for a rotation parameterized as a unit quaternion is explained in detail in Section 2 of <a href="http://www-users.cs.umn.edu/~trawny/Publications/Quaternions_3D.pdf" rel="nofollow">Indirect Kalman Filter for 3D Attitude Estimation</a> by Trawny. Note that this implementation explicitly estimates the gyroscope bias as part of the state vector. You would need to replace that with the position and add your accelerometer measurements. In fact, I recommend reading that document (or at least the first two sections) very carefully, I learned a lot the first time I read it.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9934" data-toggle = "popover">
+				<p>user name : kamek</p>
+				<p> user reputation : 775</p>
+				<p class = "tagcontent" id = "usertaginfo-9934">{'None': 48}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9934">Load Comments</button></br>
+			<div id = "commentsection-9934" class = 'collapse'>
+			<div id = "comment-17670" class = "comment">
+				<p>I have just read your recommended document. I still don't understand the difference between their approach and mine (which is inspired by Murtra). The calculation of $\Sigma_{ij}^t$ has the same structure for both approaches, as it has a "running" component and a fixed one, i.e. the sensor noise. Murtra explicitly makes use of Jacobians. As Trawny's calculations are based on the error development, i.e. he analyses the derivative of the error, it seems to me like he's working with jacobians as well, but he doesn't name it. Do both actually follow the same approach using different "vocabulary"?</p>
+			</div>
+			<div id = "comment-17671" class = "comment">
+				<p>It is very important to note that the error parameterization by Trawny is a *minimal parameterization*. From skimming Mutra, it looks like Jacobians are taken with respect to the quaternion? As in, with respect to each of the four terms in the quaternion? That does not take into account that these four terms only represent three degrees of freedom. If you consider four quaternion parameters independent and their uncertainty with a $4 \times 4$ covariance matrix, you will run into numerical issues (the covariance matrix may be singular).</p>
+			</div>
+			</div>
+				<textarea id = "speech-9934" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9934">
+					<img id="start_img-9934" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9934">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

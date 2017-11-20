@@ -1,0 +1,149 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Getting pitch, yaw and roll from Rotation Matrix in DH Parameter
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8516" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8516" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 1017</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Getting pitch, yaw and roll from Rotation Matrix in DH Parameter</h2>
+<p>I've calculated a DH Parameter matrix, and I know the top 3x3 matrix is the Rotation matrix. The DH Parameter matrix I'm using is as below, from <a href="https://en.wikipedia.org/wiki/Denavit%E2%80" rel="nofollow noreferrer">https://en.wikipedia.org/wiki/Denavit%E2%80</a><a href="https://i.stack.imgur.com/ZJ2LC.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/ZJ2LC.jpg" alt="enter image description here"></a></p>
+
+<p>Above is what I'm using. From what I understand I'm just rotating around the Z-axis and then the X-axis, but most explanations from extracting Euler angles from Rotation matrixes only deal with all 3 rotations. Does anyone know the equations? I'd be very thankful for any help.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8516" data-toggle = "popover">
+				<p>user name : Iche</p>
+				<p> user reputation : 114</p>
+				<p class = "tagcontent" id = "usertaginfo-8516">{'planning': 1, 'None': 6, 'computer-vision': 1, 'mobile-robot': 1, 'inverse-kinematics': 4, 'localization': 2, 'python': 0, 'forward-kinematics': 0, 'cameras': 1, 'kinect': 2, 'joint': 0, 'slam': 1, 'kinematics': 0, 'matlab': 0, 'robotic-arm': 3, 'jacobian': 0, 'dh-parameters': 0, 'motion-planning': 1, 'gazebo': 2, 'rrt': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8516" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8516" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8516">
+					<img id="start_img-8516" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8516">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8517"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8517" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>In general, Euler angles (or specifically roll-pitch-yaw angles) can be extracted from <em>any</em> rotation matrix, regardless of how many rotations were used to generate it. For a typical x-y-z rotation sequence, you end up with this rotation matrix where $\phi$ is roll, $\theta$ is pitch, and $\psi$ is yaw:</p>
+
+<p>$R = \begin{bmatrix} c_\psi c_\theta &amp; c_\psi s_\theta s_\phi - s_\psi c_\phi &amp; c_\psi s_\theta c_\phi + s_\psi s_\phi \\ s_\psi c_\theta &amp; s_\psi s_\theta s_\phi + c_\psi c_\phi &amp; s_\psi s_\theta c_\phi - c_\psi s_\phi \\ -s_\theta &amp; c_\theta s_\phi &amp; c_\theta c_\phi \end{bmatrix}$</p>
+
+<p>Note that $c_x = \cos x$ and $s_x = \sin x$.</p>
+
+<p>To get roll-pitch-yaw angles out of any given numeric rotation matrix, you simply need to relate the matrix elements to extract the angles based on trigonometry. So re-writing the rotation matrix as:</p>
+
+<p>$R = \begin{bmatrix} R_{11} &amp; R_{12} &amp; R_{13} \\ R_{21} &amp; R_{22} &amp; R_{23} \\ R_{31} &amp; R_{32} &amp; R_{33} \end{bmatrix}$</p>
+
+<p>And then comparing this to the above definition, we can come up with these expressions to extract the angles:</p>
+
+<p>$\tan \phi = \frac{R_{32}}{R_{33}}$</p>
+
+<p>$\tan \theta = \frac{-R_{31}}{\sqrt{R_{32}^2 + R_{33}^2}}$</p>
+
+<p>$\tan \psi = \frac{R_{21}}{R_{11}}$</p>
+
+<p>When you actually solve for these angles you'll want to use an <code>atan2(y,x)</code> type of function so that quadrants are appropriately handled (also keeping the signs of the numerators and denominators as shown above).</p>
+
+<p>Note that this analysis breaks down when $\cos \theta = 0$, where there exists a singularity in the rotation -- there will be multiple solutions.</p>
+
+<p>Also note that your question is referring to the rotation transformation <em>between</em> two joints ($^{n-1}R_n$), which is indeed composed of an x-axis and z-axis rotation, but the actual rotation of that joint with respect to the base will be different ($^0R_n$) and composed of all the rotations for joints 1 to $n$. I point this out because $^{n-1}R_n$ <em>can</em> be decomposed back into the relevant x-axis ($\alpha$) rotation and z-axis ($\theta$) rotation, whereas $^0R_n$ is better suited to roll-pitch-yaw -- especially for the end-effector.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8517" data-toggle = "popover">
+				<p>user name : Brian Lynch</p>
+				<p> user reputation : 1237</p>
+				<p class = "tagcontent" id = "usertaginfo-8517">{'None': 85}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8517">Load Comments</button></br>
+			<div id = "commentsection-8517" class = 'collapse'>
+			<div id = "comment-13784" class = "comment">
+				<p>I see! I've already finished calculating the overall transformation matrix ^0T_n, so I assume I just take the upper 3x3 matrix and use that as my ^0R_n so I can arrive at roll-pitch-yaw angles relative to the base using the equations you provided. Thank you!</p>
+			</div>
+			<div id = "comment-13786" class = "comment">
+				<p>Yes, you got it!</p>
+			</div>
+			</div>
+				<textarea id = "speech-8517" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8517">
+					<img id="start_img-8517" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8517">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

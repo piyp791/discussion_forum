@@ -1,0 +1,248 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>iRobot Create2+Arduino: Make the robot stop when facing an obstacle
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11229" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11229" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 52</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>iRobot Create2+Arduino: Make the robot stop when facing an obstacle</h2>
+<p>I have been working on writing a code to control the iRobot Create movements (forward, backward, right, left and stop) from serial monitor and finally I got the correct code. I was trying to understand how to make stop moving when it face an obstacle but I couldn't get it. Also, I didn't know how to make move for a specific distance. Could anyone help me with this?</p>
+
+<p>Here is my code:</p>
+
+<pre><code>#include "Arduino.h"
+#include "Morse.h"
+#include &lt;SoftwareSerial.h&gt;
+#define rxPin 10
+#define txPin 11
+SoftwareSerial softSerial = SoftwareSerial(rxPin, txPin);
+char inByte = 0; // incoming serial byte
+
+irobot::irobot(int pin)
+{
+  pinMode(pin, OUTPUT);
+  _pin = pin;
+}
+
+
+void irobot::Begin()
+{
+   delay(2000); // Needed to let the robot initialize
+// define pin modes for software tx, rx pins:
+ pinMode(rxPin, INPUT);
+ pinMode(txPin, OUTPUT);
+// start the the SoftwareSerial port 19200 bps (robot s default)
+ softSerial.begin(19200);
+// start hardware serial port
+Serial.begin(19200);
+softSerial.write(128); // This command starts the OI.
+softSerial.write(131); // set mode to safe (see p.7 of OI manual)
+delay(2000);
+}
+
+void irobot::runIt()
+{
+    softSerial.write(142); // requests the OI to send a packet of
+    // sensor data bytes
+    softSerial.write(9); // request cliff sensor value specifically
+    delay(250); // poll sensor 4 times a second
+    if (Serial.available() &gt; 0) {
+        inByte = Serial.read();
+        if(inByte == '8')
+        {
+            goForward();
+        }
+        if(inByte == '2'){
+            goBackward();
+        }
+        if(inByte == '4')
+            goLeft();
+        if(inByte == '6')
+            goRight();
+        if(inByte == '5')
+            stop();
+    }
+    Serial.println(inByte);
+}
+
+
+void irobot::goForward()
+{
+   // Drive op code
+    softSerial.write(137);
+    // Velocity (-500   500 mm/s)
+    softSerial.write((byte)0);
+    softSerial.write((byte)200);
+    //Radius (-2000 - 2000 mm)
+    softSerial.write((byte)128);
+    softSerial.write((byte)0);
+}
+
+
+
+void irobot::goBackward()
+{
+    // Drive op code
+    softSerial.write(137);
+    // Velocity (-500   500 mm/s)
+    softSerial.write(255);
+    softSerial.write(56);
+    //Radius (-2000 - 2000 mm)
+    softSerial.write((byte)128);
+    softSerial.write((byte)0);
+}
+
+
+
+void irobot::goLeft()
+{
+    // Drive op code
+    softSerial.write(137);
+    // Velocity (-500   500 mm/s)
+    softSerial.write((byte)0);
+    softSerial.write((byte)200);
+    //Radius (-2000 - 2000 mm)
+    softSerial.write((byte)0);
+    softSerial.write((byte)1);
+}
+
+
+void irobot::goRight()
+{
+    // Drive op code
+    softSerial.write(137);
+    // Velocity (-500   500 mm/s)
+    softSerial.write((byte)0);
+    softSerial.write((byte)200);
+    //Radius (-2000 - 2000 mm)
+    softSerial.write((byte)255);
+    softSerial.write((byte)255);
+}
+
+void irobot::stop()
+{
+    softSerial.write(137);
+    softSerial.write((byte)0);
+    softSerial.write((byte)0);
+    //Radius (-2000 - 2000 mm)
+    softSerial.write((byte)0);
+    softSerial.write((byte)0);
+}
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11229" data-toggle = "popover">
+				<p>user name : user3479130</p>
+				<p> user reputation : 18</p>
+				<p class = "tagcontent" id = "usertaginfo-11229">{'None': 0, 'irobot-create': 3, 'serial': 2, 'arduino': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11229">Load Comments</button></br>
+			<div id = "commentsection-11229" class = 'collapse'>
+			<div id = "comment-22700" class = "comment">
+				<p>Do you mind sharing how you wired your Roomba? (I'm assuming it's just ports 3 and 4 on the Roomba to the arduino's 10 and 11 pins and then powering the Arduino separately, but this does not seem to work for me...) Any help would be appreciated!</p>
+			</div>
+			</div>
+				<textarea id = "speech-11229" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11229">
+					<img id="start_img-11229" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11229">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-11844"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11844" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>All you need is a ultrasonic sensor to detect objects. You can buy one at aliexpress. Then you must download a library named <a href="https://bitbucket.org/teckel12/arduino-new-ping/wiki/Home" rel="nofollow noreferrer">NewPing Arduino Library for Arduino</a> which is compatible with a wide range of ultrasonic sensors.</p>
+
+<p>You can download it from <a href="https://bitbucket.org/teckel12/arduino-new-ping/downloads/" rel="nofollow noreferrer">Arduino New Ping at Bitbucket</a>.</p>
+
+<p>It contains functions to take distance between the sensor and the obstacle. Then you can set a condition using if statement that of the distance between the obstacle and robot is less than, say, 5 CM, then stop all motors. For more information consult instuctables website. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11844" data-toggle = "popover">
+				<p>user name : Aman Singh</p>
+				<p> user reputation : 26</p>
+				<p class = "tagcontent" id = "usertaginfo-11844">{'None': 1}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11844" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11844" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11844">
+					<img id="start_img-11844" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11844">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

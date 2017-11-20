@@ -1,0 +1,222 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Adafruit PCA9685 servo driver connected to Beaglebone Green Wireless generating erratic movement when driving multiple servos
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-10972" class = "post">
+			<h2>Question</h2>
+			<div id="vote-10972" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 262</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Adafruit PCA9685 servo driver connected to Beaglebone Green Wireless generating erratic movement when driving multiple servos</h2>
+<p>I have a hexapod that a friend and I built this summer, but there is a big problem whenever we try to move multiple servos. When using the Adafruit_Python_PCA9685 library, I am able to move the servos perfectly fine for a short period, but then they will breakdown and start erratically twitching.</p>
+
+<p>To illustrate the problem, I just modified a few lines from Adafruit's simpletest.py program.</p>
+
+<p>Here is the code:</p>
+
+<pre><code># Simple demo of of the PCA9685 PWM servo/LED controller library.
+# This will move channel 0 from min to max position repeatedly.
+# Author: Tony DiCola
+# License: Public Domain
+from __future__ import division
+import time
+
+# Import the PCA9685 module.
+import Adafruit_PCA9685
+
+
+# Uncomment to enable debug output.
+import logging
+logging.basicConfig(level=logging.DEBUG)
+
+# Initialise the PCA9685 using the default address (0x40).
+# pwm = Adafruit_PCA9685.PCA9685()
+
+# Alternatively specify a different address and/or bus:
+pwm = Adafruit_PCA9685.PCA9685(address=0x40, busnum=2)
+
+# Configure min and max servo pulse lengths
+servo_min = 300  # Min pulse length out of 4096
+servo_max = 400  # Max pulse length out of 4096
+
+# Helper function to make setting a servo pulse width simpler.
+def set_servo_pulse(channel, pulse):
+pulse_length = 1000000    # 1,000,000 us per second
+pulse_length //= 60       # 60 Hz
+print('{0}us per period'.format(pulse_length))
+pulse_length //= 4096     # 12 bits of resolution
+print('{0}us per bit'.format(pulse_length))
+pulse *= 1000
+pulse //= pulse_length
+pwm.set_pwm(channel, 0, pulse)
+
+# Set frequency to 60hz, good for servos.
+pwm.set_pwm_freq(60)
+
+print('Moving servo on channel 0, press Ctrl-C to quit...')
+while True:
+# Move servo on channel O between extremes.
+for i in range(0, 3):
+    for j in range(0,3):
+    k = (4*i)+j
+    pwm.set_pwm(k, 0, servo_min)
+    time.sleep(1)
+    pwm.set_pwm(k, 0, servo_max)
+    time.sleep(1)
+</code></pre>
+
+<p>And <a href="https://youtu.be/ue0e5lczjk4" rel="nofollow noreferrer">here is a video</a> of the "erratic movement" (the first 8 seconds are normal movement)</p>
+
+<p>I am running the code on a Beagle Bone Green Wireless with ubuntu on it and I am using turnigy TGY-S091D servos.</p>
+
+<p>Here is a photo of the wiring
+<a href="https://i.stack.imgur.com/EaafA.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/EaafA.jpg" alt="photo of the hexapod&#39;s wiring"></a></p>
+
+<p>I don't have enough reputation to post more detailed pictures, but hopefully this is enough.</p>
+
+<p>Please help.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10972" data-toggle = "popover">
+				<p>user name : begolf123</p>
+				<p> user reputation : 16</p>
+				<p class = "tagcontent" id = "usertaginfo-10972">{'python': 3, 'None': 0, 'beagle-bone': 3, 'rcservo': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10972">Load Comments</button></br>
+			<div id = "commentsection-10972" class = 'collapse'>
+			<div id = "comment-19758" class = "comment">
+				<p>is current draw an issue?</p>
+			</div>
+			<div id = "comment-19816" class = "comment">
+				<p>Does a single servo behave the same way after awhile?</p>
+			</div>
+			</div>
+				<textarea id = "speech-10972" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10972">
+					<img id="start_img-10972" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10972">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-10992"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10992" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The movement you are seeing is what I would expect to see if your ground was rising becouse of current draw. Basically as you turn on more servos you will see there current draw will make the apparent voltage drop and the pulses for PWM grow more indistinct, digital servos will generally still work ok but analog servos like you have will stutter as you show. </p>
+
+<p>In order to resolve this problem I would suggest you wire up the power in a more robust way directly connecting much larger gauge wire to your servo boards and your power supply, definitely not through a breadboard, and possibly installing <a href="https://www.sparkfun.com/products/8982" rel="nofollow noreferrer" title="thease">thease</a> capacitors in the provided spots on the boards</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10992" data-toggle = "popover">
+				<p>user name : Mark Omo</p>
+				<p> user reputation : 1786</p>
+				<p class = "tagcontent" id = "usertaginfo-10992">{'None': 119}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-10992" class = 'collapse'>
+			</div>
+				<textarea id = "speech-10992" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10992">
+					<img id="start_img-10992" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10992">Comment</button>
+			<br><div id = "ans-11052"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11052" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You should avoid breadboards when working with circuits subject to significant currents or vibration.  </p>
+
+<p>That said - the power side of the servos (centre wire) can and should be supplied by a private  and isolated supply. The arduino has its own on-board regulator but that is limited to under 500mA. If you are driving the servos directly from the arduino then when your servos are working they are drawing too much current, resulting in a voltage drop which is interfering with the signal.  </p>
+
+<p>The second issue may simply be circuit noise. All brushed motors are digitally noisy - that noise appears as spurious signals on the supply rail which can interfere with high frequency MCUs for example. If circuit noise is suspected - an oscilloscope on the arduino supply rail will show the problem. Often a simple capacitor (0.1uF) to ground is sufficient to attenuate the noise.</p>
+
+<p>The solution is to use a BEC (Battery Elimination Circuit) which isolates the power used by the BEC connected devices, in this case your servos, from other devices connected to the same battery.  With the BEC in place and supplying power to the servos, the ground connection must be common with the control signal ground and the power ground. The control signal is therefore independent of the servo supply voltage and is always referenced to the arduino ground.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11052" data-toggle = "popover">
+				<p>user name : Donald Gibson</p>
+				<p> user reputation : 101</p>
+				<p class = "tagcontent" id = "usertaginfo-11052">{'None': 0}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11052" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11052" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11052">
+					<img id="start_img-11052" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11052">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

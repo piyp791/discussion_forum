@@ -37,17 +37,18 @@ def get_top_n(predictions, n=10):
 
 # First train an SVD algorithm on the movielens dataset.
 # path to dataset file
-file_path = 'ratings.dat'
+file_path = 'ratings_robotics.dat'
 
 # As we're loading a custom dataset, we need to define a reader. In the
 # movielens-100k dataset, each line has the following format:
 # 'user item rating timestamp', separated by '\t' characters.
-reader = Reader(line_format='user item rating', sep=' ')
+reader = Reader(line_format='user item rating', rating_scale=(1, 5), sep=' ')
 
 data = Dataset.load_from_file(file_path, reader=reader)
-data.split(n_folds=5)  # data can now be used normally
-#data = Dataset.load_builtin('ml-100k')
+#data.split(n_folds=5)  # data can now be used normally
+#data = Dataset.load_builtin('ml-1m')
 trainset = data.build_full_trainset()
+#algo = NMF()
 algo = SVD()
 algo.train(trainset)
 
@@ -57,22 +58,22 @@ predictions = algo.test(testset)
 
 top_n = get_top_n(predictions, n=10)
 
-r = redis.Redis('localhost')
+#r = redis.Redis('localhost')
 #p_mydict = pickle.dumps(top_n)
-r.hset('test', 'suggestions_dict',json.dumps(top_n))
+#r.hset('test', 'suggestions_dict',json.dumps(top_n))
 
 #print(len(top_n))
-#print(top_n)
-print top_n['-1']
+print(top_n)
+#print top_n['1']
 # Print the recommended items for each user
 #for uid, user_ratings in top_n.items():
 #    print(uid, [iid for (iid, _) in user_ratings])
 
-read_dict = r.hget('test', 'suggestions_dict')
+#read_dict = r.hget('test', 'suggestions_dict')
 #yourdict = pickle.loads(read_dict)
-read_dict = json.loads(read_dict)
+#read_dict = json.loads(read_dict)
 #print(len(read_dict))
 
-taglist = r.hget('test', 'taglist')
-taglist = json.loads(taglist)
+#taglist = r.hget('test', 'taglist')
+#taglist = json.loads(taglist)
 #print (taglist)

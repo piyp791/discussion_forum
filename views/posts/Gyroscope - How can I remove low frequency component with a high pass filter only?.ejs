@@ -1,0 +1,277 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Gyroscope - How can I remove low frequency component with a high pass filter only?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7803" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7803" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 1059</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Gyroscope - How can I remove low frequency component with a high pass filter only?</h2>
+<p>I'm using Matlab to suppress low frequency components with a high pass filter. </p>
+
+<p><strong>Objective</strong></p>
+
+<ul>
+<li>Filter angular velocity measurements affected by high frequency noise and bias in order to get the best estimate of the angular position.</li>
+</ul>
+
+<p>The output when the gyroscope is still looks like this.</p>
+
+<p><a href="https://i.stack.imgur.com/y8isi.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/y8isi.png" alt="Simulated angular velocity"></a></p>
+
+<p><strong>First Approach</strong></p>
+
+<p>The easiest way to remove baseline is to remove the average and can be achieved with Matlab using one line of code.</p>
+
+<pre><code>yFilt = y - mean(y)
+</code></pre>
+
+<p><strong>Second Approach</strong></p>
+
+<p>We can design a high pass filter to attenuate low frequency components. If we analyze the frequency components of the signal we will see one peak at low frequency and "infinite" small components in all frequencies due to Noise. With a second order ButterWorth filter with normalized cutoff freq <code>Wn = 0.2</code> we will get what we are looking for.</p>
+
+<p><a href="https://i.stack.imgur.com/FVmKM.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/FVmKM.png" alt="First half of DFT in normalized scale"></a></p>
+
+<p><strong>Filtered data</strong></p>
+
+<p><a href="https://i.stack.imgur.com/ELXzb.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/ELXzb.png" alt="Filtered data"></a></p>
+
+<p><strong>Tilting the Gyro</strong></p>
+
+<p>When we tilt the gyroscope the situation changes. With a sampling frequency of 300Hz we get the following plot.</p>
+
+<p><a href="https://i.stack.imgur.com/m1XaJ.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/m1XaJ.png" alt="Angular Velocity Wx [deg/sec]"></a></p>
+
+<p>The first half of the dft is shown below in a normalized scale.</p>
+
+<p><a href="https://i.stack.imgur.com/w8mvU.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/w8mvU.png" alt="First half of DFT in normalized scale"></a></p>
+
+<p>You can find the sample.mat file <a href="https://drive.google.com/file/d/0BwU34T-_OF2saFVGS0hqMUk0cVE/view?usp=sharing" rel="nofollow noreferrer">here</a></p>
+
+<p>The first approach works great. I would like to apply the second one to this particular case but here there are other low frequency components that make to job harder.</p>
+
+<p><strong>How can I apply the second approach based on the High Pass filter to remove the bias?</strong></p>
+
+<p><strong>EDIT 1</strong> 
+You can find more information <a href="http://userk.co.uk/filtering-matlab-gyroscope-bias/" rel="nofollow noreferrer">here</a></p>
+
+<p><strong>EDIT 2</strong>
+How can we filter this signal to remove bias while keeping the angular velocity information (from 110-th to 300-th sample) intact?</p>
+
+<p>If gyroscopes have the bias problem only when they are not experiencing any rotation, then the offset is present only in the first ~110 samples.</p>
+
+<p>If the above hypothesis is correct, maybe if we apply high pass filtering only in the first 110 samples and desactivate the filter during rotations of the gyro, the estimated angular position will be more accurate.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7803" data-toggle = "popover">
+				<p>user name : UserK</p>
+				<p> user reputation : 199</p>
+				<p class = "tagcontent" id = "usertaginfo-7803">{'quadcopter': 6, 'None': 3, 'motor': 1, 'accelerometer': 2, 'filter': 6, 'imu': 2, 'matlab': 2, 'kalman-filter': 2, 'sensors': 2, 'gyroscope': 6, 'quadrature-encoder': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7803">Load Comments</button></br>
+			<div id = "commentsection-7803" class = 'collapse'>
+			<div id = "comment-11345" class = "comment">
+				<p>I don't understand. You made a Butterworth filter, and it removes the DC offset well. What is the problem you are having?</p>
+			</div>
+			<div id = "comment-11346" class = "comment">
+				<p>Also, you may want to check whatever you're doing for simulation. You look like you average about 750 m/s2 for about 30 seconds - so your sensor is going about 0.5*750*900 = 337.5 km/hr. This might be correct if your're designing aircraft, but it's worth consideration if you're not.</p>
+			</div>
+			<div id = "comment-11348" class = "comment">
+				<p>@Chuck Comment 1: Hi Chuck thanks for your relpy. The high pass filter works well in steady state but I would like to use it when the gyroscope rotates. As you can see from the last Figure, in the spectrum of the signal there are low frequency components that make the job harder. I would like to apply a high pass filter to remove the offset in the last situation.</p>
+			</div>
+			<div id = "comment-11349" class = "comment">
+				<p>Are you looking for a band pass filter? Are you looking to take the derivative of the signal?
+You either need to say in technical terms what you want or provide some clues as to what you are doing and what exact result you want.
+If you are looking for a band pass filter I would go for a difference of Gaussians (DOG) filter. If you want the derivative then do the difference equations followed by some smoothing if you like. There are some very interesting free DSP books on the Internet.</p>
+			</div>
+			<div id = "comment-11350" class = "comment">
+				<p>On stack exchange, it is better to edit your question to add information requested in comments, rather than adding more comments. Comments are for helping to improve questions and answers, and are distracting, so we try to keep them to a minimum. If all of the information needed to answer the question is contained within it, the comments can be tidied up (deleted).</p>
+			</div>
+			<div id = "comment-11351" class = "comment">
+				<p>Ok @MarkBooth, I'll clarify the meaning.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7803" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7803">
+					<img id="start_img-7803" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7803">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7808"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7808" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p><strong>:UPDATED:</strong></p>
+
+<p>This is the last update I'm going to make to this answer because I feel like you are repeatedly redefining your question.</p>
+
+<ol>
+<li><p>You have already designed a Butterworth filter that removes the DC offset, but your question title is <em>"How can I remove low frequency component with a high pass filter"</em>. What is the problem you are having??</p></li>
+<li><p>You ask, in what was the <strong>5th edit</strong> of your question, but you call "Edit 2", how you can remove the bias while retaining the signal intact. If you have to do it with a filter (which I DO NOT RECOMMEND), then set the cutoff frequency of your filter an order of magnitude (one decade) below your lowest frequency of interest. Refer to a <a href="https://en.wikipedia.org/wiki/Bode_plot" rel="nofollow">Bode plot</a> of your filter to see how your filter will modify your signal. </p></li>
+<li><p>I don't recommend a filter because a bias is called "bias" and not "noise". This is because a bias is a systematic error - a DC bias will exist in all samples, so you <strong>cannot</strong> "turn on" a filter when you think you are stationary and then "turn off" the filter when you think you are moving - <em>the DC bias will exist in all signals</em>. This is why I have suggested you <a href="https://learn.adafruit.com/calibrating-sensors/why-calibrate" rel="nofollow">calibrate your sensor</a>, which is what you should be doing with <strong>every sensor</strong> you connect to your system anyways. </p></li>
+<li><p>You have not provided any information about your testing or application, but if what you say at the end of the current version of your question is correct - <code>maybe if we apply high pass filtering only in the first 110 samples and desactivate the filter during rotations of the gyro, the estimated angular position will be more accurate</code> - then this would imply that you know, <em>in advance</em>, when the the gyro is rotating and when it is not. If this is the case, you can remove all of the DC bias accurately, with <em>very little</em> computational cost, by calculating the signal mean during periods when the gyro is stationary and subtracting that mean from the signal when the gyro is in motion. </p></li>
+<li>As BendingUnit22 pointed out in the comments, the sample data set you have provided is <em>not representative</em> of the scenario in which you intend to use the filter, which is making it needlessly difficult for everyone trying to contribute to this problem to divine what you're after.</li>
+<li>I have to assume your insistence on using a filter is academic because it is more difficult to implement, more computationally expensive, and more likely to skew the data you want to use.</li>
+</ol>
+
+<p><strong>:Original Content Below:</strong></p>
+
+<p>I've moved from a comment to an answer in the hopes that I might clarify/point out some problems you might be having. </p>
+
+<p>Regarding the topics you did ask about:</p>
+
+<ol>
+<li>A DC offset in a sensor like an accelerometer or a gyroscope is called a bias - it's the output of the sensor when the input is zero. </li>
+<li>For devices like this, you actually <em>would</em> do a calibration process where you would use your line of code <code>yFilt = y - mean(y)</code>, but you could more appropriately call it <code>biasOffset = y - mean(y)</code>. Once you've done the initial calibration you store <code>biasOffset</code> in nonvolatile memory and use that to adjust future input samples. </li>
+</ol>
+
+<p>Regarding the topics you didn't ask about:</p>
+
+<ol>
+<li>Be careful using a high pass filter when your frequencies of interest are low. In your Figure 3, you have a close approximation of 3/4 of a sine wave starting at 110 seconds and running to 150 seconds. That is, it looks like your signal has a period of about (150-110)/(3/4) = 53.3 seconds, corresponding to a frequency of (1/53.3) = 0.0188 Hz, or 0.118 rad/s. Bear in mind that a filter's "cutoff" frequency doesn't actually cut off all frequency content above or below the designate frequency, but rather the cutoff frequency is generally the half-power (-3dB) point. <a href="http://www.wescottdesign.com/articles/Sampling/sampling.pdf" rel="nofollow">Here's a decent discussion</a> of filters (page 9) from a signal processing/aliasing perspective, but still worth reading. What I'm trying to say is that you could wind up significantly skewing your desired signal if you choose a cutoff frequency that is anywhere near (within an order of magnitude) of your desired signal frequency. </li>
+<li>Be careful with units. You caught it! You changed the units on Figure 2 from $m/s^2$ to deg/s - it makes a big difference! Where last night it looked like your sensor was accelerating up to 335km/hr, now it looks like it's turning at 1rpm. That's a big difference! </li>
+</ol>
+
+<p><strong>:EDIT:</strong>
+You have since changed the units on Figure 2 (x-axis) from seconds to samples, which, at 300Hz, means you've changed the time scale from 5 minutes to 1 second. Again, a huge difference, but now this means that your 3/4 sine wave-looking section occurs in 40 <em>samples</em>, not 40 seconds, which at 300Hz means it happens in 0.1333 seconds. Then, a full sine wave happens in a period of 0.1777 seconds, for a frequency of 5.6257Hz. </p>
+
+<p>Note, however, that you are using normalized frequency on your last figure, and your signal frequency, 5.6257Hz, divided by your sampling frequency, 300Hz, gives you 0.0188. This again shows that the low frequency signal I'm assuming you're trying to eliminate is, in fact, the signal you want. </p>
+
+<p>As a correction, I had previously stated that you didn't provide time data, but in fact you <em>had</em> provided sampling frequency, which means that you have indirectly provided time data, given the number of samples in the test data you provided. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7808" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-7808">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7808">Load Comments</button></br>
+			<div id = "commentsection-7808" class = 'collapse'>
+			<div id = "comment-11352" class = "comment">
+				<p>And those 0.0188 Hz are the low frequency spikes in the dft. @UserK: `As you can see from the last Figure, in the spectrum of the signal there are low frequency components that make the job harder. ` The low frequency components are your **actual signal**. They don't make the job harder.</p>
+			</div>
+			<div id = "comment-11353" class = "comment">
+				<p>@Chuck I've updated the plot in Figure 2 and corrected the units. Fig 2 represents 1 second of data. The partial sinusoid was generated by a fast movement (~ [4;8] Hz)</p>
+			</div>
+			<div id = "comment-11354" class = "comment">
+				<p>@BendingUnit22 The frequency components of the actual signal are really close to the bias ones. If you rotate a gyroscope slowly at 360 deg/hour it would be really hard to estimate the angular position from its measurements. That's why I said `low frequency components that make the job harder.`</p>
+			</div>
+			<div id = "comment-11355" class = "comment">
+				<p>@UserK so the image and data provided isn't representing the actual data/situation. I don't really understand what the question is then. Do you have data that is more closely related to your use case?</p>
+			</div>
+			<div id = "comment-11356" class = "comment">
+				<p>@BendingUnit22. How can we remove the bias from the samples provided at the end of the question in order to get the best angular position estimate?</p>
+			</div>
+			<div id = "comment-11357" class = "comment">
+				<p>You do it the way I explained in the answer above - you use your first method with a calibration test. Turn the system on, let it "warm up" for a few (maybe 5) minutes, then start recording sensor output while you leave the gyro stationary. Record for some adequate period of time (a minute or two is probably sufficient), then find the mean of the gyro output while the gyro is stationary. This is your bias. This procedure is called a calibration. Use the bias you determine from the calibration to adjust your sample readings for all readings in the future. No filter needed.</p>
+			</div>
+			<div id = "comment-11369" class = "comment">
+				<p>I tend to agree with all the points highlighted by Chuck. Let me add one more thing: filtering the gyro has the significant downside to introduce latency in the final response you will use to account for rotations, whereas the gyro is purposely meant to provide very fast measurements.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7808" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7808">
+					<img id="start_img-7808" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7808">Comment</button>
+			<br><div id = "ans-12411"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-12411" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Please refer to this Article "Keeping a Good Attitude: A Quaternion-Based Orientation Filter for IMUs and MARGs".</p>
+
+<p>They are using low-pass filter at stationary gyro to estimate the gyro bias and then subtract it from the original signal. They are doing that only if the gyro is stationary. However, I recommend to remove the bias when the gyro is stationary by means of subtracting the mean value. </p>
+
+<p>The method of subtracting the bias only when the gyro is stationary based on low pass filter is called online gyro compensation.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12411" data-toggle = "popover">
+				<p>user name : momtaz</p>
+				<p> user reputation : 11</p>
+				<p class = "tagcontent" id = "usertaginfo-12411">{'None': 1}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-12411" class = 'collapse'>
+			</div>
+				<textarea id = "speech-12411" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12411">
+					<img id="start_img-12411" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12411">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

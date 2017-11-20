@@ -1,0 +1,162 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Path comparison
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-3170" class = "post">
+			<h2>Question</h2>
+			<div id="vote-3170" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 71</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Path comparison</h2>
+<p>Problem: the cartesian position of an end effector (no orientation) of a robot arm is recorded, say, every millisecond (the time steps can not be changed), during a motion. The robot arm is commanded the same path but with different velocities. So I get different trajectories. I want to calculate the deviation of the paths, which is the distances of equivalent points of two paths. The problem is to find equivalent points. Since the two velocities are different the comparison at the same time steps of the trajectories makes no sense. I can assume that the paths underlying the trajectories to be compared are rather similar. The deviation for the ideal path being smaller than 1% of a typical length dimension of the path. I want to detect deviations of much lass than that. </p>
+
+<p>I have to map the timestamp of the recorded points to the path length, and make comparison of points at the same path length. But of course also the path lengths differ for different paths, so any deviation would distort the result for all later points. How can I compensate for this ? </p>
+
+<p>Is there a reliable algorithm ? Where can I find information ?</p>
+
+<p>Note: time warp algorithms (even memory optimized ones) are out of the game because of memory consumption. </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-3170" data-toggle = "popover">
+				<p>user name : Johannes Trost</p>
+				<p> user reputation : 130</p>
+				<p class = "tagcontent" id = "usertaginfo-3170">{'None': 0, 'algorithm': 2, 'localization': 1, 'joint': 2, 'industrial-robot': 2, 'robotic-arm': 1, 'reference-request': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-3170">Load Comments</button></br>
+			<div id = "commentsection-3170" class = 'collapse'>
+			<div id = "comment-6688" class = "comment">
+				<p>Please be aware of the subtle difference between the two terms "path" and "trajectory" as used in robotics: A path is just a sequence of points and usually does not include any information about time (and neither velocity). If the time at which each point on the path is reached is relevant, you are talking about a trajectory.</p>
+			</div>
+			<div id = "comment-6689" class = "comment">
+				<p>@sebsch Thank you for the comment. I included a sentence to make it clear that I am not comparing trajectories but paths.</p>
+			</div>
+			</div>
+				<textarea id = "speech-3170" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-3170">
+					<img id="start_img-3170" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-3170">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-3171"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-3171" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The problem you are describing sounds like you need to calculate Frechet distance.</p>
+
+<p>If you take a point at each of your paths, connect them with a string and move them along the path (not necessarily with the same velocities), then Frechet distance of the paths is a minimum length of the string necessary.
+Not a good description :-)</p>
+
+<p>The formula from the <a href="https://en.wikipedia.org/wiki/Frechet_distance" rel="nofollow">wikipedia page</a> is much better:</p>
+
+<p>$$F(A,B) = \inf_{\alpha, \beta}\,\,\max_{t \in [0,1]} \,\, \Bigg \{d \Big ( A(\alpha(t)), \, B(\beta(t)) \Big ) \Bigg \}$$
+where $\alpha$ and $\beta$ are mappings from time to the position on the curve.</p>
+
+<p>The only problem is, that calculating the Frechet distance between two polylines takes $O(n^{2}m + m^{2}n)$ of memory (and even more time). There are some approximations you could use that only take the turning points of the polyline into account, but I don't know much about them.</p>
+
+<p>And some resources:</p>
+
+<ul>
+<li>More detailed description of the calculation:
+<a href="http://www.cim.mcgill.ca/~stephane/cs507/Project.html" rel="nofollow">http://www.cim.mcgill.ca/~stephane/cs507/Project.html</a></li>
+<li>Implementation in matlab:
+<a href="http://www.mathworks.com/matlabcentral/fileexchange/38714-frechet-distance-calculation/content/frechet_compute.m" rel="nofollow">http://www.mathworks.com/matlabcentral/fileexchange/38714-frechet-distance-calculation/content/frechet_compute.m</a></li>
+<li>My buggy implementation in python:
+<a href="https://github.com/bluecube/robomower2/blob/master/src_python/util/frechet_distance.py" rel="nofollow">https://github.com/bluecube/robomower2/blob/master/src_python/util/frechet_distance.py</a></li>
+</ul>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-3171" data-toggle = "popover">
+				<p>user name : cube</p>
+				<p> user reputation : 567</p>
+				<p class = "tagcontent" id = "usertaginfo-3171">{'control': 2, 'None': 31, 'wifi': 2, 'kalman-filter': 3, 'calibration': 3, 'geometry': 0, 'localization': 2, 'c': 1, 'avr': 1, 'robotic-arm': 0, 'brushless-motor': 2, 'differential-drive': 2, 'esc': 1, 'motor': 2, 'mobile-robot': 2}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-3171">Load Comments</button></br>
+			<div id = "commentsection-3171" class = 'collapse'>
+			<div id = "comment-6711" class = "comment">
+				<p>Now that I'm thinking about it, Hausdorff distance might be enough (because the paths are similar), and only needs O(m * n) time and O(1) memory.</p>
+			</div>
+			<div id = "comment-6740" class = "comment">
+				<p>Actually the paths are not THAT similar on one hand and on the other hand there are parts of the path that are transversed several times. It is important to check the deviation for each round.</p>
+			</div>
+			<div id = "comment-18795" class = "comment">
+				<p>Sorry for being so late. The answer was VERY helpful and I was able to solve my problem based on the links. Thank you very much !</p>
+			</div>
+			</div>
+				<textarea id = "speech-3171" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-3171">
+					<img id="start_img-3171" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-3171">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

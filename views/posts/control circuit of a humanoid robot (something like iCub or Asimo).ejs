@@ -1,0 +1,168 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>control circuit of a humanoid robot (something like iCub or Asimo)
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-5014" class = "post">
+			<h2>Question</h2>
+			<div id="vote-5014" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 287</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>control circuit of a humanoid robot (something like iCub or Asimo)</h2>
+<p>My friend and I are building the upper body of a humanoid robot for our M.Sc thesis project. There are 24 DC motors in this robot. The thing I want to know is <strong>what is the best way to command these motors simultaneously?</strong></p>
+
+<p>The design I had in mind is for each motor to have its own micro for position and velocity control and then one master micro to command and control the slave micros. <strong>If this is the best way to go how does the master micro command slave ones simultaneously?</strong></p>
+
+<p>Another question I have is what is the best micro for the robot to go with between ARM and PIC? I want the master micro to receive its command from a PC. Any help would be appreciated.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-5014" data-toggle = "popover">
+				<p>user name : Ehsan</p>
+				<p> user reputation : 20</p>
+				<p class = "tagcontent" id = "usertaginfo-5014">{'control': 1, 'None': 0, 'communication': 1, 'microcontroller': 1, 'driver': 0, 'humanoid': 0, 'servomotor': 0, 'motor': 0, 'hall-sensor': 2, 'sensors': 2, 'ros': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-5014" class = 'collapse'>
+			</div>
+				<textarea id = "speech-5014" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-5014">
+					<img id="start_img-5014" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-5014">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-5019"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-5019" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><blockquote>
+  <p>what is the best way to command these motors simultaneously?</p>
+</blockquote>
+
+<p>Like all engineering questions, the answer is <strong>it depends</strong>.</p>
+
+<p>First, for some general things to keep in mind read <a href="https://robotics.stackexchange.com/q/3110/158">this answer</a> even though it's about ROS, but some of the same principles apply.</p>
+
+<p>In short, one particular factor deciding between one-micro-handles-all and dividing motors among slave micros is how powerful each micro is. If one micro <em>could</em> handle all, it's kind of overkill to use many micros. On the other hand, distributing the control means you could use cheaper micros and probably be more energy efficient. You may also save on wiring, depending on where the motors are located. Note that the slave micros don't necessarily have to control <em>one</em> motor, but they could control a couple of related motors.</p>
+
+<p>If you go with master-slave architecture, first you need to understand what motors are meaningless without the other. I.e. what motors need to be perfectly coordinated. The motors driving the fingers come to mind.</p>
+
+<p>That said, it would make sense to have one micro driving the finger motors, and one micro for each other joint. That means a failure in one micro disables a joint or the whole hand. In the former case, redundancy in the arm compensates for the lost degree of freedom and in the later case, well if you have two fingers and one of them is not working or both are not working, then there's really no difference. If you have more fingers, then of course you need to assess the possibilities and decide between more micros or better coordination.</p>
+
+<p>The master micro is of course connected to the slaves through bus(es); SPI, I2C or otherwise. The master would have to query the slaves periodically for information (such as the current state of the motors), do the control calculations and send instructions to the slaves to drive the motors. What needs to be transferred and the frequency really really depends on the type of the motor, the maximum speed of your robot, the internal safety features of the robot and various other things.</p>
+
+<p>That is probably what you would want with a lower level control. On the PC, what you would probably want is a more higher level control. So you tell the robot arm to go to some <code>(Position, Orientation)</code> and the master micro would take care of the details of how much and how fast each motor exactly has to move at every period.</p>
+
+<blockquote>
+  <p>If this is the best way to go how does the master micro command slave ones simultaneously</p>
+</blockquote>
+
+<p>Of course, you cannot achieve perfect simultaneous-ness. However, with a <em>fast-enough</em> bus, the master micro may be able to tell all the slaves what to do with a delay that is acceptable. If you have multiple buses, by driving the buses inside interrupt service routines, you could send commands on different buses in parallel which further reduces the delay.</p>
+
+<p>However, don't fret it so much. You would likely have to make your robot slow because you cannot guarantee you can stop in time in a dangerous situation. There are actually two main reasons for this.</p>
+
+<ol>
+<li>You most likely don't have enough information from the robot to decide safe vs unsafe situation. If you cover your robot with robot skin and be able to process all the data on the slave or master micros, you may be able to gather enough information, but chances are that you probably don't do this.</li>
+<li>Your PC connection and processes are probably not real-time and depend on other non-real-time sensors and processes (such as cameras and image processing). That means that you don't have any guarantee that you can in fact respond in a timely manner.</li>
+</ol>
+
+<p>Since you have to make your robot slow (to minimize the damage in case of collision, both to the robot and to nearby humans), then your control loop likely has a much larger period than your bus communications have. Therefore, in comparison, the delay between controlling different motors (through different slaves) is likely to be negligible.</p>
+
+<blockquote>
+  <p>Another question I have is what is the best micro for the robot to go with between arm and pic?</p>
+</blockquote>
+
+<p>I have to say that this is a bad question. Each of ARM and PIC have a wide variety of microcontrollers with a varying features and powers. That question is like asking "should I buy a Mazda or a Honda?" You really need to look for what features you want and how much you want to pay for it. You need to take into account what compilers you would have access to and what libraries are available. You need to look for what speed the micro can have, whether it has an FPU, whether it has interrupts on events you are interested in, whether it has enough pins to drive all you need to drive, whether it can support as many buses as you would like etc.</p>
+
+<p>So the answer is to look at as many datasheets as you can and see for yourself what matches your ideals best.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-5019" data-toggle = "popover">
+				<p>user name : Shahbaz</p>
+				<p> user reputation : 2615</p>
+				<p class = "tagcontent" id = "usertaginfo-5019">{'None': 193, 'usb': 12, 'distributed-systems': 7, 'microcontroller': 1, 'embedded-systems': 7, 'servomotor': 1, 'platform': 18, 'can': 1, 'machine-learning': 12, 'real-time': 18, 'mobile-robot': 1, 'rs232': 12, 'software': 20}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-5019">Load Comments</button></br>
+			<div id = "commentsection-5019" class = 'collapse'>
+			<div id = "comment-7773" class = "comment">
+				<p>       </p>
+			</div>
+			<div id = "comment-7778" class = "comment">
+				<p>@ehsan, No problem, but this is an English site, so I don't think others would appreciate Persian.</p>
+			</div>
+			</div>
+				<textarea id = "speech-5019" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-5019">
+					<img id="start_img-5019" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-5019">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

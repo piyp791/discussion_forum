@@ -1,0 +1,145 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>2D Robot Arm Inverse Kinematics with minimum joint loads
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-5058" class = "post">
+			<h2>Question</h2>
+			<div id="vote-5058" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 420</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>2D Robot Arm Inverse Kinematics with minimum joint loads</h2>
+<p>Suppose I have a robot arm with $n$ linkages of fixed length and equal density whose motion constrained within a 2D plane.  I want the end effector to reach a particular pose $(x^*,y^*,\theta^*)$.  </p>
+
+<p>I know that in general, there can be multiple solutions that can reach this pose.  For my particular application, I'm interested in a solution that minimizes the maximum torque exerted over any joint under the influence of the weights of all the linkages, combined.  </p>
+
+<p>Is there a way I can reformulate the inverse kinematics problem as a minimization problem over the joint loads?  Can I formulate my objective function to be differentiable (i.e. so that I can use traditional optimization techniques)?  Would this yield an unique solution (in a least squares sense) for the 2D planar motion problem?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-5058" data-toggle = "popover">
+				<p>user name : Paul</p>
+				<p> user reputation : 704</p>
+				<p class = "tagcontent" id = "usertaginfo-5058">{'control': 6, 'occupancygrid': 1, 'pid': 3, 'slam': 14, 'design': 0, 'motor': 5, 'dynamics': 11, 'probability': 1, 'accelerometer': 4, 'mechanism': 3, 'differential-drive': 1, 'kalman-filter': 6, 'actuator': 1, 'reference-request': 8, 'None': 30, 'inverse-kinematics': 3, 'mapping': 1, 'sensors': 10, 'quadcopter': 4, 'motion': 3, 'particle-filter': 4, 'sonar': 4, 'balance': 12, 'automatic': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-5058">Load Comments</button></br>
+			<div id = "commentsection-5058" class = 'collapse'>
+			<div id = "comment-8026" class = "comment">
+				<p>I'd deeply rephrase your problem in terms of dynamic control. Minimizing the effort (joint torque) has generally nothing to do with inverse kinematics. Rather, take a look at the discipline of optimal control: Hamilton's principle, Pontryagin's minimum principle ...
+Further, do not confuse joint torques with joint loads.</p>
+			</div>
+			<div id = "comment-8030" class = "comment">
+				<p>@ugopattacini:  That makes more sense.  I'll probably close this question and rephrase it appropriately as a control question.</p>
+			</div>
+			</div>
+				<textarea id = "speech-5058" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-5058">
+					<img id="start_img-5058" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-5058">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-5064"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-5064" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Kawato M. Developped the technique called the <code>Minimum Commanded Torque</code> and <code>Minimum Commanded Torque Change</code> to optimize joint torques (see article from <a href="http://www.cns.atr.jp/~kawato/Ppdf/kaneko05.pdf" rel="nofollow">Kaneko Y., Kawato M. and al., 2005</a>).</p>
+
+<p>A similar approach in the kinematics domain is the <code>Minimum Jerk (MJ)</code> model. It have been proven to be the domain in which humans plan movements, see article from Flash <a href="http://www.jneurosci.org/content/5/7/1688.full.pdf" rel="nofollow">T. and Hogan N., 1985</a> (not to mention it is also simpler to plan trajectories in the kinematics domain). Details of implementation can be found on <a href="http://www.shadmehrlab.org/book/minimum_jerk/minimumjerk.htm" rel="nofollow">Shadmehr R. website</a>. It consist of 5th degree polynomials combined together and minimize the jerk (derivative of acceleration) over the whole trajectory, thus minimizing acceleration changes.</p>
+
+<p>MJ in the articular coordinate system yield a unique trajectory in the articular space, that depends on the choice of the configuration for the robot at the intermediate passage points.
+MJ model in the Cartesian coordinate system yield a unique trajectory in the Cartesian space, thus multiple possible solution in the articular space.</p>
+
+<p>Using traditional optimization techniques with the MJ model is possible. Using the Resolved Motion Rate (RMR) technique after having computed the result of a pure MJ trajectory, the optimization function is</p>
+
+<p>$z_{MJ}= \frac{1}{2}(q-q_{MJ})^TK^TK(q-q_{MJ})$</p>
+
+<p>with $z_{MJ}$ the function to minimize, $K$ the gain coefficients, $q$ the articular position, and $q_{MJ}$ the MJ articular position. Computing the gradient $h$ of such function will allow you to find $\Delta \theta$ (see <a href="http://www.professeurs.polymtl.ca/luc.baron/doc/r14.pdf" rel="nofollow">Huo, L. and Baron, L., 2008</a>, for similar technique for joint limit avoidance).</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-5064" data-toggle = "popover">
+				<p>user name : Alexandre Willame</p>
+				<p> user reputation : 103</p>
+				<p class = "tagcontent" id = "usertaginfo-5064">{'None': 10}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-5064">Load Comments</button></br>
+			<div id = "commentsection-5064" class = 'collapse'>
+			<div id = "comment-8029" class = "comment">
+				<p>As per my [comment](http://robotics.stackexchange.com/questions/5058/2d-robot-arm-inverse-kinematics-with-minimum-joint-loads#comment8026_5058) I'd avoid talking about kinematics in this context. To a certain extent, minimum-jerk profile can serve as link though, since this specific polynomial comes out from the application of the variational principle (as it happens with Pontryagin theorem in the end). Nonetheless, we don't have to minimize the jerk, but rather the acceleration, as the equation $\ddot{\theta}=\tau$ maps joint acceleration into joint torque (neglecting many other components).</p>
+			</div>
+			</div>
+				<textarea id = "speech-5064" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-5064">
+					<img id="start_img-5064" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-5064">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

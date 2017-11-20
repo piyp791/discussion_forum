@@ -1,0 +1,214 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Rotation matrix sign convention confusion.
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-10702" class = "post">
+			<h2>Question</h2>
+			<div id="vote-10702" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 271</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Rotation matrix sign convention confusion.</h2>
+<p>In rotation matrix, Why do we rotate the first and third rotation in the opposite direction of the 2nd rotation, this is confusing. 
+Image is attached with this.</p>
+
+<p><a href="https://i.stack.imgur.com/W3hip.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/W3hip.jpg" alt="enter image description here"></a></p>
+
+<p>In this image we can note that for x and Z rotation non zero elements are same. But for Y rotation sign of sin(theta) changed. </p>
+
+<p>why is so?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10702" data-toggle = "popover">
+				<p>user name : Naseeb Gill</p>
+				<p> user reputation : 62</p>
+				<p class = "tagcontent" id = "usertaginfo-10702">{'None': 0, 'manipulator': 2, 'inverse-kinematics': 5, 'simulator': 0, 'arduino': 2, 'simulation': 2, 'servomotor': 1, 'kinematics': 1, 'matlab': 6, 'robotic-arm': 5, 'rotation': 1, 'forward-kinematics': 0, 'dynamics': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-10702" class = 'collapse'>
+			</div>
+				<textarea id = "speech-10702" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10702">
+					<img id="start_img-10702" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10702">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-10703"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10703" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I think that the main issue is that you're trying to read your rotation matrices from left to right. The sign changes seem random, but actually cycle in an ordinary way. Below follows a more elaborate explanation with some more background information.</p>
+
+<p>Let's start with the question:</p>
+
+<p>A) Why do minuses appear at all?</p>
+
+<p>Followed by:</p>
+
+<p>B) Why do minuses appear where they appear?</p>
+
+<p><strong>A)</strong></p>
+
+<p>From a mathematical point of view, it is not possible to construct a strictly positive rotation matrix. This can easily be deduced from the property that rotation matrices are skew-symmetric, i.e. $R=R^{-T}$. As such, it is not possible to define a rotation matrix without minuses or zeros appearing on non-diagonal elements. For example, it is <strong><em>not</em></strong> possible to define (a real number) $\theta$ (representing an angle) in any way to obtain the following matrix and call it a rotation matrix:</p>
+
+<p>$$R\neq\left[\begin{matrix}\cos{\theta} &amp; \sin{\theta} \\ \sin{\theta} &amp; \cos{\theta} \end{matrix}\right]$$</p>
+
+<p>(This matrix is 2D but the same applies to 3D)</p>
+
+<p>A more intuitive explanation is that all three axes of the Cartesian coordinate system are defined to be orthogonal to each other, i.e. at 90 degrees. If mapping a horizontal coordinate component from Y to X requires a rotation of 90 degrees, it follows that mapping from X to Y (i.e. the cross-diagonal element on the rotation matrix) requires a rotation of -90 degrees. The difference between the two is 180 degrees, i.e. a change of sign.</p>
+
+<p><strong>B)</strong></p>
+
+<p>So, minus has to appear somewhere, but why are they appearing as they do? For instance, in a 2D X-Y coordinate system where X is pointing right and Y is pointing up, we could define rotation $\theta$ to be counter-clockwise (cc), or clockwise (c) leading to either of the following two rotation matrices respectively:</p>
+
+<p>$$R_{cc}=\left[\begin{matrix}\cos{\theta} &amp; -\sin{\theta} \\ \sin{\theta} &amp; \cos{\theta} \end{matrix}\right]$$</p>
+
+<p>$$R_{c}=\left[\begin{matrix}\cos{\theta} &amp; \sin{\theta} \\ -\sin{\theta} &amp; \cos{\theta} \end{matrix}\right]$$</p>
+
+<p>As you may already know, we have (nearly) globally accepted to use the former. It is just a convention, defining axes to point to the right and up and the rotation to be counter-clockwise.</p>
+
+<p>Now, let's move to 3D. We cannot simply speak of clockwise and counter-clockwise and right and up anymore, because we are not forced to observe the image from a specific direction. To fix this minor issue, we rewrite our conventions such that they are also applicable in 3D:</p>
+
+<p>1) We use right-handed Cartesian coordinated systems:</p>
+
+<p><a href="https://i.stack.imgur.com/0hxY1m.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/0hxY1m.png" alt="Right-handed coordinated system"></a></p>
+
+<p>2) We use right-handed rotations:</p>
+
+<p><a href="https://i.stack.imgur.com/Hyw9Lm.gif" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/Hyw9Lm.gif" alt="Right-handed rotation"></a></p>
+
+<p>Now, if you look straight at the X-Y coordinate system along Z, we obtain the same coordinate system we had in 2D (Y pointing up, X pointing right). We find that Z is pointing towards you. Due to Z pointing towards you, the rotation will be counter-clockwise and we use the rotation matrix $R_{cc}$. </p>
+
+<p>We can do the same for the Y-Z coordinate system (Z pointing up, Y pointing right), along X. Now X will be pointing towards you. Again, we use $R_{cc}$.</p>
+
+<p>Next, we have the Z-X coordinate system (X pointing up, Z pointing right), along Y. We find exactly the same, i.e. Y pointing towards you. However, Z-X does not appear as obvious in the rotation matrix, because our (flat) matrix has finite width and height rather than being circular.</p>
+
+<p>If you read your rotation matrix from left to right, what appears is the X-Z coordinate system instead of the Z-X coordinate system, also along Y, but now we see that Y is pointing away from you now. This changes the direction of rotation. Hence, you see $R_c$ appearing instead of $R_{cc}$.</p>
+
+<p>Analysing X-Y, Y-Z and Z-X makes more sense than X-Y, Y-Z and X-Z. Try to read your rotation matrix in a more cyclic way, rather than from left to right, if that makes any sense... Try to think of X, Y and Z as independent entities, rather than Y being greater than X and Z being greater than Y, and thus greater than X. Perhaps replace them for apple, orange and banana instead.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10703" data-toggle = "popover">
+				<p>user name : JJM Driessen</p>
+				<p> user reputation : 422</p>
+				<p class = "tagcontent" id = "usertaginfo-10703">{'battery': 1, 'None': 22, 'driver': 3}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10703">Load Comments</button></br>
+			<div id = "commentsection-10703" class = 'collapse'>
+			<div id = "comment-19282" class = "comment">
+				<p>Good answer.  I'd like to add two items.  First, consider each column of the rotation matrix as mapping a new, moving coordinate system back to the old, stationary system.  For example, the first column is the moving x vector expressed in the stationary coordinate system.  If you look at the right-hand coordinate system picture, and rotate it 90 degrees about z (the thumb), you'll see that at that moment it is pointing in the positive y direction of the stationary system.  But the moving y vector is now pointing in the *negative* x direction.  I'll put the second item in another comment.</p>
+			</div>
+			<div id = "comment-19283" class = "comment">
+				<p>The second item is that rotation matrices are *orthonormal*.  Their determinant is always +1.  This means they do not scale, stretch, or mirror anything.  Since it is sin and cos functions that model the circular rotations about an axis, you will always end up with a determinant represented as a form of "sin^2 + cos^2".  That results in 1.  Think about the process for taking a determinant (top-to-bottom diagonals minus bottom-to-top diagonals is one approach).  In order to get *positive* sin^2 plus *positive* cos^2, there has to be a minus sign in there somewhere.</p>
+			</div>
+			<div id = "comment-19285" class = "comment">
+				<p>thank @Driessen for your answer. But when I derived rotation matrix for 2D in counterclockwise direction, I got matrix which is equal to your clockwise matrix. Youtube video link is attached with this. I follow the same method. [link](https://www.youtube.com/watch?v=8XRvpDhTJpw). Can you please explain me, where I am wrong?</p>
+			</div>
+			<div id = "comment-19287" class = "comment">
+				<p>@Naseeb, I'm not sure where you make the mistake in the derivation, but given one of the two matrices (clockwise or counter-clockwise) you can easily find the other, and you'll see that they are not the same. If $\theta$ denotes clockwise rotation, then $-\theta$ denotes counter-clockwise rotation. It can then also be shown that $R_c(-\theta)=R_{cc}(\theta)$, because we know that $\cos{-\theta}=\cos{\theta}$ and $\sin{-\theta}=-\sin{\theta}$</p>
+			</div>
+			<div id = "comment-19288" class = "comment">
+				<p>Good points  @SteveO! I suppose there are many things to say about rotation matrices; in the end they all correspond and we can only draw one conclusion: they make sense!</p>
+			</div>
+			</div>
+				<textarea id = "speech-10703" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10703">
+					<img id="start_img-10703" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10703">Comment</button>
+			<br><div id = "ans-10704"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10704" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The convention of these rotation matrices follow the same positive direction of rotation as the <a href="https://en.m.wikipedia.org/wiki/Cross_product#Coordinate_notation" rel="nofollow">cross product in a right handed coordinate system</a>.</p>
+
+<p>So a 90  rotation around the x-axis maps the y-axis to the positive z-axis and the z-axis to the negative y-axis; a 90  rotation around the y-axis maps the z-axis to the positive x-axis and the x-axis to the negative z-axis; a 90  rotation around the z-axis maps the x-axis to the positive y-axis and the y-axis to the negative x-axis.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10704" data-toggle = "popover">
+				<p>user name : fibonatic</p>
+				<p> user reputation : 373</p>
+				<p class = "tagcontent" id = "usertaginfo-10704">{'quadcopter': 2, 'None': 19, 'design': 2}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-10704" class = 'collapse'>
+			</div>
+				<textarea id = "speech-10704" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10704">
+					<img id="start_img-10704" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10704">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

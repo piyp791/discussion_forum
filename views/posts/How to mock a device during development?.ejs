@@ -1,0 +1,300 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to mock a device during development?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11777" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11777" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 39</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to mock a device during development?</h2>
+<p>I am coding a little robot controlled by a raspberry pi zero. 
+<em>Disclaimer</em>: This is a more general development question, and only indirectly related to raspberry pi. </p>
+
+<p><strong>Background</strong>: I don't want to test everything on the robot directly, this is too time consuming. Therefore I am trying to implement mock interfaces. For example, I'd am using a set of fake sensor readings and feed them to the class responsible for sensing and driving. Running this code in command line should for example print out "driving left" instead of starting the right motor and so on.</p>
+
+<p><strong>Question: How to mock a device so that I can use the main code without modification on my robot.</strong></p>
+
+<p><strong>Code examples</strong>
+I have currently the following file structure:</p>
+
+<ul>
+<li>main.py: running the loop so the robot is doing something and       currently holding mock sensor data.  </li>
+<li>acc.py: AutonomousCruiseControl class: taking care of the process of       measuring and steering  </li>
+<li>hcsr04.py: a class mocking the sonar    distance reader device  </li>
+<li>servo.py: currently doing nothing: Should    contain a mock device writing to console what motor is turned  into    what direction</li>
+</ul>
+
+<p>In the following code examples, you can see e.g. in the drive() method, that I have code purely for testing mixed with the code destined for production.</p>
+
+<p><strong>main.py</strong></p>
+
+<pre><code>#!/usr/bin/env python3
+# coding=UTF-8
+
+from navigation import AutonomousCruiseControl
+
+
+def main():
+    #self.objectColisionRange = [10,15,20,15,10]
+    readings = [
+        [11, 16, 21, 16, 11],       # path free
+        [100, 100, 19, 100, 100],   # front blocked
+        [9, 100,20, 100, 100],      # center &amp; left blocked
+        [100, 100, 10, 100, 10],    # center &amp; right blocked
+        [10, 100, 10, 100, 10],     # center, left &amp; right blocked
+        [100, 10, 100, 100, 100],   # center free, left front object to avoid
+        [100, 100, 100, 10, 100],   # center free, right front object to avoid
+        [100, 10, 100, 10, 100]     # center free, but left and right (45 ) objects too narrow
+    ]
+
+    ACC = AutonomousCruiseControl()
+    # range second parameter is numbers to generate not the right boundary
+    for i in range(0,8):
+        ACC.front_sonar.readings = readings[i]
+        print("{}. reading: {}".format(i, ACC.read_front_sonar()))
+        print("{}. FOS: {}".format(i, ACC.get_front_object_status()))
+        ACC.drive()
+
+if __name__ == '__main__':
+    main()
+</code></pre>
+
+<p><strong>acc.py</strong></p>
+
+<pre><code>#!/usr/bin/env python3
+# coding=UTF-8
+
+from navigation.hcsr04 import Hcsr04
+from navigation.servo import Servo
+from random import randint
+
+
+class AutonomousCruiseControl:
+    """helping to steer a robot trough obstacles"""
+
+    def __init__(self, object_colision_range=None, front_sonar_angles=None):
+        # initiate sensors
+        self.front_sonar = Hcsr04()
+        self.front_sonar_servo = Servo()
+        self.collision_distance = 20
+
+        if object_colision_range is None:
+            self.object_colision_range = [10, 15, 20, 15, 10]
+        else:
+            self.object_colision_range = object_colision_range
+
+        if front_sonar_angles is None:
+            self.front_sonar_angles = [0, 45, 90, 135, 180]
+        else:
+            self.front_sonar_angles = front_sonar_angles
+
+        self.front_sonar_distances = [200, 200, 200, 200, 200]
+        self.read_front_sonar()
+        print(self.front_sonar_distances)
+
+        self.front_object_status = [0, 0, 0, 0, 0]
+
+    def read_front_sonar(self):
+        """ Setting the angle and calling the read_distance method. """
+        # TODO implement reading from right to left and left to right, so both servo swings can be used
+        # go through all angles and read distance put it into front_sonar_distances
+        # initiate only once for test cases, to not mix values
+        for i in range(0, len(self.front_sonar_angles)):
+            # set servo to angle
+            angle = self.front_sonar_angles[i]
+            # read distance
+            distance = self.read_distance(self.front_sonar, angle)
+            # print("distance is {}\n".format(distance))
+            self.front_sonar_distances[i] = distance
+        return self.front_sonar_distances
+
+    def get_front_object_status(self):
+        """ Creating a simplified form of the distance measures. Currently if a reading is equal or below the
+            reading angle specific collision range, the status is set to 1. Zero means, no obstacle. """
+        for i in range(0, len(self.front_sonar_distances)):
+            if self.front_sonar_distances[i] &lt;= self.object_colision_range[i]:
+                self.front_object_status[i] = 1
+            else:
+                self.front_object_status[i] = 0
+        return self.front_object_status
+
+    def read_distance(self, sensor, angle):
+        """ Remove angle later from this method and from hcsr04. """
+        if sensor is self.front_sonar:
+            # TODO: implement servo, set angle
+            # print("Set servo to angle {}  ".format(angle))
+            # angle/index won't be necessary after the real servo routine is working
+            # this just helps the dry run tests
+            index = self.front_sonar_angles.index(angle)
+            return self.front_sonar.get_distance(index)
+
+    def drive(self):
+        """ Contolling the motors with obstacle avoidance switch.
+            Light search is not yet implemented. The robot should aimlessly
+            cruise around without hitting detectable obstacles. """
+
+        stat = self.front_object_status
+        dist = self.front_sonar_distances
+
+        if stat[1] + stat[2] + stat[3] is 0:
+            # road is free
+            print("Road free: L(eft) &amp; R(ight) forward")
+        elif stat[1] is 1:
+            # left blocked
+            print("Obstacle left: L(eft) faster  &amp; R(ight) slower forward")
+        elif stat[3] is 1:
+            # right blocked
+            print("Obstacle right: L(eft) slower  &amp; R(ight) faster forward")
+        elif stat[2] is 1 or (stat[1] + stat[3] is 2):
+            # front blocked
+            print("obstacle front: stop all")
+            dist_sum_left = dist[0] + dist[1]
+            dist_sum_right = dist[3] + dist[4]
+
+            if dist_sum_left == dist_sum_right:
+                # both sides are free and distance the same
+                # choose randomly left and right 0 is left and 1 is right
+                rand = randint(0, 1)
+                if rand is 0:   # left
+                    print("Random turn left, L backw, R forw")
+                else:           # right
+                    print("Random turn right, R backw, L forw")
+            elif dist_sum_left &gt; dist_sum_right:
+                # left has more leeway
+                print("Left leeway, turn left")
+            elif dist_sum_left &lt; dist_sum_right:
+                # right has more leeway
+                print("Right leeway, turn right")
+</code></pre>
+
+<p><strong>hcsr04.py</strong></p>
+
+<pre><code>#!/usr/bin/env python3
+# coding=UTF-8
+
+# Test method
+
+class Hcsr04:
+    'this just fakes the reading from sonar it needs the servo angle where the reading should come from'
+    def __init__(self):
+        self.readings = [88, 88, 88, 88, 88]
+
+    def get_distance(self, index):
+        return self.readings[index]
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11777" data-toggle = "popover">
+				<p>user name : Stowoda</p>
+				<p> user reputation : 103</p>
+				<p class = "tagcontent" id = "usertaginfo-11777">{'None': 0, 'raspberry-pi': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11777" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11777" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11777">
+					<img id="start_img-11777" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11777">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-11799"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11799" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The general name for what you're looking for is <strong>dependency injection</strong></p>
+
+<p>The pattern is to ensure that the sensors ("the dependencies") are provided to the main control system at configuration time, instead of being hardcoded deep-down. You can then have two toplevel paths. One creates the objects that connect to the actual devices and passes them when creating the main control system. The other one creates the mock objects.</p>
+
+<p>Generally speaking, if you start having these kind of issues, consider using the frameworks that already exist (ROS, Rock, ...).</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11799" data-toggle = "popover">
+				<p>user name : sylvain.joyeux</p>
+				<p> user reputation : 363</p>
+				<p class = "tagcontent" id = "usertaginfo-11799">{'None': 20, 'kalman-filter': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11799">Load Comments</button></br>
+			<div id = "commentsection-11799" class = 'collapse'>
+			<div id = "comment-21006" class = "comment">
+				<p>Cool, I will read into that try to apply it.</p>
+			</div>
+			</div>
+				<textarea id = "speech-11799" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11799">
+					<img id="start_img-11799" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11799">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,178 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Deciding length of quadcopter arms
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7819" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7819" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 669</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Deciding length of quadcopter arms</h2>
+<p>How quadcopter's arm length affect stability?</p>
+
+<p>As per my view I'll have better control on copter with longer arms but with stresses in arms and also it doesn't affect lift capabilities.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7819" data-toggle = "popover">
+				<p>user name : harshal naik</p>
+				<p> user reputation : 18</p>
+				<p class = "tagcontent" id = "usertaginfo-7819">{'control': 3, 'quadcopter': 3, 'None': 0, 'stability': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7819">Load Comments</button></br>
+			<div id = "commentsection-7819" class = 'collapse'>
+			<div id = "comment-11376" class = "comment">
+				<p>Have you already checked existing questions and answers? There are many answers about rotor arrangement and configuration.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7819" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7819">
+					<img id="start_img-7819" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7819">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7821"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7821" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>For the most part, it will increase the gain of the controller.</p>
+
+<blockquote>
+  <p>doesn't affect lift capabilities.</p>
+</blockquote>
+
+<p>Adding weight to something that flies always decreases lift capabilities. However, this influence is likely very small.</p>
+
+<p>So here's your quadrocopter with 1 DOF rotating around an axis:</p>
+
+<p>$$a\ddot r + b\dot r + c r$$</p>
+
+<p>The general differential equation<sup>1</sup> for a mechanical system. $r$ is the angle of rotation and $a$, $b$ and $c$ are coefficients describing the system.</p>
+
+<p>You have probably concluded by now that <sup>1</sup>this was a blatant lie, for the obvious lack of the other side of the equal sign. that missing side is the load that you apply. This is usually in the form of rotors, producing thrust. For simplicities sake let's assume that this can be modelled as a force $f$. This force is applied at a distance from the center of rotation and that's where the arm length $l$ comes into play:</p>
+
+<p>$$a\ddot r + b\dot r + c r = l f$$</p>
+
+<p>Transforming into...</p>
+
+<p>$$as^2 R + bsR + cR = l F$$</p>
+
+<p>getting the transfer function of the system that we are interested in:
+$$\frac{R}{F}= \frac{l}{as^2 + bs + c}$$</p>
+
+<p>$\frac{R}{F}$ can be understood as "if I add this much $f$, how much $r$ do I get back?" $l$ is basically the gain. It is a constant factor, written a little differently, this becomes more obvious:</p>
+
+<p>$$\frac{R}{F}= l\cdot\frac{1}{as^2 + bs + c}$$</p>
+
+<p><em>How much $r$ do I get back?</em> Can be answered as "$l$ times something". With a bigger $l$ you get more bang for your buck (or more rotation for your force respectively). Which means your motors don't have to <em>go to 11</em> all the time.</p>
+
+<hr>
+
+<p>But what about stability? Stability can be determined from the roots of the denominator, called poles. The question essentially is how does $l$ influence 
+$a$, $b$ and $c$ and how does that affect stability?</p>
+
+<ul>
+<li><strong>a</strong> - moment of inertia: While it's unclear how the mass is distributed in the system, one can assume that, based on the general formula, $l$ has a quadratic influence on a, that is $a = a(l^2)$ That means increasing $l$ will increase $a$ a lot </li>
+<li><strong>b</strong> - damping: This is hard to estimate. I guess most of the damping in the system comes from wind resistance. Increasing $l$ will only add little surface to the copter, hence wind resistance will not increase much (if at all). I conclude that $l$ has little to no influence on $b$</li>
+<li><strong>c</strong> - spring coefficient: there's certainly an influence, but you want to keep that as minimal as possible by design, because you want to make the arms as stiff as possible. Nobody likes wobbly structures.</li>
+</ul>
+
+<p>Now where <em>are</em> the poles?</p>
+
+<p>$$s_{1/2} = -\frac{b}{2a} \pm\frac{\sqrt{b^2-4ac}}{2a}$$</p>
+
+<p>The important part for stability is that $s_{1/2}$ has a negative real part. Increasing $a$ due to increasing $l$ certainly reduces the negativity of the term, but it will not change it to be positive.</p>
+
+<p>The conclusion of this very rough estimation is that the system will not become unstable when the arm length is increased.</p>
+
+<p>Of course, this is a <strong>very</strong> handwavy estimate without knowing any of the actual values. If you want more, <a href="http://sal.aalto.fi/publications/pdf-files/eluu11_public.pdf" rel="nofollow">go</a> <a href="http://math.ucsd.edu/~mleok/pdf/LeLeMc2010_quadrotor.pdf" rel="nofollow">right</a> <a href="http://www.control.lth.se/documents/2008/5823.pdf" rel="nofollow">ahead</a> (&lt;- 3 links)</p>
+
+<p>Quadrocopters are a popular topic not just by enthusiast but also academia, so you find a lot of papers about it, giving more insights on more detailed models of the system.</p>
+
+<p>I think the rough estimate given in this answer is sufficient to explain the influences of the length of the arm.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7821" data-toggle = "popover">
+				<p>user name : Bending Unit 22</p>
+				<p> user reputation : 1335</p>
+				<p class = "tagcontent" id = "usertaginfo-7821">{'None': 93}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7821" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7821" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7821">
+					<img id="start_img-7821" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7821">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

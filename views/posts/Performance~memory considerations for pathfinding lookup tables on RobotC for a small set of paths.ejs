@@ -1,0 +1,165 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Performance~memory considerations for pathfinding lookup tables on RobotC for a small set of paths
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2982" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2982" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 139</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Performance~memory considerations for pathfinding lookup tables on RobotC for a small set of paths</h2>
+<p>I'm writing a C code generator geared toward RobotC and complex tasks for an FTC team, and was wondering about some performance and storage concerns:</p>
+
+<ol>
+<li>How much memory is available for my program's data? It'll be mostly pre-defined lookup tables, generally in the form of multidimensional arrays.</li>
+<li>How much NXT memory is available for my program itself? As in, roughly how much code can I expect to fit into a single RobotC compiled program?</li>
+<li>How quickly do programs execute, generally? Looking at disassembly most of my generated lines correspond to 2-4 opcodes.</li>
+</ol>
+
+<p>Based on these, I'm trying to make a decision of precomputation vs runtime pathfinding.</p>
+
+<p>I'm using NXT/Tetrix. My major interest at this point with these questions is for pathfinding. I plan to have a 64x64 grid and be running Djisktra's A* algorithm with a heuristic function that assigns a penalty to turns and is as close to consistent as possible (not sure if consistency/monotonicity is doable with the turn penalty).</p>
+
+<p>Roughly 8 paths would be cached if I decide to use the pre-cached lookup tables.</p>
+
+<p>Instead of a set, I'll probably use a boolean array for the set of nodes visited. The fact that I'm working with a square layout will allow me to use a 2D array for the map needed to reconstruct the path.</p>
+
+<p>I'd love some feedback and answers to my question if anyone has any. Thanks!</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2982" data-toggle = "popover">
+				<p>user name : hexafraction</p>
+				<p> user reputation : 138</p>
+				<p class = "tagcontent" id = "usertaginfo-2982">{'nxt': 7, 'None': 0, 'robotc': 7, 'power': 5, 'rcservo': 5}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2982" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2982" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2982">
+					<img id="start_img-2982" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2982">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-2989"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2989" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Just to be clear, my answers assume you are asking about NXT, <strong>not</strong> the more recent EV3. Also I couldn't find information on how RobotC works on NXT   if it loads native code straight to memory or generates RXE files to run on the NXT VM   so I'll cover both scenarios.</p>
+
+<p>According to the <a href="http://www.legolab.daimi.au.dk/DigitalControl.dir/LEGO%20MINDSTORMS%20NXT%20Hardware%20Developer%20Kit/LEGO%20MINDSTORMS%20NXT%20Hardware%20Developer%20Kit.pdf" rel="nofollow">NXT Hardware Developer Kit</a>, the NXT brick's main processor is connected to 64KB RAM. That is the amount of memory available for <a href="http://www.cs.tau.ac.il/~stoledo/lego/nxt-native/" rel="nofollow">bare metal programming</a>, that is if you load a native program into the brick, bypassing the original firmware. Of course in this case your program will also have to include drivers to control robot sensors, motors and so on.</p>
+
+<p>If however your program runs on top of the NXT VM, the <a href="http://cache.lego.com/upload/contentTemplating/Mindstorms2SupportFilesDownloads/otherfiles/download49E7B34DE74049D6BC872D3A0FB2A1F6.pdf" rel="nofollow">Executable File Specification</a> says that <em>"[w]hen the VM runs a program, it reads the encoded
+.RXE file format from flash memory and initializes a 32KB pool of RAM reserved for use by user programs. The .RXE file specifies the layout and default content of this pool. (...) Non-volatile sub-components remain in the file, which the VM can refer to at any time during program execution. The code space is an example of a non-volatile sub-component. The bytecodes never change at run-time, so these bytecodes remain entirely in flash memory."</em></p>
+
+<p>In other words, RXE programs have a 32KB limit for data structures, but bytecode instructions are not included in this total   they are executed directly from Flash memory, which has a size of 256KB (minus the size of the NXT VM   unfortunately I couldn't find a number for this).</p>
+
+<p>As for processing speed, the NXT HDK says the main processor runs at 48MHz. How this translates to actual speed again depends on whether RobotC programs run natively or on top of the VM. The <a href="http://lejos-osek.sourceforge.net/" rel="nofollow">nxtOSEK</a> project <a href="http://lejos-osek.sourceforge.net/whatislejososek.htm" rel="nofollow">reports</a> their test program achieves a maximum speed of 1,864,000 loop iterations per minute.</p>
+
+<p>But at any rate, I'd bet peripheral pooling, not processing speed, will be you main speed limiting factor. <a href="http://www.cs.tau.ac.il/~stoledo/lego/nxt-native/" rel="nofollow">According to Sivan Toledo</a>, <em>"[t]he Interval Timer of the AT91SAM7S256 is used to generate an interrupt every 1 ms. This interrupt is used for time keeping and for running all the periodic tasks of the system."</em> So every 1ms your program stops while the NXT drivers talk to sensors and motors.</p>
+
+<p>So to summarize:</p>
+
+<ol>
+<li>RXE programs running on top of the VM are limited to 32KB RAM for data structures, whereas native programs will have 64KB to share between data and code;</li>
+<li>RXE programs run straight from Flash, so their code size is limited to how much storage is taken by the firmware. For native programs see the previous answer;</li>
+<li>The brick's main processor runs at 48MHz, but peripheral interruptions occur once every 1ms, so even native code will probably run somewhat slower than that.</li>
+</ol>
+
+<p>I hope this helps.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2989" data-toggle = "popover">
+				<p>user name : xperroni</p>
+				<p> user reputation : 386</p>
+				<p class = "tagcontent" id = "usertaginfo-2989">{'None': 19, 'inverse-kinematics': 3, 'algorithm': 2, 'speech-processing': 2, 'rangefinder': 2, 'linux': 3, 'mobile-robot': 8, 'sensors': 2, 'digital-audio': 3}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2989">Load Comments</button></br>
+			<div id = "commentsection-2989" class = 'collapse'>
+			<div id = "comment-5499" class = "comment">
+				<p>I read somewhere about a slave microcontroller handling those interrupts so the NXT can only read the last polled value when necessary, am I mistaken on that? And yes, I'm using the NXT, non-EV3.</p>
+			</div>
+			<div id = "comment-5500" class = "comment">
+				<p>It's true; this is also documented in the HDK. But just the same, the main processor still has to switch between the user program and the interruption handlers to copy the polled values.</p>
+			</div>
+			<div id = "comment-5501" class = "comment">
+				<p>But maybe you're right, and this won't be such an important overhead after all.</p>
+			</div>
+			</div>
+				<textarea id = "speech-2989" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2989">
+					<img id="start_img-2989" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2989">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

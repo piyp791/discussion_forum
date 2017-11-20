@@ -1,0 +1,236 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Suggestions on object types (features) to track from ARDrone 2 camera
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9269" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9269" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 93</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Suggestions on object types (features) to track from ARDrone 2 camera</h2>
+<blockquote>
+  <p><strong><em>UPDATE</em></strong>
+  I have aded 50 bounty for <a href="https://stackoverflow.com/questions/35672762/finding-features-to-track-from-ar-drone-2-camera-illumination">this</a> question on the StackOverflow</p>
+</blockquote>
+
+<p>I am trying to implement object tracking from the camera(just one camera, no Z info). Camera has 720*1280 resolution, but I usually rescale it to 360*640 for faster processing.</p>
+
+<p>This tracking is done from the robots camera and I want a system which would be as robust as possible. </p>
+
+<p>I will list what I did so far and what were the results.</p>
+
+<ol>
+<li>I tried to do <strong><em>colour tracking</em></strong>, I would convert image to hsv colour space, do thresholding, some morphological transformations and then find the object with the biggest area. This approach made a fair tracking of the object, unless there are no other object with the same colour. As I was looking for the max and if there are any other objects bigger than the one I need, robot would go towards the bigger one</li>
+<li>Then, I decided to track <strong><em>circled objects of the specific colour</em></strong>. However, it was difficult to find under different angles</li>
+<li>Then, I decided to track <strong><em>square objects of specific colour</em></strong>. I used this</li>
+</ol>
+
+<blockquote>
+<pre><code>       // Approximate contour with accuracy proportional
+        // to the contour perimeter
+        cv::approxPolyDP(
+                cv::Mat(contours[i]),
+                approx,
+                cv::arcLength(cv::Mat(contours[i]), true) * 0.02,
+                true
+        );
+</code></pre>
+</blockquote>
+
+<p>and then I checked this condition</p>
+
+<blockquote>
+  <p>if (approx.size() >= 4 &amp;&amp; approx.size() &lt;= 6)</p>
+</blockquote>
+
+<p>and afterwards I checked for</p>
+
+<blockquote>
+  <p>solidity > 0.85 and aspect ratio between 0.85 and 1.15</p>
+</blockquote>
+
+<p>But still result is not as robust as I would expect, especially the size. If there are several squares it would not find the needed one.</p>
+
+<hr>
+
+<p>So, now I need some suggestions on what other <strong><em>features</em></strong> of the object could I use to improve tracking and how? As I mentioned above several times, one of the main problems is <strong><em>size</em></strong>. And I know the size of the object. However, I am not sure how I can make use of it, because I do not know the distance of the object from the camera and that is why I am not sure how to represent its size in pixel representation so that I can eliminate any other blobs that do not fall into that range.</p>
+
+<p><strong><em>UPDATE</em></strong></p>
+
+<p>In the third step, I described how I am going to detect squares with specific colour. Below are the examples of what I am getting. </p>
+
+<p>I used this HSV range for the red colour:</p>
+
+<blockquote>
+  <p>Scalar(250, 129, 0), Scalar(255, 255, 255), params to OpenCV's inRange function</p>
+  
+  <p>HMIN = 250, HMAX = 255; SMIN = 129, SMAX = 255; VMIN = 0, VMAX = 255;
+  (Would like to see your suggestions on tweaking this values as well)</p>
+</blockquote>
+
+<p>So, in this picture you can see the processing; gaussian blurring (5*5),
+morphological closing two times (5*5). And the image with the label "result" shows the tracked object (please look at the green square).</p>
+
+<p><a href="https://i.stack.imgur.com/XSffp.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/XSffp.png" alt="Thresholding and tracking based on HSV colour space 1"></a></p>
+
+<p>On the second frame, you can see that it cannot detect the "red square". The only main difference between these two pics is that I bended down the lid of the laptop (please look closer if you cannot notice). I suppose this happens because of the <strong><em>illumination</em></strong>, and this causes the thresholding to give not desired results. </p>
+
+<p><a href="https://i.stack.imgur.com/iJ5Vk.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/iJ5Vk.png" alt="Bended the lid of the laptop"></a></p>
+
+<p>The only way, I can think of is doing two separate processing on the image. First, to do thresholding based on the colour as I was doing above. Then if I find the object to move to the next frame. If not to use <a href="https://github.com/Itseez/opencv/blob/master/samples/cpp/squares.cpp" rel="nofollow noreferrer">this opencv's find squares</a> method.</p>
+
+<p>However, this method will involve doing too much of processing of the image. </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9269" data-toggle = "popover">
+				<p>user name : fiz</p>
+				<p> user reputation : 35</p>
+				<p class = "tagcontent" id = "usertaginfo-9269">{'control': 3, 'quadcopter': 6, 'None': 0, 'tuning': 3, 'cameras': 3, 'pid': 3, 'opencv': 6}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-9269" class = 'collapse'>
+			</div>
+				<textarea id = "speech-9269" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9269">
+					<img id="start_img-9269" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9269">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9271"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9271" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You could use <a href="http://docs.opencv.org/master/d5/dae/tutorial_aruco_detection.html#gsc.tab=0" rel="nofollow">ArUco fiducials</a> to demonstrate robust object detection and tracking. From there, you might be able to adapt the fiducial pipeline to detect more generic objects like colored squares.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9271" data-toggle = "popover">
+				<p>user name : hammer</p>
+				<p> user reputation : 86</p>
+				<p class = "tagcontent" id = "usertaginfo-9271">{'None': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9271">Load Comments</button></br>
+			<div id = "commentsection-9271" class = 'collapse'>
+			<div id = "comment-16415" class = "comment">
+				<p>thanks for your response. Could you please give more details? Otherwise I cannot accept this answer as I do not think this answers my question.</p>
+			</div>
+			</div>
+				<textarea id = "speech-9271" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9271">
+					<img id="start_img-9271" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9271">Comment</button>
+			<br><div id = "ans-9273"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9273" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I will attempt to answer slightly more than your question in order to expose you to alternative tracking methods.
+Note that what you are doing is essentially trying to locate and classify a certain object in an image. To do this robustly generally you need to have some training images and a label image that has each pixel labeled 0 or 1, where the pixels that are 1 are the object to be tracked. This is often done by hand. The training and label images are used to calculate a histogram of all the features of the object of interest, and those histograms are used either for simple range-based thresholding, or for use in a machine learning algorithm.</p>
+
+<p>The following rely on having somehow located a region of interest that you want to describe. These ROIs may have been found by using the opencv::findContours function, or even randomly, or by testing a [100x100] window in a grid of every [60x60] pixels. </p>
+
+<p><strong>Shape descriptions:</strong> Area, perimeter, convexity, centroid, mean and standard deviation of distance of each pixel from centroid, skeleton length</p>
+
+<p><strong>Colour descriptions:</strong> mean, standard deviation, range, skew and kurtosis of intensities.</p>
+
+<p><strong>Texture descriptions:</strong> gabor filters response, standard deviation of intensities (in a local window)</p>
+
+<p>Most of these are implemented in the python library <strong><em>scikit-image</em></strong> in the <em>measure</em> module.</p>
+
+<p>In any case you will need to do the above on a 1-channel image.
+That may be just a single R/G/B channel, or combined into a grayscale channel, or for instance the (R - 0.5*(G + B)) channel if you were tracking for instance red apples.</p>
+
+<p>Regardless of your detection method, it would be useful to track the object in pixel space with a Kalman Filter (KF). This would then give you additional spatial features which would be the difference between each contour centroid, and the expected position of the contour that the KF estimated.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9273" data-toggle = "popover">
+				<p>user name : Gouda</p>
+				<p> user reputation : 632</p>
+				<p class = "tagcontent" id = "usertaginfo-9273">{'control': 0, 'None': 39, 'computer-vision': 1, 'calibration': 1, 'cameras': 1, 'kalman-filter': 0, 'jacobian': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9273">Load Comments</button></br>
+			<div id = "commentsection-9273" class = 'collapse'>
+			<div id = "comment-16454" class = "comment">
+				<p>thank you for your answer. However, I do not have enough time to do machine learning and train data. I implemented simple Kalman filtering based on the example from opencv, but to say honestly I did not quite understand how it works. In addition, it was predicting next possible place of the object, but still it did not seem quite accurate.</p>
+			</div>
+			</div>
+				<textarea id = "speech-9273" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9273">
+					<img id="start_img-9273" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9273">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

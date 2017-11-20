@@ -1,0 +1,297 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>optimal number of robots for cooperative surveillance
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-5097" class = "post">
+			<h2>Question</h2>
+			<div id="vote-5097" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 50</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>optimal number of robots for cooperative surveillance</h2>
+<p>Suppose we need to detect the occurrence of a special event in a large area(e.g. a city). If we need that each point being visited every h hours, how could we find the optimal number of robots for cooperative surveillance? </p>
+
+<p>Notice that there is no control center!</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-5097" data-toggle = "popover">
+				<p>user name : Hossein</p>
+				<p> user reputation : 46</p>
+				<p class = "tagcontent" id = "usertaginfo-5097">{'None': 0, 'simulator': 2, 'multi-agent': 5, 'swarm': 5, 'auv': 2, 'mobile-robot': 4, 'ros': 4}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-5097" class = 'collapse'>
+			</div>
+				<textarea id = "speech-5097" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-5097">
+					<img id="start_img-5097" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-5097">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-5098"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-5098" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Let's say your environment is a weighted graph. The weight of each edge shows the distance. Edges ($E$) could be roads and nodes ($V$) could be junctions. Let's further assume that each robot has velocity $v$.</p>
+
+<p>You say each "point" needs to be surveyed every $h$ hours. I assume that means each point in the city, which means each point in every road and junction. Since this is a city, we can also assume that the graph is connected.</p>
+
+<p>As a final assumption, let's say that the junctions have zero dimension.  That is a single point in the junction is taken as the graph node and the distances from the edges of the roads to that point are added to that roads weight (road length). This implies that there is no time spent in a node and all time is spent walking the edges.</p>
+
+<h3>Lower Bound</h3>
+
+<p>First, let's find a lower bound to the number of robots. If we sum the weights of the edges, we get the total distance that needs to be travelled. The minimum number of robots required is:</p>
+
+<p>$N_{min} = \bigg\lceil \dfrac{\sum_{i \in E} w_i}{h \times v} \bigg\rceil$</p>
+
+<p>If it was possible for the robots to travel the edges without travelling on each road more than once, then this lower bound is the actual number required. Think of it this way. Imagine the city is like this:</p>
+
+<pre><code>              X----------X
+             /            \
+            /              \
+           /                \
+          X                  X
+           \                /
+            \              /
+             \            /
+              X----------X
+</code></pre>
+
+<p>And imagine each edge is 1Km, and the speed of the robots ($v$) is 0.7Km/h. Imagine $h$ is two hours. Each robot can to travel $h \times v = 2 \times 0.7 = 1.4Km$ in that two hours. Now if you place robots at regular intervals around the loop and they all go for example clock-wise, then just as the 2 hours limit is getting expired on a point, another robot should arrive at that point. This means that the robots should be placed at 1.4Km intervals. Simply dividing the circumference of the loop by 1.4 (and taking the ceiling) gives the number of required robots.</p>
+
+<p><strong>Note</strong>: An <a href="https://en.wikipedia.org/wiki/Eulerian_path">Eulerian graph</a> is essentially a twisted loop and for such graphs the formula above gives the exact number of required robots. Unfortunately, a city is far from an Eulerian graph.</p>
+
+<h3>Upper Bound</h3>
+
+<p>This is a harder problem. However, here is an idea.</p>
+
+<p>First, let's solve the problem for another simple case. Imagine the graph is just a line:</p>
+
+<pre><code>     X--------X------------------X-------X----X-----------X
+</code></pre>
+
+<p>Then, the robots can't circle around anymore, but they have to "patrol". That means they have to use half of their time going one way and the other half coming back. In other words, the number of robots needed becomes:</p>
+
+<p>$N_{min} = \bigg\lceil \dfrac{\sum_{i \in E} w_i}{(h/2) \times v} \bigg\rceil$</p>
+
+<p>Another point of view could be robots that loop this path by going to one end and coming back to the other end in which case the number of robots would be:</p>
+
+<p>$N_{min} = \bigg\lceil \dfrac{2 \times \sum_{i \in E} w_i}{h \times v} \bigg\rceil$</p>
+
+<p>Which is exactly the same as patrolling the path.</p>
+
+<p>That said, here is an algorithm that gives an upper bound to the number of needed robots.</p>
+
+<pre><code> 1. do
+ 2.   G' = G with marked edges removed
+ 3.   if loop L exists in G'
+ 4.     put robots looping in L
+ 5.     mark edges of L
+ 6.   else
+ 7.     find a random unexpandable path P in G'
+ 8.     find the shortest path P' in G that connects both ends of P
+ 9.     create a loop L by combining P and P'
+10.     N1 = number of robots needed to patrol P
+11.     N2 = number of robots needed to loop in L
+12.     if N1 &lt; N2
+13.       put robots patrolling P
+14.       mark edges of P
+15.     else
+16.       put robots looping in L
+17.       mark edges of L
+18. while unvisited edges remain
+</code></pre>
+
+<p>Notes:</p>
+
+<p>At 3, we try to extract out Eulerian loops out of the graph for which we know the optimal answer.</p>
+
+<p>At 7, we try to get paths as long as possible out of the graph and have robots patrolling them. Make sure the path is expanded as far as possible. That is, if there is an unmarked edge connected to any end of the path, just augment the path with that edge.</p>
+
+<p>The purpose for 8 and 9 is that, having robots patrolling the found path may be far from optimal. In fact, if we allow the robots to move from one end of the path to the other end via the edges that are possible already marked, then perhaps we find a loop which results in a smaller number of robots. 10 and 11 calculate the number of robots for the two possible cases and 12 decides which one was better.</p>
+
+<p>Here is an example. Imagine the following graph:</p>
+
+<pre><code>              X----------X
+             /            \
+            /              \
+           /                \
+          X                  X
+           \                /
+            \              /
+             \            /
+              X----------X
+             /            \
+            /              \
+           /                \
+          X                  X
+           \                /
+            \              /
+             \            /
+              X----------X
+</code></pre>
+
+<p>First, we find a loop and mark it. Imagine this is the top loop:</p>
+
+<pre><code>              X**********X
+             *            *
+            *              *
+           *                *
+          X                  X
+           *                *
+            *              *
+             *            *
+              X**********X
+             /            \
+            /              \
+           /                \
+          X                  X
+           \                /
+            \              /
+             \            /
+              X----------X
+</code></pre>
+
+<p>Now we are left with this path:</p>
+
+<pre><code>              X          X
+             /            \
+            /              \
+           /                \
+          X                  X
+           \                /
+            \              /
+             \            /
+              X----------X
+</code></pre>
+
+<p>We can either patrol the path with a larger number of robots, or make a loop with an edge previously visited and have fewer robots travelling it. In the end, two loops is better.</p>
+
+<p>The algorithm could have also found a different solution. For example, the first loop could have been the outer loop:</p>
+
+<pre><code>              X**********X
+             *            *
+            *              *
+           *                *
+          X                  X
+           *                *
+            *              *
+             *            *
+              X----------X
+             *            *
+            *              *
+           *                *
+          X                  X
+           *                *
+            *              *
+             *            *
+              X**********X
+</code></pre>
+
+<p>After which we are left with the center edge as a path:</p>
+
+<pre><code>              X----------X
+</code></pre>
+
+<p>And obviously, it's better to have robot(s) patrolling it than to create a very large loop out of the visited edges.</p>
+
+<p>It is interesting to note that in this case, the shortest path <code>P'</code> as in the algorithm above is in fact this path itself. As a result, the loop is essentially robots that loop between the ends of this path (rather than patrolling only their specific portion of the path). The optimal number of robots in either way is the same as mentioned before.</p>
+
+<h3>Optimal Number</h3>
+
+<p>I really don't know. It is possible (but I haven't proven anything) that this problem doesn't even belong to $P$, so there may not be any useful solution for it at all (again, I may be wrong).</p>
+
+<p>If you find that the "Upper Bound" algorithm doesn't provide small enough number of robots, for example by examining the graph yourself and find obvious optimizations, you could also always try optimization algorithms (such as <a href="https://en.wikipedia.org/wiki/Genetic_algorithm">genetic algorithms</a>).</p>
+
+<hr>
+
+<blockquote>
+  <p>Notice that there is no control center!</p>
+</blockquote>
+
+<p>Mind you, my solution is to calculate the paths each robot needs to circle in (or patrol) offline and then program the robots to keep to their path forever. This doesn't address problems such as a robot breaking and others having to cover for it for example.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-5098" data-toggle = "popover">
+				<p>user name : Shahbaz</p>
+				<p> user reputation : 2615</p>
+				<p class = "tagcontent" id = "usertaginfo-5098">{'None': 193, 'usb': 12, 'distributed-systems': 7, 'microcontroller': 1, 'embedded-systems': 7, 'servomotor': 1, 'platform': 18, 'can': 1, 'machine-learning': 12, 'real-time': 18, 'mobile-robot': 1, 'rs232': 12, 'software': 20}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-5098" class = 'collapse'>
+			</div>
+				<textarea id = "speech-5098" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-5098">
+					<img id="start_img-5098" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-5098">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

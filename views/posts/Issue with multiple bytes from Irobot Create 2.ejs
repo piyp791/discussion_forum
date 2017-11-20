@@ -1,0 +1,326 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Issue with multiple bytes from Irobot Create 2
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7219" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7219" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 495</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Issue with multiple bytes from Irobot Create 2</h2>
+<p>I was having problems reading sensor information from my Irobot Create 2 and sent an email asking for help from the Irobot staff. They were super helpful and gave me an answer(the next day!!!) that helped push along my project. I was requesting data from the create2 to print to the screen so I could figure out how to write a code that would read the data. I started with this section of code that was not working for me (I trimmed some of the code off that controlled other functions):</p>
+
+<pre><code>from Tkinter import *
+from subprocess import call
+import datetime
+import serial
+import ttk
+import struct
+import thread
+
+port = '/dev/ttyUSB0' #sets the com port for Atlas
+baud = 115200 #sets the baud rate
+connection = serial.Serial(port, baud) #starts the serial communication
+
+#program to read communication from create2
+def program2(threadName):
+    while True:
+        x = connection.read()
+        print x
+
+#program to write to create2    
+def program1(threadName):
+    atlas = Tk() #starts a new GUI for atlas control
+    atlas.geometry('1000x500') #sets the size of the control window
+    atlas.title('Atlas Control Panal') #sets the name of the control window
+
+    def sendCommandASCII(command):#used to send a command to the create2
+    cmd = ""
+    for v in command.split():
+        cmd += chr(int(v))
+
+    sendCommandRaw(cmd)
+
+    def sendCommandRaw(command):#used to send a command to the create2
+    global connection
+
+    try:
+        if connection is not None:
+            connection.write(command)
+        else:
+            tkMessageBox.showerror('Not connected!', 'Not connected to a robot!')
+            print "Not connected."
+    except serial.SerialException:
+        print "Lost connection"
+        tkMessageBox.showinfo('Uh-oh', "Lost connection to the robot!")
+        connection = None
+
+    def test():#sets a test command up to check connection
+        global buttonpress
+        buttonpress='test'
+        sendCommandASCII('142 7')
+
+    #makes a button on the GUI that starts the test command
+    button1 = Button(atlas, text = 'test mode', command=test)
+    button1.place(x=600, y=400)
+    button1.config(width=10, height=5)
+
+    atlas.mainloop() #runs the GUI as a loop to keep the window open.
+
+#runs the read and the write program at the same time
+try:
+    thread.start_new_thread(program1, ("program1",))
+    thread.start_new_thread(program2, ("program2",))
+except Exception, e:
+    print str(e)
+</code></pre>
+
+<p>They told me that the code was actually working fine but I was trying to print out the value of the sensor packet without parsing it in any way. They then recommended I change the code in program2 to this:</p>
+
+<pre><code>while True:
+
+    def toHexFromByte(val):
+        return hex(ord(val))[2:}.rjust(2, '0').upper()
+
+    x = connection.read()
+    for b in x:
+        print toHexFromByte(b)
+</code></pre>
+
+<p>this works beautifully and prints to the screen if the bumper is pressed or a wheel drops. My question is how to deal with responses that are longer than one byte (ie Packet ID: 22 for voltage)? </p>
+
+<p>When I try Packet ID: 22 it prints to screen and it sends the high byte of 3F and a low byte of D7. I can manually combine them to get 3FD7 and convert it to a decimal of 16.343 Volts but I would like to figure a way to print to screen the the voltage by having my program do this for me. Many of the sensors send data in 2 bytes and I need a way to make sure that it is combined automatically. </p>
+
+<p>Robb </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7219" data-toggle = "popover">
+				<p>user name : wilsorob</p>
+				<p> user reputation : 8</p>
+				<p class = "tagcontent" id = "usertaginfo-7219">{'python': 1, 'None': 0, 'roomba': 1, 'irobot-create': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7219" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7219" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7219">
+					<img id="start_img-7219" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7219">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7233"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7233" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><blockquote>
+  <p>Many of the sensors send data in 2 bytes and I need a way to make sure that it is combined automatically.</p>
+</blockquote>
+
+<p>Robb,</p>
+
+<p>I have been working on a project and have faced a similar problem. The best way that I have found to combine individual bytes has been to use bit shifting to concatenate the bytes into a single variable. </p>
+
+<p>I am using Arduino to interface with the Create 2, and I am trying to work with the encoder counts of each wheel, which are two bytes signed. I load an integer array with the bytes individually, and then, I join them as follows:</p>
+
+<pre><code>right_encoder=(array[0] &lt;&lt; 8)|(array[1]);
+</code></pre>
+
+<p>array[0] is the high byte, and array[1] is the low byte. The bit shifting shifts the high byte by 8 bits, which makes room for the low byte. The low byte is then 'or'ed with the shifted high byte, which finalizes the concatenation.</p>
+
+<p>Obviously, the syntax will look different for you, but the idea is the same.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7233" data-toggle = "popover">
+				<p>user name : NBCKLY</p>
+				<p> user reputation : 741</p>
+				<p class = "tagcontent" id = "usertaginfo-7233">{'None': 44, 'roomba': 4, 'irobot-create': 4, 'arduino': 2}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7233" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7233" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7233">
+					<img id="start_img-7233" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7233">Comment</button>
+			<br><div id = "ans-7236"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7236" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The program shown below illustrates two ways of determining result size, and a method that reads the right number of bytes to combine.</p>
+
+<p>The first method suggested in the program below is to define <code>singleSet</code>, a set containing the packet numbers of sensors that return single-byte results.  [The function <code>resultSize()</code> as shown uses <code>return ord(sizesList[sensor]) - ord('0')</code>; a method depending on <code>singleSet</code> would instead say <code>return 1 if sensor in singleSet else 2</code>.</p>
+
+<p>The second method shown is slightly more adaptable than the first, and if extended would allow treatment of large packets #0-#6.  With a bit more work it could accomodate packets #100-#107.</p>
+
+<p>Here is the output from the program:</p>
+
+<pre><code> 7  8  9 10 11 12 13 14 15 16 17 18 21 24 32 34 35 36 37 38 45 52 53 58
+ 1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1
+
+ 0  1  2  3  4  5  6 19 20 22 23 25 26 27 28 29 30 31 33 39 40 41 42 43 44 46 47 48 49 50 51 54 55 56 57
+26 10  6 10 14 12 52  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2
+
+ 1  16      54  0x36         54.000
+ 1  17      71  0x47         71.000
+ 1  18      88  0x58         88.000
+ 2  19   27002  0x697a    27002.000
+ 2  20   35740  0x8b9c    35740.000
+ 1  21     173  0xad        173.000
+ 2  22   48847  0xbecf       48.847
+ 2  23   57585  0xe0f1       57.585
+ 1  24       3  0x3           3.000
+ 2  25    5157  0x1425        5.157
+ 2  26   13895  0x3647       13.895
+ 2  27   22633  0x5869    22633.000
+</code></pre>
+
+<p>Here is the program itself.  Replace the call to dummy routine <code>connectionread()</code> with your <code>connection.read()</code> call.</p>
+
+<pre><code>#!/usr/bin/env python
+# re: Combining bytes from Create2 sensor inputs 
+# http://robotics.stackexchange.com/questions/7219/issue-with-multiple-bytes-from-irobot-create-2
+
+singleSet = set((7,8,9,10,11,12,13,14,15,16,17,18,21,24,
+                 32,34,35,36,37,38,45,52,53,58))
+
+sizesList = 'J:6:&gt;&lt;d1111111111112212212222222121111122222212222221122221'
+
+def resultSize(sensor):
+    if sensor &lt; 59:       # Sensor groups &gt; 58 not handled
+        return ord(sizesList[sensor]) - ord('0')
+    else: return -1
+
+# The next 11 lines print debugging / demo  output
+for i in singleSet:  print '{:&gt;2}'.format(i),
+print
+for i in singleSet:  print '{:&gt;2}'.format(sizesList[i]),
+print; print
+
+for i in range(len(sizesList)):
+    if i not in singleSet: print '{:&gt;2}'.format(i),
+print
+for i in range(len(sizesList)):
+    if i not in singleSet: print '{:&gt;2}'.format(resultSize(i)),
+print; print
+
+# Routine to scale a sensor result and return real result
+def scaleResult(sensor, r):
+    if sensor in (22,23,25,26,54,55,56,57):
+        return r/1000.0
+    else:
+        return r
+
+# Dummy routine in place of connection.read()
+crv = 37
+def connectionread():
+    global crv;
+    crv = (crv+17)%255
+    return crv
+
+# Routine to query a sensor, read one or two bytes, and return result
+def readResult(sensor):
+    if 6 &lt; sensor &lt; 59:         # Work on basic sensors, not groups
+        valu = 0
+        for i in range(resultSize(sensor)):
+            valu = (valu&lt;&lt;8) | connectionread()
+        return valu
+    else:
+        return -1
+
+# Some test cases
+for i in range(16,28):
+    r = readResult(i)
+    print '{:&gt;2} {:&gt;3} {:&gt;7}  {:8}  {:9.3f}'.format(resultSize(i), i, r, hex(r), scaleResult(i, r))
+</code></pre>
+
+<p>There are of course dozens of ways to address the issue, and the two shown above are two of the simpler ones.  If you are going to create a large software suite, you might instead use a more sophisticated approach, in which you would set up a record for each kind of packet, with each record containing packet number and name, some brief id, size, scale, and units.  For example, packet 25 would have a record like (25, 'Battery Charge', 'B_Ch', 2, 1000m 'Ah').  Records would be stored in a <code>dict</code> indexed by packet number.  Records could also include group-packets membership information.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7236" data-toggle = "popover">
+				<p>user name : James Waldby - jwpat7</p>
+				<p> user reputation : 1856</p>
+				<p class = "tagcontent" id = "usertaginfo-7236">{'None': 134}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7236" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7236" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7236">
+					<img id="start_img-7236" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7236">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,152 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Can I use Ziegler-Nichols's rules to find PID parameters for a non linear system
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-1356" class = "post">
+			<h2>Question</h2>
+			<div id="vote-1356" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">6</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 419</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Can I use Ziegler-Nichols's rules to find PID parameters for a non linear system</h2>
+<p>I'm trying to use a PID to stabilize a system described from the following difference equation:</p>
+
+<p>$$y_{k+1} = a y_k \sqrt{(1-y_k)}~~~ + b y_{k-1} ~+ c u_k$$</p>
+
+<p>Can I use <a href="http://en.wikipedia.org/wiki/Ziegler%E2%80%93Nichols_method" rel="nofollow">Ziegler-Nichols's rules</a> to find PID parameters in this situation?</p>
+
+<p>To be more precise. My system is an <a href="http://en.wikipedia.org/wiki/Apache_HTTP_Server" rel="nofollow">Apache Http Server</a>, in particular I'm trying to model how the CPU load can change in function of <a href="http://httpd.apache.org/docs/current/mod/core.html#keepalivetimeout" rel="nofollow">KeepAlive</a> parameter. When KeepAlive grows the cpu load should decrease.</p>
+
+<p>So:</p>
+
+<p>$$cpu_{k+1} = a \cdot cpu_k \sqrt{(1-cpu_k)}~~~ + b \cdot cpu_{k-1} ~+ c \cdot keepAlive_k$$</p>
+
+<p>Obviously the Cpu load is a scalar $\in [0,1]$ , $keepAlive$ is just a time and the $a,b,c$ parameters are known to me through experimental data and multiple regression on them.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1356" data-toggle = "popover">
+				<p>user name : Edge7</p>
+				<p> user reputation : 31</p>
+				<p class = "tagcontent" id = "usertaginfo-1356">{'None': 0, 'pid': 6}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1356">Load Comments</button></br>
+			<div id = "commentsection-1356" class = 'collapse'>
+			<div id = "comment-2961" class = "comment">
+				<p>Given the extra information, I'm starting to wonder what this actually has to do with *robotics*. In fact, you may have better luck elsewhere.</p>
+			</div>
+			<div id = "comment-2966" class = "comment">
+				<p>I really only see this as being amenable to control by a PID controller if both $a$ and $b$ are much smaller than one -- otherwise the dynamics of the CPU load will vary greatly by the value of $cpu$, and may even go unstable.  You have not chosen an easy nut to crack in this problem.</p>
+			</div>
+			</div>
+				<textarea id = "speech-1356" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1356">
+					<img id="start_img-1356" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1356">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-1357"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1357" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>First, you haven't provided enough information.  Your equation is nonlinear, which means that the behavior of the system as described depends not just on the coefficients of the difference equation, but on the range of values that $y$ can take on.  From the looks of things, the closer that $y$ is restricted to 0, the more you can treat the whole thing like a linear system and just apply PID control to it.</p>
+
+<p>Second, Ziegler-Nichols just isn't indicated here.  Z-N was invented as an ad-hoc tuning method for industrial plants with unknown characteristics.  It guarantees neither stability nor performance of the result -- and assuming that you know the values of $a$, $b$, and $c$, you have a plant with known characteristics!!!</p>
+
+<p>Even if the plant characteristics are known, Z-N is really only a good way to arrive at a starting point for tuning.  Z-N tends to result in an underdamped system, and as I mentioned, it guarantees neither stability nor performance.</p>
+
+<p>In systems that are amenable, I vastly prefer to do swept-sine measurements (<a href="http://www.wescottdesign.com/articles/FreqMeas/freq_meas.html" rel="nofollow">Measuring Frequency Response</a>).  If you don't like the buzzing and shrieking noises, and the uninitiated diving for cover behind lab equipment, you can use some sort of a system identification based on a step response instead -- but in my experience with servo systems, a frequency response-based design is superior when you need to go from measured values.</p>
+
+<p>Whatever you do, you want to account for the effect that the variation in the value of $y$ is going to have on your system.  If the derivative 
+$$\frac{d}{dy}y\,\sqrt{1-y}$$ varies by more than a few percent, then you need to do your design to accommodate the differing systems characteristics.  If that derivative varies by a factor of two or more, then you need to consider the possibility of some sort of a nonlinear controller, however difficult and perverted your design may end up being, or you need to just pull in your horns and accept that you're going to have a severely detuned system for most ranges of $y$.</p>
+
+<p>See <a href="http://www.wescottdesign.com/actfes/actfes.html" rel="nofollow">Applied Control Theory for Embedded Systems</a> for more information.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1357" data-toggle = "popover">
+				<p>user name : TimWescott</p>
+				<p> user reputation : 1336</p>
+				<p class = "tagcontent" id = "usertaginfo-1357">{'None': 107}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1357">Load Comments</button></br>
+			<div id = "commentsection-1357" class = 'collapse'>
+			<div id = "comment-2958" class = "comment">
+				<p>Hi, I just updated my question adding further details</p>
+			</div>
+			</div>
+				<textarea id = "speech-1357" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1357">
+					<img id="start_img-1357" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1357">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

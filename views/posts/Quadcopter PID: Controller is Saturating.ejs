@@ -1,0 +1,275 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Quadcopter PID: Controller is Saturating
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9250" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9250" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 289</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Quadcopter PID: Controller is Saturating</h2>
+<p>Good day,</p>
+
+<p>I am currently creating an autonomous quadcopter using a cascading PID controller specifically a P-PID controller using angle as setpoints for the outer loop and angular velocities for the inner loop. I have just finished tuning the Roll PID last week with only +-5 degrees of error however it is very stable and is able to withstand disturbances by hand. I was able to tune it quickly on two nights however the pitch axis is a different story.</p>
+
+<p><strong>Introduction to the Problem:</strong>
+The pitch is asymmetrical in weight (front heavy due to the stereo vision cameras placed in front). I have tried to move the battery backwards to compensate however due to the constraints of the DJI F450 frame it is still front heavy.</p>
+
+<p>In a PID controller for an asymmetrical quadcopter, the I-gain is responsible for compensating as it is the one able to "remember" the accumulating error.</p>
+
+<p><strong>Problem at Hand</strong>
+I saw that while tuning the pitch gains, I could not tune it further due to irregular oscillations which made it hard for me to pinpoint whether this is due to too high P, I or D gain. The quadcopter pitch PID settings are currently at Prate=0.0475 Irate=0.03 Drate=0.000180 Pstab=3 giving an error from the angle setpoint of 15degrees of +-10degrees. Here is the data with the corresponding video.</p>
+
+<p>RATE Kp = 0.0475, Ki = 0.03, Kd = 0.000180 STAB Kp=3
+Video: <a href="https://youtu.be/NmbldHrzp3E" rel="nofollow noreferrer">https://youtu.be/NmbldHrzp3E</a></p>
+
+<p>Plot:
+<a href="https://i.stack.imgur.com/NcoAu.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/NcoAu.png" alt="enter image description here"></a></p>
+
+<p><strong>Analysis of Results</strong>
+It can be seen that the controller is saturating.
+The motor controller is currently set to limit the pwm pulse used to control the ESC throttle to only 1800ms or 180 in the code (The maximum is 2000ms or 205) with the minimum set at 155 or 1115ms (enough for the quad to lift itselft up and feel weightless). I did this to make room for tuning the altitude/height PID controller while maintaining the throttle ratio of the 4 motors from their PID controllers.  </p>
+
+<blockquote>
+  <p>Is there something wrong on my implementation of limiting the maximum throttle?</p>
+</blockquote>
+
+<p>Here is the implementation:</p>
+
+<pre><code> //Check if PWM is Saturating - This method is used to fill then trim the outputs of the pwm that gets fed into the gpioPWM() function to avoid exceeding the earlier set maximum throttle while maintaining the ratios of the 4 motor throttles. 
+    float motorPWM[4] = {motorPwm1, motorPwm2, motorPwm3, motorPwm4};
+    float minPWM = motorPWM[0];
+    int i;
+    for(i=0; i&lt;4; i++){ // Get minimum PWM for filling
+        if(motorPWM[i]&lt;minPWM){
+            minPWM=motorPWM[i];
+        }
+    }
+
+    cout &lt;&lt; " MinPWM = " &lt;&lt; minPWM &lt;&lt; endl;
+
+    if(minPWM&lt;baseThrottle){
+        float fillPwm=baseThrottle-minPWM; //Get deficiency and use this to fill all 4 motors
+        cout &lt;&lt; " Fill = " &lt;&lt; fillPwm &lt;&lt; endl;
+        motorPwm1=motorPwm1+fillPwm;
+        motorPwm2=motorPwm2+fillPwm;
+        motorPwm3=motorPwm3+fillPwm;
+        motorPwm4=motorPwm4+fillPwm;
+    }
+
+    float motorPWM2[4] = {motorPwm1, motorPwm2, motorPwm3, motorPwm4};
+    float maxPWM = motorPWM2[0];
+    for(i=0; i&lt;4; i++){ // Get max PWM for trimming
+        if(motorPWM2[i]&gt;maxPWM){
+            maxPWM=motorPWM2[i];
+        }
+    }
+
+    cout &lt;&lt; " MaxPWM = " &lt;&lt; maxPWM &lt;&lt; endl;
+
+    if(maxPWM&gt;maxThrottle){
+        float trimPwm=maxPWM-maxThrottle; //Get excess and use this to trim all 4 motors
+        cout &lt;&lt; " Trim = " &lt;&lt; trimPwm &lt;&lt; endl;
+        motorPwm1=motorPwm1-trimPwm;
+        motorPwm2=motorPwm2-trimPwm;
+        motorPwm3=motorPwm3-trimPwm;
+        motorPwm4=motorPwm4-trimPwm;
+    }
+</code></pre>
+
+<p><strong>Possible solution</strong>
+I have two possible solutions in mind</p>
+
+<ol>
+<li><p>I could redesign the camera mount to be lighter by 20-30 grams. to be less front heavy</p></li>
+<li><p>I could increase the maximum throttle but possibly leaving less room for the altitude/throttle control.</p></li>
+</ol>
+
+<blockquote>
+  <p>Does anyone know the optimum solution for this problem?</p>
+</blockquote>
+
+<p><strong>Additional information</strong>
+The quadcopter weighs about 1.35kg and the motor/esc set from DJI (e310) is rated up to 2.5kgs with the recommended thrust per motor at 350g (1.4kg). Though a real world test <a href="http://www.rcgroups.com/forums/showthread.php?t=2409123" rel="nofollow noreferrer" title="here">here</a> showed that it is capable at 400g per motor with a setup weighing at 1600g take-off weight </p>
+
+<p>How I tune the roll PID gains</p>
+
+<p>I had set first the Rate PID gains. at a setpoint of zero dps</p>
+
+<ol>
+<li>Set all gains to zero.</li>
+<li>Increase P gain until response of the system to disturbances is in steady oscillation.</li>
+<li>Increase D gain to remove the oscillations.</li>
+<li>Increase I gain to correct long term errors or to bring oscillations to a setpoint (DC gain).</li>
+<li>Repeat until desired system response is achieved</li>
+</ol>
+
+<p>When I was using the single loop pid controller. I checked the data plots during testing and make adjustments such as increasing Kd to minimize oscillations and increasing Ki to bring the oscillations to a setpoint. I do a similar process with the cascaded PID controller.</p>
+
+<p>The reason why the rate PID are small because rate Kp set at 0.1 with the other gains at zero already started to oscillate wildy (a characteristic of a too high P gain). <a href="https://youtu.be/SCd0HDA0FtY" rel="nofollow noreferrer">https://youtu.be/SCd0HDA0FtY</a></p>
+
+<p>I had set the Rate pid's such that it would maintain the angle I physically placed it to (setpoint at 0 degrees per second) </p>
+
+<p>I then used only P gain at the outer loop stabilize PID to translate the angle setpoint to velocity setpoint to be used to control the rate PID controller.</p>
+
+<p>Here is the roll axis at 15 degrees set point <a href="https://youtu.be/VOAA4ctC5RU" rel="nofollow noreferrer">https://youtu.be/VOAA4ctC5RU</a>
+Rate Kp = 0.07, Ki = 0.035, Kd = 0.0002 and Stabilize Kp = 2
+<a href="https://i.stack.imgur.com/p3RyT.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/p3RyT.png" alt="enter image description here"></a></p>
+
+<p>It is very stable however the reaction time/rise time is too slow as evident in the video.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9250" data-toggle = "popover">
+				<p>user name : user123456098</p>
+				<p> user reputation : 415</p>
+				<p class = "tagcontent" id = "usertaginfo-9250">{'control': 16, 'stereo-vision': 2, 'communication': 0, 'pid': 19, 'uav': 0, 'stability': 13, 'mobile-robot': 2, 'sensor-error': 0, 'tuning': 2, 'cameras': 0, 'integration': 0, 'opencv': 2, 'differential-drive': 0, 'motion-planning': 0, 'None': 13, 'raspberry-pi': 14, 'localization': 0, 'microcontroller': 0, 'mapping': 0, 'path-planning': 0, 'real-time': 1, 'sensors': 0, 'quadcopter': 19, 'computer-vision': 2, 'vfh': 0, 'c++': 2, 'filter': 0, 'dead-reckoning': 0, 'sensor-fusion': 5, 'sonar': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9250">Load Comments</button></br>
+			<div id = "commentsection-9250" class = 'collapse'>
+			<div id = "comment-16818" class = "comment">
+				<p>When this question was posted, a mistake can be seen in the video when doing the tuning. The thrust/base throttle that I've set when I tune the PID parameters was not enough and as said by Ian and Chuck, the quad is sitting on the strings which will cause a pendulum effect</p>
+			</div>
+			</div>
+				<textarea id = "speech-9250" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9250">
+					<img id="start_img-9250" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9250">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9252"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9252" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I feel like I make the <a href="https://robotics.stackexchange.com/a/8999/9720">same comments</a> every time you ask a question about your controller:</p>
+
+<ol>
+<li><a href="https://robotics.stackexchange.com/a/9080/9720">How are you tuning the gains</a>?</li>
+<li>I think your slack line is interfering with your results. </li>
+</ol>
+
+<p>Your quadcopter is not pulling on the slack line, <a href="https://robotics.stackexchange.com/questions/9077/pid-tuning-for-an-unbalanced-quadcopter-when-do-i-know-if-the-i-gain-ive-set-i#comment14983_9077">it's sitting on it</a>. This is introducing a floating inverted (unstable!) pendulum on system to your quadcopter. The motors aren't making enough thrust to lift the quadcopter because it's sitting on the tether. </p>
+
+<p>That said, I think your statement,</p>
+
+<blockquote>
+  <p>I could not tune it further due to irregular oscillations</p>
+</blockquote>
+
+<p>is revealing because I <em>think</em> that those oscillations are due to your tether. Not helping anything - you're pulling on the tether. So, extra forces your quadcopter <em>shouldn't</em> have to account for, that is being added to it:</p>
+
+<ol>
+<li>Spring force in the tether material itself.</li>
+<li>You are reacting to motion, so you're applying a time-varying force.</li>
+<li>The wooden pillar wobbles (I can see it at <a href="https://www.youtube.com/watch?v=NmbldHrzp3E&amp;t=34s" rel="nofollow noreferrer">34 seconds into your video</a>), which is applying a time-varying force. </li>
+</ol>
+
+<p>Your gains look very, very low, and I would be surprised that they're doing much of anything. To demonstrate, consider the quick simulation I ran in Simulink:</p>
+
+<p><a href="https://i.stack.imgur.com/kFnJJ.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/kFnJJ.png" alt="PID Loop"></a></p>
+
+<p><a href="https://i.stack.imgur.com/oCdWk.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/oCdWk.png" alt="PID Output"></a></p>
+
+<p>The second figure above is the output of a step response to a PID controller with your PID gains. It is far too slow of a response for you to get meaningful control of an aerial vehicle. </p>
+
+<p>So, I reiterate: How are you tuning the gains? I suggested <a href="https://robotics.stackexchange.com/a/8660/9720">a couple months ago</a> a method you could you to do your tuning. I would expect your gains to be probably 100x larger than they are. Kp somewhere about 10-20 maybe, Ki at 5 or 10% of that, maybe 1 or 2, and Kd maybe 25% of the Ki gain, somewhere maybe 0.25 or 0.5. Those gains would look more along the lines of what I would expect, at least.</p>
+
+<h2>:EDIT:</h2>
+
+<p>I forgot to add that it does <em>not</em> look like anything is saturating. Your motors never appear to hit a sustained full-speed output and your integral error never reaches a point where it is clipped, either. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9252" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-9252">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9252">Load Comments</button></br>
+			<div id = "commentsection-9252" class = 'collapse'>
+			<div id = "comment-16371" class = "comment">
+				<p>As a comment - Zeigler-Nichols relies on getting to the ultimate gain (oscillations) based on the *gains* and *gains alone* - i.e., oscillations from a tether don't count.</p>
+			</div>
+			<div id = "comment-16376" class = "comment">
+				<p>I have made edits in the post to address the questions on how I tune my PID's</p>
+			</div>
+			<div id = "comment-16377" class = "comment">
+				<p>So, basically I should increase my minimum thrust and my maximum thrust? I also followed Ian's advice to move the pivot as close as possible to the center of lift. I also increased the tensions on the lines before and I saw noticable improvements while tuning</p>
+			</div>
+			</div>
+				<textarea id = "speech-9252" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9252">
+					<img id="start_img-9252" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9252">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

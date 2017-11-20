@@ -1,0 +1,220 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Conversion GPS (longitude,latitude) to (x,y) of local reference frame?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-10450" class = "post">
+			<h2>Question</h2>
+			<div id="vote-10450" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 325</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Conversion GPS (longitude,latitude) to (x,y) of local reference frame?</h2>
+<p>I would like to use GPS data as measurement input for an extended kalman filter. Therefore I need to convert from GPS longitude and lattitude to x and y coordinate. I found information about the  <a href="https://stackoverflow.com/questions/16266809/convert-from-latitude-longitude-to-x-y">equirectangular projection</a> given these formulas: 
+$$\ X = r_{earth} \cdot \lambda \cdot cos(\phi_0) $$
+$$\ Y = r_{earth} \cdot \phi $$</p>
+
+<p>However I think these formulas are only for use when the axis x- and y-axis of my local frame are parallel to north and south axis of the earth.
+<a href="https://i.stack.imgur.com/dAVlh.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/dAVlh.jpg" alt="enter image description here"></a>
+But my vehicle is starting in my local reference frame in the origin and heading straight in y-direction. In whatever compas angle I put my vehicle, this should always be the starting position. 
+I can measure the angle $ \alpha $ to north with a compass on my vehicle.</p>
+
+<p>Now what is the relationship between (longitude,lattitude) an (x,y) of my local frame?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10450" data-toggle = "popover">
+				<p>user name : Eva</p>
+				<p> user reputation : 60</p>
+				<p class = "tagcontent" id = "usertaginfo-10450">{'odometry': 5, 'None': 2, 'noise': 1, 'sensor-fusion': 5, 'wheeled-robot': 1, 'differential-drive': 0, 'imu': 5, 'kalman-filter': 6, 'gps': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-10450" class = 'collapse'>
+			</div>
+				<textarea id = "speech-10450" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10450">
+					<img id="start_img-10450" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10450">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-10451"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10451" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Why not have your starting frame be magnetic north and then adjust your starting position by whatever value your compass is reading?</p>
+
+<p>Set your local frame equal to global frame one time, at the start, and you can use global reference sensors (GPS) without transforming for every sample thereafter (beyond the rectangular transform). </p>
+
+<p>Your alternative (the way you do it), means you don't have to transform the starting sample, but then every sample afterwards you need to get your GPS position, reference that to your start position, then reference your start heading to get to the local frame. </p>
+
+<p>The way you want to do it means you need to find the differential distance and apply a rotation to every sample. Do it the easy way - leave everything in global coordinates. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10451" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-10451">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10451">Load Comments</button></br>
+			<div id = "commentsection-10451" class = 'collapse'>
+			<div id = "comment-18810" class = "comment">
+				<p>Because the track I want to plot with this vehicle is in this frame as I've drawn it. If I measure the available space (like a few m  asphalt), and I know how big the drawing is at max in X and Y direction, than I can position my vehicle the way I want. If the heading is fixed and my drawing in X or Y direction is too wide to fit on that space, it would be a pitty if it would fit on it in another angle.</p>
+			</div>
+			<div id = "comment-18811" class = "comment">
+				<p>I could do the rotation calculation in the beginning, if I know the angle and recalculate the coordinates to plot in the new frame, but then why not do it while driving? I have to do the calculcation for the rectangular transform anyway.</p>
+			</div>
+			</div>
+				<textarea id = "speech-10451" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10451">
+					<img id="start_img-10451" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10451">Comment</button>
+			<br><div id = "ans-10457"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10457" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Using formula's for rotation of frame:
+$$ x' = x \cdot \cos{\alpha} - y \cdot\sin{\alpha} $$
+$$ y' = x \cdot \sin{\alpha} + y \cdot\cos{\alpha} $$</p>
+
+<p>Could this be the solution?
+$$ X = (r_{earth} \cdot \lambda \cdot cos(\phi_0)) \cdot \cos{\alpha} - (r_{earth} \cdot \phi) \cdot\sin{\alpha} $$
+$$ Y = (r_{earth} \cdot \lambda \cdot cos(\phi_0)) \cdot \sin{\alpha} + (r_{earth} \cdot \phi) \cdot\cos{\alpha} $$</p>
+
+<p>with $ X,Y $ the coordinate of my vehicle in local coordinate system, $r_{earth}$ radius of the earth, $\lambda$ longitude in degrees, $\phi$ latitude in degrees, $\phi_0$ initial measured latitude and $\alpha$ initial measured compass angle</p>
+
+<p>Could anyone please confirm these formulas would work?</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10457" data-toggle = "popover">
+				<p>user name : Eva</p>
+				<p> user reputation : 60</p>
+				<p class = "tagcontent" id = "usertaginfo-10457">{'odometry': 5, 'None': 2, 'noise': 1, 'sensor-fusion': 5, 'wheeled-robot': 1, 'differential-drive': 0, 'imu': 5, 'kalman-filter': 6, 'gps': 1}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-10457" class = 'collapse'>
+			</div>
+				<textarea id = "speech-10457" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10457">
+					<img id="start_img-10457" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10457">Comment</button>
+			<br><div id = "ans-10478"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10478" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Some testing gave me the following solution:</p>
+
+<p>converting from (longitude,latitude) to (X,Y)
+$$X = r \cdot cos(lat.) \cdot cos(long.)$$
+$$Y = r \cdot cos(lat.) \cdot sin(long.)$$</p>
+
+<p>rotating the frame so that the Y-axis is always in front of you
+$$X' = [r \cdot cos(lat.) \cdot cos(long.)-X_0]\cdot cos(\alpha-90 )- [r \cdot cos(lat.) \cdot sin(long.)-Y_0] \cdot sin(\alpha-90 ) $$
+$$Y' = [r \cdot cos(lat.) \cdot cos(long.)-X_0]\cdot sin(\alpha-90 )+ [r \cdot cos(lat.) \cdot sin(long.)-Y_0] \cdot cos(\alpha-90 ) $$</p>
+
+<blockquote>
+  <p>$r$ : earth radius 6371000 m</p>
+</blockquote>
+
+<hr>
+
+<blockquote>
+  <p>$\alpha$ :  heading at start (so vehicle pointing east $\alpha = 90 $, pointing north $\alpha = 0 $)</p>
+</blockquote>
+
+<hr>
+
+<blockquote>
+  <p>$X_0$ and $Y_0$ : first formula's filled in with start longitude and latitude</p>
+</blockquote>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10478" data-toggle = "popover">
+				<p>user name : Eva</p>
+				<p> user reputation : 60</p>
+				<p class = "tagcontent" id = "usertaginfo-10478">{'odometry': 5, 'None': 2, 'noise': 1, 'sensor-fusion': 5, 'wheeled-robot': 1, 'differential-drive': 0, 'imu': 5, 'kalman-filter': 6, 'gps': 1}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-10478" class = 'collapse'>
+			</div>
+				<textarea id = "speech-10478" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10478">
+					<img id="start_img-10478" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10478">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

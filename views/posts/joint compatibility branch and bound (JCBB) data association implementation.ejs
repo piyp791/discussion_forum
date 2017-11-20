@@ -1,0 +1,157 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>joint compatibility branch and bound (JCBB) data association implementation
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-5238" class = "post">
+			<h2>Question</h2>
+			<div id="vote-5238" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 618</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>joint compatibility branch and bound (JCBB) data association implementation</h2>
+<p>I would like to implement the joint compatibility branch and bound technique <a href="http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=976019&amp;tag=1" rel="nofollow">in this link</a> as a method to carry out data association. I've read the paper but still confused about this function $f_{H_{i}} (x,y)$. I don't know exactly what they are trying to do. They compared their approach with The individual compatibility nearest neighbor (ICNN). In the aforementioned method we have this function $f_{ij_{i}} (x,y)$. This function simply the inverse measurement function or what they call it in their paper the implicit measurement function. In Laser sensor, given the observations in the polar coordinates, we seek via the inverse measurement function to acquire their Cartesian coordinates. In ICNN, every thing is clear because we have  this function $f_{ij_{i}} (x,y)$, so it is easily to acquire the Jacobian $H_{ij_{i}}$ which is </p>
+
+<p>$$
+H_{ij_{i}} = \frac{\partial f_{ij_{i}}}{\partial \textbf{x}}
+$$ </p>
+
+<p>For example in 2D case and 2D laser sensor,  $\textbf{x} = [x \ y \ \theta]$ and the inverse measurement function is 
+$$
+m_{x} = x + rcos(\phi + \theta) \\
+m_{y} = y + rsin( \phi + \theta )
+$$</p>
+
+<p>where $m_{x}$ and $m_{y}$ are the location of a landmark and 
+$$
+r = \sqrt{ (m_{x}-x)^{2} + (m_{y}-y)^{2}} \\
+\phi = atan2\left( \frac{(m_{y}-y)}{(m_{x}-x)} \right) - \theta
+$$</p>
+
+<p>Using <code>jacobian()</code> in Matlab, we can get $H_{ij_{i}}$. Any suggetions?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-5238" data-toggle = "popover">
+				<p>user name : CroCo</p>
+				<p> user reputation : 1040</p>
+				<p class = "tagcontent" id = "usertaginfo-5238">{'control': 18, 'pid': 4, 'slam': 16, 'manipulator': 3, 'mobile-robot': 14, 'dynamics': 6, 'errors': 2, 'data-association': 1, 'kinematics': 3, 'matlab': 6, 'kalman-filter': 21, 'motion-planning': 3, 'None': 41, 'noise': 24, 'theory': 1, 'localization': 14, 'microcontroller': 5, 'mapping': 5, 'sensor-error': 1, 'sensors': 7, 'quadcopter': 8, 'ekf': 26, 'simulation': 1, 'motion': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-5238" class = 'collapse'>
+			</div>
+				<textarea id = "speech-5238" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-5238">
+					<img id="start_img-5238" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-5238">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-6491"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6491" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Suppose you have three measurements (1, 2, and 3) and four landmarks (a, b, c, d). The <em>joint compatibility</em> is a measure of how well a subset of the measurements associates with a subset of the landmarks. </p>
+
+<p>For example, what is the joint compatibility of (1b, 2d, 3c)? First we construct the <em>implicit measurement functions</em> $f_{ij_i}$ for each correspondence ($f_{1b_1}$, $f_{2d_2}$, $f_{3c_3}$). The <em>joint implicit function</em> $f_{\mathcal{H}_i}$ is simply the vector of the implicit measurement functions; i.e.,</p>
+
+<p>$$
+f_{\mathcal{H}_i} := \begin{bmatrix} f_{1b_1} \\ f_{2d_2} \\ f_{3c_3}\end{bmatrix}
+$$</p>
+
+<p>This function is linearized in (5) in the linked paper (this requires the Jacobians  of $f_{\mathcal{H}_i}$ with respect to the state and measurement). Equation (9) calculates the covariance of $f_{\mathcal{H}_i}$ and (10) uses this covariance, along with expected value of $f_{\mathcal{H}_i}$ (that is, $h_{\mathcal{H}_i}$) to calculate the joint compatibility (or more specifically, the joint Mahalanobis distance) of this particular set of associations. The Mahalanobis distance forms a chi-square distribution, and the confidence of the association is checked against a threshold (which is dependent on the dimension of the distribution; in this case, it is three).</p>
+
+<p>What I described above is how you check a single set of associations. The real trick is how to check "all" (you don't usually need to check all of them) of the possible associations and pick the one that (a) has the maximum likelihood, AND (b) maximizes the number of associations. The reason why you want to maximize the number of associations is because (from the paper):</p>
+
+<p><em>"The probability that a spurious pairing is jointly compatible with all the pairings of a given hypothesis decreases as the number of pairings in the hypothesis increases."</em></p>
+
+<p>The "branch and bound" part of JCBB is how you efficiently traverse through the search space to find the best set of associations.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6491" data-toggle = "popover">
+				<p>user name : kamek</p>
+				<p> user reputation : 775</p>
+				<p class = "tagcontent" id = "usertaginfo-6491">{'None': 48}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-6491">Load Comments</button></br>
+			<div id = "commentsection-6491" class = 'collapse'>
+			<div id = "comment-9696" class = "comment">
+				<p>do you a C++ or Matlab sample for this algorithm? I am not able to code it. Got stuck</p>
+			</div>
+			<div id = "comment-9713" class = "comment">
+				<p>You might find that the overview of the algorithm in [this thesis](http://dspace.mit.edu/handle/1721.1/32438#files-area) is helpful in getting a better understanding of how it works.</p>
+			</div>
+			</div>
+				<textarea id = "speech-6491" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6491">
+					<img id="start_img-6491" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6491">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

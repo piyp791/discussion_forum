@@ -1,0 +1,158 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Open source implementations of EKF for 6D pose esimation
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-4990" class = "post">
+			<h2>Question</h2>
+			<div id="vote-4990" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 1773</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Open source implementations of EKF for 6D pose esimation</h2>
+<p>I am looking for open source implementations of an EKF for 6D pose estimation (Inertial Navigation System) using at minimum an IMU (accelerometer, gyroscope) + absolute position (or pose) sensor.</p>
+
+<p>This seems to be such a recurring and important problem in robotics that I am surprised I cannot find a few reference implementations. Does everyone just quickly hack together his own EKF and move on to more interesting things? Is that not rather error-prone?</p>
+
+<p>I would ideally like a well-tested implementation that can serve as a reference for fair evaluation of possible improvements. </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4990" data-toggle = "popover">
+				<p>user name : sebsch</p>
+				<p> user reputation : 404</p>
+				<p class = "tagcontent" id = "usertaginfo-4990">{'control': 6, 'quadcopter': 2, 'None': 15, 'sensor-error': 4, 'sensor-fusion': 4, 'localization': 16, 'ekf': 9, 'pose': 1, 'errors': 8, 'kalman-filter': 17, 'mobile-robot': 8, 'sensors': 4, 'navigation': 8}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-4990">Load Comments</button></br>
+			<div id = "commentsection-4990" class = 'collapse'>
+			<div id = "comment-7742" class = "comment">
+				<p>@roboman, perhaps the reason the OP couldn't find much regarding the problem was that he didn't know it's called _Inertial Navigation System_? That's why I rejected your edit (even though a moderator accepted it), because I think you know about the problem and you could perhaps write up an answer, or at least a comment with a few pointers.</p>
+			</div>
+			<div id = "comment-7752" class = "comment">
+				<p>@Shahbaz woha ..... I implemented one for a company few months ago , also I didn't conduct a search about INS open source , let me check</p>
+			</div>
+			</div>
+				<textarea id = "speech-4990" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4990">
+					<img id="start_img-4990" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4990">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-4993"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4993" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I believe this should tick all your boxes:</p>
+
+<p><a href="http://wiki.ros.org/robot_localization" rel="nofollow">http://wiki.ros.org/robot_localization</a></p>
+
+<p>It's a ROS node for 6D pose estimation that has the following features:</p>
+
+<ul>
+<li>Fusion of an arbitrary number of sensors. The nodes do not restrict the number of input sources. If, for example, your robot has multiple IMUs or multiple sources of odometry information, the state estimation nodes within robot_localization can support all of them.</li>
+<li>Support for multiple ROS message types. All state estimation nodes in robot_localization can take in nav_msgs/Odometry, sensor_msgs/Imu, geometry_msgs/PoseWithCovarianceStamped, or geometry_msgs/TwistWithCovarianceStamped messages.</li>
+<li>Per-sensor input customization. If a given sensor message contains data that you don't want to include in your state estimate, the state estimation nodes in robot_localization allow you to exclude that data on a per-sensor basis.</li>
+<li>Continuous estimation. Each state estimation node in robot_localization begins estimating the vehicle's state as soon as it receives a single measurement. If there is a holiday in the sensor data (i.e., a long period in which no data is received), the filter will continue to estimate the robot's state via an internal motion model.</li>
+</ul>
+
+<p>It has both an EKF implementation (ekf_localization_node) and a UKF (ukf_localization_node). Feel free to ask questions on the <a href="http://answers.ros.org/questions/" rel="nofollow">ROS Answers</a> site.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4993" data-toggle = "popover">
+				<p>user name : TheWumpus</p>
+				<p> user reputation : 141</p>
+				<p class = "tagcontent" id = "usertaginfo-4993">{'magnetometer': 1, 'None': 2, 'ekf': 2, 'platform': 0, 'imu': 1, 'kalman-filter': 18, 'ugv': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-4993">Load Comments</button></br>
+			<div id = "commentsection-4993" class = 'collapse'>
+			<div id = "comment-7753" class = "comment">
+				<p>Thanks, this looks almost perfect. How could I have missed it? It looks like a rather new package. The only problem I see is its reliance on Euler angles, which is probably not a problem for the authors since it seems to be aimed at wheeled robots.</p>
+			</div>
+			<div id = "comment-7754" class = "comment">
+				<p>The interfaces to it (the input and output messages) use quaternions, but they are converted to Euler angles internally.</p>
+			</div>
+			<div id = "comment-7756" class = "comment">
+				<p>...also, I've used it with a Parrot Drone, and it works fine.</p>
+			</div>
+			<div id = "comment-7768" class = "comment">
+				<p>@TheWumpus, it would be a good idea to quote the most relevant parts of the link in your answer, since sooner or later that page is either going to die or its contents changed. That way, the answer to the question would be lost.</p>
+			</div>
+			<div id = "comment-7769" class = "comment">
+				<p>Fair enough, will do. For the record, though, I'm the maintainer of that link. :)</p>
+			</div>
+			</div>
+				<textarea id = "speech-4993" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4993">
+					<img id="start_img-4993" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4993">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

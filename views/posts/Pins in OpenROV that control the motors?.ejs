@@ -1,0 +1,186 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Pins in OpenROV that control the motors?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7138" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7138" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 341</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Pins in OpenROV that control the motors?</h2>
+<p>I'm working on my own ROV project, but I find OpenROV have a <a href="https://github.com/OpenROV/openrov-software/releases/tag/v2.5.0" rel="nofollow">ready to use image</a> for my BB so want to use that instead of making my own program, and I already deployed the image, but I can't find which three pins find that send PWM signal for ESC's? Please help.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7138" data-toggle = "popover">
+				<p>user name : Nur</p>
+				<p> user reputation : 122</p>
+				<p class = "tagcontent" id = "usertaginfo-7138">{'brushless-motor': 0, 'mobile-robot': 2, 'None': 0, 'beagle-bone': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7138" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7138" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7138">
+					<img id="start_img-7138" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7138">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7150"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7150" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><h2>OpenROV Cape</h2>
+
+<p>If I understand things correctly,
+the OpenROV motors are connected to ESCs that are connected to Arduino Digital pins 9, 10, and 11.
+According to the <a href="http://www.arduino.cc/en/Hacking/PinMapping168" rel="nofollow noreferrer">"ATmega168/328-Arduino Pin Mapping"</a>, that corresponds to physical pins 15, 16, and 17 respectively on the 28-pin ATmega328 DIP.</p>
+
+<p><img src="https://i.stack.imgur.com/CyLW7.jpg" alt="enter image description here">
+A nice diagram on the OpenROV wiki showing a photo of the OpenROV Cape and where to connect the Port, Vertical, and Starboard ESCs to the cape
+(diagram from <a href="https://forum.openrov.com/t/wiki-buildout/1585" rel="nofollow noreferrer">https://forum.openrov.com/t/wiki-buildout/1585</a> ).</p>
+
+<p><img src="https://i.stack.imgur.com/MD3Gh.jpg" alt="enter image description here">
+The Arduino IDE is used to program the ATmega328 in a 28-pin DIP package on the other side of the OpenROV Cape, shown here.
+(photo from 
+<a href="http://www.bluebird-electric.net/artificial_intelligence_autonomous_robotics/open_rov_source_underwater_robots_for_exploration_education.htm" rel="nofollow noreferrer">"Bluebird Marine Systems: OpenROV underwater robots for educational exploration"</a>)</p>
+
+<p>Why are there 2 not-quite-the-same Arduino firmware folders,
+<a href="https://github.com/OpenROV/openrov-software/tree/v2.5.0/arduino/OpenROV" rel="nofollow noreferrer">https://github.com/OpenROV/openrov-software/tree/v2.5.0/arduino/OpenROV</a>
+and <a href="https://github.com/OpenROV/openrov-software-arduino/tree/master/OpenROV" rel="nofollow noreferrer">https://github.com/OpenROV/openrov-software-arduino/tree/master/OpenROV</a> ?
+I'm guessing that the "openrov-software-arduino" version is the latest version.</p>
+
+<p>The <a href="https://github.com/OpenROV/openrov-software-arduino/blob/master/OpenROV/Cape.h" rel="nofollow noreferrer">OpenROV Cape.h file</a> defines those pins:</p>
+
+<pre><code>#define PORT_PIN 9
+#define VERTICAL_PIN 10
+#define STARBOARD_PIN 11
+</code></pre>
+
+<p>Those definitions are used in the <a href="https://github.com/OpenROV/openrov-software-arduino/blob/master/OpenROV/Thrusters2X1.cpp" rel="nofollow noreferrer">OpenROV Thrusters2X1.cpp file</a></p>
+
+<pre><code>Motor port_motor(PORT_PIN);
+Motor vertical_motor(VERTICAL_PIN);
+Motor starboard_motor(STARBOARD_PIN);
+</code></pre>
+
+<p>The above lines pass the pin numbers to the Motor constructor declared in <a href="https://github.com/OpenROV/openrov-software-arduino/blob/master/OpenROV/Motor.h" rel="nofollow noreferrer">Motor.h</a>.
+Later the <a href="https://github.com/OpenROV/openrov-software-arduino/blob/master/OpenROV/Motor.cpp" rel="nofollow noreferrer">OpenROV Motor.cpp file</a> stores those pin numbers and passes them to functions in the <a href="https://github.com/OpenROV/openrov-software-arduino/blob/master/OpenROV/openrov_servo.cpp" rel="nofollow noreferrer">openrov_servo.cpp file</a> to control the ESCs.</p>
+
+<h2>BeagleBone PWM</h2>
+
+<p>Some of the pins on the BeagleBone are internally connected to a hardware PWM driver.
+Some people have several ESCs or other things controlled by a standard <a href="http://www.opencircuits.com/Servo_control" rel="nofollow noreferrer">RC control signal</a>, each one driven by one such pin on a BeagleBone.</p>
+
+<p>(FIXME: this would be a good place for a link to the part of the OpenROV code that runs on the BeagleBone and sends a message to the Arduino with the desired PWM; can that bit of code can be tweaked to directly drive that desired PWM out the BeagleBone pins?)</p>
+
+<ul>
+<li>Simon Monk. Adafruit. <a href="https://learn.adafruit.com/controlling-a-servo-with-a-beaglebone-black/overview" rel="nofollow noreferrer">"Controlling a Servo with a BeagleBone Black"</a></li>
+<li>Ben Martin. <a href="https://www.linux.com/learn/tutorials/776799-servo-control-from-the-beaglebone-black" rel="nofollow noreferrer">"How to Control a Servo Motor from a BeagleBone Black on Linux"</a>.</li>
+<li><a href="http://beagleboard.org/support/BoneScript/analogWrite/" rel="nofollow noreferrer">"BoneScript: analogWrite"</a></li>
+<li>Meng Cao. <a href="http://www.egr.msu.edu/classes/ece480/capstone/fall13/group05/meng.pdf" rel="nofollow noreferrer">"How to use all the GPIO on Beaglebone Black in Python"</a></li>
+<li>Akkana. <a href="http://shallowsky.com/blog/hardware/beaglebone-black-gpio.html" rel="nofollow noreferrer">"GPIO tutorial for the BeagleBone Black"</a>
+implies that the BeagleBone Black hardware PWM can drive up to 8 pins (?).</li>
+<li>Justin Cooper. Adafruit. <a href="https://learn.adafruit.com/setting-up-io-python-library-on-beaglebone-black/pwm" rel="nofollow noreferrer">"Setting up IO Python Library on BeagleBone Black: Using GPIO, PWM and more with Python"</a></li>
+<li>Babak Parvizi. <a href="http://digital-drive.com/?p=146" rel="nofollow noreferrer">"BeagleBone Black ... Controlling a Servo Using HTML5, JavaScript, and Node.js."</a></li>
+<li><a href="https://briancode.wordpress.com/2015/01/06/working-with-pwm-on-a-beaglebone-black/" rel="nofollow noreferrer">"Working with PWM on a BeagleBone Black"</a>.</li>
+<li>Saad Ahmad. <a href="https://github.com/SaadAhmad/beaglebone-black-cpp-PWM" rel="nofollow noreferrer">"beaglebone-black-cpp-PWM"</a>.</li>
+<li>eLinux. <a href="http://elinux.org/BeagleBoardPWM" rel="nofollow noreferrer">BeagleBoardPWM</a></li>
+<li>Hipstercircuits. <a href="http://hipstercircuits.com/enable-pwm-on-beaglebone-with-device-tree-overlays/" rel="nofollow noreferrer">"Enable PWM on BeagleBone with Device Tree overlays"</a>.</li>
+<li><a href="http://beaglebone.cameon.net/home/using-pwm-outputs" rel="nofollow noreferrer">"Using the BeagleBone : Using PWM outputs"</a> describes how to drive 6 servos from a white BeagleBone.</li>
+</ul>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7150" data-toggle = "popover">
+				<p>user name : David Cary</p>
+				<p> user reputation : 3365</p>
+				<p class = "tagcontent" id = "usertaginfo-7150">{'quadcopter': 38, 'stepper-driver': 9, 'None': 256, 'multi-rotor': 2, 'force-sensor': 9, 'stability': 36, 'industrial-robot': 1, 'design': 18, 'motor': 2, 'stepper-motor': 9}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7150">Load Comments</button></br>
+			<div id = "commentsection-7150" class = 'collapse'>
+			<div id = "comment-10183" class = "comment">
+				<p>So the ESC isn't connected directly with BBB? I don't have an Arduino and I don't see the need of it, can I change the control of OpenROV image to drive using BBB pin instead? Where is the image you're talking about?</p>
+			</div>
+			<div id = "comment-10187" class = "comment">
+				<p>The OpenROV cape is Arduino-compatible. After you have that, I agree that you don't need *another* Arduino board to build a OpenROV.</p>
+			</div>
+			<div id = "comment-10194" class = "comment">
+				<p>Well I'm looking to make a ROV project with a BBB only without additional component that OpenROV using, I just want to borrow the OS..</p>
+			</div>
+			</div>
+				<textarea id = "speech-7150" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7150">
+					<img id="start_img-7150" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7150">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

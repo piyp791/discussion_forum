@@ -1,0 +1,238 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>SLAM : Why is marginalization the same as schur's complement?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8900" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8900" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 898</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>SLAM : Why is marginalization the same as schur's complement?</h2>
+<p>Consider the system 
+$$
+\tag 1
+H\delta x=-g
+$$
+ where $H$ and $g$ are the Hessian and gradient of some cost function $f$ of the form $f(x)=e(x)^Te(x)$. The function $e(x)=z-\hat{z}(x)$ is an error function, $z$ is an observation (measurement) and  $\hat{z}$ maps the estimated parameters to a measurement prediction. </p>
+
+<p>This minimization is encountered in each iteration of many SLAM algorithms, e.g.one could think of $H$ as a bundle adjustment Hessian. Suppose $x=(x_1,x_2)^T$, and let $x_2$ be some variables that we seek to marginalize. Many authors claim that this marginalization is equivalent to solving a smaller liner system $M\delta x_1=-b$ where $M$ and $g$ are computed by applying Schur's complement to (1), i.e. if
+$$H=
+\begin{pmatrix}
+H_{11} &amp; H_{12}\\
+H_{21} &amp; H_{22}
+\end{pmatrix}
+$$
+then
+$$
+M=H_{11}-H_{12}H_{22}^{-1}H_{21}
+$$ 
+and 
+$$
+b=g_1-H_{12}H_{22}^{-1}g_2
+$$</p>
+
+<p>I fail to understand why that is equivalent to marginalization... I understand the concept of marginalization for a Gaussian, and I know that schur's complement appears in the marginalization if we use the canonical representation (using an information matrix), but I don't see the link with the linear system. </p>
+
+<p><strong>Edit:</strong> I understand how Schur's complement appears in the process of marginalizing or conditioning $p(a,b)$ with $a,b$ Gaussian variables, as in the link supplied by Josh Vander Hook. I had come to the same conclusions, but using the canonical notation: If we express the Gaussian $p(a,b)$ in canonical form, then $p(a)$ is gaussian and its information matrix is the Schur complement of the information matrix of $p(a,b)$, etc. Now the problem is that I don't understand how Schur's complement appears in marginalization in bundle adjustment (for reference, in these recent papers: <a href="https://www.google.fr/url?sa=t&amp;rct=j&amp;q=&amp;esrc=s&amp;source=web&amp;cd=1&amp;cad=rja&amp;uact=8&amp;ved=0ahUKEwiDgNiC9K3KAhVL1RoKHcXvAWkQFgggMAA&amp;url=http%3A%2F%2Fwww-users.cs.umn.edu%2F~stergios%2Fpapers%2FRSS_2013_Workshop_CKLAM_Esha_Kejian.pdf&amp;usg=AFQjCNEsKknpqqMNJcYSWawCinb5R3qzAg&amp;sig2=gikqqcwFFZWWA_g_p60J3w" rel="nofollow">c-klam</a> (page 3 if you want to look) and in <a href="https://www.google.fr/url?sa=t&amp;rct=j&amp;q=&amp;esrc=s&amp;source=web&amp;cd=1&amp;ved=0ahUKEwjStJyd9K3KAhWBCxoKHfLWAK4QFgglMAA&amp;url=http%3A%2F%2Fwww.roboticsproceedings.org%2Frss09%2Fp37.pdf&amp;usg=AFQjCNHpE92Meqxmuja-N5gs0Oh3HbqB_g&amp;sig2=wh5gcv6W3tGrJ9TN1lGJOA" rel="nofollow">this</a> (part titled marginalization). In these papers, a single bundle adjustment (<strong>BA</strong>) iteration is performed in a manner similar to what I initially described in the question. I feel like there is a simple connection between marginalizing a Gaussian and the marginalization in BA that I am missing. For example, one could say that optimizing $f$ (one iteration) is equivalent to drawing a random variable following a denstiy $$e^{-\frac{1}{2}(x-\mu)^T\Sigma^{-1}(x-\mu)}$$  where $\Sigma$ is the inverse of the Hessian $H$ of $f$, and $\mu$ is the true value for $x$ (or an approximation of that value), and that marginalizing this density is equivalent to using Schur's compelement in the bundle? I am really confused...  </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8900" data-toggle = "popover">
+				<p>user name : Ash</p>
+				<p> user reputation : 197</p>
+				<p class = "tagcontent" id = "usertaginfo-8900">{'None': 1, 'computer-vision': 2, 'localization': 1, 'ekf': 1, 'visual-odometry': 1, 'gnss': 2, 'particle-filter': 8, 'slam': 11, 'kalman-filter': 1, 'pseudo-ranges': 2, 'sensors': 2, 'ephemeris': 2, 'gps': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8900">Load Comments</button></br>
+			<div id = "commentsection-8900" class = 'collapse'>
+			<div id = "comment-14673" class = "comment">
+				<p>Are you asking why the schur complement falls out of the marginalization of a MV Gaussian? Or are you asking why the same form appears in the bundle-adjustment type optimization?</p>
+			</div>
+			<div id = "comment-14675" class = "comment">
+				<p>Basically the problem is with why and how it appears in BA. I edited the question to clarify.</p>
+			</div>
+			<div id = "comment-14677" class = "comment">
+				<p>Thanks for the clarification! I see now. I've updated my answer and hopefully others can come along and help out as well. At this point I think we've beat this to death. if you have further questions I suggest you submit a new question.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8900" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8900">
+					<img id="start_img-8900" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8900">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8901"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8901" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p><a href="https://gbhqed.wordpress.com/2010/02/21/conditional-and-marginal-distributions-of-a-multivariate-gaussian/" rel="nofollow">See the walk-through</a></p>
+
+<p>The Schur complement helps with the closed form derivation but isn't necessary. It's just a nice convenient property of Gaussians and the covariance matrices. </p>
+
+<blockquote>
+  <p>In these papers, a single bundle adjustment (BA) iteration is performed in a manner similar to what I initially described in the question.</p>
+</blockquote>
+
+<p>The reason the marginal / schur complement appears over and over is that all of the objective functions, noise models, and (in some sense) optimization methods are <em>the same</em>.</p>
+
+<p>All the problems attempt to find a vector $x$ which maximizes the likelihood of the observations $z=h(x)+\eta $ where $\eta$ is some Gaussian noise. $h(x)$ is often not linear, but we linearize it so that $h(x)\approx h(x)+H_x(a-x) $ where (sorry for abusing notation), $H$ is the Jacobian.</p>
+
+<blockquote>
+  <p>I feel like there is a simple connection between marginalizing a Gaussian and the marginalization in BA that I am missing. </p>
+</blockquote>
+
+<p>Everyone and their mother assumes that the noise in the observation $z$ is Gaussian. If you construct the Gaussian noise terms, you'll find something like $e^{ (z-h(\hat{x}))^T\Sigma^{-1}(z-h(\hat{x}) )}$ (modulo the denominator). </p>
+
+<p>However, this isn't the only formulation. We can also minimize the error (difference in observations and state estimate). A careful look reveals that <strong>maximizing the likelihood of the observations is equivalent to finding a vector $x$ which minimizes the error $\eta=z-h(x)$</strong>.</p>
+
+<p>Thus, minimizing the mean squared error $(\eta^T\eta)$ is the same as finding $x$ which maximizes the likelihood of the observations $z$. Thus, minimizing mean squared error and maximizing Gaussian observation likelihood results in the same objective function.*</p>
+
+<p>If we substitute our linear approximation, we need to minimize </p>
+
+<p>$$J=(z-h(x)+H_x(a-x))^T(z-h(x)+H_x(a-x))$$</p>
+
+<p>If you multiply that out, and minimize by taking the derivative, you get the solutions you showed above. <strong>This is the same across any ML estimation of a state vector given Gaussian noise</strong>.  The difference in various estimation methods is summarized as follows, as best as I know.</p>
+
+<ul>
+<li>The EKF does only one optimization step, and uses only the last measurement and the current state approximation</li>
+<li>Other methods, like IteratedEKF use many iterations of the solution, but only use the most recent measurement</li>
+<li>If you can afford to use more than one measurement, you've arrived at a larger state (one copy of the state vector for each time step, and a stacked vector of observations). Doing this optimization over this larger state is what BA does, but is also known as Iterative Weighted Least Squares. More generally, these are <em>batch estimators</em>.</li>
+<li>What's nice <em>in the computer vision world</em>, is that a huge state vector and observation vector have independent components (because a camera cannot see all parts of the world at all time). This structure is exploited to find what is classically known as Bundle Adjustment.</li>
+<li>If you wish to discard the Gaussian noise assumption and evaluate a larger space of possible soutions, you can use sampling based methods. However, almost all sampling based methods I'm aware of sample $x$ (the state), and run one of the above estimators for <em>each</em> $x$ using the observations, then find the posterior probability that the sample you drew was correct.</li>
+</ul>
+
+<blockquote>
+  <p>For example, one could say that optimizing ff (one iteration) is equivalent to drawing a random variable following a density ...</p>
+</blockquote>
+
+<p>Here you're a bit off. That's not correct that we're drawing <em>samples</em>, but it is correct that by trying to minimize error, we're actually maximizing likelihood of the Gaussian. This is how the error minimization objective of BA, the Gaussian noise model (and resulting appearance of a marginalization i.e., schur complement), and general slam frameworks are all related. They're the same, just found by different methods across different disciplines. Isn't research great?</p>
+
+<ul>
+<li>*Kinda. In this derivation it does, but we do assume that the observation noise is Gaussian to arrive there. It's a difference in starting point, not path.</li>
+</ul>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8901" data-toggle = "popover">
+				<p>user name : Josh Vander Hook</p>
+				<p> user reputation : 3960</p>
+				<p class = "tagcontent" id = "usertaginfo-8901">{'None': 345}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8901">Load Comments</button></br>
+			<div id = "commentsection-8901" class = 'collapse'>
+			<div id = "comment-14674" class = "comment">
+				<p>Thanks a lot for your answer! However, your link doesn't answer my question, To clarify, I edited the question and added two references to papers, that given your profile, you might already be familiar with :)</p>
+			</div>
+			<div id = "comment-14678" class = "comment">
+				<p>I've updated the answer. I apologize for the lack of links at this point. I could link my thesis but that's pretentious, so I'll try to find some original links (or maybe someone could drop some in).</p>
+			</div>
+			<div id = "comment-14697" class = "comment">
+				<p>Btw, the part about an EKF  doing only one optimization step is a bit surprising to me. Does it mean that if I start with the Kalman equations for state update, I can arrive at the same equation as in Gauss-Newton?</p>
+			</div>
+			<div id = "comment-14702" class = "comment">
+				<p>Yes, with one measurement and one update step, they better be the same. The difference arrives when you repeat the steps and, critically, re linearize the system.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8901" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8901">
+					<img id="start_img-8901" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8901">Comment</button>
+			<br><div id = "ans-9253"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9253" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p><a href="https://i.stack.imgur.com/EVzz0.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/EVzz0.jpg" alt="enter image description here"></a>
+The following image should help. It's an old post but just in case anyone comes here later.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9253" data-toggle = "popover">
+				<p>user name : Partha Ghosh</p>
+				<p> user reputation : 11</p>
+				<p class = "tagcontent" id = "usertaginfo-9253">{'None': 1}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9253">Load Comments</button></br>
+			<div id = "commentsection-9253" class = 'collapse'>
+			<div id = "comment-16414" class = "comment">
+				<p>Thanks Partha Ghosh, but on *robotics* we are fortunate enough to have MathJax support enabled, so it would be far better to include these formulae as text rather than as a big image with no further explanation. Using MathJax you can easily create subscripts, superscripts, fractions, square roots, greek letters and more, allowing you to add both inline and block element mathematical expressions in *robotics* questions and answers. For a quick tutorial, take a look at [How can I format mathematical expressions here, using MathJax?](http://meta.robotics.stackexchange.com/q/130/37)</p>
+			</div>
+			</div>
+				<textarea id = "speech-9253" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9253">
+					<img id="start_img-9253" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9253">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

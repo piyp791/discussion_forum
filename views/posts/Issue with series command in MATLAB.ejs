@@ -1,0 +1,188 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Issue with series command in MATLAB
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11143" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11143" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 52</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Issue with series command in MATLAB</h2>
+<p>I have a controller and a plant in series. The controller is 3 input 3 output MIMO system and the plant is also 3 input 3 output system. The bode of the open loop gain, i.e., </p>
+
+<p>$$D(z)=C(z)*G(z)$$</p>
+
+<p>appears to be different when using </p>
+
+<p>$$series(C(z),G(z))$$ versus </p>
+
+<p>$$
+D(z) = C_1(z)G_1(z) + C_2(z)G_2(z) + C_3(z)G_3(z) \\
+$$</p>
+
+<p>Theoretically, I believe both are same. However, the latter method gives a different bode with undamped peak, unlike the one using the series command.</p>
+
+<p>The approach using 
+$
+D(z) = C_1(z)G_1(z) + C_2(z)G_2(z) + C_3(z)G_3(z) 
+$
+is most suitable, according to me, as it gives more clarity. </p>
+
+<p>Can anyone share idea on why this misbehaviour exists?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11143" data-toggle = "popover">
+				<p>user name : GKY1980</p>
+				<p> user reputation : 18</p>
+				<p class = "tagcontent" id = "usertaginfo-11143">{'control': 3, 'None': 0, 'kinematics': 0, 'matlab': 3, 'dynamics': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11143">Load Comments</button></br>
+			<div id = "commentsection-11143" class = 'collapse'>
+			<div id = "comment-20059" class = "comment">
+				<p>Is there a difference between Z and z (seems that you use both in the code). Matlab is case sensitive, right?</p>
+			</div>
+			<div id = "comment-20069" class = "comment">
+				<p>Z and z does not matter as this is just an explanation of the logic used in the code</p>
+			</div>
+			<div id = "comment-20072" class = "comment">
+				<p>@50k4 - It doesn't seem to matter in this particular question, but for the record, yes Matlab is case sensitive.</p>
+			</div>
+			</div>
+				<textarea id = "speech-11143" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11143">
+					<img id="start_img-11143" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11143">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-11145"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11145" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You haven't posted any specifics about your plant or the controller, and I'm not positive I understand your terminology. </p>
+
+<p>You said it's a MIMO system, but then you give the combined block (controller/plant) as:</p>
+
+<p>$$
+D(z) = C_1(z)G_1(z) + C_2(z)G_2(z) + C_3(z)G_3(z) \\
+$$</p>
+
+<p>A couple of points here:</p>
+
+<ol>
+<li>It looks to me like $D(z)$ is now a singular value and not a vector of outputs.</li>
+<li>Ignoring the point above, it doesn't look like you have any method for interaction between inputs. The way you wrote the "long" model implies that $G_1$ can be separated from $G_2$ and $G_3$, which means that $G_1$ has no impact on the others and vice-versa. This would mean that you don't actually have a MIMO system, just a group SISO systems.</li>
+</ol>
+
+<p>Per point (1) above, I would expect your $D(z)$ definition to look more like:</p>
+
+<p>$$
+D(z) = \left[ \begin{array}{}
+C_1(z)G_1(z) \\
+C_2(z)G_2(z) \\
+C_3(z)G_3(z)
+\end{array} \right] \\
+$$</p>
+
+<p><em>That</em> gives you a vector of outputs, but again, if $C_x$ has no impact on any of the other $C$ states, and $G_x$ has no impact on any of the other $G$ states, then you're saying that there's no coupling between any of those states and thus you don't have a MIMO system; it's more of a diagonal or block diagonal system where each input/output pair is distinct and unrelated to any other pair. </p>
+
+<p>Unfortunately, this is about as helpful or insightful as I can be without specifics. If you could <em>edit your post</em> to show what you're using for the controller and plant, some plots of what your outputs are looking like, etc., then maybe I could say something more, but at the moment this is the best answer I can give.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11145" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-11145">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11145">Load Comments</button></br>
+			<div id = "commentsection-11145" class = 'collapse'>
+			<div id = "comment-20075" class = "comment">
+				<p>Thank you for your response.could you please share your email if possible?</p>
+			</div>
+			<div id = "comment-20076" class = "comment">
+				<p>Could you please check my new post "issue with open loop gain" and revert with your valuable suggestion</p>
+			</div>
+			<div id = "comment-20079" class = "comment">
+				<p>@GKY1980 - This is a public site, with the hopes that anyone that has the same problem as you in the future can find the answer here. There is no private messaging or email linking at Stack Exchange to discourage behind-the-scenes communication. If you have more questions, feel free to just create more posts - they're free! If there's some aspect of your question you think I've missed or I didn't exactly answer your question, then leave me a comment and/or edit your original question.</p>
+			</div>
+			<div id = "comment-20158" class = "comment">
+				<p>Thank you Chuck for your valuable reply. The issue is solved. I found that the OLTF is arrived as plant G(s)*controller(C(s)) thereby making the loop as single loop(plant(1x3) * controller(3x1)). However, when the same is connected as controller C(s)* Plant G(s), the resulting output is a MIMO (3x3). However, the existing calculations show that only diagonal elements of the resultant matrix is considered to compute OLTF. The final answer neglecting other loop interactions is C1(z)G1(z)+C2(z)G2(z)+C3(z)G3(z).</p>
+			</div>
+			</div>
+				<textarea id = "speech-11145" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11145">
+					<img id="start_img-11145" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11145">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

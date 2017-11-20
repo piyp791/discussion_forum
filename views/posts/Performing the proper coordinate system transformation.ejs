@@ -1,0 +1,134 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Performing the proper coordinate system transformation
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-1925" class = "post">
+			<h2>Question</h2>
+			<div id="vote-1925" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 207</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Performing the proper coordinate system transformation</h2>
+<p>I could use some guidance regarding a coordinate system transform problem. My situation is this: my system begins at some unknown location, which I initialize the location (x y) and orientation (roll, pitch, and yaw) all to zero. I establish a frame of reference at this point, which I call the "local" coordinate frame. It is fixed in the world and does not move. At system startup, the body frame is perfectly aligned with the local frame, where body +x points forward, +y to the right and +z down. The body frame is fixed to my system, and travels with the system as it moves.</p>
+
+<p>I have an estimation routine that provides me with the x and y position, as well as the roll, pitch, and yaw of the system. Yaw is rotation about the z axis of the local frame. Pitch and roll are with respect to the body frame (I.e.,if the robot pitches up, I always get a positive value. If it rolls right, I get a positive value.)</p>
+
+<p>How can I take the known roll and pitch values and transform them to be with respect to the local (fixed) frame?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1925" data-toggle = "popover">
+				<p>user name : jdt141</p>
+				<p> user reputation : 126</p>
+				<p class = "tagcontent" id = "usertaginfo-1925">{'mobile-robot': 3, 'None': 1, 'kinematics': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-1925" class = 'collapse'>
+			</div>
+				<textarea id = "speech-1925" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1925">
+					<img id="start_img-1925" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1925">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-1929"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1929" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I introduced a different frame of reference, which I called $\mathbf{R}_p$, or position of the robot on the ground plane, instead of the "body" frame that I asked about.</p>
+
+<p>$\mathbf{R}_p$ moves with the robot, but only in yaw and X and Y position. The pitch and roll (provided by the estimator) are relative to this frame, so the roll ($\phi$) and pitch ($\theta$) are relative to the frame $\mathbf{R}_p$. To transform a point from $\mathbf{R}_p$, to the local frame $\mathbf{L}$, we just rotate $\psi$, (yaw) about the Z axis of $\mathbf{R}_p$ of e.g.: </p>
+
+<p>$$
+\mathbf{T}_R^L = \begin{vmatrix} cos(\psi) &amp; -sin(\psi) &amp; 0 &amp; 0 \\ sin(\psi) &amp; cos(\psi) &amp; 0 &amp; 0 \\ 0 &amp; 0 &amp; 1 &amp; 0 \\ 0 &amp; 0 &amp; 0 &amp; 1 \end{vmatrix}
+$$</p>
+
+<p>$$
+P_L = \mathbf{T}_R^L * \begin{vmatrix} \phi \\ \theta \\ 0 \\ 0 \end{vmatrix}
+$$</p>
+
+<p>This gives me the attitude with respect to the local frame that I established when I initialized my system.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1929" data-toggle = "popover">
+				<p>user name : jdt141</p>
+				<p> user reputation : 126</p>
+				<p class = "tagcontent" id = "usertaginfo-1929">{'mobile-robot': 3, 'None': 1, 'kinematics': 3}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-1929" class = 'collapse'>
+			</div>
+				<textarea id = "speech-1929" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1929">
+					<img id="start_img-1929" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1929">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

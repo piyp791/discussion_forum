@@ -1,0 +1,155 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Implementation of wall and obstacle avoidance
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-6838" class = "post">
+			<h2>Question</h2>
+			<div id="vote-6838" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 108</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Implementation of wall and obstacle avoidance</h2>
+<p>I have a task of developing a simulation of an adaptive robot control system but I don't seem too have anyone to discuss my uncertainties with. I want to keep the simulation as simple as possible as I have a very tight deadline and it's only a one off project that most probably will never be used in my life again. </p>
+
+<p>The minimal behaviour that the agent is supposed to exhibit is wall and obstacle avoidance. It can be extended to avoiding small objects and exploring large ones. </p>
+
+<p>I've decided to go with a simple feedback control system. 
+To begin with I'm struggling to decide how to represent the map of agent's environment. What I mean is, what if I want a wall to be from coordinate [0,0] to [0.5]. I could hard code it, e.g. have a matrix with coordinates of all obstacles but how small units do I make... I.e. what if I have two neighbouring coordinates [0,0.01] and [0,0.02] but the agents gets a 'clear to go' to coordinate [0,0.05]. In this case it doesn't know that it actually is about to walk into a wall. I've heard of something called occupancy grid map but I don't exactly get how it works and how to implement it. </p>
+
+<p>Another thing that I am struggling with is how do I distinct between a wall and an obstacle? And then, how do I let the agent know how big that obstacle is so that it can either avoid it or explore it. </p>
+
+<p>Eh, I'm really puzzled with this project.
+I would really appreciate any thoughts or directions. Thank you. :-)</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6838" data-toggle = "popover">
+				<p>user name : Vetaxili</p>
+				<p> user reputation : 113</p>
+				<p class = "tagcontent" id = "usertaginfo-6838">{'control': 2, 'None': 0, 'simulation': 2, 'localization': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-6838" class = 'collapse'>
+			</div>
+				<textarea id = "speech-6838" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6838">
+					<img id="start_img-6838" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6838">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-6840"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6840" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>There's a lot of questions here, so I expect pushback from the peanut gallery, but I'll answer what I can.</p>
+
+<p>First off, a wall <em>is</em> an obstacle, right? There's no difference there other than what words you use to describe "a place a robot cannot go".</p>
+
+<p>So now, we just need a way to <em>store</em> the locations of obstacles so that we know where the robot can go. This is your map.  One way of storing this map, as you mentioned, is an occupancy grid. </p>
+
+<p>An occupancy grid (for two dimensional environments, like a floor) is simply an N by M matrix of numbers. In each "cell" we store the probability that an object is present. Cells that contain a zero are known to be clear (unlikely objects). Cells with a 1 are obstacles.</p>
+
+<p>Here, N and M are the dimensions of the area.  If your workspace is 10 meters by 10 meters, and your robot is small, then a reasonable choice of N and M is 10x10.   This gives you a resolution of one square meter per cell.  For higher resolution, 100x100 would give you a tenth of a meter resolution. Good enough for navigating an iRobot Create, in my experience.</p>
+
+<p><em>How</em> you fill these cells is up to you. If you know that a wall goes from [0,0] to [5,5], for example, you can fill each cell between those two points with ones.</p>
+
+<h3>Sidebar</h3>
+
+<p>So why <em>wouldn't</em> we use this representation? Well one reason is the space the map takes up. If you are navigating in a hallway, you really only need to know that it is bounded by two lines. So storing the length and position of these lines is enough. That's a small number of variables to represent any length or size of hallway. With an occupancy grid, we'd have to store <em>all of the cells</em> to understand the configuration of the hallway. </p>
+
+<p>However, occupancy grids are probably the most modular, extensible, flexible, etc mapping techniques.</p>
+
+<h3>How to "fill" the cells</h3>
+
+<p>Great question. You'd want to fill all cells that the line touches. To see if a line goes through a certain cell, you can check if the line (ray) collides with the cell (box). Since the box is aligned with the X and Y axes, this is known as the Axis-Aligned Bounding Box intersection problem. <a href="https://gamedev.stackexchange.com/q/18436">see this question</a>. This may not be the best way to "fill" the cells, as you may have to iterate over the whole map. <a href="https://stackoverflow.com/q/10350258">here</a> is a way to find all cells intersected by a line.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6840" data-toggle = "popover">
+				<p>user name : Josh Vander Hook</p>
+				<p> user reputation : 3960</p>
+				<p class = "tagcontent" id = "usertaginfo-6840">{'None': 345}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-6840">Load Comments</button></br>
+			<div id = "commentsection-6840" class = 'collapse'>
+			<div id = "comment-9787" class = "comment">
+				<p>Thank you for your reply. :-) I just wanted to ask... If my map is e.g. a matrix 20x20 I can only have coordinates that are integers, e.g. [0,4]. If my robot end up on coordinate that is e.g. [0.3,0.338] how would I translate it to the equivalent of a map? Would I just round the numbers up or is there something else that would need to be done?</p>
+			</div>
+			<div id = "comment-9788" class = "comment">
+				<p>Great question. (you can thank with a check mark / upvote ;-) ) You'd want to fill all cells that the line touches. To see if a line goes through a certain cell, you can check if the line (ray) collides with the cell (box). Since the box is aligned with the X and Y axes, this is known as the Axis-Aligned Bounding Box intersection problem. [see this question](http://gamedev.stackexchange.com/q/18436). This may not be the best way to "fill" the cells, as you may have to iterate over the whole map. [here](http://stackoverflow.com/q/10350258) is a way to find all cells intersected by a line.</p>
+			</div>
+			</div>
+				<textarea id = "speech-6840" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6840">
+					<img id="start_img-6840" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6840">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

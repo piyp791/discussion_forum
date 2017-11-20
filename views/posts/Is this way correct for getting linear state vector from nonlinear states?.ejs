@@ -1,0 +1,228 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Is this way correct for getting linear state vector from nonlinear states?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-12680" class = "post">
+			<h2>Question</h2>
+			<div id="vote-12680" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 20</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Is this way correct for getting linear state vector from nonlinear states?</h2>
+<p>I have written a code for the linear model of quadrotor vehicle and a linear model predictive controller to control it.</p>
+
+<p>The state vector for linear model is;</p>
+
+<p>$x=[x\quad y\quad z\quad \phi\quad \theta\quad \psi\quad \dot{x}\quad \dot{y}\quad \dot{z}\quad \dot{\phi}\quad \dot{\theta}\quad \dot{\psi}]^T$</p>
+
+<p>Also, the controller uses this state vector to calculate the system inputs as squared speeds of 4 rotors. This works as expected with the linearized system model around hover condition which approximates Euler rates to body rates as;</p>
+
+<p>$[\dot{\phi}\quad \dot{\theta}\quad \dot{\psi}]^T=[p\quad q\quad r]^T$</p>
+
+<p>Now I want to use this linear controller with nonlinear model of the vehicle whose state vector is;</p>
+
+<p>$x=[x\quad y\quad z\quad p\quad q\quad r\quad \dot{x}\quad \dot{y}\quad \dot{z}\quad \phi\quad \theta\quad \psi]^T$</p>
+
+<p>In order to use this state vector and realize the system I am using 4th order Runge-Kutta with fixed step size to solve the following differential equations;</p>
+
+<p>$[\dot{x}\quad \dot{y}\quad \dot{z}]^T=R[u\quad v\quad w]^T$ where R is rotation matrix from body to inertial frame.</p>
+
+<p>$\dot{p}=\frac{(I_y-I_z)rq+\tau _x}{I_x}\qquad \dot{q}=\frac{(I_z-I_x)pr+\tau _y}{I_y}\qquad \dot{p}=\frac{(I_x-I_y)pq+\tau _z}{I_z}$</p>
+
+<p>$\ddot{x}=\frac{f_t}{m}[sin(\phi)sin(\psi)-cos(\phi)cos(\psi)sin(\theta)$</p>
+
+<p>$\ddot{y}=\frac{f_t}{m}[cos(\phi)sin(\psi)sin(\theta)+cos(\psi)sin(\phi)$</p>
+
+<p>$\ddot{x}=-g+\frac{f_t}{m}[cos(\phi)cos(\theta)]$</p>
+
+<p>$\dot{\phi}=p+r[cos(\phi)tan(\theta)]+q[sin(\phi)tan(\theta)]$</p>
+
+<p>$\dot{\theta}=qcos(\phi)-r(\sin(\phi))$</p>
+
+<p>$\dot{\psi}=r\frac{cos(\phi)}{cos(\theta)}+q\frac{sin(\phi)}{cos(\theta)}$</p>
+
+<p>after each iteration in the Runge-Kutta, I am using the last 3 formulas to convert body rates to Euler rates to generate linear state vector. Is this the correct approach?</p>
+
+<p>This is my differential function; </p>
+
+<pre><code>function dxdt = RunnableSys(t, x)
+global g Q sqrd_wi;
+
+%x -&gt; x y z p q r u v w phi theta psi  
+%xdot -&gt; u v w pdot qdot rdot udot vdot wdot phidot thetadot psidot
+
+T = body2inert([x(12) x(11) x(10)]);%%body rate to euler rate
+R = eul2rotm([x(12) x(11) x(10)]);%%euler to rotation matrix
+
+mapMatrix = [Q.b*ones(1,4); 0 -Q.L*Q.b 0 Q.L*Q.b; -Q.L*Q.b 0 Q.L*Q.b 0; Q.d*[-1 1 -1 1]];%%rotor speeds to external forces (1vertical thrust 3 Moments)
+u = mapMatrix*sqrd_wi(1:4);
+
+dxdt = zeros(12,1);
+%%
+dxdt(1:3,1) = R*x(7:9);%xdot ydot zdot
+dxdt(10:12,1) = T*x(4:6);%phidot thetadot psidot
+
+%%
+dxdt(7:9)     = 
+[(sin(x(12))*sin(x(10))+cos(x(12))*sin(x(11))*cos(x(10)))*u(1)/Q.m;%xddot
+             (-
+cos(x(12))*sin(x(10))+sin(x(12))*sin(x(11))*cos(x(10)))*u(1)/Q.m;%yddot
+             -g+(cos(x(11))*cos(x(10)))*u(1)/Q.m];%zddot
+%%             
+dxdt(4:6,1)   = [((Q.J(2)-Q.J(3))*x(5)*x(6)+u(2))/Q.J(1);%pdot
+           ((Q.J(3)-Q.J(1))*x(4)*x(6)+u(3))/Q.J(2);%qdot
+           ((Q.J(1)-Q.J(2))*x(4)*x(5)+u(4))/Q.J(3)];%rdot
+end
+</code></pre>
+
+<p>and in the Runge-Kutta section;</p>
+
+<pre><code>for i = 2:N
+  ti = tspan(i-1); 
+  hi = h(i-1);%0.001 0.1
+  yi = Y(:,i-1);
+
+
+
+
+ rpms(end+1,:) = sqrd_wi;   
+
+
+ T = body2inert([yi(12) yi(11) yi(10)]);
+
+  Q.xReal(end+1,:) = [yi(1:3); yi(10:12); yi(7:9); T*yi(4:6)];%% careful
+  Q.yReal(end+1,:) = Q.xReal(end, [1 2 3 6]);
+
+
+
+
+  %% RK4
+
+
+  F(:,1) = feval(odefun,ti,yi,varargin{:});
+  F(:,2) = feval(odefun,ti+0.5*hi,yi+0.5*hi*F(:,1),varargin{:});
+  F(:,3) = feval(odefun,ti+0.5*hi,yi+0.5*hi*F(:,2),varargin{:});
+  F(:,4) = feval(odefun,tspan(i),yi+hi*F(:,3),varargin{:});
+
+  Y(:,i) = yi + (hi/6)*(F(:,1) + 2*F(:,2) + 2*F(:,3) + F(:,4));
+
+
+
+
+  %% controller activated in each Ts for contorller update speed
+  if ti == 0
+
+%     sqrd_wi = u0;
+  else
+   %%
+  if mod(ti, Ts) == 0
+    %%
+    %Y -&gt; x y z p q r u v w phi theta psi  
+    %x -&gt; x y z phi theta psi xd yd zd phid thetad psid
+    x = Y(:,i);
+
+
+    T = body2inert([x(12) x(11) x(10)]);
+    Q.x = [x(1:3); x(10:12); x(7:9); T*x(4:6)];%% careful used for linear controller
+    Q.y = Q.x([1 2 3 6]);
+
+    Q.Controller.UpdateState;
+    Q.UpdateStateHistory;
+
+    if ~isempty(Q.Controller.PF)
+       ref = Q.Controller.PF.CalculateReference;
+    else
+       ref = Q.Controller.ref;
+    end
+
+    sqrd_wi = Q.Controller.FindInput(ref);      
+    end
+  end
+end
+Y = Y.';
+</code></pre>
+
+<p>my controller does not respond as expected when using this functions for nonlinear model. And I can't find why.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12680" data-toggle = "popover">
+				<p>user name : freezer</p>
+				<p> user reputation : 35</p>
+				<p class = "tagcontent" id = "usertaginfo-12680">{'quadcopter': 5, 'control': 1, 'None': 0, 'rrt': 0, 'pid': 4, 'matlab': 4, 'path-planning': 1, 'mobile-robot': 1, 'motion-planning': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-12680" class = 'collapse'>
+			</div>
+				<textarea id = "speech-12680" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12680">
+					<img id="start_img-12680" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12680">Comment</button>
+
+<h1>Answers</h1>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

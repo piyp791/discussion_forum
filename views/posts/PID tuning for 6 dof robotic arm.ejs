@@ -1,0 +1,203 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>PID tuning for 6 dof robotic arm
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8575" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8575" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 603</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>PID tuning for 6 dof robotic arm</h2>
+<p>I'm currently developing a 6 dof robotic arm. The arm is vibrating when it stop moving and I want to reduce it. Another thing is that arm is so heavy (because there is a projector inside it, lol) and I have to use spring between joints. So, can anyone tell me 1. how to select springs because my supervisor told me that proper selection of springs can reduce vibration? 2. how do I tune the PID parameters? All the joints are dynamixel servos and their PID parameters are tunable. I read article about tuning for a single servo. How do I tune these parameters for the whole arm?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8575" data-toggle = "popover">
+				<p>user name : You Zhe Dou</p>
+				<p> user reputation : 11</p>
+				<p class = "tagcontent" id = "usertaginfo-8575">{'control': 2, 'None': 0, 'pid': 2, 'robotic-arm': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8575">Load Comments</button></br>
+			<div id = "commentsection-8575" class = 'collapse'>
+			<div id = "comment-13960" class = "comment">
+				<p>Are the vibrations coming from the motors, i.e. are the motort moving the linkages activly when it vibrates, or are the mechanical vibrations coming from the stiffness of the mechancal structure?</p>
+			</div>
+			<div id = "comment-13992" class = "comment">
+				<p>I would say most vibrations come from the structure because it vibrate when it stop moving and these motors pretty high-end (dynamixel). BUT I think there is some 'backlash' inside the servo which I have no idea how to solve. although it is very tiny, the effect on the end effector is visible.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8575" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8575">
+					<img id="start_img-8575" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8575">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8578"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8578" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Springs (no matter the combination) are not going to reduce the vibration. (there are exceptions because real springs lose energy but I don't think it applies to your case.) Damping could reduce the vibration, but that means you are throwing away energy and it sounds like you need all you can get to move that heavy projector.</p>
+
+<p>Keep in mind that PID does not work as well when the load on the joints change, which is what happens in an arm. Depending on the angle of the joints, sometimes gravity will increase or decrease the apparent load in a way that makes the PID gains not work well at that angle.</p>
+
+<p>Increasing the D gain of your PID will help. However for an arm you should be using a trajectory generator to set the target position to intermediate points between the start and end position.</p>
+
+<p>Another issue you might be having is that you probably have the extra projector support springs arranged to help lift the projector to the position you will use most often. This means you will have asymmetric force gradients on the arm with gravity creating one force and the spring creating another. </p>
+
+<p>So...</p>
+
+<ol>
+<li>Use the single servo PID tuning approach for each servo, one at a time, with the joint axis of the servo of interest vertical and the other joints in a position that puts the projector closest to where you normally want it. Leave the projector support spring on. (the goal is to eliminate the influence of gravity when tuning the PID)</li>
+<li>Set up the arm for normal use and increase the D gain on the joints that are vibrating too much until it's ok (or until you get a high frequency vibration). I predict that the arm performance will not be good when you do this and you should do the next step.</li>
+<li>Add a trajectory generator to your control. With this you should be able to set an accelleration that gives you better performance than step 2 but might be a little slow.</li>
+<li>Switch to torque control, do your own PID calculaton and add feedforward control for gravity compensation and support spring compensation.</li>
+</ol>
+
+<p>All of the above should help regardless if the vibration is from motor, mechanism, or control.</p>
+
+<p>Starting with actuators that are properly sized for the application would be best but it sounds like that is not an option for you. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8578" data-toggle = "popover">
+				<p>user name : hauptmech</p>
+				<p> user reputation : 2621</p>
+				<p class = "tagcontent" id = "usertaginfo-8578">{'battery': 2, 'None': 220, 'lithium-polymer': 2}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8578">Load Comments</button></br>
+			<div id = "commentsection-8578" class = 'collapse'>
+			<div id = "comment-13991" class = "comment">
+				<p>Hi hauptmech,  Than k you so much for your reply. I am currently working on step 1. I am trying to find the plant function by using System identification in Matlab. This is what i did, I give it command to move 90 degree as step input. i read the position as output. then I have my transfer function for plant and I add controller fomr there onwards. is this correct? or is there another way to find out the plant function of the arm link?</p>
+			</div>
+			<div id = "comment-13993" class = "comment">
+				<p>I don't use Matlab so I can't help you with using it. I would not bother with system identification or modeling until step 4. With manual tuning of the PID you don't need the plant function and the results will show you what you need to know, which is that step 1 and 2 is not enough (I'm guessing). However doing it your way (plant function -> PID gains) will teach you a lot especially if you observe the difference between what theory says should happen and how your mechanism actually behaves.</p>
+			</div>
+			<div id = "comment-13994" class = "comment">
+				<p>is there a general guideline for manual tuning PID?  or I just observe the overshoot, settling time and all that ?</p>
+			</div>
+			<div id = "comment-14001" class = "comment">
+				<p>General guidline for PID tuninig is called Ziegler Nichols https://en.wikipedia.org/wiki/Ziegler%E2%80%93Nichols_method</p>
+			</div>
+			</div>
+				<textarea id = "speech-8578" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8578">
+					<img id="start_img-8578" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8578">Comment</button>
+			<br><div id = "ans-8593"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8593" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I think the vibrations of the mechanical structure are due to the mechanical structures natural frequency. The dynamixel servos you mentioned are quite performant and have a acceleration and deceleration. This means that it has an abrupt stop when it reaches its setpoint, and this "shock" excites the mechanical structure at its natural frequency. </p>
+
+<p>You could set the PID controller of the dynamixel servos softer with a large settling time without any overshot. This might help.</p>
+
+<p>To tune the PID you can follow the <a href="https://en.wikipedia.org/wiki/Ziegler%E2%80%93Nichols_method" rel="nofollow">Ziegler-Nichols</a> method. The order of tuning should be backwards, from end-effector to base.</p>
+
+<p>Another solution (and actually this would be my recommendation): 
+You can leave the PID controllers of the servos as they are and do a <a href="http://www.diag.uniroma1.it/~deluca/rob1_en/13_TrajectoryPlanningJoints.pdf" rel="nofollow">trajectory planning</a>. Instead of reducing the performance of the controllers (i.e. instead of making them soft), generate the reference values, the setpoints of the controllers, in a smooth manner, where you control the changes in position, velocity and acceleration, and those are not implicitly set by the controller. They will still be influenced by the controllers, but their effect will be greatly reduced. If you plan the trajectories smoothly (continuous acceleration, no sudden changes) the mechanical structure (at its natural frequency) will not be excited anymore. You will lose some dynamical performance but you will gain smooth motions.</p>
+
+<p>The spring can help your servos if they do not have enough torque. It may effect the frequency of the vibrations but will not eliminate these in most cases. Dampers can be used to reduce vibrations, if your spring is actually a spring-damper it can eliminate vibrations.</p>
+
+<p>To dimension a spring you have to determine what is the maximum torque required by the mechanical system in one given axis. You compare that with the maximum torque of your motor. if it is larger, so you need more torque than you have, you can use this difference to dimension a spring. The spring exerts a force, which is then converted to a torque using the perpendicular distance. This perpendicular however changes with the motion of the joint. So the design variables, spring constant, perpendicular distance (distance and angle of attack) will effect how much torque the spring will exert for every position of the joint. The same way the mechanical torque requirements of the robot will change for every position of the joint. The motor torque will not change. So...the torque coming form the spring plus the torque coming from the motor will have to be smaller than the required torque for every possible position of the joint. </p>
+
+<p>Since you mentioned a projector:
+Please keep in mind that a small motion at the projector level will produce a large motion at the projected image. So you will have to have very smooth motions in order to not excite the mechanical structure. Or you could use a more robust mechanical structure, which is not that easy to excite.</p>
+
+<p>Backlash can also be compensated to some degree. You can find more about it <a href="http://serv.yanchick.org/Books/%D0%9C%D0%B0%D1%82%D0%B5%D1%80%D0%B8%D0%B0%D0%BB%D1%8B%20%D0%BA%D0%BE%D0%BD%D1%84%D0%B5%D1%80%D0%B5%D0%BD%D1%86%D0%B8%D0%B9/ecc03/pdfs/548.pdf" rel="nofollow">here</a>.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8593" data-toggle = "popover">
+				<p>user name : 50k4</p>
+				<p> user reputation : 2800</p>
+				<p class = "tagcontent" id = "usertaginfo-8593">{'geometry': 0, 'None': 193, 'kinematics': 0, 'robotic-arm': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8593">Load Comments</button></br>
+			<div id = "commentsection-8593" class = 'collapse'>
+			<div id = "comment-14011" class = "comment">
+				<p>Thx for your advice, I will look into trajectory planning. For Ziegler-Nichols methods, how exactly do I find the vibration frequency? Do I need any equipment? I am now using a C program to read the position from the servo internally every 0.029s. This data does not show vibration even the Kp is maximum.</p>
+			</div>
+			<div id = "comment-14012" class = "comment">
+				<p>Depending on how high the frequency will be that might be enough. 0.029s cycle time gives you a frequency of 34.4Hz, so you might be able to see the vibrations if they are up tp the 10-15Hz range. If you have a smartphone, you can get an app that does a audio spectrum analysis. If your microphone can pick up the noises your drives make it might show you the frequency, however expect it to be very noise, this is just a low-cost (free) solution.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8593" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8593">
+					<img id="start_img-8593" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8593">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

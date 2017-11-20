@@ -1,0 +1,192 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to further understand the computed torque model controller
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9967" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9967" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 752</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to further understand the computed torque model controller</h2>
+<p>For the following controller what do $q_{des}$ and $q_{act}$ stand for? Also, what is the general principle of this controller? <a href="https://i.stack.imgur.com/hHZUI.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/hHZUI.png" alt="enter image description here"></a></p>
+
+<p>Thanks!</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9967" data-toggle = "popover">
+				<p>user name : Dave</p>
+				<p> user reputation : 1</p>
+				<p class = "tagcontent" id = "usertaginfo-9967">{'control': 0, 'None': 0, 'microcontroller': 0, 'torque': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9967">Load Comments</button></br>
+			<div id = "commentsection-9967" class = 'collapse'>
+			<div id = "comment-17771" class = "comment">
+				<p>Where did you find that controller?</p>
+			</div>
+			<div id = "comment-17788" class = "comment">
+				<p>They are short for **des**ired and **act**ual.</p>
+			</div>
+			</div>
+				<textarea id = "speech-9967" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9967">
+					<img id="start_img-9967" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9967">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9968"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9968" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Setting <em>desired</em> values for a robot's joints $q$ and measuring the <em>actual</em> values is fundamental to any feedback control scheme.   I suggest you study the basics of feedback control if you are getting stuck on the meaning of those terms.  </p>
+
+<p>This controller allows the robot to achieve a desired position in joint space, $q$, with a PD control law that computes joint accelerations necessary to achieve those positions.   It then adds in a desired joint acceleration $\ddot q$ (this may be the novelty of this approach but I need more background information to confirm that) which, when passed through the system dynamics model $D$, determines the torques $\tau$, to apply to each motor.   $h(q, \dot q)$ appears to be a position and velocity observer that ensures $q$ achieves its final state, or it may be the actual plant dynamics.   I can clear up this answer if you also post more details about how the controller is defined from whatever reference you are using. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9968" data-toggle = "popover">
+				<p>user name : SteveO</p>
+				<p> user reputation : 2960</p>
+				<p class = "tagcontent" id = "usertaginfo-9968">{'None': 222}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9968">Load Comments</button></br>
+			<div id = "commentsection-9968" class = 'collapse'>
+			<div id = "comment-17772" class = "comment">
+				<p>$\ddot{q}_{des}$ looks like a simple feedforward implementation, which should not affect stability, but can significantly improve performance.</p>
+			</div>
+			<div id = "comment-17773" class = "comment">
+				<p>Thanks @fibonatic - it could be a feedforward term but then I wonder why the feedforward plant model isn't shown for arriving at that term?  Even just a simple $a s^2 + b s + c$ should be shown if that's what it is.  At least that is how I interpret the drawing.</p>
+			</div>
+			<div id = "comment-17774" class = "comment">
+				<p>Usually you apply a force on something that has inertia, in a setup which wants to minimize friction, so acceleration should be dominant a lot of the time and thus should already improve performance considerably.</p>
+			</div>
+			<div id = "comment-17775" class = "comment">
+				<p>I get that, and agree.  It is a great way to get ahead of the dynamic response.  I'm just not sure if that is what the drawing implies.   More background information about the derivation of the drawing would help.</p>
+			</div>
+			<div id = "comment-17783" class = "comment">
+				<p>Looks like a PD controller with feedforward going into a state feedback controller, with the $\hat{h}$ terms being the output feedback or observers. I was taught an integral controller around a state feedback controller was the most common way of achieving reference tracking, but I don't see why other versions of the PID controller couldn't be used.</p>
+			</div>
+			</div>
+				<textarea id = "speech-9968" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9968">
+					<img id="start_img-9968" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9968">Comment</button>
+			<br><div id = "ans-9977"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9977" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>One of the most common controllers is a <strong>computed-torque</strong> controller, also known as the <strong>inverse dynamics</strong>. The preceding controller is based on the <strong><a href="https://en.wikipedia.org/wiki/Feedback_linearization" rel="nofollow">feedback linearization</a></strong> principle which is an approach that maps a nonlinear model into a linear one and treats it as such as we will show momentarily. Consequently, one can utilize linear controllers such as PD and PID controllers to control nonlinear systems. For example, dynamics equation of robot is usually represented as follows, 
+$$
+M(q) \ddot{q} + C(q,\dot{q}) + G(q) = \tau
+$$</p>
+
+<p>where $q, M(\cdot), C(\cdot), G(\cdot)$ and $\tau$ are a set of generalized coordinates, the inertia matrix, the Coriolis/Centripetal vector, the gravity vector and the control input, respectively. One of many goals of a control engineer is to choose the control input $\tau$ so that the robot should follow a desired trajectory (i.e. denoted as $q_{des}$ or $q_{d}$ for short). The aforementioned equation can be rewritten as </p>
+
+<p>$$
+\ddot{q} = M^{-1}(q)[\tau  - C(q,\dot{q}) - G(q)]
+$$</p>
+
+<p>Now if we can cancel the nonlinear terms (i.e. $M(\cdot),C(\cdot)G(\cdot) $), then we can choose any linear controller. Assume now the matrix $M(\cdot)$ and the vectors $C(\cdot), G(\cdot)$ are given, therefore, one can easily choose the control input $\tau$ as follows </p>
+
+<p>$$
+\tau = M(q)[ \Lambda] + C(q,\dot{q}) + G(q) 
+$$</p>
+
+<p>where $\Lambda$ depends on the chosen controller. In the PD computed-torque, $\Lambda$ is defined as follows 
+$$
+\Lambda = \ddot{q}_{d} + k_{p} \dot{e} + k_{d} e
+$$</p>
+
+<p>where $e$ is the tracking error $ e(t) = q_{d}(t) - q(t)$ which is defined as the difference between the desired and actual joint angles (i.e. they  are in your case $q_{des}$ and $q_{act}$ ). The disadvantage of computed-torque control is the fact that the parameters of the model must be provided precisely. If there is uncertainly which is always the case,   the PD computed-torque controller is not applicable. It is solely utilized in a pure simulation. Another disadvantage of the preceding controller is the fact that it requires the measurements of joint angles, hence the feedback name.  </p>
+
+<p><strong>Note:</strong> I think you can now see how the diagram is generated from the above equations.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9977" data-toggle = "popover">
+				<p>user name : CroCo</p>
+				<p> user reputation : 1040</p>
+				<p class = "tagcontent" id = "usertaginfo-9977">{'control': 18, 'pid': 4, 'slam': 16, 'manipulator': 3, 'mobile-robot': 14, 'dynamics': 6, 'errors': 2, 'data-association': 1, 'kinematics': 3, 'matlab': 6, 'kalman-filter': 21, 'motion-planning': 3, 'None': 41, 'noise': 24, 'theory': 1, 'localization': 14, 'microcontroller': 5, 'mapping': 5, 'sensor-error': 1, 'sensors': 7, 'quadcopter': 8, 'ekf': 26, 'simulation': 1, 'motion': 3}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-9977" class = 'collapse'>
+			</div>
+				<textarea id = "speech-9977" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9977">
+					<img id="start_img-9977" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9977">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,242 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Optimal Control for a simple pendulum
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-851" class = "post">
+			<h2>Question</h2>
+			<div id="vote-851" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">13</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 1303</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Optimal Control for a simple pendulum</h2>
+<p>I'm studying various optimal control methods (and implements them in Matlab), and as test case I choose (for now) a simple pendulum (fixed to the ground), which I want to control to the upper position.</p>
+
+<p>I managed to control it using "simple" feedback method (swing-up based on energy control + LQR stabilization for the upper position), and the state trajectory is show in figure (I forgot the axis description: x is theta, y is theta dot.</p>
+
+<p><img src="https://i.stack.imgur.com/rZAcD.png" alt="Swing-up + LQR control state trajectory"></p>
+
+<p>Now I want to try a "full" optimal control method, starting with an iterative LQR method (which I found implemented here <a href="http://homes.cs.washington.edu/~todorov/software/ilqg_det.m" rel="nofollow noreferrer">http://homes.cs.washington.edu/~todorov/software/ilqg_det.m</a>)</p>
+
+<p>The method requires one dynamic function and one cost function (<code>x = [theta; theta_dot], u</code> is the motor torque (one motor only)):</p>
+
+<pre><code>function [xdot, xdot_x, xdot_u] = ilqr_fnDyn(x, u)
+    xdot = [x(2);
+        -g/l * sin(x(1)) - d/(m*l^2)* x(2) + 1/(m*l^2) * u];
+    if nargout &gt; 1
+        xdot_x = [ 0, 1;
+            -g/l*cos(x(1)), -d/(m*l^2)];
+        xdot_u = [0; 1/(m*l^2)];
+    end
+end
+
+function [l, l_x, l_xx, l_u, l_uu, l_ux] = ilqr_fnCost(x, u, t)
+    %trying J = x_f' Qf x_f + int(dt*[ u^2 ])
+    Qf = 10000000 * eye(2);
+    R = 1;
+    wt = 1;
+    x_diff = [wrapToPi(x(1) - reference(1)); x(2)-reference(2)];
+
+    if isnan(t)
+        l = x_diff'* Qf * x_diff;
+    else
+        l = u'*R*u;
+    end
+
+    if nargout &gt; 1
+        l_x = zeros(2,1);
+        l_xx = zeros(2,2);
+        l_u = 2*R*u;
+        l_uu = 2 * R;
+        l_ux = zeros(1,2);
+
+        if isnan(t)
+            l_x = Qf * x_diff;
+            l_xx = Qf;
+        end
+    end
+end
+</code></pre>
+
+<p>Some info on the pendulum: the origin of my system is where the pendulum is fixed to the ground. The angle theta is zero in the stable position (and pi in the unstable/goal position).
+<code>m</code> is the bob mass, <code>l</code> is the rod length, <code>d</code> is a damping factor (for simplicity I put <code>m=1</code>, <code>l=1</code>, <code>d=0.3</code>)</p>
+
+<p>My cost is simple: penalize the control + the final error.</p>
+
+<p>This is how I call the ilqr function</p>
+
+<pre><code>tspan = [0 10];
+dt = 0.01;
+steps = floor(tspan(2)/dt);
+x0 = [pi/4; 0];
+umin = -3; umax = 3;
+[x_, u_, L, J_opt ] = ilqg_det(@ilqr_fnDyn, @ilqr_fnCost, dt, steps, x0, 0, umin, umax);
+</code></pre>
+
+<p>This is the output</p>
+
+<blockquote>
+  <p>Time From 0 to 10. Initial conditions: (0.785398,0.000000). Goal: (-3.141593,0.000000)
+   Length: 1.000000, mass: 1.000000, damping :0.300000</p>
+  
+  <p>Using Iterative LQR control</p>
+  
+  <p>Iterations = 5;  Cost = 88230673.8003</p>
+</blockquote>
+
+<p>the nominal trajectory (that is the optimal trajectory the control finds) is </p>
+
+<p><img src="https://i.stack.imgur.com/tf9gp.png" alt="ILQR optimal trajectory"></p>
+
+<p>The control is "off"... it doesn't even try to reach the goal...
+What am I doing wrong? (the algorithm  from Todorov seems to work.. at least with his examples)</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-851" data-toggle = "popover">
+				<p>user name : Francesco</p>
+				<p> user reputation : 201</p>
+				<p class = "tagcontent" id = "usertaginfo-851">{'control': 13, 'None': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-851" class = 'collapse'>
+			</div>
+				<textarea id = "speech-851" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-851">
+					<img id="start_img-851" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-851">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-1481"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1481" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Without going through all your code (that would be too much like real work), my gut feel is that you have weighted your control effort heavily enough that the least-cost thing to do is to do nothing and live with the error.</p>
+
+<p>Yes, I know -- all your explicit weights are unity.  But still -- try giving the control effort a lower weight, or the position error a higher one.</p>
+
+<p>Again without getting deeply into your code, your ilrq function may not "understand" the nonlinear nature of the thing you're controlling.  As such, it may not see a way to get to the pendulum upright position, and again, it may fail.</p>
+
+<p>The approach that you first tried, to put just the right amount of energy into the pendulum, then regulate optimally once the pendulum is erect, is probably the best way: you know that in the absence of friction, a system with just the perfectly right amount of energy is going to end up standing still on top (however briefly), so that would seem a sensible place to start.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1481" data-toggle = "popover">
+				<p>user name : TimWescott</p>
+				<p> user reputation : 1336</p>
+				<p class = "tagcontent" id = "usertaginfo-1481">{'None': 107}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1481">Load Comments</button></br>
+			<div id = "commentsection-1481" class = 'collapse'>
+			<div id = "comment-3150" class = "comment">
+				<p>Thank you for your comment. As I said commenting the other answer this question is quite old and maybe I should remove it.. The problem is that I never solved it, even because I moved to other algorithms. Regarding your comment about the energy.. The real goal is not to control an inverted pendulum, but to use it as a test bed for ocp algorithms. (low dimension but non-linear and unstable system)</p>
+			</div>
+			</div>
+				<textarea id = "speech-1481" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1481">
+					<img id="start_img-1481" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1481">Comment</button>
+			<br><div id = "ans-1488"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1488" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>iLQR is an iterative method but you do not in fact appear to be iterating. Todorov supplies a <a href="http://homes.cs.washington.edu/~todorov/software/test_ilqg_det.m" rel="nofollow">test script</a> that should elucidate the approach though it may need to be customized for your system.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1488" data-toggle = "popover">
+				<p>user name : DaemonMaker</p>
+				<p> user reputation : 3321</p>
+				<p class = "tagcontent" id = "usertaginfo-1488">{'control': 4, 'stereo-vision': 15, 'None': 271, 'computer-vision': 15, 'battery': 7, 'cameras': 15, 'research': 4, 'troubleshooting': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1488">Load Comments</button></br>
+			<div id = "commentsection-1488" class = 'collapse'>
+			<div id = "comment-3149" class = "comment">
+				<p>The first thing I tried when I implemented the iLQG method is the todorov test and it worked. Now.. this question is of the end of January.. maybe I should close it.. I moved from this method and from matlab to  NLP methods</p>
+			</div>
+			<div id = "comment-3155" class = "comment">
+				<p>I'm sorry I didn't see it sooner.
+
+Re: closing it, I would recommend against doing so  as others may still find it helpful.</p>
+			</div>
+			<div id = "comment-3163" class = "comment">
+				<p>@DeamonMaker yeah.. this is the reason why I left it open... :)</p>
+			</div>
+			</div>
+				<textarea id = "speech-1488" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1488">
+					<img id="start_img-1488" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1488">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

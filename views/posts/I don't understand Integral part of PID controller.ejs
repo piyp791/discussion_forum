@@ -1,0 +1,211 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>I don't understand Integral part of PID controller
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-499" class = "post">
+			<h2>Question</h2>
+			<div id="vote-499" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">11</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 3736</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>I don't understand Integral part of PID controller</h2>
+<p>I dont understand integral part of PID controller. Let's assume this pseudocode from Wikipedia:</p>
+
+<pre><code>previous_error = 0
+integral = 0 
+start:
+  error = setpoint - measured_value
+  integral = integral + error*dt
+  derivative = (error - previous_error)/dt
+  output = Kp*error + Ki*integral + Kd*derivative
+  previous_error = error
+  wait(dt)
+  goto start
+</code></pre>
+
+<p>Integral is set to zero in the beginning. And then in the loop it's integrating the error over the time. When I make a (positive) change in setpoint, the error will become positive and integral will "eat" the values over the time (from the beginning). But what I dont understand is, when error stabilizes back to zero, the integral part will still have some value (integrated errors over time) and will still contribute to the output value of controller, but it should not, because if error is zero, output of PID should be zero as well, right?</p>
+
+<p>Can somebody explain me that please?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-499" data-toggle = "popover">
+				<p>user name : user561838</p>
+				<p> user reputation : 56</p>
+				<p class = "tagcontent" id = "usertaginfo-499">{'control': 11, 'None': 0, 'pid': 11}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-499" class = 'collapse'>
+			</div>
+				<textarea id = "speech-499" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-499">
+					<img id="start_img-499" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-499">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-500"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-500" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">15</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The main purpose of the integral term is to eliminate the steady state error.
+In the normal case there is going to be a small steady state error and the integral is mainly used to eliminate this error.
+It's however true that when the error gets to 0 the integral will still be positive and will make you overshoot. Then after overshoot the integral will start to go down again. This is the negative effect of the integral term.
+So there is always the trade-off and you have to tune the PID controller to make sure that the overshoot is as small as possible and that the steady state error is minimized.
+Here is where the derivative term come into play. The derivative term helps to minimize the overshoot in the system.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-500" data-toggle = "popover">
+				<p>user name : JuliusG</p>
+				<p> user reputation : 283</p>
+				<p class = "tagcontent" id = "usertaginfo-500">{'None': 17, 'motor': 2}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-500">Load Comments</button></br>
+			<div id = "commentsection-500" class = 'collapse'>
+			<div id = "comment-591" class = "comment">
+				<p>And a good example of steady state error is friction in a joint.  Lets say your PD controller settles close to your target joint angle, but can't quite get there due to friction.  The "I" term will slowly build up and eventually generate a large enough input to overcome friction.</p>
+			</div>
+			<div id = "comment-2077" class = "comment">
+				<p>Another example is bias in steering. If it turns out that there's a slight bias in the steering control, or, for tread-style robots, one tread turns slightly slower than the other despite the controller setting them to the same value, there'll be a bias.  The integral term, set properly, corrects for that.</p>
+			</div>
+			</div>
+				<textarea id = "speech-500" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-500">
+					<img id="start_img-500" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-500">Comment</button>
+			<br><div id = "ans-515"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-515" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">6</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Imagine that you set up a PID controller on your own arm, so that you could hold a cup of coffee straight out in front of you.  </p>
+
+<ul>
+<li>The proportional element would control your arm strength relative to your hand position being too high or too low.</li>
+<li>The derivative element would adjust that strength based on how quickly you were already moving, so that you don't overshoot your target.  </li>
+<li>The integral element would compensate for the effects of gravity; without it, the cup would come to rest where the proportional force equaled the force of gravity.</li>
+</ul>
+
+<p>It sounds like the part of the code you're stuck on is that the system must somehow measure the weight of the coffee, and one way to do that is to accumulate the position error over time.  Most PID controllers have an additional term to specify a reasonable limit on the size that the integral element can be.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-515" data-toggle = "popover">
+				<p>user name : Ian</p>
+				<p> user reputation : 9640</p>
+				<p class = "tagcontent" id = "usertaginfo-515">{'planning': 10, 'None': 809, 'power': 1, 'algorithm': 10, 'battery': 1, 'slam': 7, 'coverage': 10, 'mobile-robot': 9, 'sensors': 9}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-515">Load Comments</button></br>
+			<div id = "commentsection-515" class = 'collapse'>
+			<div id = "comment-619" class = "comment">
+				<p>+1. "if error is zero, output of PID should be zero as well, right?" As Ian explains, even when the coffee cup is in the perfect position and the error is zero, the output of the PID needs to have some upward force to hold that cup in position.</p>
+			</div>
+			</div>
+				<textarea id = "speech-515" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-515">
+					<img id="start_img-515" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-515">Comment</button>
+			<br><div id = "ans-2578"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2578" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Here's a video that gives an "intuitive" understanding of PID loops.  It has an explanation of the integral term, as well as the proportional and derivative terms.</p>
+
+<p><a href="https://www.youtube.com/watch?v=l03SioQ9ySg" rel="nofollow noreferrer">https://www.youtube.com/watch?v=l03SioQ9ySg</a></p>
+
+<p>There's a followup video that explains the math and shows how to derive the code from the general formula.</p>
+
+<p><a href="https://www.youtube.com/watch?v=sDd4VOpOnnA" rel="nofollow noreferrer">https://www.youtube.com/watch?v=sDd4VOpOnnA</a></p>
+
+<p><img src="https://i.stack.imgur.com/ik7xv.png" alt="enter image description here"></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2578" data-toggle = "popover">
+				<p>user name : Mark Harrison</p>
+				<p> user reputation : 183</p>
+				<p class = "tagcontent" id = "usertaginfo-2578">{'quadcopter': 1, 'mobile-robot': 5, 'None': 5, 'differential-drive': 5, 'power': 1}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2578" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2578" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2578">
+					<img id="start_img-2578" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2578">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

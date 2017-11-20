@@ -1,0 +1,253 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Robotic manipulator Jacobian by product of exponentials
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8940" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8940" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 209</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Robotic manipulator Jacobian by product of exponentials</h2>
+<p>I've taken a class and started a thesis on robotics and my reference for calculating the Jacobian by product of exponentials seems incorrect, see:</p>
+
+<p><a href="http://www.cds.caltech.edu/~murray/books/MLS/pdf/mls94-complete.pdf" rel="nofollow">http://www.cds.caltech.edu/~murray/books/MLS/pdf/mls94-complete.pdf</a></p>
+
+<p>Specifically the resulting Jacobian matrix for the SCARA manipulator on page 118 would have us believe that the end effector translational velocity depends on joints 2 and 3 rather than 1 and 2.</p>
+
+<p>Could someone please explain me why?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8940" data-toggle = "popover">
+				<p>user name : Drew</p>
+				<p> user reputation : 70</p>
+				<p class = "tagcontent" id = "usertaginfo-8940">{'product-of-exponentials': 3, 'None': 5, 'manipulator': 3, 'matlab': 0, 'jacobian': 3, 'dynamics': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8940" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8940" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8940">
+					<img id="start_img-8940" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8940">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9011"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9011" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The Jacobian in that equation is from the joint velocity to the "spatial velocity" of the end effector.</p>
+
+<p>The spatial velocity of an object is a somewhat unintuitive concept: it is the velocity of a frame rigidly attached to the end effector <em>but currently coincident with the origin frame</em>. It may help to think of the rigid body as extending to cover the whole space, and you're measuring the velocity by standing at the origin and looking at what is happening to the end effector where you are, instead of at the end of the arm.</p>
+
+<p>In the example given, the origin is at the same location as the first joint. This means that rotating the joint will sweep the end effector in a circle, but that the frame at the origin will only pivot around the vertical axis; this is encoded by the first column of the Jacobian being [0 0 0 0 0 1]'.</p>
+
+<p>Rotating joints two and three will pull the origin-overlapping frame away from the origin, and hence have translational components.</p>
+
+<p>To see how this works in action, note that the Jacobian that you asked about from MLS can be simplified to</p>
+
+<p>$J_{st,SCARA}^{s} =  \begin{bmatrix}
+0 &amp; \phantom{-}y_{2} &amp; \phantom{-}y_{3} &amp; 0\\
+0 &amp; -x_{2} &amp; - x_{3} &amp; 0 \\
+0 &amp;0&amp;0&amp;1 \\
+0&amp; 0&amp; 0&amp;0\\
+0&amp; 0&amp; 0&amp;0\\
+1&amp;1&amp;1 &amp;0
+\end{bmatrix},
+$</p>
+
+<p>in which the first three columns encode the velocity at the origin of an object rotating around the corresponding axis and the fourth column gives the velocity at the origin of an object sliding up the fourth axis.</p>
+
+<p>You can convert the spatial-velocity Jacobian into a world-frame Jacobian by incorporating the Jacobian from base-frame motion to motion at the end effector's current position and orientation. For the SCARA arm, this works out fairly cleanly, with the only difference between the two frame velocities being the "cross product" term that accounts for the extra motion of the end effector sweeping around the base,</p>
+
+<p>$
+J^{w}_{st, SCARA} = \begin{bmatrix} 
+%
+\begin{pmatrix} 1 &amp;&amp;\\ &amp;1&amp;\\ &amp;&amp; 1 \end{pmatrix}
+%
+&amp; 
+%
+\begin{pmatrix} 0 &amp; &amp; -y_{4}\\ &amp; 0 &amp; \phantom{-}x_{4} \\ &amp; &amp; \phantom{-}0 
+\end{pmatrix} \\ \begin{pmatrix} 0&amp;&amp; \\ &amp;0&amp;\\ &amp;&amp;0 \end{pmatrix} &amp; \begin{pmatrix} 1 &amp;  &amp;  \\  &amp; 1 &amp;  \\ &amp;&amp; 1 \end{pmatrix} \end{bmatrix} J^{s}_{st,\text{SCARA}}.
+$</p>
+
+<p>This product evaluates to</p>
+
+<p>$
+J_{st,SCARA}^{w} =  \begin{bmatrix}
+-y_{4} &amp; -(y_{4}-y_{2}) &amp; -(y_{4}-y_{3}) &amp; 0\\
+\phantom{-}x_{4} &amp; \phantom{-}x_{4}-x_{2} &amp; \phantom{-}x_{4}- x_{3} &amp; 0 \\
+0 &amp;0&amp;0&amp;1 \\
+0&amp; 0&amp; 0&amp;0\\
+0&amp; 0&amp; 0&amp;0\\
+1&amp;1&amp;1 &amp;0
+\end{bmatrix},
+$</p>
+
+<p>which matches what we would expect to see: Each of the rotary joints contributes to the end effector velocity by the cross product between its rotational velocity and the vector from the joint to the end effector (note that $x_{4}-x_{3}$ and $y_{4}-y_{3}$ are both zero).</p>
+
+<p>===</p>
+
+<p>In the general case, where the rotations are not only around the $z$ axis, you would want to use the full form of the matrix mapping between the spatial to world Jacobians,</p>
+
+<p>$
+J_{w} = \begin{bmatrix} 
+%
+\begin{pmatrix} 1 &amp;&amp;\\ &amp;1&amp;\\ &amp;&amp; 1 \end{pmatrix}
+%
+&amp; 
+%
+\begin{pmatrix} \phantom{-}0 &amp; \phantom{-}z &amp; -y\\ -z&amp; \phantom{-}0  &amp; \phantom{-}x \\ \phantom{-}y&amp; -x &amp; \phantom{-}0 
+\end{pmatrix} \\ \begin{pmatrix} 0&amp;&amp; \\ &amp;0&amp;\\ &amp;&amp;0 \end{pmatrix} &amp; \begin{pmatrix} 1 &amp;  &amp;  \\  &amp; 1 &amp;  \\ &amp;&amp; 1 \end{pmatrix} \end{bmatrix} J^{s},
+$</p>
+
+<p>which encodes the cross product terms for all three rotation axes when the end effector is at $(x,y,z)$ relative to the base frame.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9011" data-toggle = "popover">
+				<p>user name : RLH</p>
+				<p> user reputation : 36</p>
+				<p class = "tagcontent" id = "usertaginfo-9011">{'None': 2}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9011">Load Comments</button></br>
+			<div id = "commentsection-9011" class = 'collapse'>
+			<div id = "comment-14857" class = "comment">
+				<p>The base velocity of a frame rigidly attached to the end effector, strange. I don't know how i would use that. Might this mean the body jacobian, produces the end effector velocity in a base relative frame?</p>
+			</div>
+			<div id = "comment-14859" class = "comment">
+				<p>no, I don't know what this is either:
+Jb =
+ 
+[ - l1*cos(q2 + q3) - l2*cos(q3), -l2*cos(q3), 0, 0]
+[   l1*sin( q2 + q3) + l2*sin(q3),   l2*sin( q3), 0, 0]
+[                                            0,                 0, 0, 1]
+[                                            0,                 0, 0, 0]
+[                                            0,                 0, 0, 0]
+[                                            1,                 1, 1, 0]</p>
+			</div>
+			<div id = "comment-14860" class = "comment">
+				<p>I'm not sure I understand your second comment. For the first comment, the "spatial velocity" is, as I mentioned, a somewhat unintuitive concept. It's mostly used as a way of expressing that all frames rigidly attached to a single object have a single shared velocity, and then measuring that velocity at the origin for lack of a better choice. You can transform the spatial Jacobian into a world-velocity Jacobian at a given end effector position by using a right group action, or into a body-frame Jacobian by using an adjoint-inverse transformation.</p>
+			</div>
+			<div id = "comment-14861" class = "comment">
+				<p>I was hoping for a way to directly evaluate what might be called the analytical Jacobian.  For the SCARA it should be :
+[ - l2*cos(q1 + q2) - l1*cos(q1), -l2*cos(q1 + q2), 0, 0]
+[ - l2*sin(q1 + q2) - l1*sin(q1), -l2*sin(q1 + q2), 0, 0]
+[                              0,                0, 0, 1]
+[                              0,                0, 0, 0]
+[                              0,                0, 0, 0]
+[                              1,                1, 1, 0]
+Unfortunately, stack exchange is butchering the formatting key read this easily.  Built with derivatives, this process is very slow.</p>
+			</div>
+			<div id = "comment-14862" class = "comment">
+				<p>From what I understand, you want the end-effector Jacobian. The easiest way to get that from the spatial Jacobian is to multiply J_st by the right lifted action. MLS unfortunately doesn't have a directly linked explanation of that action, so I will write it in a second comment.</p>
+			</div>
+			<div id = "comment-14866" class = "comment">
+				<p>Thank you so much for trying RLH, but I am just not getting it.  Can you recommend a book or publication that might explain this "right lifted action" in greater detail?</p>
+			</div>
+			<div id = "comment-14867" class = "comment">
+				<p>The four blocks in the matrix I posted describe how the end effector velocity depends on the end-effector-at-origin velocity: Top left is that all translational components of EEAO velocity transfer to EE. Bottom right is all rotational components transfer. Top right is that the x and y velocities are affected by the distance away from the origin and the z rotational velocity (like in a cross product). Bottom left is that EE rotational velocity isn't affected by EEAO translational velocity. If you haven't done kinematics with cross-products recently, I suggest brushing up on that first.</p>
+			</div>
+			<div id = "comment-14868" class = "comment">
+				<p>.. Okay, is there a source you would recommend?</p>
+			</div>
+			<div id = "comment-14869" class = "comment">
+				<p>Engineering dynamics books with sections on rigid-body mechanics should have enough to get you started. They should all be roughly equivalent in their treatment of basic planar rigid bodies (which you should start with), and the cross-product formulas generalize to three dimensions. Once you're familiar with what is physically happening as rigid bodies move, take another look at the formula I gave in the edited answer.</p>
+			</div>
+			<div id = "comment-14870" class = "comment">
+				<p>Give me a little credit. My attempt at product above did not make sense.  I'll go back to the library, but I would challenge you to produce what you would believe the world Jacobian to be and test your solution.</p>
+			</div>
+			<div id = "comment-14888" class = "comment">
+				<p>Edited to show just the steps answering the question "Is there an error in MLS 118?"</p>
+			</div>
+			<div id = "comment-14978" class = "comment">
+				<p>interesting, i'm attempting to apply the trig functions of the scara to your math so I can demonstrate their veracity to myself.  The translation matrix or right lifted actor seems to resemble the adjoint construction but not quite.  I'm still anxious to know where you learned this and why it's not described in MLS.</p>
+			</div>
+			<div id = "comment-14980" class = "comment">
+				<p>wow, that is powerful.  The 8dof mobile manipulator that originally had me stuck on this problem now seems easy.  If there's not a book on this you need to write it.</p>
+			</div>
+			<div id = "comment-18248" class = "comment">
+				<p>Though this seems to work, I have not found a published source for this math.  A key piece of my thesis is now built on an internet post by an anonymous author.</p>
+			</div>
+			<div id = "comment-18269" class = "comment">
+				<p>Apologies for the long delay in reply. I'm not sure of a good published source on this particular aspect worked out at this level of detail; I've been re-deriving a number of aspects of MLS and related works, with the goal of making the material more broadly accessible. I'm planning to work this into my book (most recent version at geometricmechanics.org), and may be able to pull this into a standalone pamphlet/tutorial by the end of the summer. My contact information is at http://research.engr.oregonstate.edu/lram/</p>
+			</div>
+			<div id = "comment-18272" class = "comment">
+				<p>Outstanding, I can now acknowledge and reference you.  And I'm anxious to read your works.</p>
+			</div>
+			</div>
+				<textarea id = "speech-9011" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9011">
+					<img id="start_img-9011" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9011">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

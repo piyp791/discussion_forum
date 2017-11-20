@@ -1,0 +1,348 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>OpenRAVE output torques and simulation timestep
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-10314" class = "post">
+			<h2>Question</h2>
+			<div id="vote-10314" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 74</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>OpenRAVE output torques and simulation timestep</h2>
+<p>I'm using OpenRAVE to simulate a quadruped, in order to get an idea of torque requirements. </p>
+
+<p>To get started I made a single DOF, single link pendulum to test controllers etc out on.
+I've whipped up an inverse dynamics based PD controller using ComputeInverseDynamics(), which I set the outputs using SetDOFTorques(). I then set a desired position, with the desired velocity being zero. This all appears to work well and I can start the simulation, with the pendulum driving up to the desired position and settling. 
+My concern is the value of the output torques. My pendulum is modeled as a simple box of length 1, mass manually set to 1, with a COM of 0.5.
+When I run my simulation, I output the gravity component from ComputeInverseDynamics(). This gives 4.9NM, which matches up with hand calculated torques I expect from the pendulum (eg the static case) when it is driven to the desired position (from down to horizontal).
+But the output torques to SetDOFTorques() are much higher and vary depending what I set the simulation timestep to.
+If I maintain a controller update rate of 0.001 seconds, then for a simulation update of 0.0001 seconds, my output torque is approximately 87NM. If I alter the simulation timestep to 0.0005 seconds, keeping the controller rate the same the output torques drop down to about 18NM.</p>
+
+<p>As an experiment I removed the inverse dynamics controller and replaced it with a plain PD controller, but I still see large output torques.</p>
+
+<p>Can anyone shed some light on this? It's very possible I'm missing something here!</p>
+
+<p>Thanks very much</p>
+
+<p>Edits:
+I'm adding the main section of my code. There is no trajectory generation, really. I'm just trying to get to a fixed static position.
+In the code, if I keep dt fixed, and alter env.StartSimulation(timestep=0.0001), I get the issues popping up.</p>
+
+<pre><code>with env:
+    robot = env.GetRobots()[0]
+    robot.GetLinks()[0].SetStatic(True)
+    env.StopSimulation()
+    env.StartSimulation(timestep=0.0001)
+
+dt = 0.001
+w = 100
+eta = 5
+Kp = [w*w]
+Kv = [2*eta*w]
+# Desired pos, vel and acc 
+cmd_p = [3.14/2]
+cmd_v = [0]
+cmd_a = [0]
+
+while True:    
+    with env:
+        torqueconfiguration, torquecoriolis, torquegravity = robot.ComputeInverseDynamics([1],None,returncomponents=True)
+        err_p = cmd_p - robot.GetDOFValues()
+        err_v = cmd_v - robot.GetDOFVelocities()
+
+        # ID Controller
+        M = compute_inertia_matrix(robot, robot.GetDOFValues())
+        a_cmd = (Kp*err_p + Kv*err_v + cmd_a)
+        taus = torquegravity + torquecoriolis +  M.dot(a_cmd.transpose()).transpose()
+
+        # Just PD(ish) controller
+        #taus = Kp*err_p - Kv*robot.GetDOFVelocities()
+
+        with robot:
+            robot.SetDOFTorques(taus,False)     # True = use limits
+            print (taus, torquegravity+torquecoriolis, a_cmd, M.dot(a_cmd.transpose()).transpose())
+    time.sleep(dt)
+
+
+# https://scaron.info/teaching/equations-of-motion.html
+def compute_inertia_matrix(robot, q, external_torque=None):
+    n = len(q)
+    M = np.zeros((n, n))
+    with robot:
+        robot.SetDOFValues(q)
+        for (i, e_i) in enumerate(np.eye(n)):
+            m, c, g = robot.ComputeInverseDynamics(e_i, external_torque, returncomponents=True)
+            M[:, i] = m
+    return M
+
+
+
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;Robot name="Pendulum"&gt;
+    &lt;RotationAxis&gt;0 1 0 90&lt;/RotationAxis&gt; &lt;!-- makes the pendulum vertical --&gt;
+    &lt;KinBody&gt;
+        &lt;!-- &lt;Mass type="mimicgeom"&gt;&lt;density&gt;100000&lt;/density&gt;&lt;/Mass&gt; --&gt;
+        &lt;Body name="Base" type="dynamic"&gt;
+            &lt;Translation&gt;0.0  0.0  0.0&lt;/Translation&gt;
+            &lt;Geom type="cylinder"&gt;
+                &lt;rotationaxis&gt;1 0 0 90&lt;/rotationaxis&gt;
+                &lt;radius&gt;0.3&lt;/radius&gt;
+                &lt;height&gt;0.02&lt;/height&gt;
+                &lt;ambientColor&gt;1. 0. 0.&lt;/ambientColor&gt;
+                &lt;diffuseColor&gt;1. 0. 0.&lt;/diffuseColor&gt;
+            &lt;/Geom&gt;
+            &lt;mass type="custom"&gt;
+                &lt;!-- specify the total mass--&gt;
+                &lt;total&gt;5.0&lt;/total&gt;
+                  &lt;!-- specify the 3x3 inertia matrix--&gt;
+                  &lt;!--&lt;inertia&gt;2 0 0 0 3 0 0 0 5&lt;/inertia&gt; --&gt;
+                  &lt;!-- specify the center of mass (if using ODE physics engine, should be 0)--&gt;
+                &lt;com&gt;0.1 0.0 0.0&lt;/com&gt;
+                &lt;/mass&gt; 
+        &lt;/Body&gt;
+        &lt;Body name="Arm0" type="dynamic"&gt;
+            &lt;offsetfrom&gt;Base&lt;/offsetfrom&gt;
+            &lt;!-- translation and rotation  will be relative to Base --&gt;
+            &lt;Translation&gt;0 0 0&lt;/Translation&gt;
+            &lt;Geom type="box"&gt;
+                &lt;Translation&gt;1 0 0&lt;/Translation&gt;
+                &lt;Extents&gt;1 0.1 0.1&lt;/Extents&gt;
+                &lt;ambientColor&gt;1. 0. 0.&lt;/ambientColor&gt;
+                &lt;diffuseColor&gt;1. 0. 0.&lt;/diffuseColor&gt;
+            &lt;/Geom&gt;
+            &lt;mass type="custom"&gt;
+                &lt;!-- specify the total mass--&gt;
+                &lt;total&gt;1.0&lt;/total&gt;
+                  &lt;!-- specify the 3x3 inertia matrix--&gt;
+                  &lt;!--&lt;inertia&gt;2 0 0 0 3 0 0 0 5&lt;/inertia&gt; --&gt;
+                  &lt;!-- specify the center of mass (if using ODE physics engine, should be 0)--&gt;
+                &lt;com&gt;0.5 0.0 0.0&lt;/com&gt;
+                &lt;/mass&gt;             
+        &lt;/Body&gt;
+        &lt;Joint circular="true" name="Joint0" type="hinge"&gt;
+            &lt;Body&gt;Base&lt;/Body&gt;
+            &lt;Body&gt;Arm0&lt;/Body&gt;
+            &lt;offsetfrom&gt;Arm0&lt;/offsetfrom&gt;
+            &lt;weight&gt;0&lt;/weight&gt;
+            &lt;axis&gt;0 0 1&lt;/axis&gt;
+            &lt;maxvel&gt;100&lt;/maxvel&gt;
+            &lt;resolution&gt;1&lt;/resolution&gt;
+        &lt;/Joint&gt;
+    &lt;/KinBody&gt;
+&lt;/Robot&gt;
+</code></pre>
+
+<p>Here is some data for dt = 0.001 and env.StartSimulation(timestep=0.0001)</p>
+
+<p>In this data,</p>
+
+<ul>
+<li>taus is the torque command to the simulation, </li>
+<li>torquegravity+torquecoriolis is returned from the inverse dynamics </li>
+<li>a_cmd is the controller command and</li>
+<li>M*a_cmd is the command after being multiplied by the mass matrix</li>
+</ul>
+
+<p>The gravity and coriolis parts appear to be correct for steady state, where it should be about 4.9NM</p>
+
+<pre><code>taus, torquegravity+torquecoriolis, a_cmd, M*a_cmd
+ 3464.88331508,  0.48809828,  5329.83879509,  3464.39521681
+ 330.67177959,  1.47549936,  506.45581573,  329.19628023
+-785.91806527,  2.45531014, -1212.88211601, -788.37337541
+-1065.4689484,  3.23603844, -1644.16151823, -1068.70498685
+-1027.47479809,  3.80261774, -1586.58063974, -1031.27741583
+-877.83110127,  4.18635604, -1356.94993433, -882.01745731
+-707.25108627,  4.4371714, -1094.9050118, -711.68825767
+-554.34483533,  4.6006198, -859.91608481, -558.94545512
+-432.22314217,  4.70818921, -672.20204828, -436.93133138
+-327.797496,  4.7768792, -511.65288492, -332.5743752
+-240.77203429,  4.82021019, -377.83422228, -245.59224448
+-172.18942128,  4.84807059, -272.3653721, -177.03749186
+-117.58895761,  4.86591166, -188.39210657, -122.45486927
+-74.51920719,  4.87743369, -122.14867828, -79.39664088
+-39.91183436,  4.88473444, -68.91779816, -44.7965688
+-12.82321495,  4.88971433, -27.25066043, -17.71292928
+ 8.45349476,  4.89281357,  5.47797105,  3.56068118
+ 25.35468725,  4.89489884,  31.47659755,  20.45978841
+ 38.84080509,  4.896309,  52.22230167,  33.94449609
+ 48.72668147,  4.89724689,  67.42989936,  43.82943458
+ 56.78552877,  4.89790152,  79.82711885,  51.88762725
+ 65.515892,  4.89836756,  93.25772991,  60.61752444
+ 68.81359264,  4.89867903,  98.33063633,  63.91491362
+ 73.86961896,  4.89891052,  106.10878221,  68.97070844
+ 76.67416578,  4.89907489,  110.42321674,  71.77509088
+ 79.62549808,  4.89919702,  114.96354008,  74.72630105
+ 85.17343708,  4.89928669,  123.49869291,  80.27415039
+ 85.13686188,  4.89934963,  123.44232654,  80.23751225
+ 85.75675034,  4.89939931,  124.39592466,  80.85735103
+ 86.55192592,  4.89943807,  125.61921208,  81.65248785
+ 86.39672231,  4.89946802,  125.38039121,  81.49725429
+ 87.4299925,  4.89949202,  126.97000073,  82.53050048
+ 87.42776523,  4.8995098,  126.96654682,  82.52825543
+ 87.15472709,  4.8995251,  126.54646461,  82.255202
+ 86.97240783,  4.89953825,  126.26595319,  82.07286958
+ 86.98023044,  4.89954905,  126.27797137,  82.08068139
+ 86.75364661,  4.89955809,  125.92936696,  81.85408852
+ 86.9853716,  4.89956526,  126.28585591,  82.08580634
+ 88.01679721,  4.89957062,  127.8726563,  83.1172266
+ 89.2610231,  4.89957348,  129.78684557,  84.36144962
+ 88.47969399,  4.89957495,  128.58479851,  83.58011903
+ 88.77623594,  4.89957711,  129.04101359,  83.87665884
+ 90.87280518,  4.89957739,  132.2665043,  85.9732278
+ 88.9513552,  4.89957707,  129.3104279,  84.05177813
+ 89.14100099,  4.89957773,  129.60218964,  84.24142327
+</code></pre>
+
+<p>And here is some data for dt = 0.001 and env.StartSimulation(timestep=0.0005)</p>
+
+<pre><code>taus, torquegravity+torquecoriolis, a_cmd, M*a_cmd
+-313.62240349,  0.98927261, -484.01796324, -314.61167611
+-242.03525463,  2.00886997, -375.45249938, -244.0441246
+-199.82226305,  2.79259699, -311.71516928, -202.61486003
+-190.02605484,  3.39367572, -297.56881625, -193.41973056
+-162.08293067,  3.8525617, -255.28537288, -165.93549237
+-125.84847045,  4.17559368, -200.03702174, -130.02406413
+-103.89936813,  4.40068949, -166.61547326, -108.30005762
+-82.32305905,  4.5566127, -133.66103347, -86.87967175
+-64.56801352,  4.66415211, -106.51102404, -69.23216563
+-49.68124446,  4.73812107, -83.72210081, -54.41936553
+-37.91265825,  4.78890663, -65.6947152, -42.70156488
+-27.99189838,  4.82374208, -50.48560071, -32.81564046
+-19.81225948,  4.84762415, -37.9382825, -24.65988362
+-12.55978349,  4.8636252, -26.80524414, -17.42340869
+-6.89165107,  4.87470983, -18.10209369, -11.7663609
+-3.13313345,  4.88256746, -12.33184754, -8.0157009
+ 0.69831646,  4.88796162, -6.44560793, -4.18964516
+ 3.86277859,  4.89166745, -1.58290594, -1.02888886
+ 6.12163439,  4.8941598,  1.88842245,  1.22747459
+ 8.58189707,  4.89593332,  5.67071346,  3.68596375
+ 9.1580546,  4.89712981,  6.55526891,  4.26092479
+ 11.81854706,  4.89798468,  10.64701905,  6.92056238
+ 12.40540565,  4.89856409,  11.54898701,  7.50684156
+ 14.04109075,  4.89897979,  14.06478609,  9.14211096
+ 14.39924399,  4.89926951,  14.61534535,  9.49997448
+ 14.98060951,  4.89947252,  15.50944153,  10.08113699
+ 16.08890875,  4.89961544,  17.2142974,  11.18929331
+ 16.01955973,  4.89971637,  17.10745133,  11.11984337
+ 17.06493791,  4.89978831,  18.71561478,  12.16514961
+ 17.35364328,  4.89983976,  19.15969772,  12.45380352
+ 17.62239334,  4.89987688,  19.57310225,  12.72251646
+ 17.84455913,  4.89990387,  19.91485424,  12.94465525
+ 17.43825648,  4.89992362,  19.28974286,  12.53833286
+ 17.58436934,  4.89993826,  19.51450935,  12.68443108
+ 17.70571012,  4.8999492,  19.70117065,  12.80576093
+ 18.40852272,  4.89995746,  20.78240808,  13.50856525
+ 18.49492461,  4.89996372,  20.91532445,  13.59496089
+ 18.56575802,  4.89996852,  21.02429154,  13.6657895
+ 18.62430693,  4.89997223,  21.11436108,  13.7243347
+ 16.54216482,  4.89997511,  17.91106109,  11.64218971
+ 18.71146936,  4.89997747,  21.24844907,  13.81149189
+ 18.13316504,  4.89997923,  20.35874741,  13.23318581
+ 18.77330006,  4.89998067,  21.34356829,  13.87331939
+</code></pre>
+
+<p>Despite the differences in torque command (a_cmd) I still get similar performance, in that the arm drives to the right position fairly quickly.
+As another experiment I set the initial position to pi/2 and just fed back the gravity term to the torque output. My understanding of this is that the arm should float, ala a gravity compensation sort of thing. But it just drops as if a small torque is applied.
+Thanks again! </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10314" data-toggle = "popover">
+				<p>user name : law</p>
+				<p> user reputation : 31</p>
+				<p class = "tagcontent" id = "usertaginfo-10314">{'None': 3, 'torque': 0, 'robotic-arm': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10314">Load Comments</button></br>
+			<div id = "commentsection-10314" class = 'collapse'>
+			<div id = "comment-18476" class = "comment">
+				<p>It seems like your desired trajectory is being affected by the timestep setting.   This should not be the case.  When you slow down the similation timestep, does the position profile also slow down?   Can you include a couple of graphs of the rotational position, velocity, and acceleration values for two different timesteps?</p>
+			</div>
+			<div id = "comment-18477" class = "comment">
+				<p>I'll echo what @SteveO said - we can help troubleshoot a lot of problems here, but not without data. Data is what separates an answer from a guess.</p>
+			</div>
+			<div id = "comment-18507" class = "comment">
+				<p>Hey fellas, thanks for taking a look. I've updated my question with a bit more info. Just on what SteveO said, there is no trajectory generation at the moment. Just very basic 'trying to drive to a position'. Thanks!</p>
+			</div>
+			<div id = "comment-18533" class = "comment">
+				<p>Thanks for the update.  I see that you are just asking for a step change in the pendulum's position.  I do not understand (yet) why, for timestep = 0.0001, the initial a_cmd value is so large.  It is over 5,000 compared with -484 for the longer timestep.</p>
+			</div>
+			<div id = "comment-18558" class = "comment">
+				<p>I'm not too sure what's going on here. I think the early timestep values should be fairly large. Based just on the Kp term, the initial step should be around 100^2*(pi/2 - 0) = 15700. Also, the difference in the outgoing toques is about 5 times lower for simtimestep = 0.005. Very strange! I might have to have a dig through the OpenRAVE code.</p>
+			</div>
+			<div id = "comment-19089" class = "comment">
+				<p>It might have something to do with `with` statement. The previous robot state is restored when your code gets out of `with robot` statement. So DOF torques might not be set correctly, I think.</p>
+			</div>
+			</div>
+				<textarea id = "speech-10314" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10314">
+					<img id="start_img-10314" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10314">Comment</button>
+
+<h1>Answers</h1>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

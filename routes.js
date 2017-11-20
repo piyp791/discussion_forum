@@ -46,21 +46,33 @@ module.exports = function(app) {
             res.json(JSON.stringify({'status': 'failure'}))
         }
 
-        dbHelper.getHomePageLinks('recommended', userid, function(err, data){
-
+        misc.getActivityForUser(userid, function(err, activityPosts){
             if(err){
-                console.log('some error!!');
-                res.json({'content': 'hahahahahaha'})
-
+                console.log('some error retrieving user activity');
+                res.json('error')
             }else{
+                console.log(JSON.stringify(activityPosts));
 
-                var response = misc.searchRecommendations(userid, data, function(err, response){
-                     console.log('response-->' + JSON.stringify(response))
-                     res.json(response)
+                //get important words for this id
+                misc.getQueryWordsForUser(activityPosts, function(err, words){
+                    if(err){
+                        console.log('some error retrieving user activity');
+                        res.json('error')
+                    }else{
+                        console.log(JSON.stringify(words));
+
+                        misc.doContentBasedQuery(words, function(err, posts){
+
+                            if(err){
+                                console.log('error retrieving results from elasticseat');
+                            }else{
+                                console.log('posts-->' +JSON.stringify(posts));
+                                res.json(posts['hits']['hits']);
+                            }
+                        });
+                    }
                 })
-                //console.log('handled query-->' + post[1].substring(0,50));
             }
-
         });
 
     });

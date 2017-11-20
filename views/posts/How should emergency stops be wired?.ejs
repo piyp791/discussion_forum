@@ -1,0 +1,264 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How should emergency stops be wired?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-112" class = "post">
+			<h2>Question</h2>
+			<div id="vote-112" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">20</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 10245</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How should emergency stops be wired?</h2>
+<p>Emergency stops are obviously a good idea on most robots, how should they be wired?  What systems should be killed immediately, and what should stay working?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-112" data-toggle = "popover">
+				<p>user name : Felix</p>
+				<p> user reputation : 437</p>
+				<p class = "tagcontent" id = "usertaginfo-112">{'planning': 4, 'control': 32, 'None': 0, 'errors': 20, 'tuning': 32, 'localization': -3, 'artificial-intelligence': 4, 'pid': 32, 'noise': 9, 'mobile-robot': 17, 'sensors': 9, 'motion-planning': 4}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-112" class = 'collapse'>
+			</div>
+				<textarea id = "speech-112" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-112">
+					<img id="start_img-112" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-112">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-114"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-114" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">18</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Emergency stops are a safety feature, normally found on industrial equipment.</p>
+
+<p>They should be used when the robot has a potential to hurt humans or cause harm to other assets. This generally depends on the weight of the robot, and the power of the motors (speed at which the robot moves).</p>
+
+<p>For example, a 1kg robot is too light to cause much damage. Conversely if it is 50kg, it could cause some damage. Similarly, a 5kg flying robot which moves very quickly could be dangerous.</p>
+
+<p>You will want to mount an emergency stop on the robot, and possibly also another one off the robot (although this is a more difficult configuration). The safe way of wiring an emergency stop is in a normally closed manner. That means that the switch is normally closed, and the two terminals are connected. By connecting one end to logical 1, and pulling the other end to logical 0 through a resistor, it can be used to determine the state of the emergency stop.</p>
+
+<p>If the emergency stop is triggered, the switch will open, and the signal will be pulled to logical 0 (0 volts).</p>
+
+<p>This will normally feed into a relay controlling the power to the robot.</p>
+
+<p>Note that another safety requirement of emergency stops is that resetting an emergency stop should not start up the robot again. Turning it back on should require both resetting the emergency stop, and subsequently pressing the on switch.</p>
+
+<p>EHow has a diagram showing how this should be wired:</p>
+
+<p><a href="http://www.ehow.com/how-does_5151421_do-emergency-stop-buttons-work.html" rel="nofollow noreferrer">http://www.ehow.com/how-does_5151421_do-emergency-stop-buttons-work.html</a></p>
+
+<hr>
+
+<p>As <a href="https://robotics.stackexchange.com/a/116/145">Mark Booth</a> pointed out, to further increase robustness, you should use the normally open switch as well. To do this, connect this signal (with a pull down resistor), to the STOP signal of a relay (<a href="http://en.wikipedia.org/wiki/Relay_logic" rel="nofollow noreferrer">http://en.wikipedia.org/wiki/Relay_logic</a>).</p>
+
+<hr>
+
+<p>The systems that should be killed should include all actuators. This means anything that can move. If you have a computer on board, you may be able to separate its power to another system to avoid sudden loss of power. However, you will want to ensure that it is not powering any actuators directly (eg. USB).</p>
+
+<hr>
+
+<p>For low power applications, you might try to save on space by skipping the relay, and wire the emergency stop in series with your main power source (batteries). <strong>Don't do this.</strong> There are two problems:</p>
+
+<ul>
+<li>This would violate the safety principle that resetting the emergency stop should <strong>not</strong> by itself turn on the power again.</li>
+<li>All the current will be flow through your emergency stop. There are emergency stops rated up to 10A (others are rated only 5A). Your application will probably require more current</li>
+</ul>
+
+<p>If an emergency stop is required on your robot, it is probably large enough to have the space for relays.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-114" data-toggle = "popover">
+				<p>user name : ronalchn</p>
+				<p> user reputation : 2449</p>
+				<p class = "tagcontent" id = "usertaginfo-114">{'None': 187, 'two-wheeled': 20, 'inverse-kinematics': 15, 'interrupts': 5, 'microcontroller': 13, 'wiring': 7, 'c': 8, 'avr': 5, 'brushless-motor': 2, 'joint': 15, 'kinematics': 15, 'hall-sensor': 2, 'mobile-robot': 20, 'arm': 15}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-114">Load Comments</button></br>
+			<div id = "commentsection-114" class = 'collapse'>
+			<div id = "comment-133" class = "comment">
+				<p>In my experience, the asset that an emergency stop should *always* protect is itself. So, stopping all actuators sounds fine ... except if you have water around (my case), where we actually made it cut the complete system power (i.e. just after the battery)</p>
+			</div>
+			</div>
+				<textarea id = "speech-114" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-114">
+					<img id="start_img-114" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-114">Comment</button>
+			<br><div id = "ans-116"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-116" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">13</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>In addition to the points that <a href="https://robotics.stackexchange.com/a/114/37">ronalchn</a> makes, if you have a <em>safety critical system</em>, the E-Stop selected should use at least a 4-wire interface rather than a simpler two wire interface.</p>
+
+<p>The E-Stop should then have two internal switches, one normally closed, the other normally open (<a href="http://www.ia.omron.com/products/family/1111/download/catalog.html" rel="nofollow noreferrer">like one of these OMRON options</a>, see <code>A22E-M-11-EMO</code>
+ and <code>A22E-M-11-EMS</code> on p2 of the <a href="http://www.ia.omron.com/data_pdf/cat/a22e_ca_csm206513-9703.pdf?id=1111" rel="nofollow noreferrer">datasheet</a>). Activating the E-Stop both opens the <a href="http://en.wikipedia.org/wiki/Switch#Contact_terminology" rel="nofollow noreferrer">NC<sup>(Normally closed)</sup> switch</a> and closes the NO<sup>(Normally open)</sup> switch.</p>
+
+<p>The reason for this is redundancy.</p>
+
+<p>One failure mode of a two wire normally closed e-stop circuit is that the wires get shorted, thus opening the NC switch would do nothing. This could happen in a situation where a cable is crushed, the insulation displaced and the now bare wires touch each other.</p>
+
+<p>If you decide to wire your E-stop in the opposite way though, with a normally open circuit then one of <em>its</em> failure mode is that the e-stop wire gets cut, thus closing the NO switch would do nothing. This could happen in a situation where a cable is caught between two surfaces or where movement pulls a cable out of it's socket.</p>
+
+<p>The risk of these failure modes means that neither on their own are sufficient.</p>
+
+<p>By including both NC and NO E-Stop circuits, you virtually eliminate this risk, since either E-Stop circuit registering an E-Stop condition would cause an overall E-Stop condition. There <em>is</em> an exceedingly small chance that the NC circuit could be shorted <em>at the same time</em> as the NO circuit is disconnected, but any safety system worth its salt would make the window of opportunity for this vanishingly small (i.e. transistor switching rates).</p>
+
+<hr>
+
+<p>On the subject of what to kill on an E-Stop, in my opinion <strong>you should kill everything which can move</strong> and everything which could cause damage (such as a laser).</p>
+
+<p>My experience is with <em>industrial robotics</em> though, where the mechanics are typically designed so that it is inherently safe to kill the power at any time. Axes are designed such that motors aren't acting against gravity without significant gearing (for example <a href="http://en.wikipedia.org/wiki/SCARA" rel="nofollow noreferrer">SCARA robots</a>, where most of the axes are in a horizontal plane) or are designed such that  in an E-Stop condition the <a href="http://en.wikipedia.org/wiki/Dynamic_braking#Principle_of_operation" rel="nofollow noreferrer">motors are shorted, bringing them to an abrupt stop</a>.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-116" data-toggle = "popover">
+				<p>user name : Mark Booth</p>
+				<p> user reputation : 3037</p>
+				<p class = "tagcontent" id = "usertaginfo-116">{'control': 7, 'quadcopter': 2, 'None': 258, 'tuning': 7, 'uav': 2, 'design': 2, 'stepper-motor': 7}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-116" class = 'collapse'>
+			</div>
+				<textarea id = "speech-116" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-116">
+					<img id="start_img-116" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-116">Comment</button>
+			<br><div id = "ans-132"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-132" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p><strong>What to cut out is not always a simple matter</strong></p>
+
+<p>One complication arises when the actuators actually need power in order to remain safe. For example: a back-drivable or compliant robot arm had picked up a heavy object, and is using motor power to hold the object in the air. If you kill the power, the weight of the object will bring the arms crashing down, and either breaking the object, the robot, or a person.</p>
+
+<p><strong>One way to implement cut out</strong></p>
+
+<p>In the above case, rather than cutting actuator power, it might be wise to send a message to all actuators to go into a safe mode. Exactly what that means depends on the nature of the robot and the particular actuator. They might stop, or simply go into a lower power mode where they fall down slowly.</p>
+
+<p><strong>Another way to implement cut out</strong></p>
+
+<p>In the <a href="http://www.shadowrobot.com" rel="nofollow">Shadow Robot Hand</a>, the sensing system, bus and actuators are all powered from the same 48v supply line. The sensors and actuators each have their own regulators, each with their own Unver-Voltage Lockout setting. The actuators cut out at 25v, while the sensors cut out at 9v. When an emergency stop happens, the power supply line is taken down to 18v, which causes the actuators' power supply to cut out, while maintaining the power to the sensors and communication bus.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-132" data-toggle = "popover">
+				<p>user name : Rocketmagnet</p>
+				<p> user reputation : 4235</p>
+				<p class = "tagcontent" id = "usertaginfo-132">{'control': 31, 'force': 8, 'multi-agent': 5, 'pid': 29, 'air-muscle': 6, 'uav': 52, 'stepper-driver': 3, 'reliability': 5, 'motor': 12, 'esc': 1, 'mobile-robot': 6, 'ros': 35, 'stepper-motor': 3, 'tuning': 12, 'swarm': 10, 'research': 5, 'platform': 17, 'imu': 4, 'kalman-filter': 49, 'hri': 4, 'None': 266, 'raspberry-pi': 24, 'localization': 7, 'python': 7, 'torque': 3, 'brushless-motor': 28, 'failure': 5, 'force-sensor': 15, 'sensors': 20, 'pwm': 10, 'wireless': 10, 'servos': 7, 'wifi': 24, 'simulation': 6, 'servomotor': 11, 'particle-filter': 0, 'sensor-fusion': 4, 'automatic': 12, 'software': 17}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-132">Load Comments</button></br>
+			<div id = "commentsection-132" class = 'collapse'>
+			<div id = "comment-155" class = "comment">
+				<p>@MarkBooth - Yes, that's true in industry. In academia however, I've seen a bunch of robots that could cause problems on power off.</p>
+			</div>
+			<div id = "comment-156" class = "comment">
+				<p>That doesn't surprise me, just as it doesn't surprise me that E-Stops aren't something that many hobbyists consider either. I think part of the value of this stack exchange will be to help bring these communities together and help everyone see solutions from other domains. As it is, your answer inspired me to edit my own answer with the industrial perspective on *what to kill*. Luckily I never had to fill out the risk assessment on the Robot that smashed a 50kg jig through it's own safety cage because it was trying to move it so quickly.</p>
+			</div>
+			</div>
+				<textarea id = "speech-132" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-132">
+					<img id="start_img-132" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-132">Comment</button>
+			<br><div id = "ans-321"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-321" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>If you are not near the robot but require an e-stop, you'll want to consider a watchdog circuit watching a remote signal. The circuit keeps an eye out for a pulsing signal and, if the signal stops pulsing, activates the e-stop circuitry. You want to have this as close to a physical circuit as you can, which means the pulse can't be interpreted by a computer nor a microcontroller, because either of those are likely to have failure states that will prevent them from adequately actuating the e-stop.</p>
+
+<p>As many of the other answers are stating, the ideal e-stop is one in which any failure mode will cause an emergency stop, which means that the laws of physics are doing most of the work of the e-stopping, rather than something resembling software. Of course, trying to interpret that stop correctly depends greatly on what the robot is meant to do and the consequences of it stopping that action, but failure of an e-stop system should not ensure that your robot keeps running.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-321" data-toggle = "popover">
+				<p>user name : Brian J. Geiger</p>
+				<p> user reputation : 31</p>
+				<p class = "tagcontent" id = "usertaginfo-321">{'None': 3}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-321" class = 'collapse'>
+			</div>
+				<textarea id = "speech-321" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-321">
+					<img id="start_img-321" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-321">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

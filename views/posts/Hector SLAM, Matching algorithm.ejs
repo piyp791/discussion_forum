@@ -1,0 +1,167 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Hector SLAM, Matching algorithm
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7387" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7387" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 2768</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Hector SLAM, Matching algorithm</h2>
+<p>I'm trying to understand the scan-matching part of <a href="http://www.sim.informatik.tu-darmstadt.de/publ/download/2011_SSRR_KohlbrecherMeyerStrykKlingauf_Flexible_SLAM_System.pdf" rel="nofollow noreferrer">Hector SLAM</a> (<a href="http://www.sim.informatik.tu-darmstadt.de/~kohlbrecher/hector_overview/ROS-Workshop%20Darmstadt%202011.pdf" rel="nofollow noreferrer">PPT summary</a>). It seems a little difficult to understand, in some cases, how is it possible to actually perform the alignment of the scans. <em>Can anyone explain about it?</em></p>
+
+<p>In my case, I'm working with a simulation. I'm moving my robot in a corridor-like featureless environment (only two walls) and I don't get a map. Nevertheless, if I move in a sinewave motion, I'm able to get a map. Moreover, if I have an additional feature, the algorithm even shows the real path as long as this feature is seen (right part of the image), otherwise it shows a very weird-looking oscillatory path which does not resemble a sinewave at all. Something important to notice is that the width of the map is pretty accurate (real=4m, map's=4.014m), and the length of the movement is also somehow accurate (real=15m, map's= 15.47). I'm using a Hokuyo URG-04LX laser range finder, no odometry, no IMU. I'm running in Ubuntu 14.04 and using ROS Indigo.</p>
+
+<p><img src="https://i.stack.imgur.com/NhCbG.png" alt="Generated map by algorithm"></p>
+
+<p>I more or less understand how Hector works, but I have no idea about why I'm getting this map and specially trajectory.</p>
+
+<p>Thank you.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7387" data-toggle = "popover">
+				<p>user name : Ledom</p>
+				<p> user reputation : 6</p>
+				<p class = "tagcontent" id = "usertaginfo-7387">{'None': 0, 'localization': 1, 'mapping': 1, 'slam': 1, 'rangefinder': 1, 'ros': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7387" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7387" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7387">
+					<img id="start_img-7387" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7387">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7391"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7391" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Imagine someone put you in a wheelchair and blindfolded you, then let you reach your arm out and touch a wall. You could tell how far away the wall was, but as long as you were pushed parallel to the wall, how would you know how far you had gone? You can't count steps or see the end of the hall, so you do not have a way to <em>index</em> your <em>samples</em> of where the wall is. </p>
+
+<p>In a similar way, you have handicapped your robot in the simulation. You state you are using a<a href="https://www.hokuyo-aut.jp/02sensor/07scanner/urg_04lx.html" rel="nofollow">Hokuyo URG 04LX</a>, and you also state that your hall is 15 meters long. The range on that scanner is 4 meters, so it cannot "see" the end of the hall and cannot use that information to index its scans. You are also not providing any odometry, so it can't guess where to index the scans either. </p>
+
+<p>SLAM is simultaneous <em>localization</em> and mapping - if the current "image" (scan) looks just like the previous image, and you provide no odometry, it does not update its position and thus you do not get a map. This is true as long as you move parallel to the wall, which is your problem case. </p>
+
+<p>When you advance or retreat from a wall (feature) <strong>within range</strong>, as you do when you take the sinusoidal path, the images are different from one scan to the next. The algorithm looks for the rotation and translation that yields a "best fit" between those two <strong>different</strong> images and assumes that the difference between the two was due to motion, updates its estimate of location accordingly, then indexes that scan to the new position.</p>
+
+<p>Regarding the path you are shown, I would look for a range issue somewhere, probably in a tangent expression. Always use atan2 instead of atan whenever possible to avoid errors due to quadrant location; (-y)/x and y/(-x) both evaluate to -(y/x) inside an atan expression but those are two totally different angles. :EDIT: See below, but this may also be due to a lack of features. </p>
+
+<p><strong>RECOMMENDATIONS</strong>
+Get a scanner that has a range greater than the hall length, OR reduce the hall length, OR start your craft within "sight" of the end of the hall, OR add features such as alcoves/recesses along the hall to give the algorithm a key point with which it can localize and index. </p>
+
+<p>A final note regarding the alcoves: <a href="https://m.youtube.com/watch?v=j1Q-a5zCmhc" rel="nofollow">(In Bruges reference)</a> they must be spaced closer together than the twice the maximum scan range because the craft is operating in the center of the hall. Distance to wall (squared) + distance to alcove (squared) = max range (squared). You need a new feature to enter the frame before the old feature leaves, so if the max distance to <em>one</em> alcove is sqrt (max range (squared) - distance to wall (squared)), then the spacing needs to be less than (or equal, if you enjoy pain and borderline cases) double that distance. Finally note that this is assuming your scanner has a 360 degree view and can see the feature behind it until it passes the maximum scanning range. In actuality your scanner has a 240 degree field of view, but I'll let you work that math out on your own. </p>
+
+<p>:EDIT:
+With a little further reflection, I don't know that a straight, infinitely long wall (which is what you have if both ends are out of range) is sufficient to provide lateral position estimation. This may also help to explain your weird path. As an easy check, try putting it within sight of the end of the hall <em>without</em> your feature to see if you get the smooth sine you would expect. Then I would add alcoves at the 1x spacing I described above (range^2 - (wall dist)^2) and see if that also fixes it. I would do both of these before hunting through the algorithm for trig out of range errors. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7391" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-7391">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7391" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7391" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7391">
+					<img id="start_img-7391" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7391">Comment</button>
+			<br><div id = "ans-8708"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8708" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">-1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>So your path starts out perfect because of the back wall, however because of the lack of features afterward &amp; poor sinusoidal path planned spatial parameters i.e. (amplitude, frequency) w.r.t. speed (wait... speed).</p>
+
+<p><strong>Have you tried increasing the speed of the motors?</strong></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8708" data-toggle = "popover">
+				<p>user name : nimig18</p>
+				<p> user reputation : 1</p>
+				<p class = "tagcontent" id = "usertaginfo-8708">{'None': -1}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8708" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8708" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8708">
+					<img id="start_img-8708" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8708">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

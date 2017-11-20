@@ -1,0 +1,218 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Gazebo: moving joint with model plugin
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8893" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8893" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 869</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Gazebo: moving joint with model plugin</h2>
+<p>This is my first week with Gazebo.  The tutorials are clear (except for my dearth of C++ knowledge) but now that I'm working to move out on my own things are getting cloudy.  I made a model comprising two boxes and a revolute joint.  The file one_r_test.world loads this model.  A plugin is "loaded" (?) in model.sdf and that plugin, ModelControl, comes from model_push.cc in the "Model plugins" tutorial (<a href="http://gazebosim.org/tutorials?tut=plugins_model&amp;cat=write_plugin" rel="nofollow">http://gazebosim.org/tutorials?tut=plugins_model&amp;cat=write_plugin</a>), which uses SetLinearVel to move a box.  I can get this same behavior out of model_control.cc if I just copy the tutorial code (and change the plugin name as appropriate), but that's not what I want.  I'm seeking to eventually simulate joint control of robotic manipulators and what's not working in this basic simulation is my attempt to move the model joint via the ModelControl plugin.  It moves in the GUI if I set the velocity (or torque) that way.  The model_control.cc code is pasted below in hopes that you can identify a problem.</p>
+
+<p><strong>model_control.cc</strong></p>
+
+<pre><code>
+#include "boost/bind.hpp"
+#include "gazebo/gazebo.hh"
+#include "gazebo/physics/physics.hh"
+#include "gazebo/common/common.hh"
+#include "stdio.h"
+// In the real file these quotes are greater-than and less-than but I
+// don't know how to get that to show up in my question
+
+namespace gazebo
+{
+  class ModelControl : public ModelPlugin
+  {
+  public: void Load(physics::ModelPtr _parent, sdf::ElementPtr /*_sdf*/)
+    {
+      // Store the pointer to the model
+      this->model = _parent;
+
+      // Store the pointers to the joints
+      this->jointR1_ = this->model->GetJoint("r1");
+
+      // Listen to the update event. This event is broadcast every
+      // simulation iteration.
+      this->updateConnection = event::Events::ConnectWorldUpdateBegin(boost::bind(&ModelControl::OnUpdate, this, _1));
+    }
+
+    // Called by the world update start event
+  public: void OnUpdate(const common::UpdateInfo & /*_info*/)
+    {
+      // Apply a small linear velocity to the model.
+      //this->model->SetLinearVel(math::Vector3(.03, 0, 0));
+
+      // Apply angular velocity to joint
+      this->jointR1_->SetParam("vel", 0, 99);
+      this->jointR1_->SetParam("max_force", 0, 9999999999);
+
+      double currAngle = this->jointR1_->GetAngle(0).Radian();
+      printf("Current angle is \t %f\n", currAngle);
+    }
+
+    // Maybe I want to keep track of time?
+    common::Time last_update_time_;
+
+    // Pointer to the model
+  private: physics::ModelPtr model;
+
+    // Pointer to the update event connection
+  private: event::ConnectionPtr updateConnection;
+
+    // Pointers to joints
+    physics::JointPtr jointR1_;
+  };
+
+  // Register this plugin with the simulator
+  GZ_REGISTER_MODEL_PLUGIN(ModelControl)
+}
+</code></pre>
+
+<p><strong>edit:</strong> If I change</p>
+
+<p><code>this-&gt;jointR1_-&gt;SetParam("vel", 0, 99);</code></p>
+
+<p>to</p>
+
+<p><code>this-&gt;jointR1_-&gt;SetVelocity(0, 99);</code></p>
+
+<p>then the joint moves (yes, very, very quickly).  What's wrong with SetParam vs SetVelocity?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8893" data-toggle = "popover">
+				<p>user name : thehandoftheking</p>
+				<p> user reputation : 1</p>
+				<p class = "tagcontent" id = "usertaginfo-8893">{'joint': 0, 'None': 0, 'gazebo': 0, 'simulator': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8893" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8893" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8893">
+					<img id="start_img-8893" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8893">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-11314"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11314" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Your first line is:</p>
+
+<pre><code>virtual bool SetParam   (   const std::string &amp;     _key,
+unsigned int    _index,
+const boost::any &amp;  _value 
+)       
+pure virtual
+Set a non-generic parameter for the joint.
+
+replaces SetAttribute(Attribute, int, double) List of parameters: "friction" Axis Coulomb joint friction coefficient. "hi_stop" Axis upper limit. "lo_stop" Axis lower limit.
+
+Parameters
+[in]    _key    String key.
+[in]    _index  Index of the axis.
+[in]    _value  Value of the attribute.
+</code></pre>
+
+<p>And the second one is based on this member function of joint class from Gazebo API <a href="http://osrf-distributions.s3.amazonaws.com/gazebo/api/7.1.0/classgazebo_1_1physics_1_1Joint.html#ae32987acf99308e4aca7f2c399f3e731" rel="nofollow noreferrer">here</a>:</p>
+
+<pre><code>virtual void SetVelocity    (   unsigned int    _index,
+double  _vel 
+)       
+pure virtual
+Set the velocity of an axis(index).
+
+Parameters
+[in]    _index  Index of the axis.
+[in]    _vel    Velocity.
+</code></pre>
+
+<p>So yes your robot joint will move depending on the parameter _vel. Don't just depend on Gazebo Tutorials if you want to make your own robot, it's not enough. See also Gazebo API, if you're not good in C++ that much then first learn the important aspects of C++ like inheritance, access specifiers, object classes, friend functions. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11314" data-toggle = "popover">
+				<p>user name : Dinesh Lama</p>
+				<p> user reputation : 160</p>
+				<p class = "tagcontent" id = "usertaginfo-11314">{'control': 0, 'stability': 1, 'None': 2, 'inverse-kinematics': 0, 'arduino': 4, 'python': 1, 'gazebo': 0, 'lidar': 0, 'servomotor': 0, 'motor': 0, 'real-time': 1, 'actuator': 0, 'serial': 1, 'ros': 2, 'servos': 0}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11314" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11314" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11314">
+					<img id="start_img-11314" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11314">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,150 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>EKF-SLAM: Shrink covariance matrix on one direction
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8202" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8202" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 106</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>EKF-SLAM: Shrink covariance matrix on one direction</h2>
+<p>I have implemented an EKF on a mobile robot (x,y,theta coordinates), but now I've a problem.
+When I detect a landmark, I would like to correct my estimate only on a defined direction. As an example, if my robot is travelling on the plane, and meets a landmark with orientation 0 degrees, I want to correct the position estimate only on a direction perpendicular to the landmark itself (i.e. 90 degrees).</p>
+
+<p>This is how I'm doing it for the position estimate:</p>
+
+<ul>
+<li>I update the x_posterior as in the normal case, and store it in x_temp.</li>
+<li>I calculate the error x_temp - x_prior.</li>
+<li>I project this error vector on the direction perpendicular to the landmark.</li>
+<li>I add this projected quantity to x_prior.</li>
+</ul>
+
+<p>This is working quite well, but how can I do the same for the covariance matrix? Basically, I want to shrink the covariance only on the direction perpendicular to the landmark.</p>
+
+<p>Thank you for your help.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8202" data-toggle = "popover">
+				<p>user name : charles</p>
+				<p> user reputation : 266</p>
+				<p class = "tagcontent" id = "usertaginfo-8202">{'None': 9, 'ekf': 3, 'frame': 3, 'slam': 3, 'imu': 4, 'kalman-filter': 3, 'mobile-robot': 4, 'gyroscope': 4}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8202">Load Comments</button></br>
+			<div id = "commentsection-8202" class = 'collapse'>
+			<div id = "comment-13116" class = "comment">
+				<p>I highly doubt that the orientation can be exactly zero due to noise. You probably need to elaborate more about your ultimate objective. Covariance matrix holds the uncertainty and the correlation about the elements of the state vector, therefore, updating some elements affect the whole covariance matrix.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8202" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8202">
+					<img id="start_img-8202" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8202">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8236"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8236" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Here is my solution, that is just an approximation but it is working quite well.</p>
+
+<p>Essentially this is what I do:</p>
+
+<ul>
+<li>I store the a priori covariance matrix in $P_{old}$.</li>
+<li>I execute the normal (uncorrected) update step, and store the covariance matrix in $P_{new}$.</li>
+<li>Given the direction of the landmark $d$, I compute the parallel component (to this direction $d$) of the axis of the ellipse represented by $P_{old}$. Then, I select the component with maximum length and store it in $a_{par}$.</li>
+<li>I compute the perpendicular component (to the same direction $d$) of the axis of the ellipse represented by $P_{new}$. Then, I select the component with maximum length and store it in $a_{perp}$.</li>
+<li>Finally I generate the corrected ellipse from the 2 axis $a_{par}$ and $a_{perp}$ and store the covariance matrix in $P$. </li>
+</ul>
+
+<p>This is represented in the following example (direction of the landmark $d$ = 0 ) figure, where the red ellipse is represented by $P_{old}$, the green ellipse by $P_{new}$, and the blue ellipse is the corrected one represented by $P$, where only the component perpendicular to $d$ has been shrunk.</p>
+
+<p><a href="https://i.stack.imgur.com/AqaT7.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/AqaT7.png" alt="enter image description here"></a></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8236" data-toggle = "popover">
+				<p>user name : charles</p>
+				<p> user reputation : 266</p>
+				<p class = "tagcontent" id = "usertaginfo-8236">{'None': 9, 'ekf': 3, 'frame': 3, 'slam': 3, 'imu': 4, 'kalman-filter': 3, 'mobile-robot': 4, 'gyroscope': 4}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8236" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8236" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8236">
+					<img id="start_img-8236" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8236">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

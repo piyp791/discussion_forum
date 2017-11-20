@@ -1,0 +1,199 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to rotate covariance?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2556" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2556" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">8</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 4933</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to rotate covariance?</h2>
+<p>I am working on an EKF and have a question regarding coordinate frame conversion for covariance matrices. Let's say I get some measurement $(x, y, z, roll, pitch, yaw)$ with corresponding 6x6 covariance matrix $C$. This measurement and $C$ are given in some coordinate frame $G_1$. I need to transform the measurement to another coordinate frame, $G_2$. Transforming the measurement itself is trivial, but I would also need to transform its covariance, correct? The translation between $G_1$ and $G_2$ should be irrelevant, but I would still need to rotate it. If I am correct, how would I do this? For the covariances between $x$, $y$, and $z$, my first thought was to simply apply a 3D rotation matrix, but that only works for a 3x3 submatrix within the full 6x6 covariance matrix. Do I need to apply the same rotation to all four blocks? </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2556" data-toggle = "popover">
+				<p>user name : TheWumpus</p>
+				<p> user reputation : 141</p>
+				<p class = "tagcontent" id = "usertaginfo-2556">{'magnetometer': 1, 'None': 2, 'ekf': 2, 'platform': 0, 'imu': 1, 'kalman-filter': 18, 'ugv': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2556" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2556" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2556">
+					<img id="start_img-2556" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2556">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-2557"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2557" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Covariance is defined as</p>
+
+<p>$\begin{align}
+C &amp;= \mathbb{E}(X X^T)
+\end{align}$</p>
+
+<p>where, in your case, $X \in \mathbb{R}^6$ is your state vector and $C$ is the covariance matrix you already have.</p>
+
+<p>For the transformed state $X'=R X$, with $R \in \mathbb{R}^{6\times 6}$ in your case, this becomes</p>
+
+<p>$\begin{align}
+C' &amp;= \mathbb{E}(X' X'^T)
+\\
+&amp;= \mathbb{E}(R X X^T R^T)
+\\
+&amp;= R ~\mathbb{E}(X X^T) ~R^T
+\\
+&amp;= R C R^T
+\end{align}$</p>
+
+<p>As a caveat, be carefull with Euler angles. Those are usual non-intuitive in their behavior so you might not be able to simply rotate them with the same rotation matrix that you use for position. Remember that they are usually defined (in the robotics world) in terms of the local coordinate system whereas position is usually defined in terms of the global coordinate system. Off the top of my head, though, I can't remember if they need special treatment.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2557" data-toggle = "popover">
+				<p>user name : ryan0270</p>
+				<p> user reputation : 1814</p>
+				<p class = "tagcontent" id = "usertaginfo-2557">{'None': 133}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2557">Load Comments</button></br>
+			<div id = "commentsection-2557" class = 'collapse'>
+			<div id = "comment-4905" class = "comment">
+				<p>Thanks. In this case, though, $R$ is 3x3 and $C$ is 6x6. I guess part of my problem is that I'm uncertain how $R$ would affect the covariance between linear axes and rotation (or even the covariance of the Euler angles themselves), i.e., how should I augment $R$ so that it's 6x6.</p>
+			</div>
+			<div id = "comment-4906" class = "comment">
+				<p>$R$ is just any arbitrary affine transformation. In your case, the top left 3x3 block and the bottom right 3x3 blocks are both the rotation matrix (if you assume that the Euler angles can be rotated the same ... see caveat in answer). The off-diagonal blocks are zeros.</p>
+			</div>
+			</div>
+				<textarea id = "speech-2557" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2557">
+					<img id="start_img-2557" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2557">Comment</button>
+			<br><div id = "ans-9671"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9671" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The <a href="http://www.mrpt.org/" rel="nofollow">MRPT library</a> can do this for you. You need to use a <code>CPose3DPDFGaussian</code> to represent your pose and covariance then use the <code>+</code> operator.</p>
+
+<p>Under the hood it represents your 6DOF covariance as a 7DOF quaternion base covariance, where the math is more straightforward.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9671" data-toggle = "popover">
+				<p>user name : brice rebsamen</p>
+				<p> user reputation : 131</p>
+				<p class = "tagcontent" id = "usertaginfo-9671">{'None': 3}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-9671" class = 'collapse'>
+			</div>
+				<textarea id = "speech-9671" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9671">
+					<img id="start_img-9671" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9671">Comment</button>
+			<br><div id = "ans-11688"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11688" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Very intuitive explanation with geometric interpretation for covariance and its decomposition. </p>
+
+<p><a href="http://www.visiondummy.com/2014/04/geometric-interpretation-covariance-matrix/" rel="nofollow noreferrer">http://www.visiondummy.com/2014/04/geometric-interpretation-covariance-matrix/</a></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11688" data-toggle = "popover">
+				<p>user name : Nitish Gupta</p>
+				<p> user reputation : 1</p>
+				<p class = "tagcontent" id = "usertaginfo-11688">{'None': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11688">Load Comments</button></br>
+			<div id = "commentsection-11688" class = 'collapse'>
+			<div id = "comment-20894" class = "comment">
+				<p>Hello and welcome to Robotics! Thanks for your answer but we prefer answers to be self contained where possible. Links [tend to rot](https://en.wikipedia.org/wiki/Link_rot) so answers which rely on a link can be rendered useless if the linked to content disappears. If you add more context from the link, it is more likely that people will find your answer useful.</p>
+			</div>
+			</div>
+				<textarea id = "speech-11688" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11688">
+					<img id="start_img-11688" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11688">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

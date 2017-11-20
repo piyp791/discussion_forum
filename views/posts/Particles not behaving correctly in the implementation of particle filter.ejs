@@ -1,0 +1,320 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Particles not behaving correctly in the implementation of particle filter
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-4589" class = "post">
+			<h2>Question</h2>
+			<div id="vote-4589" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 117</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Particles not behaving correctly in the implementation of particle filter</h2>
+<p>I am implementing a particle filter in Java. The problem with my particle filter implementation is that the particles suddenly go away from the robot i.e the resampling process is choosing particles which are away from robot more than those which are near.It is like particles chase the robot, but always remain behind it. I am trying to find the root cause, but to no luck. Can anyone please help me where I am going wrong?</p>
+
+<p>I am adding all the imp. code snippets and also some screenshots in consecutive order to make it more clear. </p>
+
+<p><a href="https://i.stack.imgur.com/Tul8Vm.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/Tul8Vm.jpg" alt="1"></a>
+<a href="https://i.stack.imgur.com/t04Wz.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/t04Wzm.jpg" alt="2"></a>
+<a href="https://i.stack.imgur.com/5EZJZ.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/5EZJZm.jpg" alt="3"></a>
+<a href="https://i.stack.imgur.com/bNqBV.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/bNqBVm.jpg" alt="4"></a>
+<a href="https://i.stack.imgur.com/tibqD.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/tibqDm.jpg" alt="5"></a></p>
+
+<p>Details:</p>
+
+<p>I am using a range sensor which only works in one direction i.e. its fixed and tells the distance from the obstacle in front. If there is no obstacle in its line of vision, then it tells the distance to boundary wall. </p>
+
+<p>Code:
+Calculating Range</p>
+
+<pre><code>/*
+ * This method returns the range reading from the sensor mounted on top of robot. 
+ * It uses x and y as the actual position of the robot/particle and then creates Vx and Vy as virtual x and y.
+ * These virtual x and y loop from the current position till some obstruction is there and tell us distance till there.
+ */
+
+private int calculateRange(double x, double y, double Vx, double Vy, int counter, int loop_counter)
+{
+    while(robotIsWithinBoundary(Vx, Vy))
+    {
+        int pace = 2;
+        Vx += pace* Math.sin(Math.toRadians(robot_orientation));
+        Vy += pace* Math.cos(Math.toRadians(robot_orientation));
+        counter++;
+        Line2D line1 = new Line2D.Double(x,y,Vx,Vy);
+        if(line1.intersects(obst1))
+        {
+            //System.out.println("Distance to obst1:"+counter);
+            loop_counter++;
+            break;
+        }
+        if(line1.intersects(obst2))
+        {
+            //System.out.println("Distance to obst2:"+counter);
+            loop_counter++;
+            break;
+        }
+
+    }
+    return counter;
+}
+
+/*
+ * This method tells us whether the robot/particle is within boundary or not.
+ */
+private boolean robotIsWithinBoundary(double x, double y)
+{
+    boolean verdict = true;
+    if(x&gt;680||x&lt;0)
+    {
+        verdict = false;
+    }
+    if(y&lt;0||y&gt;450)
+    {
+        verdict = false;
+    }
+    return verdict;
+}   /*
+ * This method returns the range reading from the sensor mounted on top of robot. 
+ * It uses x and y as the actual position of the robot/particle and then creates Vx and Vy as virtual x and y.
+ * These virtual x and y loop from the current position till some obstruction is there and tell us distance till there.
+ */
+private int calculateRange(double x, double y, double Vx, double Vy, int counter, int loop_counter)
+{
+    while(robotIsWithinBoundary(Vx, Vy))
+    {
+        int pace = 2;
+        Vx += pace* Math.sin(Math.toRadians(robot_orientation));
+        Vy += pace* Math.cos(Math.toRadians(robot_orientation));
+        counter++;
+        Line2D line1 = new Line2D.Double(x,y,Vx,Vy);
+        if(line1.intersects(obst1))
+        {
+            //System.out.println("Distance to obst1:"+counter);
+            loop_counter++;
+            break;
+        }
+        if(line1.intersects(obst2))
+        {
+            //System.out.println("Distance to obst2:"+counter);
+            loop_counter++;
+            break;
+        }
+
+    }
+    return counter;
+}
+
+/*
+ * This method tells us whether the robot/particle is within boundary or not.
+ */
+private boolean robotIsWithinBoundary(double x, double y)
+{
+    boolean verdict = true;
+    if(x&gt;680||x&lt;0)
+    {
+        verdict = false;
+    }
+    if(y&lt;0||y&gt;450)
+    {
+        verdict = false;
+    }
+    return verdict;
+}
+</code></pre>
+
+<p>Calculating Weights</p>
+
+<pre><code>/*
+ * This method calculates the importance weights for the particles based on the robot_range which is 
+ * the reading of the range sensor for the robot.
+ */
+private double measurementProbability(int index)
+{
+    double probability=1;
+    double particle_x_position=particleListX.get(index);
+    double particle_y_position=particleListY.get(index);
+    double particle_Vx=particle_x_position;
+    double particle_Vy=particle_y_position;
+    int range_counter=0;
+    int loop_counter=0;
+
+    int distance = calculateRange(particle_x_position, particle_x_position, particle_Vx, particle_Vy ,range_counter, loop_counter); 
+    probability *= calculateGaussianDistance(distance, senseNoise, robot_range);
+    //System.out.println(probability);          
+    return probability;
+}
+
+private double calculateGaussianDistance(double mu, double sigma, double x )
+{
+    double gDistance=Math.exp(-(((Math.pow((mu - x),2))/(Math.pow(sigma,2)) / 2.0) / (Math.sqrt(2.0 * Math.PI * (Math.pow(sigma,2))))));
+    return gDistance;
+}
+</code></pre>
+
+<p>Resampling</p>
+
+<pre><code>/*
+ * This method provides a resampled particle back to the list. It chooses a particle randomly 
+ * from the list based on the weights with replacement.
+ */
+private int giveResampledParticle()
+{
+    int index = randomInteger(0, n-1);
+    double sample =0.0;
+    double maxWeight = maximumWeight();
+
+    sample += randomDouble(0, maxWeight);
+    while(sample &gt; particleListProbability.get(index))
+    {
+        sample -= particleListProbability.get(index);
+        index = (index +1) % n;
+    }
+    return index;
+}
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4589" data-toggle = "popover">
+				<p>user name : StarksAreBack</p>
+				<p> user reputation : 164</p>
+				<p class = "tagcontent" id = "usertaginfo-4589">{'particle-filter': 8, 'None': 0, 'theory': 3, 'localization': 11}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-4589">Load Comments</button></br>
+			<div id = "commentsection-4589" class = 'collapse'>
+			<div id = "comment-7205" class = "comment">
+				<p>1. We can't see the screenshots. 2. Instead of posting code, it would be much more helpful if you explain your logic/algorithm concisely. If there is a bug in the code you posted, I'm afraid it will be quite difficult for us to figure that out just by looking at it. It is, however, quite possible for us to understand the logic of your implementation of the particle filter and figure out if there's anything else that needs to be done with the algo.</p>
+			</div>
+			</div>
+				<textarea id = "speech-4589" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4589">
+					<img id="start_img-4589" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4589">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-4598"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4598" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Your function <code>calculateRange()</code> uses a variable <code>robot_orientation</code> which I cannot see from your code snippets that it is set or changed. </p>
+
+<p>I would expect something like:</p>
+
+<pre><code>double particle_orientation = particleListOrientation.get(index);
+</code></pre>
+
+<p>inside your function <code>measurementProbability()</code> and then call <code>calculateRange()</code> with that additional parameter.</p>
+
+<pre><code>private int calculateRange(double x, double y, double robot_orientation)
+{
+    double Vx = x, double Vy = y;
+    int pace = 2;
+    int counter = 0;
+    while(robotIsWithinBoundary(Vx, Vy))
+    {
+        Vx += pace* Math.sin(Math.toRadians(robot_orientation));
+        Vy += pace* Math.cos(Math.toRadians(robot_orientation));
+        counter++;
+        Line2D line1 = new Line2D.Double(x,y,Vx,Vy);
+        if(line1.intersects(obst1))
+        {
+            break;
+        }
+        if(line1.intersects(obst2))
+        {
+            break;
+        }
+
+    }
+    return counter*pace;
+}
+</code></pre>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4598" data-toggle = "popover">
+				<p>user name : Steffen</p>
+				<p> user reputation : 186</p>
+				<p class = "tagcontent" id = "usertaginfo-4598">{'None': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-4598">Load Comments</button></br>
+			<div id = "commentsection-4598" class = 'collapse'>
+			<div id = "comment-7238" class = "comment">
+				<p>Thanks, yes i was using robot orientation for both particles and robot to calculate range. I will pass orientation as parameter now.</p>
+			</div>
+			</div>
+				<textarea id = "speech-4598" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4598">
+					<img id="start_img-4598" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4598">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

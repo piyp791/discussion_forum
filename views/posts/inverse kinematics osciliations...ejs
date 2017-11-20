@@ -1,0 +1,163 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>inverse kinematics osciliations..
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8700" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8700" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 64</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>inverse kinematics osciliations..</h2>
+<p>I am the moment having some issues with an Jacobian going towards a singularity (i think)as some of its values becomes close to zero, and my robot oscillates, and therefore thought that some form of optimization of the linear least square solution is needed. </p>
+
+<p>I have heard about the interior point method, but I am not sure on how i can apply it here. </p>
+
+<p>My equation is as this.. </p>
+
+<p>J(q)dq = du </p>
+
+<p>How would i have to implement the optimization, and would be needed?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8700" data-toggle = "popover">
+				<p>user name : fouritn</p>
+				<p> user reputation : 11</p>
+				<p class = "tagcontent" id = "usertaginfo-8700">{'None': 0, 'inverse-kinematics': 2, 'c++': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8700">Load Comments</button></br>
+			<div id = "commentsection-8700" class = 'collapse'>
+			<div id = "comment-14222" class = "comment">
+				<p>You have a problem: your robot oscillates. You have a **suspected** root cause: Jacobian singularity due to near-zero values. My issue with your question is that you are looking for help with optimizing based on a root cause that you seem unsure about. I would prefer if you could provide more data about your problem so we can all getter a clearer idea of what is going on, and we can then confirm or refute your idea and go from there.</p>
+			</div>
+			<div id = "comment-14223" class = "comment">
+				<p>For instance, oscillations may be an expected occurrence that could be eliminated with compliance control; see [this video](http://www.youtube.com/watch?v=AJPZjF7HDxY) for example. With no description of the oscillations it's hard to give meaningful feedback.</p>
+			</div>
+			<div id = "comment-14232" class = "comment">
+				<p>Welcome to *robotics* fouritn, as Chuck says, it's better not to presuppose a solution, so it would probably be a good idea to include more details of what what you would like to achieve, what you have tried, what you expected to see and what you actually saw. A description of you system would also be useful. If you edit your question to make it more clear, then hopefully someone will be able to answer it.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8700" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8700">
+					<img id="start_img-8700" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8700">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8701"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8701" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>As your Jacobian matrix approaches a singularity, one or more of your joints will be required to reach an excessive velocity in order for the end effector to remain on the path.  This is a problem when you want the end effector to continue with a non-zero speed along its path.  Otherwise, the singularity could cause the end effector to dwell while the nullspace motion of the robot eventually resulted in it being able to continue along the path, and you wouldn't have to implement any optimal control algorithms.</p>
+
+<p>When the configuration becomes close enough to a singularity, any control approach will either cause the end effector to reduce below the desire speed, or else will cause the end effector to deviate from its desired path.  If you think of the desired trajectory as a set of differential motions (or speeds), you can see that the two problems above are really the same thing:  the end effector is unable to continue with nonzero speed along a desired path.</p>
+
+<p>Systems have been controlled which attempt to optimize the motion in the neighborhood of singularities.  Often they will use a gradient technique to minimize the error from the desired trajectory (the path/speed combination).  The interior point method is one of these approaches.  </p>
+
+<p>You would need to set up your objective function (or constraint) to be optimized to be related to the error between the desired trajectory and the achievable trajectory.  I have seen pretty simple optimization functions such as minimize the sum of the square of the joint velocities, all the way through very complex optimizations that trade off between speed and positional deviations.  </p>
+
+<p>I think the answers to this question will help you get started:  <a href="https://robotics.stackexchange.com/questions/344/with-a-6-axis-robot-given-end-effector-position-and-range-of-orientations-how">With a 6-axis robot, given end-effector position and range of orientations, how to find optimal joint values</a></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8701" data-toggle = "popover">
+				<p>user name : SteveO</p>
+				<p> user reputation : 2960</p>
+				<p class = "tagcontent" id = "usertaginfo-8701">{'None': 222}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8701">Load Comments</button></br>
+			<div id = "commentsection-8701" class = 'collapse'>
+			<div id = "comment-14216" class = "comment">
+				<p>In my case i do know the velocity constraint of my system.. , and every time i compute a dq that is above allowed velocity i set it to that value. My way of "dirty hacking" the situation was to set the constraint below the velocity limit,  such that when dq becomes  vel_limit/2 => i set it to dq = vel_limit/2..</p>
+			</div>
+			<div id = "comment-14217" class = "comment">
+				<p>That is an interesting approach, but by slowing down some joints, and allowing the other joints to keep their computed speeds, you will see deviations from the path.   You are trading off positional accuracy in order to keep the velocity as high as you are comfortable letting it go.   If you would reduce all joint speeds by the same ratio, you'd stay closer to your path but the end effector speed would suffer.   Hence the need to define an optimization function so you can trade these off in a more deterministic way, instead of the arbitrary speed reduction of the excessive joint speeds only.</p>
+			</div>
+			<div id = "comment-14218" class = "comment">
+				<p>well.. yeah in theory..  you are right..  but i haven't noticed that it deviates the path that much.. I am testing it with the same path, and haven't noticed  any severe deviating..  but it would of course be desirable to give the joints the most optimal state rather dirty hack it..</p>
+			</div>
+			<div id = "comment-14219" class = "comment">
+				<p>Are the oscillations you mentioned in your original question deviations from the path, or perhaps caused by you instantaneously changing the velocity of a joint?  If the trajectory deviations are not important then maybe an optimized inverse kinematics algorithm would be less critical to performance than focusing on the tuning of each joint.  I guess I'm a little confused between your question and the last comment...</p>
+			</div>
+			<div id = "comment-14220" class = "comment">
+				<p>It follows the overall path, but overshoots when it try to hit the target it try to be at...</p>
+			</div>
+			<div id = "comment-14224" class = "comment">
+				<p>I'd folliow the advice @Chuck gave.   It does not sound like a kinematics issue given the limited information we have.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8701" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8701">
+					<img id="start_img-8701" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8701">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,164 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Quadcopter PID output and duty cycle conversion
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7415" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7415" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 332</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Quadcopter PID output and duty cycle conversion</h2>
+<p>I'm trying to design two PD controllers to control the roll and pitch angle of my quadcopter and a P controller to control the yaw rate. I give to the system the reference roll, pitch and yaw rate from a smartphone controller (with WiFi).In the case of roll and pitch the feedback for the outer 'P' loop is given by my attitude estimation algorithm, while in the inner 'D' loop there is no reference angle rate, and the feedback is provived by a filtered version of the gyroscope data.
+As far the yaw rate is concerned, is only a P controller, the reference yaw rate is given by the smartphone, and the feedback of the only loop is provived by the smartphone. This is to illustrate the situation. My sampling frequency is 100hz (imposed by the attitude estimation algorithm, that is a Kalman Filter, that I'm using). I have tuned my controller gains with matlab, imposing a rise time of 0.1 seconds and a maximum percent overshoot of 2% with root locus. Matlab is able to found me a solution, but with very large gains (like 8000 for P and 100 for D). I was doing the tuning, using a quadcopter model (for each euler angle) based on the linearized model for quadcopter or instance : $$\ddot \tau_\Phi = I_x\ddot \Phi    -&gt;  G_\Phi(s) = \frac{I_x }{ s^2} $$ only in order to have a 'reasoned' starting point for my gains, and then re-tune it in the reality. (The transfer function above is continous, in my model I have obliviously used the discrete version at 100hz of sampling rate). 
+This is to do a premise of my following questions.
+Now, I have to map my controller outputs to duty cycle. Since I'm using a PWM at 25Khz frequency, my period (in the TIM channel configuration) is of 2879.
+I have checked the activation threshold (after which the motor starts move) and the threshold after which it stops increasing its speeds, and the first is 202
+and the second is 2389.
+I was following the very good answer of <a href="https://robotics.stackexchange.com/questions/2964/quadcopter-pid-output?lq=1">Quadcopter PID output</a> but I still have some questions.</p>
+
+<p>1) As far the throttle mapping is concerned, I have to map it in such a way that the values coming from my smartphone controller (in the interval [0, 100]) are not
+mapped in the whole [202, 2389] interval, but I have to 'reserve' some speed in order to allow the quadcopter to have an angular movement exploiting differences in the 4 motor speeds even with 100% throttle?</p>
+
+<p>2) Coming back to the fact that matlab propose me huge gains for my controllers, this leads to the fact that I cannot directly sum the controller output to the duty cycle as stated in the metioned answer (because I will certainly go out of the [202, 2389] bound of my TIM pulse). Doing a proportion will result in altering the gains of the systems, so placing somewhere else the poles of my systems and the procedure done with matlab will became useless, right? So, what I'm doing wrong? I have tried to enforce matlab to bound the gainsm for instance in the [0,100] interval, but in this case it cannot find gains such that my constraints are verified.
+Thank you</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7415" data-toggle = "popover">
+				<p>user name : Daniel</p>
+				<p> user reputation : 25</p>
+				<p class = "tagcontent" id = "usertaginfo-7415">{'control': 3, 'quadcopter': 2, 'None': 0, 'manipulator': 1, 'tuning': 0, 'pid': 2, 'matlab': 3, 'robotic-arm': 1, 'pwm': 0, 'inverse-kinematics': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7415" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7415" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7415">
+					<img id="start_img-7415" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7415">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7428"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7428" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I'm posting this as an answer because it is a bit lengthy for the comments section, and I hope it will point you in the right direction.</p>
+
+<p>First, you mention an "outer P loop" and an "inner D loop", which, to me,  would imply that you are performing those two tasks at different rates. This is incorrect for any form of a PID controller (P, PI, PD, etc.)</p>
+
+<p>All of your gains, proportional, integral, derivative, should act on the respective error measurement. If you are commanding a speed, proportional error is the difference between command and actual speed. Integral error is the difference between desired and actual position, and derivative error is the difference between reference and actual acceleration.</p>
+
+<p>You have the option of either calculation the integral/derivative of your reference speed, the actual speed, and subtracting to get the error, OR you can calculate the integral/derivative of the speed error and use that directly.</p>
+
+<p>Once you have all the error terms, you multiply each by its respective gain and <strong>add all the terms</strong> to get the control signal. I emphasize add the terms to reinforce that you need all the terms to get the control signal - you shouldn't be calculating one at a faster rate than the other.</p>
+
+<p>What I believe you are missing is what you had asked about <a href="https://robotics.stackexchange.com/questions/7400/quadcopter-force-torques-duty-cycle-conversion">in your other question</a> - it seems like your Matlab model is missing the transfer function that converts from PWM to speed, and maybe from speed to torque or lift.</p>
+
+<p>I would imagine the relationship between PWM and speed is linear - lowest PWM signal gives some minimum speed (y-intercept), up to full speed at 100%. Then, as the paper you linked in your other question suggests, try a constant k1/k2 to get from speed to lift/torque.</p>
+
+<p><a href="http://aeroquad.com/attachment.php?attachmentid=10414&amp;d=1421496243" rel="nofollow noreferrer">This paper</a> (PDF) seems to  give the answer you're looking for (on page 8), and <a href="http://andrew.gibiansky.com/blog/physics/quadcopter-dynamics/" rel="nofollow noreferrer">this page</a> gives a really good derivation of equations of motion. </p>
+
+<p>So, back to your specific questions, regarding point 1, you can either operate up to "full throttle" with no modifications, or you can leave a "reserve" (overhead) for maneuvering, or you can have sliding gains to account for a lack of headroom. If you want to rotate, you speed two props up and slow two down. At full throttle, two will slow, but the other two can't go any faster. Maneuvering is cut (for all intents and purposes) in half. You can leave headroom to allow two to speed up, but this restricts your top speed. You could modify gains to (hand waving) slow the two props twice as fast. This makes up for the other two not speeding up at all because you have the same differential. </p>
+
+<p>The choice here is up to you, but because the controller is "watching" craft performance as compared to your commands it shouldn't matter too much. The controller isn't going to slow a pair and speed a pair by a fixed amount, it's going to slow/speed until the desired command inputs have been met. It won't respond quite as quickly as you would expect, though, because...</p>
+
+<p>Point 2 - actuator saturation. This refers to passing a reference that is of such a magnitude that the actuator cannot comply. The output of your controller is the output of your controller. <em>If you have modeled the system well</em>, then the output should be what you supply as an input to your system. If the actuator saturates, it saturates. This would be something like requesting a speed of 1800rpm from a 1200rpm motor, or a force of 150lb from a 100lb hydraulic cylinder - you are asking the actuator to do something it physically cannot do. </p>
+
+<p>In your case the gains may cause the system to saturate - your PWM signal "should be" (per the controller), at 150%, but you can only command 100%. So you truncate to whatever the max is (100%), and send that. When the controller "sees" that the system is responding and approaches the reference command, it will back off on its own. This is the great thing about a controller. The output signal doesn't matter <em>too much</em> because it's looking for a response as compared to your command, not any kind of absolute. </p>
+
+<p>That is, if you command a yaw rate of 30 deg/second, but you can only accelerate 1 deg/s^2, your controller may saturate your input asking "full throttle". Once you finally accelerate to the desired yaw rate, the controller will back off <em>on its own</em> to hold the desired command. Note that the controller will always try to meet the performance goals you specified when choosing the gains; <strong>it is up to you to spec the actuators to meet those performance specs.</strong> </p>
+
+<p>Mostly this is to say that, if your gains look like they're too high, you may have either asked for more performance than your craft is capable of delivering or you have not modeled your system correctly. If you're close it will generally work, but if your gains are too far off (your model is too incorrect), then you will wind up with either no response or you will wind up railing the controller, where the controller says, "I'm too slow - Full throttle!" and then a moment later, "I'm too fast, turn it off!". This is caused by gains that are too high. </p>
+
+<p>You can always <a href="http://sts.bwk.tue.nl/7y500/readers/.%5CInstellingenRegelaars_ExtraStof.pdf" rel="nofollow noreferrer">tune the gains manually to achieve desired performance</a> (section 4 of this PDF - Zeigler Nichols tuning), but I think you'll find that PID control of a MIMO system is nigh impossible due to coupling between input/output channels. I think you would be happiest with <a href="http://en.wikipedia.org/wiki/Full_state_feedback" rel="nofollow noreferrer">a state feedback controller</a>, but that's not what you asked about so I'll just post the link and leave it at that.</p>
+
+<p>Good luck!</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7428" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-7428">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7428">Load Comments</button></br>
+			<div id = "commentsection-7428" class = 'collapse'>
+			<div id = "comment-10614" class = "comment">
+				<p>Thank you for the answer! I have to work more on that, good answer!</p>
+			</div>
+			</div>
+				<textarea id = "speech-7428" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7428">
+					<img id="start_img-7428" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7428">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

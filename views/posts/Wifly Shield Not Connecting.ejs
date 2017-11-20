@@ -1,0 +1,221 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Wifly Shield Not Connecting
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-704" class = "post">
+			<h2>Question</h2>
+			<div id="vote-704" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 517</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Wifly Shield Not Connecting</h2>
+<p>I recently asked a question about the juniper WiFi shield, and am now working with wifly from spark fun. I've been using an updated version of their experimental library, and have been attempting to set up a webserver. Unfortunately, when I attempt to connect through a web browser, I get an error saying that the page sent no data. Here's my code:</p>
+
+<pre><code>#include &lt;SPI.h&gt;
+#include &lt;WiFly.h&gt;
+
+WiFlyServer s(80);
+boolean current_line_is_blank=true;
+void setup() {
+  Serial.begin(9600);
+  WiFly.begin();
+  if(!WiFly.join(placeholderssid, placeholderpass,WPA_MODE)) {
+    Serial.println("Connection Failed.");
+  } else {
+    Serial.println("Connection Succesful!");
+    Serial.println(WiFly.ip());
+    Serial.println("Receving Client Input...");
+    s.begin();
+
+  }
+}
+void loop() { 
+   WiFlyClient c = s.available();
+   if(c) {
+   Serial.println("Server Ready.");
+   current_line_is_blank=true;
+   while(c.connected()) {
+     Serial.println("Client Connected.");
+     if(c.available()) {
+       Serial.println("Client Available for data.");
+       char tmp = c.read();
+       Serial.println(tmp);
+       if(tmp == '\n' &amp;&amp; current_line_is_blank) {
+         Serial.println("Sent OK Response.");
+         c.println("HTTP/1.1 200 OK");
+         c.println("Content-Type: text/html");
+         c.println();
+         c.print("WiFly Webserver Running!");
+         c.println("&lt;br /&gt;");
+         break;
+       }
+      if (tmp == '\n') {
+          // we're starting a new line
+          current_line_is_blank = true;
+        } else if (tmp != '\r') {
+          // we've gotten a character on the current line
+          current_line_is_blank = false;
+        }
+       }
+   }
+   }
+    delay(2000);
+    c.stop();
+}
+</code></pre>
+
+<p>I am using Arduino Uno, and the serial monitor looks like this:</p>
+
+<pre><code>Connection Succesful!
+10.100.1.173
+Receving Client Input...
+</code></pre>
+
+<p>Is there anything obviously wrong with my code?</p>
+
+<p>EDIT:
+I now have a new shield, but I'm still working with the same problem. Is it a malfunction in the hardware? I just can't figure this out!</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-704" data-toggle = "popover">
+				<p>user name : Dylan Katz</p>
+				<p> user reputation : 231</p>
+				<p class = "tagcontent" id = "usertaginfo-704">{'control': 6, 'rcservo': 2, 'None': 0, 'microcontroller': 17, 'power': 6, 'accelerometer': 2, 'arduino': 24, 'wifi': 3, 'c': 3, 'c++': 2, 'motor': 6, 'input': 11, 'sensors': 2, 'electronics': 0, 'serial': 2, 'software': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-704">Load Comments</button></br>
+			<div id = "commentsection-704" class = 'collapse'>
+			<div id = "comment-895" class = "comment">
+				<p>I just looked up an [example](https://github.com/sparkfun/WiFly-Shield/blob/master/examples/WiFly_WebServer/WiFly_WebServer.ino) and your method appears correct so I have deleted my answer. I don't see any other issues though it may help to look at the example more closely.</p>
+			</div>
+			</div>
+				<textarea id = "speech-704" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-704">
+					<img id="start_img-704" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-704">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-706"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-706" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I've never programmed an Arduino or used this module, but from a quick look at the code and its output, it looks like only setup() is getting run, while loop() is the source of the problem (sort of expected). Try adding a println statement before checking for c to see if the loop gets run at all. </p>
+
+<pre><code>...
+void loop() { 
+  WiFlyClient c = s.available();
+  Serial.println("Looping...");
+  if(c) {
+    Serial.println("Server Ready.");
+    ...
+</code></pre>
+
+<p>Assuming the above checks out, my hunch is that the problem is in the first line of the loop:</p>
+
+<pre><code>...
+WiFlyClient c = s.available();
+...
+</code></pre>
+
+<p>Why are you initializing the client, c, with the server's availability? This seems to imply that the if statement is essentially testing for the server's availability, instead of the client's availability. What's more, you then also run c.connected(), c.available(), and c.println(), which is somewhat at odds with c's initialization.</p>
+
+<p>Try checking what you need to initialize c with and then probably switch the if statement as follows:</p>
+
+<pre><code>...
+if(c.available()) {
+...
+</code></pre>
+
+<p>Just my 2c. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-706" data-toggle = "popover">
+				<p>user name : fgb</p>
+				<p> user reputation : 374</p>
+				<p class = "tagcontent" id = "usertaginfo-706">{'None': 22}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-706">Load Comments</button></br>
+			<div id = "commentsection-706" class = 'collapse'>
+			<div id = "comment-910" class = "comment">
+				<p>The loop() and setup() functions are special in the Arduino IDE. It always executes setup() and then loop(). Think of it as main().</p>
+			</div>
+			<div id = "comment-925" class = "comment">
+				<p>Yeah, I assumed so. I was just implying that whereas setup() was executing correctly, loop() wasn't.</p>
+			</div>
+			</div>
+				<textarea id = "speech-706" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-706">
+					<img id="start_img-706" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-706">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

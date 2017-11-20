@@ -1,0 +1,307 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Why does the ESC stop?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9353" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9353" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 889</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Why does the ESC stop?</h2>
+<p>I've built a quadcopter with four brushless motors and ESCs (30A). I'm using an Arduino to control them. I haven't written any complex code; just enough to get them running. Everything is fine until I send a number over 920 to the serial. Then, for some reason, all the motors stop spinning. I'm using three freshly bought and charged LiPo cells (V = 11.1V). Here is the link for the site that I bought them from (I cannot seem to find any other resource about them) : <a href="http://www.ebay.co.uk/itm/4x-A2212-1000KV-Outrunner-Motor-4x-HP-30A-ESC-4x-1045-prop-B-Quad-Rotor-/111282436897" rel="nofollow">4x A2212 1000KV Outrunner Motor + 4x HP 30A ESC + 4x 1045 prop (B) Quad-Rotor</a>. </p>
+
+<p>When I tried turning on only one motor, I could write up to about 1800 microseconds, while both with 4 and with 1 motor, the minimum that it works is 800. </p>
+
+<p>Can somebody explain why this happens and I how I can fix it? </p>
+
+<p>Here is my code: </p>
+
+<pre><code>#include &lt;Servo.h&gt;
+
+int value = 0;
+
+Servo first,second,third,fourth;
+
+void setup() {
+
+  Serial.begin(9600);    // start serial at 9600 baud
+  first.attach(6);
+  second.attach(9);
+  third.attach(10);
+  fourth.attach(11);
+
+}
+
+void loop() {
+
+    first.writeMicroseconds(value);
+    second.writeMicroseconds(value);
+    third.writeMicroseconds(value);
+    fourth.writeMicroseconds(value);
+
+    if(Serial.available() &gt; 0){
+      value = Serial.parseInt();
+    }
+
+}
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9353" data-toggle = "popover">
+				<p>user name : Petros</p>
+				<p> user reputation : 13</p>
+				<p class = "tagcontent" id = "usertaginfo-9353">{'quadcopter': 2, 'brushless-motor': 1, 'None': 0, 'esc': 2, 'arduino': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9353">Load Comments</button></br>
+			<div id = "commentsection-9353" class = 'collapse'>
+			<div id = "comment-16569" class = "comment">
+				<p>Welcome to *Robotics* Petros. For a better answer, you really need to say what ESC you are using, ideally editing your question to add a link to the datasheet for it.</p>
+			</div>
+			<div id = "comment-16570" class = "comment">
+				<p>Also, I would be interested to know the full range of values which do work. When you write 920, is it running at minimum, maximum or full speed. What value in microseconds do you have to write to get it to move at other extreme (slowest if 920 is fastest) etc. All of this information can be edited into your question to make it easier for people to answer your question.</p>
+			</div>
+			</div>
+				<textarea id = "speech-9353" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9353">
+					<img id="start_img-9353" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9353">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9354"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9354" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Looking at the documentation for the <a href="https://www.arduino.cc/en/Reference/Servo" rel="nofollow">Arduino servo library</a> it looks like you are reusing the servo library to produce a PWM speed control for your ESC.</p>
+
+<p>Although the <a href="https://www.arduino.cc/en/Reference/ServoWriteMicroseconds" rel="nofollow">writeMicroseconds()</a> function page doesn't mention <em>continuous rotation servo</em>s, the <a href="https://www.arduino.cc/en/Reference/ServoWrite" rel="nofollow">write()</a> function page does:</p>
+
+<blockquote>
+  <p>Writes a value to the servo, controlling the shaft accordingly. On a standard servo, this will set the angle of the shaft (in degrees), moving the shaft to that orientation. On a continuous rotation servo, this will set the speed of the servo (with 0 being full-speed in one direction, 180 being full speed in the other, and a value near 90 being no movement). </p>
+</blockquote>
+
+<p>What the <a href="https://www.arduino.cc/en/Reference/ServoWriteMicroseconds" rel="nofollow">writeMicroseconds()</a> function page does say is:</p>
+
+<blockquote>
+  <p>On standard servos a parameter value of 1000 is fully counter-clockwise, 2000 is fully clockwise, and 1500 is in the middle.</p>
+</blockquote>
+
+<p>Which would suggest that 1500 would be static, 1000 would be full speed in one direction, and 2000 would be full speed in the other direction.</p>
+
+<p>For motors which only go in one direction though, an ESC might change those ranges to maximise the controllability of the motor by accepting a larger range of PWM values, and mapping them to unidirectional speed only.</p>
+
+<p>Depending on your ESC, it may be that as you approach 1000, you are reaching the maximum speed, and as you exceed the maximum speed it is capable of the motor shuts off as a protection mechanism.</p>
+
+<p>Ultimately, only the data sheet for your ESC can tell you why your system is behaving the way it is.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9354" data-toggle = "popover">
+				<p>user name : Mark Booth</p>
+				<p> user reputation : 3037</p>
+				<p class = "tagcontent" id = "usertaginfo-9354">{'control': 7, 'quadcopter': 2, 'None': 258, 'tuning': 7, 'uav': 2, 'design': 2, 'stepper-motor': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9354">Load Comments</button></br>
+			<div id = "commentsection-9354" class = 'collapse'>
+			<div id = "comment-16571" class = "comment">
+				<p>ESCs don't behave like continuous rotation servos. Rather it is more like a standard servo with the low value (usually 1000) indicating lowest speed and the high value (usually 2000) indicating highest speed.</p>
+			</div>
+			<div id = "comment-16586" class = "comment">
+				<p>Hence why I said *For motors which only go in one direction though, an ESC might change those ranges to maximise the controllability of the motor by accepting a larger range of PWM values, and mapping them to unidirectional speed only.* Sadly the 'data sheet' uses *rcservo speak* rather than actually providing a pwm timing diagram, that an engineer would find useful, so I will have to leave this question to *rc* people. *8')</p>
+			</div>
+			</div>
+				<textarea id = "speech-9354" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9354">
+					<img id="start_img-9354" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9354">Comment</button>
+			<br><div id = "ans-9356"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9356" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>First of all I would suggest calibrating them.</p>
+
+<p>From the eBay page you linked to, It would seem that the ESCs are probably HobbyWing (or HobbyWing clones). I would suggest finding some spec sheets for HobbyWing ESCs and using that information to calibrate them as well as understand them better. </p>
+
+<p>Since they seem to respond to values in the range 800-1800 they probably need to be calibrated. The usual range is 1000-2000. I've had HobbyWing ESCs and there is a way to send the proper min and max values to the ESC. Besides that you could adjust your code to accept values in the range 800-1800 and assume 900 is the centerpoint. In a sense, you'd be calibrating them yourself via your code.</p>
+
+<p>As far as them not operating over 920, it almost sounds like a power issue. You say you are using "3 freshly bought and charged LiPo cells (V = 11.1V)". Are you in fact using all three at once? I'm not sure how you've wired them up, but here is an example of proper wiring:</p>
+
+<p><a href="https://i.stack.imgur.com/t2fTd.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/t2fTd.jpg" alt="enter image description here"></a></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9356" data-toggle = "popover">
+				<p>user name : Octopus</p>
+				<p> user reputation : 886</p>
+				<p class = "tagcontent" id = "usertaginfo-9356">{'control': 3, 'None': 60, 'gyroscope': 3, 'motor': 7, 'automation': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9356">Load Comments</button></br>
+			<div id = "commentsection-9356" class = 'collapse'>
+			<div id = "comment-16572" class = "comment">
+				<p>I think my connections are just like that, but, I'm not using an ardu-pilot, I'm using a standard arduino-uno board.</p>
+			</div>
+			<div id = "comment-16643" class = "comment">
+				<p>Since you have the same escs can you tell me the proper way to power them? I'm using 3 LiPo cells (3.7V, 2500mAh). Did you use an arduino or an other flight controller? If the first was the case, could you post the code that got the motors running?</p>
+			</div>
+			</div>
+				<textarea id = "speech-9356" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9356">
+					<img id="start_img-9356" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9356">Comment</button>
+			<br><div id = "ans-9360"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9360" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Following on from <a href="https://robotics.stackexchange.com/questions/9353/why-does-the-esc-stop#answer-9356">Octopus's answer</a>, this comes from the thread, <a href="http://www.rcgroups.com/forums/showthread.php?t=2079583" rel="nofollow noreferrer">Hobbypower ESC-30A on rcgroups.com</a>, where a user was having the same trouble calibrating them. </p>
+
+<blockquote>
+  <p>I bought exactly the same ESCs from eBay and asked the seller for a datasheet. It appears that WaspNest was right, they match Hobywing product.<br>
+  Here is a link to the datasheet he sent me: 
+  <a href="https://dl.dropboxusercontent.com/u/56075853/HobyPower%2030A%20ESC.jpg" rel="nofollow noreferrer">https://dl.dropboxusercontent.com/u/...030A%20ESC.jpg</a></p>
+</blockquote>
+
+<p>Here is the datasheet, referred to above:</p>
+
+<p><a href="https://i.stack.imgur.com/ZoOOz.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/ZoOOz.jpg" alt="HobbyPower 30A Brushless ESC manual"></a>.</p>
+
+<p>There is also the following:</p>
+
+<blockquote>
+  <p>A programming card is available: Hobbywing Pentium Series Brushless Speed Controller ESC Program Card. It should work with these ESC's with no problem.<br>
+  Manual?<br>
+  See <a href="http://www.hobbywing.com/uploadfiles/sx/file/Manual/HW-01-V4.pdf" rel="nofollow noreferrer">http://www.hobbywing.com/uploadfiles...l/HW-01-V4.pdf</a> and <a href="http://www.hobbyking.com/hobbyking/store/uploads/811103388X7478X20.pdf" rel="nofollow noreferrer">http://www.hobbyking.com/hobbyking/s...88X7478X20.pdf</a></p>
+</blockquote>
+
+<p>Unfortunately the first link has expired, and the second link is to the <a href="http://www.hobbyking.com/hobbyking/store/uploads/811103388X7478X20.pdf" rel="nofollow noreferrer">HobbyKing 20A and 30A UBEC</a>, but it could be of some use.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9360" data-toggle = "popover">
+				<p>user name : Greenonline</p>
+				<p> user reputation : 1053</p>
+				<p class = "tagcontent" id = "usertaginfo-9360">{'None': 44, 'arduino': 3, 'stepper-motor': 7, 'mechanism': 0, 'rcservo': 13}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9360">Load Comments</button></br>
+			<div id = "commentsection-9360" class = 'collapse'>
+			<div id = "comment-16590" class = "comment">
+				<p>Useful graphic. This looks like exactly the data sheet I used to have. The programming card isn't necessary. Its function isn't much different from an Arduino on a serial port.</p>
+			</div>
+			<div id = "comment-16619" class = "comment">
+				<p>@Greenonline - Since you bought the same ESCs, can you tell me the proper way to power them? I'm using 3 LiPo cells (3.7V, 2500mAh). Did you use an arduino or an other flight controller? If the first was the case, could you post the code that got the motors running?</p>
+			</div>
+			<div id = "comment-16620" class = "comment">
+				<p>@Petros - Unfortunately, I don't have the same ESCs, I was merely quoting the link where I managed to locate the data sheet. It is Octopus who says that he had the same ESCs as you. I would suggest that you ask him :-)</p>
+			</div>
+			<div id = "comment-16642" class = "comment">
+				<p>@Greenonline Thanks</p>
+			</div>
+			</div>
+				<textarea id = "speech-9360" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9360">
+					<img id="start_img-9360" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9360">Comment</button>
+			<br><div id = "ans-9362"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9362" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Have you calibrated your ESC? If you have not yet done so, you can calibrate it using PWM.</p>
+
+<p>First you send max PWM to the ESC, then you send min PWM to the ESC, then send PWM 20 milliseconds (assuming a 50Hz PWM signal). When you give PWM above 20ms your motor will rotate forwards, and if you give PWM below 20ms your motor will rotate backwards. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9362" data-toggle = "popover">
+				<p>user name : Muhammad Labiyb Afakh</p>
+				<p> user reputation : 1</p>
+				<p class = "tagcontent" id = "usertaginfo-9362">{'None': 0}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-9362" class = 'collapse'>
+			</div>
+				<textarea id = "speech-9362" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9362">
+					<img id="start_img-9362" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9362">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

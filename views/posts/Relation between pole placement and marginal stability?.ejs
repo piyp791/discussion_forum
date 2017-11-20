@@ -1,0 +1,193 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Relation between pole placement and marginal stability?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8333" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8333" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 93</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Relation between pole placement and marginal stability?</h2>
+<p>I'm given an assignment in which I have to design a full state feedback controller by pole placement. The state space system is fully controllable and I've been using Matlab/Simulink to determine the required feedback gain K using the place() command for several sets of poles, however once I use poles that are "too negative", for example p=[-100,-200,-300,-400,-500], my controlled system starts showing bounded oscillatory behaviour. </p>
+
+<p>Is it possible that too negative poles can cause marginal stability? And if so, why? I've read that this is only possible when the real part of one or more poles equals 0, which certainly isn't the case here. </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8333" data-toggle = "popover">
+				<p>user name : Steven</p>
+				<p> user reputation : 23</p>
+				<p class = "tagcontent" id = "usertaginfo-8333">{'control': 4, 'stability': 4, 'None': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8333">Load Comments</button></br>
+			<div id = "commentsection-8333" class = 'collapse'>
+			<div id = "comment-13369" class = "comment">
+				<p>How are you simulating the system? You can get instability due to time-step issues -- if your poles have a very high frequency (not just the imaginary part) and your time-step is too big. If you are using a crude forward integration in a script then try making your constant time-step larger. If you are using Simulink with a proper solver, then try making the tolerances smaller.</p>
+			</div>
+			<div id = "comment-13370" class = "comment">
+				<p>Also, can you post your state space model?</p>
+			</div>
+			</div>
+				<textarea id = "speech-8333" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8333">
+					<img id="start_img-8333" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8333">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8335"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8335" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">6</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You are most likely running into problems with the maximum time step in your simulation. This phenomenon is known as <a href="https://en.m.wikipedia.org/wiki/Stiff_equation#Motivating_example" rel="nofollow noreferrer">stiffness</a>, where your equations of motion are highly sensitive to the size of the time step in a discrete solution.</p>
+
+<p>Consider a simple mass-spring system with mass $m$, spring stiffness $k$, displacement $x$ and velocity $\dot{x}$ for states $q$, and an input force $F$ for the input $u$.</p>
+
+<p>$q = \begin{bmatrix} \dot{x} \\ x \end{bmatrix}$</p>
+
+<p>$A = \begin{bmatrix} 0 &amp; -\frac{k}{m} \\ 1 &amp; 0 \end{bmatrix}$</p>
+
+<p>$B = \begin{bmatrix} \frac{1}{m} \\ 0 \end{bmatrix}$</p>
+
+<p>$C = \begin{bmatrix} 0 &amp; 1 \end{bmatrix}$</p>
+
+<p>$D = 0$</p>
+
+<p>We apply a full-state feedback control law (which ends up being PD control), with:</p>
+
+<p>$u = -Kq$</p>
+
+<p>And use MATLAB's <code>place</code> function to determine the gain matrix $K$ for desired poles $p$. Package this into a setup script like this:</p>
+
+<pre><code>% system coefficients
+k = 1000;               % spring stiffness (N/m)
+m = 1;                  % mass (kg)
+
+% state-space model
+A = [0 (-k/m); 1 0];
+B = [(1/m); 0];
+C = [0 1];
+D = 0;
+
+% desired poles
+p = [-1000, -2000];
+
+% gain matrix
+K = place(A,B,p);
+
+% initial conditions
+x_dot_0 = 0.5;
+x_0 = 0.2;
+</code></pre>
+
+<p>Then create a Simulink model:</p>
+
+<p><a href="https://i.stack.imgur.com/cM2My.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/cM2My.png" alt="enter image description here"></a></p>
+
+<p>Now if we use poles $p = \begin{bmatrix} -10 &amp; -20 \end{bmatrix}$, we get an acceptable albeit slower response. But when we use poles $p = \begin{bmatrix} -1000 &amp; -2000 \end{bmatrix}$ we find that there is only marginal stability with some steady-state error (although the bandwidth of the steady-state error is small).</p>
+
+<p>This is happening because the closed-loop system frequency is so high that there is numerical instability in the simulation caused by the solver's choice of time-step. To get around this, we can switch the maximum time step from <code>auto</code> to something appropriate like <code>1-e5</code>. You can do this in the "Solver options" found in the "Simulation -> Model Configuration Parameters" menu (it might be called something a bit different in your version of MATLAB).</p>
+
+<p>Here is the comparison of the low gain result, high gain result with default <code>auto</code> maximum time-step, and high gain result with maximum time-step of <code>1e-5</code>.</p>
+
+<p><a href="https://i.stack.imgur.com/nzuX7.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/nzuX7.png" alt="enter image description here"></a></p>
+
+<p><a href="https://i.stack.imgur.com/N85qS.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/N85qS.png" alt="enter image description here"></a></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8335" data-toggle = "popover">
+				<p>user name : Brian Lynch</p>
+				<p> user reputation : 1237</p>
+				<p class = "tagcontent" id = "usertaginfo-8335">{'None': 85}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8335">Load Comments</button></br>
+			<div id = "commentsection-8335" class = 'collapse'>
+			<div id = "comment-13385" class = "comment">
+				<p>Thank you very much! This is indeed the problem. I've adjusted the maximum solver timestep and the oscillations are gone.</p>
+			</div>
+			<div id = "comment-13386" class = "comment">
+				<p>Good to hear, always glad to help!</p>
+			</div>
+			<div id = "comment-13394" class = "comment">
+				<p>In case you're interested, this phenomenon is called "stiffness" in the system of ODE's: https://en.m.wikipedia.org/wiki/Stiff_equation</p>
+			</div>
+			<div id = "comment-13395" class = "comment">
+				<p>Ah yes, thanks, I'm going to add that to the answer.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8335" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8335">
+					<img id="start_img-8335" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8335">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

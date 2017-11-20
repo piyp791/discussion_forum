@@ -1,0 +1,136 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Is it possible to simulate vision (perception) in Gazebo (or other simulators)
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7729" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7729" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 385</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Is it possible to simulate vision (perception) in Gazebo (or other simulators)</h2>
+<p>Vision is important part of robotics and frequently it is unavoidable component of control loop. E.g. many clothes/garment handling algorithms rely on visual cues in deciding how to proceed. The question is - does simulation environments (Gazebo or some others) allow one to design world with robot and garment and simulate not only garment dynamics but <strong>simulate also what robot sees, how robot perceives garment in each simulation step</strong>? If it is not possible to simulate vision then how to simulate algorithms with vision as component of control loop?</p>
+
+<p>Maybe simulation of vision can be good research theme? Are here some trend or good articles about it? Some initial projects that could be expanded?</p>
+
+<p>Actually - it can be stated as more general question - <strong>is it possible to simulate sensors in Gazebo?</strong> E.g. food handling (soft-body handling) can involve tactile sensors. In principle Gazebo can calculate deformation and forces of soft-body and format these data as the simulated values of sensor readings. Maybe similar mechanism can be used for simulation of vision as well?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7729" data-toggle = "popover">
+				<p>user name : TomR</p>
+				<p> user reputation : 189</p>
+				<p class = "tagcontent" id = "usertaginfo-7729">{'None': 0, 'computer-vision': 1, 'inverse-kinematics': 8, 'manufacturing': 0, 'simulator': 4, 'simulation': 1, 'humanoid': 0, 'research': 9, 'industrial-robot': 3, 'kinematics': 8, 'design': 10, 'dynamics': 3, 'ros': 3, 'gazebo': 4, 'programming-languages': 3, 'software': 13}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7729">Load Comments</button></br>
+			<div id = "commentsection-7729" class = 'collapse'>
+			<div id = "comment-11232" class = "comment">
+				<p>yes. I have tried usb cameras and Kinect</p>
+			</div>
+			<div id = "comment-11237" class = "comment">
+				<p>Alternatively V-REP simulator does.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7729" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7729">
+					<img id="start_img-7729" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7729">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7749"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7749" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>While Gazebo - and most other simulators - will allow you to simulate sensors, you have to realize that this the "weak" part of realtime simulators. Making an accurate simulated camera is really difficult. The result would therefore be great to test your integration and basic control algorithm behaviour (for instance that you move right when you should), but very limited to test the vision-based algorithm itself, as well as test fine print of the control laws.</p>
+
+<p>The strategy I follow in these cases is to (1) create a "simulated component simulation" to test the control system in the simulator and (2) use log replay to test the vision component:</p>
+
+<ol>
+<li><p>Create a "vision component simulator". This component would output what the vision part of your system should output, but within the simulated environment and WITHOUT processing any image. Add noise / outliers as necessary in the simulated output.</p></li>
+<li><p>Use a framework that allows you to log data and replay it offline (as Rock or ROS do). You would then have test cases for your vision component that would test its behaviour in way that the simulator could never dream to achieve.</p></li>
+</ol>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7749" data-toggle = "popover">
+				<p>user name : sylvain.joyeux</p>
+				<p> user reputation : 363</p>
+				<p class = "tagcontent" id = "usertaginfo-7749">{'None': 20, 'kalman-filter': 0}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7749" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7749" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7749">
+					<img id="start_img-7749" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7749">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

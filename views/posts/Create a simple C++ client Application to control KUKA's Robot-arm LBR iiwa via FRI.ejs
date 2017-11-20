@@ -1,0 +1,414 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Create a simple C++ client Application to control KUKA's Robot-arm LBR iiwa via FRI
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7760" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7760" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 3423</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Create a simple C++ client Application to control KUKA's Robot-arm LBR iiwa via FRI</h2>
+<p>Until now I have been programming the robot using Java on KUKA's IDE "KUKA Sunrise.Workbench", what I want to do is control the robot arm via my C++.Net application (I would use a camera or Kinect to get commands). 
+I'm reading the documents provided by Kuka, but as I'm a bit in hurry, I want to understand how a C++ client application (running on my laptop) can send/receive information to/from the robot's controller "KUKA Sunrise Cabinet" (running the server application) via FRI. I still have issues grasping the whole mechanism.</p>
+
+<p>A simple application (Server/Client) source code with explanation (or a schematic) would be more than helpful .</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7760" data-toggle = "popover">
+				<p>user name : El Zo</p>
+				<p> user reputation : 88</p>
+				<p class = "tagcontent" id = "usertaginfo-7760">{'None': 6, 'c++': 2, 'robotic-arm': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7760" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7760" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7760">
+					<img id="start_img-7760" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7760">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7770"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7770" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I have a library called <strong><a href="https://github.com/ahundt/grl" rel="nofollow">grl</a></strong> which integrates control of a KUKA iiwa in C++. </p>
+
+<p>Right now the most reliable mechanism I've found for control is to receive state over FRI, then send state via Java. All the tools necessary to do this are integrated into grl.</p>
+
+<p>While I've been able to receive state over FRI nicely, sending FRI commands so the robot drives reliably has proven more complicated. I'm close to a working implementation and I have a few simple test applications that move a single joint correctly. Once the bugs are worked out it should be very easy to use, and I'm hopeful it will work well. For a specific function controlling FRI see <a href="https://github.com/ahundt/grl/blob/master/test/KukaFRIClientDataDriverTest.cpp" rel="nofollow">KukaFRIClientDataDriver.cpp</a>.</p>
+
+<p>Unfortunately I've found the direct API KUKA provides to be a bit difficult to use as well, so I'm implementing functions that communicate over the underlying protobuf network messages and UDP.</p>
+
+<p>While this isn't a 100% answer, it is a solution that is 90% of the way to completion.</p>
+
+<p><strong>Update:</strong> FRI based control using grl is now working with the Sunrise Connectivity Suite 1.7. </p>
+
+<p>Here is an example of how to use it in the simplest case of <a href="https://github.com/ahundt/grl/blob/master/test/KukaFRIClientDataDriverTest.cpp" rel="nofollow">KukaFRIClientDataDriverTest.cpp</a>:</p>
+
+<pre><code>// Library includes
+#include &lt;string&gt;
+#include &lt;ostream&gt;
+#include &lt;iostream&gt;
+#include &lt;memory&gt;
+
+#include "grl/KukaFRI.hpp"
+#include "grl/KukaFriClientData.hpp"
+#include &lt;boost/log/trivial.hpp&gt;
+
+
+#include &lt;cstdlib&gt;
+#include &lt;cstring&gt;
+#include &lt;iostream&gt;
+#include &lt;boost/asio.hpp&gt;
+#include &lt;vector&gt;
+#include &lt;iostream&gt;
+
+
+using boost::asio::ip::udp;
+
+#include &lt;chrono&gt;
+
+/// @see https://stackoverflow.com/questions/2808398/easily-measure-elapsed-time
+template&lt;typename TimeT = std::chrono::milliseconds&gt;
+struct periodic
+{
+    periodic():start(std::chrono::system_clock::now()){};
+
+    template&lt;typename F, typename ...Args&gt;
+    typename TimeT::rep execution(F func, Args&amp;&amp;... args)
+    {
+        auto duration = std::chrono::duration_cast&lt; TimeT&gt; 
+                            (std::chrono::system_clock::now() - start);
+        auto count = duration.count();
+        if(count &gt; previous_count) func(std::forward&lt;Args&gt;(args)...);
+        previous_count = count;
+        return count;
+    }
+
+    std::chrono::time_point&lt;std::chrono::system_clock&gt; start;
+    std::size_t previous_count;
+};
+
+
+enum { max_length = 1024 };
+
+int main(int argc, char* argv[])
+{
+
+  periodic&lt;&gt; callIfMinPeriodPassed;
+
+  try
+  {
+    std::string localhost("192.170.10.100");
+    std::string localport("30200");
+    std::string remotehost("192.170.10.2");
+    std::string remoteport("30200");
+
+    std::cout &lt;&lt; "argc: " &lt;&lt; argc &lt;&lt; "\n";
+    if (argc !=5 &amp;&amp; argc !=1)
+    {
+      std::cerr &lt;&lt; "Usage: " &lt;&lt; argv[0] &lt;&lt; " &lt;localip&gt; &lt;localport&gt; &lt;remoteip&gt; &lt;remoteport&gt;\n";
+      return 1;
+    }
+
+    if(argc ==5){
+      localhost = std::string(argv[1]);
+      localport = std::string(argv[2]);
+      remotehost = std::string(argv[3]);
+      remoteport = std::string(argv[4]);
+    }
+
+      std::cout &lt;&lt; "using: "  &lt;&lt; argv[0] &lt;&lt; " " &lt;&lt;  localhost &lt;&lt; " " &lt;&lt; localport &lt;&lt; " " &lt;&lt;  remotehost &lt;&lt; " " &lt;&lt; remoteport &lt;&lt; "\n";
+
+    boost::asio::io_service io_service;
+
+    std::shared_ptr&lt;KUKA::FRI::ClientData&gt; friData(std::make_shared&lt;KUKA::FRI::ClientData&gt;(7));
+    std::chrono::time_point&lt;std::chrono::high_resolution_clock&gt; startTime;
+
+    BOOST_VERIFY(friData);
+
+    double delta = -0.0001;
+    /// consider moving joint angles based on time
+    int joint_to_move = 6;
+    BOOST_LOG_TRIVIAL(warning) &lt;&lt; "WARNING: YOU COULD DAMAGE OR DESTROY YOUR KUKA ROBOT "
+                               &lt;&lt; "if joint angle delta variable is too large with respect to "
+                               &lt;&lt; "the time it takes to go around the loop and change it. "
+                               &lt;&lt; "Current delta (radians/update): " &lt;&lt; delta &lt;&lt; " Joint to move: " &lt;&lt; joint_to_move &lt;&lt; "\n";
+
+    std::vector&lt;double&gt; ipoJointPos(7,0);
+    std::vector&lt;double&gt; offsetFromipoJointPos(7,0); // length 7, value 0
+    std::vector&lt;double&gt; jointStateToCommand(7,0);
+
+    grl::robot::arm::KukaFRIClientDataDriver driver(io_service,
+        std::make_tuple(localhost,localport,remotehost,remoteport,grl::robot::arm::KukaFRIClientDataDriver::run_automatically)
+    );
+
+    for (std::size_t i = 0;;++i) {
+
+        /// use the interpolated joint position from the previous update as the base
+        if(i!=0 &amp;&amp; friData) grl::robot::arm::copy(friData-&gt;monitoringMsg,ipoJointPos.begin(),grl::revolute_joint_angle_interpolated_open_chain_state_tag());
+
+        /// perform the update step, receiving and sending data to/from the arm
+        boost::system::error_code send_ec, recv_ec;
+        std::size_t send_bytes_transferred = 0, recv_bytes_transferred = 0;
+        bool haveNewData = !driver.update_state(friData, recv_ec, recv_bytes_transferred, send_ec, send_bytes_transferred);
+
+        // if data didn't arrive correctly, skip and try again
+        if(send_ec || recv_ec )
+        {
+           std::cout  &lt;&lt; "receive error: " &lt;&lt; recv_ec &lt;&lt; "receive bytes: " &lt;&lt; recv_bytes_transferred &lt;&lt; " send error: " &lt;&lt; send_ec &lt;&lt; " send bytes: " &lt;&lt; send_bytes_transferred &lt;&lt;  " iteration: "&lt;&lt; i &lt;&lt; "\n";
+           std::this_thread::sleep_for(std::chrono::milliseconds(1));
+           continue;
+        }
+
+        // If we didn't receive anything new that is normal behavior,
+        // but we can't process the new data so try updating again immediately.
+        if(!haveNewData)
+        {
+           std::this_thread::sleep_for(std::chrono::milliseconds(1));
+           continue;
+        }
+
+        /// use the interpolated joint position from the previous update as the base
+        /// @todo why is this?
+        if(i!=0 &amp;&amp; friData) grl::robot::arm::copy(friData-&gt;monitoringMsg,ipoJointPos.begin(),grl::revolute_joint_angle_interpolated_open_chain_state_tag());
+
+
+
+        if (grl::robot::arm::get(friData-&gt;monitoringMsg,KUKA::FRI::ESessionState()) == KUKA::FRI::COMMANDING_ACTIVE)
+        {
+#if 1 // disabling this block causes the robot to simply sit in place, which seems to work correctly. Enabling it causes the joint to rotate.
+            callIfMinPeriodPassed.execution( [&amp;offsetFromipoJointPos,&amp;delta,joint_to_move]()
+            {
+                    offsetFromipoJointPos[joint_to_move]+=delta;
+                    // swap directions when a half circle was completed
+                    if (
+                         (offsetFromipoJointPos[joint_to_move] &gt;  0.2 &amp;&amp; delta &gt; 0) ||
+                         (offsetFromipoJointPos[joint_to_move] &lt; -0.2 &amp;&amp; delta &lt; 0)
+                       )
+                    {
+                       delta *=-1;
+                    }
+            });
+
+#endif
+        }
+
+            KUKA::FRI::ESessionState sessionState = grl::robot::arm::get(friData-&gt;monitoringMsg,KUKA::FRI::ESessionState());
+        // copy current joint position to commanded position
+        if (sessionState == KUKA::FRI::COMMANDING_WAIT || sessionState == KUKA::FRI::COMMANDING_ACTIVE)
+        {
+            boost::transform ( ipoJointPos, offsetFromipoJointPos, jointStateToCommand.begin(), std::plus&lt;double&gt;());
+            grl::robot::arm::set(friData-&gt;commandMsg, jointStateToCommand, grl::revolute_joint_angle_open_chain_command_tag());
+        }
+
+        // vector addition between ipoJointPosition and ipoJointPositionOffsets, copying the result into jointStateToCommand
+        /// @todo should we take the current joint state into consideration?
+
+        //BOOST_LOG_TRIVIAL(trace) &lt;&lt; "position: " &lt;&lt; state.position &lt;&lt; " us: " &lt;&lt; std::chrono::duration_cast&lt;std::chrono::microseconds&gt;(state.timestamp - startTime).count() &lt;&lt; " connectionQuality: " &lt;&lt; state.connectionQuality &lt;&lt; " operationMode: " &lt;&lt; state.operationMode &lt;&lt; " sessionState: " &lt;&lt; state.sessionState &lt;&lt; " driveState: " &lt;&lt; state.driveState &lt;&lt; " ipoJointPosition: " &lt;&lt; state.ipoJointPosition &lt;&lt; " ipoJointPositionOffsets: " &lt;&lt; state.ipoJointPositionOffsets &lt;&lt; "\n";
+    }
+  }
+  catch (std::exception&amp; e)
+  {
+    std::cerr &lt;&lt; "Exception: " &lt;&lt; e.what() &lt;&lt; "\n";
+  }
+
+  return 0;
+}
+</code></pre>
+
+<p>Here is the <a href="https://github.com/ahundt/grl/blob/master/src/java/grl/src/friCommunication/FRIHoldsPosition_Command.java" rel="nofollow">Java side of the application</a>:</p>
+
+<pre><code>package friCommunication;
+
+import static com.kuka.roboticsAPI.motionModel.BasicMotions.positionHold;
+import static com.kuka.roboticsAPI.motionModel.BasicMotions.ptp;
+
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+import com.kuka.connectivity.fri.FRIConfiguration;
+import com.kuka.connectivity.fri.FRIJointOverlay;
+import com.kuka.connectivity.fri.FRISession;
+import com.kuka.roboticsAPI.applicationModel.RoboticsAPIApplication;
+import com.kuka.roboticsAPI.controllerModel.Controller;
+import com.kuka.roboticsAPI.deviceModel.LBR;
+import com.kuka.roboticsAPI.geometricModel.CartDOF;
+import com.kuka.roboticsAPI.motionModel.controlModeModel.CartesianImpedanceControlMode;
+
+/**
+ * Creates a FRI Session.
+ */
+public class FRIHoldsPosition_Command extends RoboticsAPIApplication
+{
+    private Controller _lbrController;
+    private LBR _lbr;
+    private String _hostName;
+
+    @Override
+    public void initialize()
+    {
+        _lbrController = (Controller) getContext().getControllers().toArray()[0];
+        _lbr = (LBR) _lbrController.getDevices().toArray()[0];
+        // **********************************************************************
+        // *** change next line to the FRIClient's IP address                 ***
+        // **********************************************************************
+        _hostName = "192.170.10.100";
+    }
+
+    @Override
+    public void run()
+    {
+        // configure and start FRI session
+        FRIConfiguration friConfiguration = FRIConfiguration.createRemoteConfiguration(_lbr, _hostName);
+        friConfiguration.setSendPeriodMilliSec(4);
+        FRISession friSession = new FRISession(friConfiguration);
+        FRIJointOverlay motionOverlay = new FRIJointOverlay(friSession);
+         try {
+            friSession.await(10, TimeUnit.SECONDS);
+        } catch (TimeoutException e) {
+            // TODO Automatisch generierter Erfassungsblock
+            e.printStackTrace();
+            friSession.close();
+            return;
+        }
+        CartesianImpedanceControlMode controlMode = new CartesianImpedanceControlMode();
+        controlMode.parametrize(CartDOF.X).setStiffness(100.0);
+        controlMode.parametrize(CartDOF.ALL).setDamping(0.7);
+
+        // TODO: remove default start pose
+        // move to default start pose
+        _lbr.move(ptp(Math.toRadians(10), Math.toRadians(10), Math.toRadians(10), Math.toRadians(-90), Math.toRadians(10), Math.toRadians(10),Math.toRadians(10)));
+
+        // sync move for infinite time with overlay ...
+        _lbr.move(positionHold(controlMode, -1, TimeUnit.SECONDS).addMotionOverlay(motionOverlay));
+        //_lbr.moveAsync(ptp(Math.toRadians(-90), .0, .0, Math.toRadians(90), .0, Math.toRadians(-90), .0));
+
+        // TODO: remove default start pose
+        // move to default start pose
+        _lbr.move(ptp(Math.toRadians(10), Math.toRadians(10), Math.toRadians(10), Math.toRadians(-90), Math.toRadians(10), Math.toRadians(10),Math.toRadians(10)));
+
+        // done
+        friSession.close();
+    }
+
+    /**
+     * main.
+     * 
+     * @param args
+     *            args
+     */
+    public static void main(final String[] args)
+    {
+        final FRIHoldsPosition_Command app = new FRIHoldsPosition_Command();
+        app.runApplication();
+    }
+
+}
+</code></pre>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7770" data-toggle = "popover">
+				<p>user name : Andrew Hundt</p>
+				<p> user reputation : 276</p>
+				<p class = "tagcontent" id = "usertaginfo-7770">{'stereo-vision': 2, 'None': 14, 'calibration': 2, 'c++': 2, 'planning': 2, 'robotic-arm': 4, 'motion-planning': 2}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7770">Load Comments</button></br>
+			<div id = "commentsection-7770" class = 'collapse'>
+			<div id = "comment-11294" class = "comment">
+				<p>Thanks a lot Andrew. I'll try it next time I'll have the robot.</p>
+			</div>
+			<div id = "comment-11295" class = "comment">
+				<p>What I did meanwhile, is to create a Server application that runs on the Robot's Controller and listens to commands on port "30000". On my PC, I create a simple Java client application that sends ints on port 30000, so the robots moves to pre-defined positions according to the integer received. and this worked just fine (I'll post codes later).</p>
+			</div>
+			<div id = "comment-11296" class = "comment">
+				<p>I met KUKA's representative, he said that FRI is mostly for overlaying paths. Say you have a robot and a Cam/Sensor and you want to avoid any unpredictable obstacles, so each time your vision/detection systems spots a obstacle, it will send "in real-time" this information, so your robot deviates from its original path to avoid any collision, then gets back to its original one.</p>
+			</div>
+			<div id = "comment-11302" class = "comment">
+				<p>I have code that does the same thing with Java, which is also in my tree. I used zmq + protobuf for it. FRI works for full control if you use a HoldPosition command and an FRI overlay. Then you can simply use joint control over FRI if you need fast response time.</p>
+			</div>
+			<div id = "comment-16258" class = "comment">
+				<p>I am very interested in your library. I am trying to install it in my window. But I keep facing the error like in the picture: [http://i.stack.imgur.com/utViE.png](http://i.stack.imgur.com/utViE.png) Wondering if you could give me advice on it?</p>
+			</div>
+			<div id = "comment-16259" class = "comment">
+				<p>@Vinh it isn't tested on windows. I suggest Ubuntu 14.04 or OS X</p>
+			</div>
+			</div>
+				<textarea id = "speech-7770" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7770">
+					<img id="start_img-7770" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7770">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

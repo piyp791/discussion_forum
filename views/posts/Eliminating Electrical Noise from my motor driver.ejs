@@ -1,0 +1,211 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Eliminating Electrical Noise from my motor driver
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-6398" class = "post">
+			<h2>Question</h2>
+			<div id="vote-6398" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 245</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Eliminating Electrical Noise from my motor driver</h2>
+<p>Background:</p>
+
+<p>I am using an Arduino Mega connected to a RoboClaw 2x60A motor driver.  I asked <a href="https://robotics.stackexchange.com/questions/6355/dealing-with-position-inaccuracy-and-latency-in-pid-loop">this question</a> about the system, but I have since narrowed the scope of the problem.  I tried adding a bunch of different size capacitor between the 5v and gnd, when the RoboClaw is switched off then a 470 micro farad capacitor seems to eliminate all noise but when I turn on the RoboClaw no capacitance valued I tried, (4.7,10,100,220,320,470,540,690,1000,1100)microfarads seems to eliminate any noise.  I even tried hooking up a 12v battery with a 5v regulator to the logic battery on the RoboClaw and connecting it to the ground on the Arduino.  Then I tried using a separate battery for the pots and connecting the AREF to the +5v on the battery.<br>
+No matter what I try when the roboclaw is on the potentiometer value will vary as much as +-6 degrees.  I found the degrees using:</p>
+
+<p>map(analogRead(A0),0,1023,0,300) </p>
+
+<p>In addition I took a bunch of data and graphed it and found that if I took 25 instantaneous data points and averaged them together it would help significantly reduce the variance.  I chose 25 because it take 2.9 ms, 100 worked really well but it took 11 ms.  To help explain the averageing of analog read, here is my code:</p>
+
+<p>unsigned int num = 0;</p>
+
+<p>for (int i = 0; i&lt;25; i++){</p>
+
+<pre><code>num+=analogRead(A0);
+</code></pre>
+
+<p>}</p>
+
+<p>potReading = num/25;</p>
+
+<p>My Question:</p>
+
+<p>What is my next step in eliminating this noise?  Is there a formula I can use to find a better capacitance value? Should I try putting capacitors on each potentiometer between 5V and gnd?  Any other IC I should try to help with this?  On my previous question someone mentioned optocouplers, what size would work best and where in the circuit do they go?  Is there code I can write to help eliminate the size of the variance beyond what I have written?</p>
+
+<p>Thanks so much for any help,
+Joel</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6398" data-toggle = "popover">
+				<p>user name : Joel</p>
+				<p> user reputation : 125</p>
+				<p class = "tagcontent" id = "usertaginfo-6398">{'control': 1, 'None': 0, 'noise': 0, 'encoding': 1, 'arduino': 3, 'microcontroller': 1, 'pid': 3, 'avr': 3, 'motor': 4, 'electronics': 0, 'motion-planning': 1, 'driver': 0, 'software': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-6398" class = 'collapse'>
+			</div>
+				<textarea id = "speech-6398" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6398">
+					<img id="start_img-6398" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6398">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-6399"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6399" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>First off, you should probably replace all electrical connections between the motor driver and other circuitry with optocouplers (I hope you aren't using the analog interface). Then, make sure that the power supplies are completely isolated. You should probably keep the grounds tied together with a 500k or one meg resistor the keep them form varying hugely. </p>
+
+<p>If you still get problems you could try shielding the motor driver and cables. I've never had rf interference problems with arduino(s), but it might be worth a try.</p>
+
+<p>Also, if nothing else, make sure that the power cables aren't daisy-chained. If you have to drive them off the same battery, make sure that you are using a star configuration. You should also probably <strong>try a ferrite choke</strong> on the power supply line if you don't separate the power supplies. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6399" data-toggle = "popover">
+				<p>user name : daweim0</p>
+				<p> user reputation : 360</p>
+				<p class = "tagcontent" id = "usertaginfo-6399">{'None': 16, 'arduino': 3, 'microcontroller': 3, 'imu': 2, 'beagle-bone': 1, 'untagged': 2, 'i2c': 1}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-6399">Load Comments</button></br>
+			<div id = "commentsection-6399" class = 'collapse'>
+			<div id = "comment-9240" class = "comment">
+				<p>I just picked up a few 4n35 optocouplers I will use them for the slave select and for the main tx line.  Why do I need to keep the grounds tied together if the circuits never interact?</p>
+			</div>
+			<div id = "comment-9244" class = "comment">
+				<p>I used optocouplers and a .1uf ceramic cap between gnd and the input to analog read.  The noise is still there, it used to stop when I unplugged the motor driver, but the motor driver is isolated.  the noise is decrease ever so slightly but it is still +- 4 degrees which I cannot use for position feedback</p>
+			</div>
+			<div id = "comment-9246" class = "comment">
+				<p>You want the grounds tied together by the meg resistor so that you don't get kilovolt differences between the circuits. It's for ESD safety. How are you powering the two boards?</p>
+			</div>
+			<div id = "comment-9247" class = "comment">
+				<p>I am powering the RoboClaw from 2 12v power sources and the arduino from a wall wart to barrel jack cable.</p>
+			</div>
+			<div id = "comment-9248" class = "comment">
+				<p>You should also probably try a ferrite choke on the analog read line as well. I don't suppose you have a spectrum analyzer handy?</p>
+			</div>
+			<div id = "comment-9249" class = "comment">
+				<p>I have been debugging and realized that there grounds are still connected, how is this possible no ground cable are touching; however both power supplies are plugged into the same power strip.  Could that link the grounds?</p>
+			</div>
+			<div id = "comment-9250" class = "comment">
+				<p>I don't have a spectrum analyzer but the new ADC I bought has ferrites, I think that will solve that problem because it eliminates everything except the ADC.  But now I am wondering why the grounds on the Roboclaw and arduino are still connected.</p>
+			</div>
+			<div id = "comment-9251" class = "comment">
+				<p>Good wall power supplies are isolated, but not all are. You should try measuring the resistance between the ground lines of the two power supplies.</p>
+			</div>
+			<div id = "comment-9252" class = "comment">
+				<p>its not registering resistance but they have a voltage difference of .441 I am extremely confuse by this.</p>
+			</div>
+			<div id = "comment-9253" class = "comment">
+				<p>are they on? also, should we move this to chat? EDIT: Wait, you can't turn wall warts off. Try measuring the resistance between their output ground and input neutral</p>
+			</div>
+			<div id = "comment-9254" class = "comment">
+				<p>Let us [continue this discussion in chat](http://chat.stackexchange.com/rooms/20366/discussion-between-joel-and-daweim0).</p>
+			</div>
+			<div id = "comment-9255" class = "comment">
+				<p>Let me know if the chokes work. I'm curious to know what the issue is</p>
+			</div>
+			</div>
+				<textarea id = "speech-6399" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6399">
+					<img id="start_img-6399" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6399">Comment</button>
+			<br><div id = "ans-6402"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6402" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I bought <a href="https://www.adafruit.com/products/1083" rel="nofollow">this ADC breakout board</a> I will use a battery for this and put optocouplers on the i2c lines to completely separate the ADC circuit from the rest of the circuits.  And it gives me a little better resolution on the potentiometers.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6402" data-toggle = "popover">
+				<p>user name : Joel</p>
+				<p> user reputation : 125</p>
+				<p class = "tagcontent" id = "usertaginfo-6402">{'control': 1, 'None': 0, 'noise': 0, 'encoding': 1, 'arduino': 3, 'microcontroller': 1, 'pid': 3, 'avr': 3, 'motor': 4, 'electronics': 0, 'motion-planning': 1, 'driver': 0, 'software': 3}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-6402">Load Comments</button></br>
+			<div id = "commentsection-6402" class = 'collapse'>
+			<div id = "comment-9245" class = "comment">
+				<p>The ADC board comes thursday in the mail so on friday I will know if this works</p>
+			</div>
+			</div>
+				<textarea id = "speech-6402" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6402">
+					<img id="start_img-6402" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6402">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

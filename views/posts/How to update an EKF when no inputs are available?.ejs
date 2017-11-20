@@ -1,0 +1,140 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to update an EKF when no inputs are available?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-10717" class = "post">
+			<h2>Question</h2>
+			<div id="vote-10717" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 70</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to update an EKF when no inputs are available?</h2>
+<p>I'm using an  Extended Kalman filter where the motion model is a function of the states and the inputs, with additive white noise, i.e. 
+$$ x_k = f(x_{k-1},u_{k-1}) +\delta_{k-1} \quad , \quad \delta_{k-1} \sim N(0,\Delta_{k-1})$$ </p>
+
+<p>If $x_{k-1}$ and $u_{k-1}$ are know, then the prediction step is done as
+$$\hat{x}_{k|k-1} = f(\hat{x}_{k-1|k-1},u_{k-1}) $$
+$$ f' = \frac{\partial F}{\partial x_{k-1}}\Big|_{x_{k-1}=\hat{x}_{k-1|k-1}~,~u=u_{k-1}} $$
+$$ P_{k|k-1} = f'P_{k-1|k-1}f $$</p>
+
+<p>However, at some time steps I won't know the value of $u$, the input. What is the optimal way to perform the prediction step in this scenario? </p>
+
+<hr>
+
+<p>My thoughts so far are to set
+$$\hat{x}_{k|k-1} = \hat{x}_{k-1|k-1} ~,$$
+since I have no new information to update it... but no idea how to estimate the covariance matrix $P_{k|k-1}$.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10717" data-toggle = "popover">
+				<p>user name : JLagana</p>
+				<p> user reputation : 185</p>
+				<p class = "tagcontent" id = "usertaginfo-10717">{'control': 2, 'quadcopter': 6, 'None': 0, 'computer-vision': 5, 'sensor-fusion': 2, 'accelerometer': 6, 'calibration': 5, 'ekf': 6, 'filter': 2, 'kalman-filter': 8, 'orientation': 6}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-10717" class = 'collapse'>
+			</div>
+				<textarea id = "speech-10717" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10717">
+					<img id="start_img-10717" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10717">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-10907"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10907" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You can use the last value $u_{t-1}$ if the time step is not too big ($\delta t$ is small).</p>
+
+<p>Or, you can keep track of $u$ some time steps in the past, e.g. ten of them and extrapolate $u_t$ when you lose it. You can use a line equation for that:</p>
+
+<p>$$
+y = mx + b
+$$</p>
+
+<p>You can use a <a href="https://en.wikipedia.org/wiki/Simple_linear_regression#Fitting_the_regression_line" rel="nofollow">simple linear regression</a> to find the values of $m$ and $b$.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10907" data-toggle = "popover">
+				<p>user name : Luis</p>
+				<p> user reputation : 101</p>
+				<p class = "tagcontent" id = "usertaginfo-10907">{'control': 0, 'ekf': 0, 'None': 7}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-10907" class = 'collapse'>
+			</div>
+				<textarea id = "speech-10907" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10907">
+					<img id="start_img-10907" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10907">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

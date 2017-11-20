@@ -1,0 +1,161 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Computationally efficient way to represent joint C space for a multi-robot RRT
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-13955" class = "post">
+			<h2>Question</h2>
+			<div id="vote-13955" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 62</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Computationally efficient way to represent joint C space for a multi-robot RRT</h2>
+<p>I am working on writing code for a coordinated multi-robot rapidly exploring random tree (RRT) based planner, which would naturally involve a lot of sampling, nearest neighbor searching and 'radius' searching. Because this is a coordinated/cooperative planning step, all robots' paths are incrementally created in every iteration until all robots reach their respective goals, and the planner needs all the robots' positions during the planning phase.</p>
+
+<p>I have a basic framework for this working in MATLAB, which was only a proof of concept and not really efficient: but I am not sure what the best way to program it in, say, C++ would be. Normally for an RRT, I would go for a KD tree implementation, but in a multi-robot point of view, the environment would be a joint configuration space and this would mean a pseudo-high-dimensional KD tree: which is not actually high dimensional, but just needs to perform nearest neighbor searches in a space that combines the states (x,y,z, yaw) of all the robots - over and over again during the planning phase. The metric is simple enough, as it is just Euclidean distance, but I don't know if using KD trees for this will be computationally efficient. I'm looking for some suggestions on how to describe the configuration space for an efficient multi-robot RRT (I am thinking of a maximum of five robots) with a state dimension of 4. </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-13955" data-toggle = "popover">
+				<p>user name : HighVoltage</p>
+				<p> user reputation : 398</p>
+				<p class = "tagcontent" id = "usertaginfo-13955">{'stereo-vision': 2, 'probability': 10, 'multi-agent': 4, 'planning': 10, 'manipulator': 2, 'cameras': 1, 'matlab': 1, 'kalman-filter': 7, 'None': 19, 'noise': 3, 'inverse-kinematics': 2, 'localization': 8, 'pose': 4, 'mapping': 0, 'rotation': 1, '3d-reconstruction': 0, 'computer-vision': 8, 'algorithm': 3, 'c++': 3, 'slam': 2, 'exploration': 0, 'path-planning': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-13955">Load Comments</button></br>
+			<div id = "commentsection-13955" class = 'collapse'>
+			<div id = "comment-22791" class = "comment">
+				<p>Something like [Finding a needle in an exponential haystack: Discrete RRT for exploration of implicit roadmaps in multi-robot motion planning](http://journals.sagepub.com/doi/pdf/10.1177/0278364915615688)? I'm not sure what you're looking for - an algorithm, or an approach to *convert* the algorithm from Matlab to C++, but unfortunately I think either question is going to be an off-topic *discussion* rather than an *answerable question*. Is it possible to rephrase the question to make it less open-ended? Please also remember you can always *discuss* projects in [chat]!</p>
+			</div>
+			<div id = "comment-22792" class = "comment">
+				<p>Thanks for that link, Chuck. I am not looking for an algorithm, really, but my question is along the lines of "what's the best way to represent what that paper calls "composite roadmap generated from the joint C space of multiple robots" in a computationally efficient way?" While that might not be a completely robotics specific question, I ended up posting here because people here might have expertise with planners like this!</p>
+			</div>
+			</div>
+				<textarea id = "speech-13955" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-13955">
+					<img id="start_img-13955" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-13955">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-13990"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-13990" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I'd start by considering your problem as a single K-dimensional problem (K would be 4 DoF by the number of robot, so K=20 in the case you mention), and have a look to <a href="http://www.cs.ubc.ca/research/flann/" rel="nofollow noreferrer">FLANN</a>, which is distributed as a C++ library, for the nearest neighbors search.</p>
+
+<p>Or simply start by an exhaustive search using Euclidean distance in that K-dimensional space.
+Also, I don't have a reference at hand, but I think you can use a search among some randomly sampled points of you graph: on each nearest-neighbor search, pick randomly n points in your graph and exhaustively look for the nearest-neighbor in that subset. It will degrade some qualities of your tree, but may result faster, depending on the value for n you pick.</p>
+
+<p>But the solution you need depends a lot on your problem specification, mainly size and clutteredness of your environment, presence of bottlenecks...</p>
+
+<p>Hope it helps...</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-13990" data-toggle = "popover">
+				<p>user name : JulesW</p>
+				<p> user reputation : 6</p>
+				<p class = "tagcontent" id = "usertaginfo-13990">{'None': 0, 'geometry': 1, 'motion': 1, 'hri': 1, 'software': 1, 'movement': 1}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-13990" class = 'collapse'>
+			</div>
+				<textarea id = "speech-13990" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-13990">
+					<img id="start_img-13990" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-13990">Comment</button>
+			<br><div id = "ans-14002"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-14002" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I don't want to sound too pessimistic, but from my experience a straightforward RRT approach for multiple robots would not be able to scale well with the number of robots, due to excessive collision checking. Therefore, nearest-neighbor search (NN) would certainly not be the bottleneck, as you will not be able to experiment with more than 10 robots, at best. </p>
+
+<p>If you do manage to experiment, possible by using a different method, with a large fleet of robots, and the high-dimensional NN technique turns out to be the bottleneck, it might be worth to consider a dimension reduction: for $m$ robots having $d$ degrees of freedom you might be able to efficiently encode the distance relations between $md$-dimensional composite configuration using <a href="https://en.wikipedia.org/wiki/Dimensionality_reduction" rel="nofollow noreferrer">dimension reduction</a>. </p>
+
+<p>You may want to elaborate on the reason you chose to implement an direct RRT approach, so that we can help in finding a better alternative. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-14002" data-toggle = "popover">
+				<p>user name : kirilsolo</p>
+				<p> user reputation : 11</p>
+				<p class = "tagcontent" id = "usertaginfo-14002">{'None': 1}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-14002" class = 'collapse'>
+			</div>
+				<textarea id = "speech-14002" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-14002">
+					<img id="start_img-14002" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-14002">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,158 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to numerically calculate the Jacobian?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7886" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7886" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">6</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 621</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to numerically calculate the Jacobian?</h2>
+<p>I'm trying to calculate the Jacobian for days now. But first some details. Within my Master's Thesis I have to numerically calculate the Jacobian for a tendon-driven continuum Robot. I have all homogeneous transformation matrices as I already implemented the kinematics for this Robot. Due to it's new structure there are no discrete joint variables anymore but rather continuous parameters. Therefore I want to compute the Jacobian numerically.
+It'd be awesome if someone could provide a detailed way how to compute the numerical Jacobian for a 6-DoF rigid-link robot (only rotational joints => RRRRRR). From that I can transfer it to the continuum robot.</p>
+
+<p>I've already started computing it. Let T be the homogeneous transformation matrix for the Endeffector (Tip)  with</p>
+
+<p>$$T=\begin{bmatrix}R &amp; r \\ 0 &amp; 1 \end{bmatrix} $$</p>
+
+<p>with R = rotational matrix (contains orientation) and $ r = \begin{bmatrix} x &amp; y &amp; z \end{bmatrix}^T$ endeffector position.
+My approach is to compute the first three rows of J by successively increasing the joints, computing the difference to the "original" joint values and dividing it by the increment delta, the joint-space is $ q = \begin{bmatrix} q_1 &amp; q_2 &amp;  q_3 &amp; ... &amp;q_6 \end{bmatrix}T $</p>
+
+<p>$q_1 = q_1 + \delta$ => $J(1,1) = (X_{increment} - X_{orig})/\delta$ </p>
+
+<p>$q_2 = q_2 + \delta$ => $J(1,2) = (X_{increment} - X_{orig})/\delta$   </p>
+
+<p>and so on. I do the same for the y and z coordinates. So I get the first 3 rows of J. </p>
+
+<p>Now I don't know how to compute the last three rows as they refer to the rotational Matrix R. Since it's a 3x3 matrix and no scalar value I don't know how to handle it. </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7886" data-toggle = "popover">
+				<p>user name : Francis</p>
+				<p> user reputation : 31</p>
+				<p class = "tagcontent" id = "usertaginfo-7886">{'None': 0, 'jacobian': 6}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7886">Load Comments</button></br>
+			<div id = "commentsection-7886" class = 'collapse'>
+			<div id = "comment-11702" class = "comment">
+				<p>Can you elaborate on the comment that there are "*no discrete joint variables but rather continuous parameters*"?  Because from your implementation it sure sounds like you have 6 discrete joint variables.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7886" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7886">
+					<img id="start_img-7886" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7886">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7927"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7927" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Well, although, I didn't well understand what have wrote as a solution to the first part (upper) half of the Jacobian, but AFAIK, the manipulator Jacobian is a $6\times n$ matrix, for that let's say $ J$ is the Jacobian thus:</p>
+
+<p>$$ 
+J = \begin{bmatrix} J_v \\ 
+J_\omega \end{bmatrix} \\
+$$ 
+where both the upper part $ J_v$ and the lower one $ J_\omega$ are $ 3 \times n $ now: $ J_{v_i} = z_{i 1} \times (o_n   o_{i 1}) $ is the upper half of the Jacobian for the joint $ i$ and  </p>
+
+<p>$$ 
+z^0_{i 1} = R^0_{i 1}k \\
+$$ </p>
+
+<p>where $ R^0_{i-1}$ is the transformation between the two neighboring frames, and $ z^0_0= k = (0, 0, 1)^T$, also $o_i$ is the position vector for the joint $ i$. and the lower part $ \textbf{which you're looking for} $ is simply:
+$$ J_{\omega_i} = z_{i 1}$$ the upper transcript could be ignored.
+All this for $ \textbf{for revolute joint, as your case.}$</p>
+
+<p>$\textbf{If we have a prismatic joint}$, then:
+$$
+J_{v_i} = z_{i 1}$$ and $$ J_{\omega_i} = 0 \\
+$$
+You may consult <a href="http://smpp.northwestern.edu/savedLiterature/Spong_Textbook.pdf" rel="nofollow">Spong: robot dynamics and control</a> for more details (ch4). </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7927" data-toggle = "popover">
+				<p>user name : AlFagera</p>
+				<p> user reputation : 99</p>
+				<p class = "tagcontent" id = "usertaginfo-7927">{'control': 5, 'product-of-exponentials': 3, 'None': 4, 'manipulator': 0, 'inverse-kinematics': 0, 'torque': 1, 'pid': 2, 'simulation': 1, 'servomotor': 1, 'industrial-robot': 6, 'dh-parameters': 2, 'matlab': 2, 'robotic-arm': 10, 'jacobian': 0, 'kinematics': 2, 'dynamics': 5, 'forward-kinematics': 1, 'robotc': 1, 'input': 1}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7927" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7927" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7927">
+					<img id="start_img-7927" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7927">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

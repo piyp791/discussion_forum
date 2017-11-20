@@ -1,0 +1,188 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>What is the required theory behind building a robotic arm?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8310" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8310" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 342</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>What is the required theory behind building a robotic arm?</h2>
+<p>I am currently planning on building a robotic arm. The arm's specs are as follows: </p>
+
+<ul>
+<li>3 'arms' with two servos each (to move the next arm)</li>
+<li>single servo clamp</li>
+<li>mounted on revolving turntable</li>
+<li>turntable rotated by stepper motor</li>
+<li>turntable mounted on baseplate by ball bearings to allow rotation</li>
+<li>baseplate mounted on caterpillar track chassis</li>
+<li>baseplate is smaller in length and width than caterpillar chassis</li>
+</ul>
+
+<p>What are the required formulas in determining how much torque each servo must produce, keeping in mind that the arm <em>must</em> be able to lift weights of up to 1 kilogram? Also, considering that the ball bearings will take the load of the arm, how strong does the stepper have to be (just formulas, no answers)?</p>
+
+<p>As far as overall dimensions are concerned, the entire assembly will be <em>roughly</em> 255mm x 205mm x 205mm (l x w x h). I have not finalized arm length, but the aforementioned dimensions give a general estimate as to the size. </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8310" data-toggle = "popover">
+				<p>user name : Forrest4096</p>
+				<p> user reputation : 33</p>
+				<p class = "tagcontent" id = "usertaginfo-8310">{'None': 1, 'rcservo': 4, 'arduino': 4, 'torque': 4, 'robotic-arm': 4, 'stepper-motor': 4}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8310" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8310" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8310">
+					<img id="start_img-8310" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8310">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8311"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8311" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>There are 2 (or 3, depending on how the planned lifetime of the robot is) thing thats you have to consider.</p>
+
+<p>Static load:
+The motors stall (zero revolution) torques have to be able to hold the weight in the robots most unfavorable pose (usually the arm stretched out). You can determine this by static modelling, that involves only an equilibrium of forces for a given pose (no motion). The motors stall torques have to be at least equal (but larger is recommended) then the torques obtained from the static model.</p>
+
+<p>Dynamic load:
+This is the case where you need to consider both forces and motions. determine the target maximum speed of the robot for its end-effector (tool center point, TCP). Besides your mentioned maximum payload, you will need to know the moment of inertia of your payload (or you can approximate it if you consider that it is e.g. sphere shaped or square shaped). You will also need to approximate the masses and inertia of your linkages (incl. motors). These all are input to the dynamical analysis. The dynamic model calculates the motions of the centers of gravities of all your solids then attaches the necessary forces that act on them and then does a force equilibrium (as in the static model, but completed with "motion forces").</p>
+
+<p>The fastest way to model the dynamics is with a software for dynamic modeling (e.g. SimMechanics package of Matlab). If not you will have to write the equations. I would recommend the Newton-Euler approach since it is the simplest. Here you can find more about it:</p>
+
+<p><a href="http://www.diag.uniroma1.it/~deluca/rob2_en/06_NewtonEulerDynamics.pdf">http://www.diag.uniroma1.it/~deluca/rob2_en/06_NewtonEulerDynamics.pdf</a></p>
+
+<p>The static model is a subcase of your dynamic model. If in the dynamic model you set velocities and accelerations to zero you end up with a static model. However, to find the worst case pose for your robot (the one that requires the maximum amount of torque, or produced the highest force on the bearings) is not simple in the dynamic case (when you have motions, not just standstill). You need to find the worst case load pose in order to be sure that the maximum load on the bearings and maximum torque on your motors does not exceed the maximum allowable forces/torques in the datasheet of your motor/bearings Trial and error with large increments, see where the forces peak and investigate that interval with smaller increments. A more complicated approach would be to use an optimization algorithm to find which pose maximizes your torques or reaction forces...</p>
+
+<p>If you want to plan the lifetime of your robot a fatigue analysis will also be required. I assume you do not need this...</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8311" data-toggle = "popover">
+				<p>user name : 50k4</p>
+				<p> user reputation : 2800</p>
+				<p class = "tagcontent" id = "usertaginfo-8311">{'geometry': 0, 'None': 193, 'kinematics': 0, 'robotic-arm': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8311">Load Comments</button></br>
+			<div id = "commentsection-8311" class = 'collapse'>
+			<div id = "comment-13300" class = "comment">
+				<p>I did not expect such a detailed answer...but thanks this is a great help. Can you please explain to me in greater depth about the TCP? I haven't quite understood how it fits in.</p>
+			</div>
+			<div id = "comment-13306" class = "comment">
+				<p>The TCP is the "most interesting point" of your robot.  If you have a tool it is usually the tip of the tool. One is usually interested in positioning the tooltip somewhere (e.g. to glue something if the tool is a glueing gun) with a given precision and for some applications you are interested in how fast the tool (TCP) moves and how it is oriented. For a glueing application you'd want your glueing gun to be perpendicular to the surface and you'd want it to move with constant velocity and follow a given curve. The tooltip (=TCP) has to have the constant velocity, you do not care about the rest</p>
+			</div>
+			</div>
+				<textarea id = "speech-8311" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8311">
+					<img id="start_img-8311" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8311">Comment</button>
+			<br><div id = "ans-8312"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8312" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>It sounds like you are developing a robotic manipulator from scratch so I also assume you will be writing software for position control too. Both the design and control depend on not only the <em>dynamics</em> but also the <em>kinematics</em> of your robot.</p>
+
+<p>Kinematics cover the relationships between the joint angles and link lengths (each "arm" is referred to as a <em>link</em>) so that you can determine the position and orientation (as well as velocities and accelerations) along any part of the robot. One method of modeling the kinematics is to break your set of links into the corresponding series of <a href="https://en.wikipedia.org/wiki/Denavit%E2%80%93Hartenberg_parameters" rel="nofollow">Denavit-Hartenberg parameters</a>. This is not difficult to do, you just have to familiarize yourself with coordinate frames and determine the coefficients for your particular links.</p>
+
+<p>Keep in mind that we are always considering the robot states to be the angles of the joints (or extension of any prismatic joint). Given any set of angles we can then use the kinematics to determine the Cartesian positions of the robot components. Same goes for angular rates to Cartesian velocities and angular accelerations to Cartesian accelerations (of course the velocities and accelerations depend on the angles and rates as well).</p>
+
+<p>To get the torques we then look at the dynamics, where we use the kinematics to model the robot motion and then examine the reaction forces and moments between links based on the inertia of the moving masses. Again, this is not actually too difficult and reduces to a series of free-body diagrams that can be solved in series. The torque on each joint is then simply the moment being applied to it projected onto the joint axis of rotation.</p>
+
+<p>This is known as the <em>computed torque method</em> whereby we prescribe a trajectory for the manipulator joints over time (angles, angular velocities, and angular accelerations) then use the kinematics to determine the Cartesian motion of the joints and finally solve for the reaction torques in the joints. Essentially we are saying "if the manipulator were to perform this motion, what torques will it need to apply through the motors".</p>
+
+<p>When you control the manipulator, you can then input those computed torques for your desired motion and include a layer of feedback control to correct for errors since our model is never perfect. Of course you can use the kinematics and dynamics to approach the problem in different ways, but you'll always need to include them both.</p>
+
+<p>As 50k4 mentioned in the other answer, there are plenty of software packages to help you do this. However, you will most definitely have to understand the underlying principles in order to translate your particular design into the configuration that the software expects (i.e., DH parameters or some other accepted convention). Manipulators can be a bit daunting so take it in stride!</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8312" data-toggle = "popover">
+				<p>user name : Brian Lynch</p>
+				<p> user reputation : 1237</p>
+				<p class = "tagcontent" id = "usertaginfo-8312">{'None': 85}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8312" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8312" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8312">
+					<img id="start_img-8312" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8312">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

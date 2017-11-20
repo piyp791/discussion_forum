@@ -1,0 +1,177 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>information filter instead of kalman filter approach
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-1180" class = "post">
+			<h2>Question</h2>
+			<div id="vote-1180" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 232</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>information filter instead of kalman filter approach</h2>
+<p>I read many sources about kalman filter, yet no about the other approach to filtering, where canonical parametrization instead of moments parametrization is used. </p>
+
+<p>What is the difference?</p>
+
+<hr>
+
+<p>Other questions:</p>
+
+<ol>
+<li><p>Using IF I can forget KF,but have to remember that prediction is more complicated <a href="http://en.wikipedia.org/wiki/Kalman_filter#Information_filter" rel="nofollow noreferrer">link</a> </p></li>
+<li><p>How can I imagine uncertainty matrix turning into an ellipse? (generally I see, area is uncertainty, but I mean boundaries) </p></li>
+<li><p>Simple addition of information in IF was possible only under assumption that each sensor read a different object? (hence no association problem, which I posted <a href="https://robotics.stackexchange.com/questions/1181/object-level-sensor-fusion-for-multiobject-tracking">here</a></p></li>
+</ol>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1180" data-toggle = "popover">
+				<p>user name : josh131</p>
+				<p> user reputation : 97</p>
+				<p class = "tagcontent" id = "usertaginfo-1180">{'None': 0, 'sensor-fusion': 14, 'algorithm': 10, 'artificial-intelligence': 3, 'books': 4, 'kalman-filter': 14, 'sensors': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1180">Load Comments</button></br>
+			<div id = "commentsection-1180" class = 'collapse'>
+			<div id = "comment-2686" class = "comment">
+				<p>You might pick up the "Probabilistic Robotics" Book from Thrun et. al. to learn about the information filter, especially in the context of robotics. If you have specific questions, feel free to ask them here :)</p>
+			</div>
+			<div id = "comment-2691" class = "comment">
+				<p>I think he had a good question: What's the difference? So I answered that. It's good for reference, I think, and also because Thrun's book isn't *that* great and is expensive.</p>
+			</div>
+			</div>
+				<textarea id = "speech-1180" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1180">
+					<img id="start_img-1180" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1180">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-1185"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1185" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">6</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>They are exactly the same. Information matricies (aka precision matricies) are the inverse of covariance matricies. Follow <a href="http://en.wikipedia.org/wiki/Kalman_filter" rel="nofollow">this</a>. The covariance update $$P_{+} = (I-KH)P$$ can be expanded by the definition of $K$ to be</p>
+
+<p>$$ P_{+} = P - KHP $$
+$$ P_{+} = P - PH^T (HPH^T+R)^{-1} HP $$</p>
+
+<p>Now apply the <a href="http://en.wikipedia.org/wiki/Woodbury_matrix_identity" rel="nofollow">matrix inversion lemma</a>, and we have:</p>
+
+<p>$$ P_{+} = P - PH^T (HPH^T+R)^{-1} HP $$
+$$ P_{+} = (P^{-1} + H^TR^{-1}H)^{-1} $$</p>
+
+<p>Which implies:
+$$ P_{+}^{-1} = P^{-1} + H^TR^{-1}H $$</p>
+
+<p>The term $P^{-1}$ is called the prior information, $H^TR^{-1}H$ is the sensor information (inverse of sensor variance), and this gives us $P^{-1}_+$, which is the posterior information. </p>
+
+<p>I'm glossing over the actual state estimate, but it's straightforward. The best intro I've seen on this is <em>not</em> Thrun's book, but Ben Grocholsky's PhD thesis. (Just the intro material). It's called <strong>Information Theoretic Control of Multiple Sensor Platforms</strong>. Here's a <a href="http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.58.5090" rel="nofollow">link</a>.</p>
+
+<hr>
+
+<p><strong>EDITS</strong></p>
+
+<p>To answer the questions posed.</p>
+
+<ol>
+<li><p>It is not more complicated to predict, it is more computationally costly, since you must invert the $n \times n$ covariance matrix to get the true state output. </p></li>
+<li><p>To view the ellipse from a covariance matrix, just note that the covariance matrix has a nice <a href="http://en.wikipedia.org/wiki/Singular_value_decomposition" rel="nofollow">Singular Value Decomposition</a>. The square root of the eigenvalues of the ellipse, or the square root of the singular values of the ellipse, will define the principal axes of the ellipse.</p></li>
+<li><p>No, addition of information depends only on the assumption of independence of measurement noise. If you want to use two information filters to track two objects, that's fine. Or if you want to use an IF to track two objects, that's also fine. All you need is the correct <em>association</em> of measurements, so that you know which part of the state (object 1 or object 2) to update.</p></li>
+</ol>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1185" data-toggle = "popover">
+				<p>user name : Josh Vander Hook</p>
+				<p> user reputation : 3960</p>
+				<p class = "tagcontent" id = "usertaginfo-1185">{'None': 345}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1185">Load Comments</button></br>
+			<div id = "commentsection-1185" class = 'collapse'>
+			<div id = "comment-2695" class = "comment">
+				<p>nice explanation in thesis! For some questions:
+1.Using IF I can forget KF,but have to remember that prediction is more complicated [link](http://en.wikipedia.org/wiki/Kalman_filter#Information_filter)
+2. How can I imagine uncertainty matrix turning into an ellipse? (generally I see, area is uncertainty, but I mean boundaries)
+3. Simple addition of information in IF was possible only under assumption that each sensor read a different object? (hence no association problem, which I posted [here](http://robotics.stackexchange.com/questions/1181/object-level-sensor-fusion-for-multiobject-tracking)</p>
+			</div>
+			<div id = "comment-2696" class = "comment">
+				<p>I addressed your questions. I also added them to your original question, since that's the preferred way of asking *related* questions.</p>
+			</div>
+			<div id = "comment-2701" class = "comment">
+				<p>Perfect, and sorry didn't think of updating the main question</p>
+			</div>
+			</div>
+				<textarea id = "speech-1185" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1185">
+					<img id="start_img-1185" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1185">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

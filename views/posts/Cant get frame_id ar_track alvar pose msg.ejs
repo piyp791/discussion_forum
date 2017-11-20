@@ -1,0 +1,235 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Cant get frame_id ar_track alvar pose msg
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-10742" class = "post">
+			<h2>Question</h2>
+			<div id="vote-10742" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 99</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Cant get frame_id ar_track alvar pose msg</h2>
+<p>I am trying to get pose of the camera and set it with respect to the world frame. I want to get the frame_id from msg, so that I can set multiple cameras with respect to world frame dynamically.</p>
+
+<p>I am using Asus Xtion pro live, so I launch ar_track_alvar with pr2_indiv_no_kinect.launch.</p>
+
+<p>This is what I have done,</p>
+
+<p>Launch file,</p>
+
+<pre><code>&lt;launch&gt;
+    &lt;arg name="marker_size" default="4.4" /&gt;
+    &lt;arg name="max_new_marker_error" default="0.08" /&gt;
+    &lt;arg name="max_track_error" default="0.2" /&gt;
+    &lt;arg name="cam_image_topic" default="/camera1/rgb/image_rect_color" /&gt;
+    &lt;arg name="cam_info_topic" default="/camera1/rgb/camera_info" /&gt;    
+    &lt;arg name="output_frame" default="/camera1_link" /&gt;
+
+    &lt;node name="ar_track_alvar" pkg="ar_track_alvar" type="individualMarkersNoKinect" respawn="false" output="screen" args="$(arg marker_size) $(arg max_new_marker_error) $(arg max_track_error) $(arg cam_image_topic) $(arg cam_info_topic) $(arg output_frame)" /&gt;
+&lt;/launch&gt;
+</code></pre>
+
+<p>My ros Node,</p>
+
+<pre><code>#include &lt;ros/ros.h&gt;
+#include &lt;tf/transform_datatypes.h&gt;
+#include &lt;ar_track_alvar_msgs/AlvarMarkers.h&gt;
+#include&lt;tf/transform_broadcaster.h&gt;
+#include &lt;tf/transform_listener.h&gt;
+#include&lt;iostream&gt;
+#include &lt;string&gt;
+
+void cb(ar_track_alvar_msgs::AlvarMarkers req) {
+
+  tf::TransformBroadcaster tf_br;
+  tf::TransformListener listener;
+  static  tf::Transform transform;
+
+  if (!req.markers.empty()) {
+    tf::Quaternion q(req.markers[0].pose.pose.orientation.x, req.markers[0].pose.pose.orientation.y, req.markers[0].pose.pose.orientation.z, req.markers[0].pose.pose.orientation.w);
+    transform.setOrigin( tf::Vector3(ceil(req.markers[0].pose.pose.position.x), ceil(req.markers[0].pose.pose.position.y), ceil(req.markers[0].pose.pose.position.z)) );
+    transform.setOrigin( tf::Vector3(req.markers[0].pose.pose.position.x, req.markers[0].pose.pose.position.y, req.markers[0].pose.pose.position.z) );
+    transform.setRotation(tf::Quaternion( req.markers[0].pose.pose.orientation.x, req.markers[0].pose.pose.orientation.y, req.markers[0].pose.pose.orientation.z, req.markers[0].pose.pose.orientation.w));
+
+    try{
+
+        // this doesn't prints the frame id.
+        ROS_INFO("req.header.frame_id . . . . . .. .  .. ", req.header.frame_id.c_str());
+
+      if(req.header.frame_id.compare("/camera1_link"))
+      {
+          ROS_INFO("this gets printed . . ");
+        // this works . . I mean string comparision returns true.
+        // I want to set frame_id to the tf tree.
+
+       //   listener.waitForTransform(req.header.frame_id, "world", ros::Time::now(), ros::Duration(1.0));
+      //    tf_br.sendTransform(tf::StampedTransform(transform.inverse(), ros::Time::now(), "world", req.header.frame_id));
+
+      }
+
+    }
+    catch (tf::TransformException ex){
+      ROS_ERROR("%s",ex.what());
+      ros::Duration(1.0).sleep();
+    }
+  }
+}
+
+int main(int argc, char **argv) {
+  ros::init(argc, argv, "camera_tf_pose");
+  ros::NodeHandle nh;
+  ros::Subscriber sub = nh.subscribe("ar_pose_marker", 1, &amp;cb);
+
+  ros::spin();
+  return 0;
+
+}
+</code></pre>
+
+<p>Output of rosrun camera_tf_pose camera_tf_pose</p>
+
+<pre><code>[ INFO] [1475225608.355125575]: req.header.frame_id . . . . . .. .  .. 
+[ INFO] [1475225608.355185064]: this gets printed . . 
+[ INFO] [1475225608.454772325]: req.header.frame_id . . . . . .. .  .. 
+[ INFO] [1475225608.454802236]: this gets printed . . 
+[ INFO] [1475225608.555007653]: req.header.frame_id . . . . . .. .  .. 
+[ INFO] [1475225608.555137160]: this gets printed . . 
+</code></pre>
+
+<p>Output of rostopic echo /ar_pose_marker</p>
+
+<pre><code>   markers: 
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 1475225585
+        nsecs: 290621273
+      frame_id: /camera1_link
+    id: 14
+    confidence: 0
+    pose: 
+      header: 
+        seq: 0
+        stamp: 
+          secs: 0
+          nsecs:         0
+        frame_id: ''
+      pose: 
+        position: 
+          x: 0.310138838061
+          y: -0.0777276835864
+          z: -0.00489581265903
+        orientation: 
+          x: 0.158053463521
+          y: -0.431284842866
+          z: 0.021097283333
+          w: 0.888013170859
+</code></pre>
+
+<p>when I uncomment the following lines,</p>
+
+<pre><code> //   listener.waitForTransform(req.header.frame_id, "world", ros::Time::now(), ros::Duration(1.0));
+      //    tf_br.sendTransform(tf::StampedTransform(transform.inverse(), ros::Time::now(), "world", req.header.frame_id));
+</code></pre>
+
+<p>I get the following output:</p>
+
+<pre><code>[ INFO] [1475225923.155792267]: req.header.frame_id . . . . . .. .  .. 
+[ INFO] [1475225923.155849162]: this gets printed . . 
+Warning: Invalid argument passed to canTransform argument target_frame in tf2 frame_ids cannot be empty
+         at line 122 in /tmp/binarydeb/ros-indigo-tf2-0.5.13/src/buffer_core.cpp
+Warning: Invalid argument passed to canTransform argument target_frame in tf2 frame_ids cannot be empty
+         at line 122 in /tmp/binarydeb/ros-indigo-tf2-0.5.13/src/buffer_core.cpp
+Warning: Invalid argument passed to canTransform argument target_frame in tf2 frame_ids cannot be empty
+         at line 122 in /tmp/binarydeb/ros-indigo-tf2-0.5.13/src/buffer_core.cpp
+Warning: Invalid argument passed to canTransform argument target_frame in tf2 frame_ids cannot be empty
+         at line 122 in /tmp/binarydeb/ros-indigo-tf2-0.5.13/src/buffer_core.cpp
+Warning: Invalid argument passed to canTransform argument target_frame in tf2 frame_ids cannot be empty
+         at line 122 in /tmp/binarydeb/ros-indigo-tf2-0.5.13/src/buffer_core.cpp
+</code></pre>
+
+<p>Please help me with this issue. Thanks in advance</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10742" data-toggle = "popover">
+				<p>user name : Mahe Sirius</p>
+				<p> user reputation : 121</p>
+				<p class = "tagcontent" id = "usertaginfo-10742">{'None': 0, 'computer-vision': 4, 'c++': 0, 'opencv': 4, 'machine-learning': 4, 'ros': 4, 'point-cloud': 4}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-10742" class = 'collapse'>
+			</div>
+				<textarea id = "speech-10742" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10742">
+					<img id="start_img-10742" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10742">Comment</button>
+
+<h1>Answers</h1>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

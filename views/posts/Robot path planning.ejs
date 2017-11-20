@@ -1,0 +1,497 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Robot path planning
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7928" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7928" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 810</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Robot path planning</h2>
+<p>My goal is to move robot in certain points as shown in the figure. It's initial position is (x0,y0) and move along other coordinates.</p>
+
+<p><a href="https://i.stack.imgur.com/TbgKo.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/TbgKo.png" alt="enter image description here"></a></p>
+
+<p>I am able to track robot position using a camera which is connected to pc and camera is located at the top of the arena. I've mounted a ir beacon on the robot, camera find this beacon and locates it's coordinate(in cm) in the arena. Using this coordinate how can I move my robot to another position, say new position (x1,y1)</p>
+
+<p>My robot has arduino mega 2560 with two DC motors, communication between pc and robot is done using bluetooth</p>
+
+<p>Update:</p>
+
+<p>Thanks @Chuck for the answer, however I still have few doubts regarding turning angle.</p>
+
+<p>My robot position setup is as shown in the image.</p>
+
+<p>(xc, yc) is the current position and (xt, yt) is the target position.
+<a href="https://i.stack.imgur.com/MsCA9.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/MsCA9.png" alt="enter image description here"></a></p>
+
+<p>If I want to align robot in the direction of the target coordinates, I've to calculate atan2 between target and current coordinates. But the angle remains same since it's current position is not changing with respect to the target point. so I assume robot simply makes 360' rotation at current position?</p>
+
+<p>Update:</p>
+
+<p>The path points is as show below in the image, is my initial heading angle assumption is correct? </p>
+
+<p>'1' is the starting point.</p>
+
+<p><a href="https://i.stack.imgur.com/buKFd.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/buKFd.png" alt="enter image description here"></a></p>
+
+<p>Update</p>
+
+<p>Thank you for your patience and time, I'm still struck at turning, my code goes like this</p>
+
+<pre><code>//current points
+float xc = -300;
+float yc = 300;
+
+//target points
+
+float xt = -300;
+float yt = -300;
+
+//turning  angle
+float turnAngle;
+
+void setup() {
+  // pin setup
+  Serial.begin(9600);
+}
+
+void loop() {
+
+  turnAngle = atan2((yt-yc), (xt-xc)); //calculate turning angle
+
+  turnAngle = turnAngle * 180/3.1415; //convert to degrees
+
+  if (turnAngle &gt; 180) {
+    turnAngle = turnAngle-360;
+  }
+
+  if (turnAngle &lt; -180) {
+    turnAngle = turnAngle+360;
+  }
+
+  if (turnAngle &lt; -10) {
+    //turn right
+  }
+
+  if (turnAngle &gt; 10) {
+    //turn left
+  }
+}
+</code></pre>
+
+<p>Since angle is always -90' robot only makes right turn in loop at current point, since angle is not changing. I think I'm missing something here.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7928" data-toggle = "popover">
+				<p>user name : ronroo</p>
+				<p> user reputation : 23</p>
+				<p class = "tagcontent" id = "usertaginfo-7928">{'None': 0, 'arduino': 2, 'navigation': 2, 'mapping': 1, 'localization': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7928">Load Comments</button></br>
+			<div id = "commentsection-7928" class = 'collapse'>
+			<div id = "comment-11620" class = "comment">
+				<p>Your question isn't clear. Is this not the answer to the question: "I've mounted a camera at the top of the arena, camera tracks beacons position as (x,y) coordinates in cm." ?</p>
+			</div>
+			<div id = "comment-11622" class = "comment">
+				<p>I need to calculate turning angle, heading direction?</p>
+			</div>
+			<div id = "comment-11629" class = "comment">
+				<p>This question is so broad it almost isn't a question. Please include more details about your setup. You start out talking about localization, then mention that you have a camera that can track x,y coordinates of the beacons (if you know these coordinates, then what localization info do you NOT have?) then end with your aim of moving the robot on a path. Path planning and localization are two different things, so what exactly is it you're asking?</p>
+			</div>
+			<div id = "comment-11630" class = "comment">
+				<p>So, as I understrand, you want to localize the three beacons using the camera situated on the top of the arena. In this case you will need to use image processing algorithms, but can you be more specific please : is the camera connected to a computer or connected directly to the robot ? Did the robot have enought processing capabilities ?</p>
+			</div>
+			<div id = "comment-11631" class = "comment">
+				<p>Guys sorry, I've updated the question please let me know if it's still not clear.</p>
+			</div>
+			<div id = "comment-11652" class = "comment">
+				<p>You say, "But the angle remains same since it's current position is not changing with respect to the target point" and it makes me think that there's a problem with your robot not turning and there is no problem with the algorithm. Can you update your question and provide specific numbers to go along with your question? A numeric heading and a numeric start and end point? I'll update my answer to use your specific case as an example.</p>
+			</div>
+			<div id = "comment-11653" class = "comment">
+				<p>@Chuck, updated. Is my initial heading angle assumption is correct? Thank you.</p>
+			</div>
+			<div id = "comment-11654" class = "comment">
+				<p>@ronroo "[truth is invariant under changes of notation](http://math.stackexchange.com/questions/1093696/is-arrow-notation-for-vectors-not-mathematically-mature)" there is no such thing as a "correct" assumption, because the angle is just a definition. You aren't asking whether it's "correct" to use cartesian coordinates either, you just picked them because they work for you. Same goes for the definition of the angle. Do it in a consistent way that makes your life easier.</p>
+			</div>
+			<div id = "comment-11657" class = "comment">
+				<p>@BendingUnit22 Thanks for the above link, it was an interesting read.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7928" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7928">
+					<img id="start_img-7928" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7928">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7932"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7932" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You have to know your initial heading, let's call it $\theta_0$. So you start at some position, $p_{start}$, and you're trying to get to some end position, $p_{end}$.</p>
+
+<p>Assume starting position and ending positions are given by:</p>
+
+<p>$$
+p_{start} = &lt;x_0 , y_0&gt; \\
+p_{end} = &lt;x_1 , y_1&gt; \\
+$$</p>
+
+<p>Those positions are absolute, but you are trying to get from one to another, so all you really care about are relative distances. Then, let:</p>
+
+<p>$$
+dX = x_1 - x_0 \\
+dY = y_1 - y_0 \\
+$$</p>
+
+<p>Now you can find the absolute heading $\theta_{0 \rightarrow 1}$ with the arc tangent of $dX$ and $dY$, but the basic $atan{}$ function doesn't handle negative signs correctly because it can't tell if which or both of $dX$ and $dY$ were negative. What you need is <a href="https://en.wikipedia.org/wiki/Atan2" rel="nofollow">atan2</a>. </p>
+
+<p>$atan2{(dY, dX)}$ will give you the absolute heading of $p_{end}$ with respect to $p_{start}$. Now to find how much your vehicle needs to turn, find the difference between your starting heading and the required heading:</p>
+
+<p>$$
+\mbox{Turn angle}= \theta_{0 \rightarrow 1} - \theta_0 \\
+\mbox{Turn angle}= atan2{(dY, dX)} - \theta_0 \\
+$$</p>
+
+<p>With turn angle, I like my vehicles to turn the direction that requires the least movement, so instead of limiting $\mbox{Turn angle}$ to $0&lt;= \mbox{Turn angle} &lt;= 2\pi$, I would limit the angle to $-\pi&lt;= \mbox{Turn angle} &lt;= \pi$.</p>
+
+<p>In this way you would wind up turning -10 degrees (10 degrees clockwise) instead of +350 (350 degrees CCW). Ultimately you should wind up in the same spot, but -10 looks "right" and +350 looks foolish. </p>
+
+<p>You can limit the turn angle with code like:</p>
+
+<pre><code>while turnAngle &gt; 3.1415
+    turnAngle = turnAngle - 2*3.1415:
+end
+while turnAngle &lt; -3.1415
+    turn Angle = turnAngle + 2*3.1415;
+end
+</code></pre>
+
+<p>This code runs and doesn't care what multiple of +/-2$\pi$ you're in, it spits out the same angle bounded to within +/-$\pi$.</p>
+
+<p>Finally, calculate how far you travel along your new heading with the magnitude of distance between the points:</p>
+
+<p>$$
+\mbox{distance} = \sqrt{dX^2 + dY^2} \\
+$$</p>
+
+<p>Remember to set the new absolute heading, $\theta_{0 \rightarrow 1}$, as your current heading then get the next point!</p>
+
+<h2>:UPDATE: - Numeric Example</h2>
+
+<p>I believe a point of confusion here may be that I didn't state that the absolute heading is relative to the +x-axis. That said, I'll work through OP's problem as shown in the most recent update. </p>
+
+<p>The initial heading $\theta_0$ is in-line with the +x-axis, so $\theta_0 = 0$. </p>
+
+<p>$$
+p_{start} = &lt;-300,300&gt; \\
+p_{end} = &lt;-300,-300&gt; \\
+$$</p>
+
+<p>$$
+dX = x_{end} - x_{start} = (-300) - (-300) \\
+\boxed{dX = 0} \\
+$$</p>
+
+<p>$$
+dY = y_{end} - y_{start} = (-300) - (300) \\
+\boxed{dY = -600} \\
+$$</p>
+
+<p>$$
+\theta_{0 \rightarrow 1} = atan2(dY,dX) \\
+\theta_{0 \rightarrow 1} = atan2(-600,0) \\
+\theta_{0 \rightarrow 1} = -1.5708 \mbox{rad} = -90^o
+$$</p>
+
+<p>Now, the change in heading:</p>
+
+<p>$$
+\mbox{Turn Angle} = \theta_{0 \rightarrow 1} - \theta_0 \\
+\mbox{Turn Angle} = -1.5708 - 0 \\
+\mbox{Turn Angle} = -1.5708 = -90^o\\
+$$</p>
+
+<p>The distance you need to travel after turning $\mbox{Turn Angle}$ is given by:
+$$
+\mbox{distance} = \sqrt{dX^2 + dY^2} \\
+\mbox{distance} = \sqrt{0^2 + (-600)^2} \\
+\mbox{distance} = \sqrt{(-600)^2} \\
+\mbox{distance} = 600 \\
+$$</p>
+
+<p>Now the new heading $\theta_1$ is equal to the absolute heading between start and end:</p>
+
+<p>$$
+\theta_1 = \theta_{0 \rightarrow 1} \\
+$$</p>
+
+<p>Or, alternatively, the new heading is equal to the initial heading plus the turn angle, but the turn angle was defined by the difference between $\theta_{0 \rightarrow 1}$ and $\theta_0$, so the equation above is just a shortcut. </p>
+
+<p>Now, proceed to the next point:</p>
+
+<p>$$
+p_{start} = &lt;-300,-300&gt; \\
+p_{end} = &lt;0,-300&gt; \\
+$$</p>
+
+<p>$$
+dX = x_{end} - x_{start} = (0) - (-300) \\
+\boxed{dX = 300} \\
+$$</p>
+
+<p>$$
+dY = y_{end} - y_{start} = (-300) - (-300) \\
+\boxed{dY = 0} \\
+$$</p>
+
+<p>$$
+\theta_{1 \rightarrow 2} = atan2(dY,dX) \\
+\theta_{1 \rightarrow 2} = atan2(0,300) \\
+\theta_{1 \rightarrow 2} = 0 \mbox{rad} = 0^o
+$$</p>
+
+<p>Now, the change in heading:</p>
+
+<p>$$
+\mbox{Turn Angle} = \theta_{1 \rightarrow 2} - \theta_1 \\
+\mbox{Turn Angle} = 0 - (-1.5708) \\
+\mbox{Turn Angle} = +1.5708 = +90^o \\
+$$</p>
+
+<p>The distance you need to travel after turning $\mbox{Turn Angle}$ is given by:
+$$
+\mbox{distance} = \sqrt{dX^2 + dY^2} \\
+\mbox{distance} = \sqrt{(300)^2 + (0)^2} \\
+\mbox{distance} = \sqrt{(300)^2} \\
+\mbox{distance} = 300 \\
+$$</p>
+
+<p>Now the new heading $\theta_1$ is equal to the absolute heading between start and end:</p>
+
+<p>$$
+\theta_2 = \theta_{1 \rightarrow 2} \\
+$$</p>
+
+<p>This process repeats as you see fit. </p>
+
+<h2>:Second Update: Code Issues</h2>
+
+<p>You need to turn (left or right) by the amount <code>turnAngle</code>. You have not described your physical robot so nobody can tell you exactly how to turn. </p>
+
+<p>You have your code in <code>void loop()</code>, which makes me think you are running the same code over and over, but you never take the following steps:</p>
+
+<ol>
+<li>You never declare a starting heading. </li>
+<li>You fail to define <code>turnAngle</code> as the <em>difference</em> between <code>atan2((yt-yc),(xt-xc))</code> and the starting heading. </li>
+<li>After you have turned, you fail to set your new heading. </li>
+<li>You fail to move forward. </li>
+<li>You fail to update your current position with the target position</li>
+</ol>
+
+<p>I would suggest modifying your code as follows:</p>
+
+<p>
+
+<h2>Last update</h2>
+
+<p>The wheel base is the distance from the center of the tire to the center of the other tire. Assuming that the motor speeds while turning are the same magnitude but opposite sides (<code>leftMotorSpeed = - rightMotorSpeed</code>), and the wheels are the same diameter, you can find out how quickly you are turning by using the arc length equation <code>s = L*theta</code>, so <code>theta = s/L</code>, where <code>theta</code> is the rotation, <code>s</code> is the arc length, and <code>L</code> is half the wheel base. Then, taking a derivative, $\dot{\theta} = \dot{s}/L$, where $\dot{s}$ is the linear tire speed, given by $\dot{s} = r_\mbox{tire}*v_\mbox{motor}$</p>
+
+<p>So you can take motor speed and get back to rotation rate, and then numerically integrate that and compare to the $\mbox{Turn Angle}$: </p>
+
+<p><code>thetaDot = (rTire * vMotor) / (wheelBase/2);</code> </p>
+
+<p>then </p>
+
+<p><code>theta = theta + thetaDot*dT;</code> </p>
+
+<p>where <code>dT</code> is the sample/sweep time on the controller. Finally, use a while loop to turn the motors until the desired angle is reached. Putting it all together:</p>
+
+<pre><code>//current points
+float xc = -300;
+float yc = 300;
+
+//target points
+
+float xt = -300;
+float yt = -300;
+
+//turning  angle
+float turnAngle;
+
+//***************
+float startingHeading = 0;
+float currentHeading = startingHeading;
+//***************
+
+//***************
+float turnRight = 1;
+float turnLeft = -1;
+float wheelBase = &lt;This is a number you get by measuring your vehicle&gt;
+float tireRadius = &lt;This is a number you get by measuring your vehicle&gt;
+float speedModifier = 0;
+float vRightMotor = 0;
+float vLeftMotor = 0;
+float vMotor = 0;
+float theta = 0;
+float distance = 0;
+//**************
+
+void setup() {
+  // pin setup
+  Serial.begin(9600);
+}
+
+void loop() {
+  //*************
+  destinationHeading = atan2((yt-yc), (xt-xc)); //calculate turning angle
+  destinationHeading = destinationHeading * 180/3.1415; //convert to degrees
+  turnAngle = destinationHeading - currentHeading;
+  //*************
+
+  if (turnAngle &gt; 180) {
+    turnAngle = turnAngle-360;
+  }
+
+  if (turnAngle &lt; -180) {
+    turnAngle = turnAngle+360;
+  }
+
+  //***************
+  if (turnAngle &lt; 0) {
+    speedModifier = turnRight;
+  }
+
+  if (turnAngle &gt; 0) {
+    speedModifier = turnLeft
+  }
+
+  theta = 0;
+  while abs(abs(theta)-abs(turnAngle)) &gt; 0
+    {
+    vRightMotor = speedModifier * &lt;100 percent speed - varies by your application&gt;;
+    vLeftMotor = -speedModifier * &lt;100 percent speed - varies by your application&gt;;
+    &lt;send the vRightMotor/vLeftMotor speed commands to the motors&gt;
+    vMotor = vRightMotor;
+    thetaDot = (tireRadius * vMotor) / (wheelBase/2);` 
+    theta = theta + thetaDot*dT;
+    }
+  &lt;send zero speed to the motors&gt;
+
+  currentHeading = destinationHeading;
+  distance = sqrt((xt - xc)^2 + (yt - yc)^2);
+  if (distance &gt; 0) {
+    // go forward
+  }
+  xc = xt;
+  yc = yt;
+  //****************
+}
+</code></pre>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7932" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-7932">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7932">Load Comments</button></br>
+			<div id = "commentsection-7932" class = 'collapse'>
+			<div id = "comment-11632" class = "comment">
+				<p>Thanks for this. one question, what's the difference between initial heading vs absolute heading?</p>
+			</div>
+			<div id = "comment-11633" class = "comment">
+				<p>Initial heading is the absolute heading at which you start.</p>
+			</div>
+			<div id = "comment-11634" class = "comment">
+				<p>I've updated my question again, I still have few doubts, please check thanks :-)</p>
+			</div>
+			<div id = "comment-11658" class = "comment">
+				<p>Sorry updated again with my code, I am missing something, thanks for your patience :-)</p>
+			</div>
+			<div id = "comment-11660" class = "comment">
+				<p>My robot has total three wheels, two dc motors for two wheels and another wheel is just to balance the robot.
+My initial idea was first turn/align robot towards target point when alignment is done, go straight.</p>
+			</div>
+			<div id = "comment-11662" class = "comment">
+				<p>@ronroo - I've made the last update I'm going to make to this question. At this point, I feel that I've answered everything you have asked. If you have a related but *different* question, please ask it in a new question.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7932" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7932">
+					<img id="start_img-7932" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7932">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

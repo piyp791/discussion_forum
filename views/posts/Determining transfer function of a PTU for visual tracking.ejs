@@ -1,0 +1,288 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Determining transfer function of a PTU for visual tracking
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7139" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7139" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 122</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Determining transfer function of a PTU for visual tracking</h2>
+<p>I have a PTU system whose transfer function I need to determine. The unit receives a velocity and position, and move towards that position with the given velocity. What kind of test would one perform for determining the transfer function...</p>
+
+<p>I know Matlab provides a method. The problem, though, is that I am bit confused on what kind of test I should perform, and how I should use Matlab to determine the transfer function.</p>
+
+<p>The unit which is being used is a Flir PTU D48E</p>
+
+<p>---> More about the system </p>
+
+<p>The input to the system is pixel displacement of an object to the center of the frame. The controller I am using now converts pixel distances to angular distances multiplied by a gain $K_p$. This works fine. However, I can't seem to prove why that it works so well, I mean, I know servo motors cannot be modeled like that.</p>
+
+<p>The controller is fed with angular displacement and its position now => added together give me angular position I have to go to. 
+The angular displacement is used as the speed it has to move with, since a huge displacement gives a huge velocity.</p>
+
+<p>By updating both elements at different frequency I'm able to step down the velocity such that the overshoot gets minimized. </p>
+
+<p>The problem here is: if I have to prove that the transfer function I found fits the system, I have to do tests somehow using the <code>ident</code> function in Matlab, and I'm quite unsure how to do that. I'm also a bit unsure whether the PTU already has a controller within it, since it moves so well, I mean, it's just simple math, so it makes no sense that I'll convert it like that.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7139" data-toggle = "popover">
+				<p>user name : Carlton Banks</p>
+				<p> user reputation : 102</p>
+				<p class = "tagcontent" id = "usertaginfo-7139">{'control': 1, 'None': 0, 'inverse-kinematics': 11, 'frame': 2, 'joint': 1, 'visual-servoing': 1, 'kinematics': 2, 'robotic-arm': 5, 'jacobian': 5, 'rotation': 0, 'motion-planning': 2, 'forward-kinematics': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7139">Load Comments</button></br>
+			<div id = "commentsection-7139" class = 'collapse'>
+			<div id = "comment-10155" class = "comment">
+				<p>**First comment**. It's quite expected that a simple controller as the one you designed performs well in practice: it's the nature of feedback controllers that are able to make complicated systems work even with simple laws.
+**Second comment**. It doesn't seem to me you came up with a transfer function, but rather with a description of your controller - which is fine in the end - you don't need always to precisely identify the plant.</p>
+			</div>
+			<div id = "comment-10156" class = "comment">
+				<p>**Third comment**. If I were you I would get rid of position and thus control solely with velocity $v_{x,y}=K_p \cdot p_{x,y}$, where $p_{x,y}$ are the pixels coordinates where your target (i.e. the face) currently is, computed with respect to the center of the image.</p>
+			</div>
+			<div id = "comment-10157" class = "comment">
+				<p>The vision program calculates the pixel distance of the center of the face to the center of the image in pixels. 
+The controller then converts this into a angular velocity.</p>
+			</div>
+			<div id = "comment-10158" class = "comment">
+				<p>No but i would like a transfer function.. even though i don't see the benefit of having one.. I am just a bit afraid that i am using the onboard controller on the system already which wouldn't be that good.</p>
+			</div>
+			<div id = "comment-10159" class = "comment">
+				<p>I've expanded my answer.</p>
+			</div>
+			<div id = "comment-10160" class = "comment">
+				<p>I am not quite sure i understand how you use vision and motor feedback for calculating the accurate speed for the speed. It's clear that you using a cascade controller to the system.  
+
+I understand the  first feedback=> which what I am basically doing feeding motor position back to controller. which outputs a velocity.
+
+But how are you implementing the second feedback loop. 
+I quite unsure on that..  A model would be very helpful here... 
+
++1000000 for the answer .. => i new here so aren't able give you anything :(</p>
+			</div>
+			<div id = "comment-10163" class = "comment">
+				<p>So this how i understand your model... 
+
+http://snag.gy/RftQl.jpg
+
+I used draw.io to draw it..</p>
+			</div>
+			<div id = "comment-10164" class = "comment">
+				<p>which is also how i have designed it now.. I very interested in knowing how you add the vision loop..</p>
+			</div>
+			<div id = "comment-10165" class = "comment">
+				<p>Some more info in the answer below...</p>
+			</div>
+			<div id = "comment-10166" class = "comment">
+				<p>Does your model consist of 2 loops or is just one loop. I am becoming a bit confused.
+
+The math you have written isn't the same as i have done, but i am already able to give the PTU an accurate position.</p>
+			</div>
+			<div id = "comment-10167" class = "comment">
+				<p>this is how i convert pixel distance to angular 
+
+
+This is how i am doing it http://answers.opencv.org/question/56744/converting-pixel-displacement-into-other-unit/</p>
+			</div>
+			<div id = "comment-10168" class = "comment">
+				<p>I am confused on how your close loop system looks like.. 
+Would it be possible to draw it?</p>
+			</div>
+			<div id = "comment-10169" class = "comment">
+				<p>It's the same math in the end; the matrix notation is more formalized though. There is one inner loop dealing with velocity control and an outer loop closed by the vision system itself.</p>
+			</div>
+			<div id = "comment-10170" class = "comment">
+				<p>I am certain that your idea is very good => but i am just having a hard time understanding what each block has as input and output is.. and where the feedback contributes  for input and so on.. I drawing would help a lot.</p>
+			</div>
+			<div id = "comment-10171" class = "comment">
+				<p>The diagram is actually the same you sketched out. The visual error is given by the vision processing block that detects as current feedback the position of the face's centroid, while the set-point is the image center (fixed over time).</p>
+			</div>
+			<div id = "comment-10172" class = "comment">
+				<p>I am not.. are talking about two separate vision blocks here?.. Or still the same..  that only output the displacement from the center?</p>
+			</div>
+			<div id = "comment-10173" class = "comment">
+				<p>Yep, the same vision block providing the distance of the face from the center: it's a feedback/measurement indeed. I think I'm done with this :-)
+The ingredients are pretty much all those in the recipe below.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7139" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7139">
+					<img id="start_img-7139" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7139">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7141"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7141" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Imagine for a moment that you keep the input velocity fixed throughout the identification experiment, then you might inject into the system a sudden change in the final commanded position set-point while measuring as feedback the current position of your equipment (e.g. joint encoders). You will thus come up with a bunch of profiles of <em>commanded vs. feedback positions</em> for your identification goal. To this end you can profitably rely on the <code>ident</code> tool of the <strong>MATLAB System Identification Toolbox</strong>.</p>
+
+<p>Explore the system response against different input position steps and remember to validate any result over profiles sets that you did not use during identification.</p>
+
+<p>Finally, you could assume that varying the input velocity will have an impact on the internal controller responsivity, since of course what you're going to model is the whole apparatus made up of the internal actuators, controller, etc. In theory, you should repeat the identification experiment over a range of different input velocities.</p>
+
+<hr>
+
+<p>I'll expand hereinafter a little bit further, given the fresh info you provided.</p>
+
+<p>It's clear that there is an internal controller that converts your velocity input in a proper signal (usually voltage) actuating the motors. If you don't trust this internal loop, then you have to identify the plant and apply compensation as follows.</p>
+
+<p><strong>Setting</strong>: identification of a system controlled in velocity. Hence, input $=$ commanded velocity $v$; output $=$ encoder feedback $\theta$.</p>
+
+<p><strong>Procedure</strong>: you inject a chirp in velocity and you collect encoders. You can use <code>ident</code> to come up with a transfer function of your motor controlled in velocity at "high-level". This transfer function should resemble a pure integrator but it won't. What makes this difference needs to be compensated with the design of your velocity controller. This procedure has to be repeated for the two axes of the PTU. How to design a proper controller by putting its poles and zeros it's a matter of knowledge you should have; to do that of course you'll exploit the identified transfer function.</p>
+
+<p><strong>Note</strong>: you don't have vision in the loop yet, just position feedback from the encoders. This way you can refine the velocity control of your system, so that in the end, given a target angular position $\theta_d$ where you want to go, you know how to form the proper velocity commands $v$ to send to the device at run-time, while reading back the corresponding encoders $\theta$.</p>
+
+<p>Then <strong>vision kicks in</strong>. The vision processing will tell you where the face centroid $p_d$ is with respect to the image center; this information is refreshed continuously at run-time. Then, using the <strong>intrinsic parameters</strong> of the <a href="http://en.wikipedia.org/wiki/Pinhole_camera_model" rel="nofollow">pinhole model</a> of your camera, you'll have an estimate of which angular positions this pixel corresponds to.</p>
+
+<p>This is not that difficult to determine. Knowing the centroid coordinates $p_d$ and assuming that we know how far the face lies from the camera (let's say <code>1 m</code> but we don't care about the real distance), that is we know its $z$ component in the camera reference frame, the pinhole model gives us a way to find out the face $x$ and $y$ components in the camera frame. Finally, trigonometry provides you with the delta angles to add up to the current camera encoders that will in turn let you compute the absolute target angular positions. These latter values will represent the angular set-point for the above velocity controller.</p>
+
+Here comes the math
+
+<p>Given $p_d=\left(u,v\right)$ the face centroid and $z$ the distance of the face from the camera, it holds:
+$$
+\left( \begin{array}{c} x \\ y \\ z \\ 1 \end{array} \right) = \Pi^\dagger \cdot \left( \begin{array}{c} z \cdot u \\ z \cdot v \\ z \end{array} \right),
+$$</p>
+
+<p>where $x,y,z$ are the Cartesian coordinates of the face in the camera frame and $\Pi^\dagger$ is the pseudoinverse of the matrix $\Pi \in \mathbb{R}^{3 \times 4}$ containing the intrinsic parameters of your camera (i.e. the focal length, the pixel ratio and the position of the principal point - browse internet for that - there are standard procedures to estimate this matrix). We are not interested in $z$, so that you can put in the above equation whatever value for $z$ you want (say <code>1 m</code>), but remember to be consistent in the following. Given $u,v$ you get $x,y$ as output.</p>
+
+<p>Once you have $x,y$ you can compute the angular variations $\Delta\phi_p$ and $\Delta\phi_t$ for the <em>pan</em> and the <em>tilt</em>, respectively:
+$$
+\Delta\phi_p=\arctan\frac{x}{z} \\
+\Delta\phi_t=-\arctan\frac{y}{z}
+$$</p>
+
+<p>Finally, the absolute angular positions used as set-point will be:
+$$
+\phi_p:=\phi_p+\Delta\phi_p \\
+\phi_t:=\phi_t+\Delta\phi_t
+$$</p>
+
+<p>Alternatively, we could also identify the whole system with the visual feedback in place of the motor encoders (<em>visual servoing</em>). Here, the transfer function will tell us the impact of a velocity command directly on the displacement a pixel undergoes. Intuitively, this identification will be more difficult because we put everything together and it's likely that we won't achieve the same performance of the first method.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7141" data-toggle = "popover">
+				<p>user name : Ugo</p>
+				<p> user reputation : 1482</p>
+				<p class = "tagcontent" id = "usertaginfo-7141">{'None': 99}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7141">Load Comments</button></br>
+			<div id = "commentsection-7141" class = 'collapse'>
+			<div id = "comment-10132" class = "comment">
+				<p>I am not quite sure i understand what kind of test you want me to perform.. the problem with the system is that if i give a velocity and position, it goes toward the position with a given velocity but at some point i begins to decrease due to an onboard controller.  response. 
+
+the last part isn't confirmed yet, since the feedback says the speed is the same even though it's not.. 
+
+I am at the moment trying run it in velocity mode, such that i don't give it position but just a velocity..  and then input a velocity => wait fixed time interval => output displacement  and then repeat..</p>
+			</div>
+			<div id = "comment-10133" class = "comment">
+				<p>The transfer function you should aim to get would be _commanded position_ to _joint position_. It's normal that the velocity is not kept constant since the device will be going through an initial _acceleration_ phase, a steady-state phase wherein the speed will be pretty much the one given, and a final _deceleration_ phase while approaching the target position. That's the usual trapezoidal shape of the speed profile (or whatever profile it is) we are not interested in. What does matter is the final position profile generated along the way.</p>
+			</div>
+			<div id = "comment-10134" class = "comment">
+				<p>Of course, you could consider identifying _commanded velocity_ to _joint position_ in velocity mode, but that's a different plant.</p>
+			</div>
+			<div id = "comment-10135" class = "comment">
+				<p>I am thinking creating a cascade control (since i want it to react quickly), such that i only provide velocity to the Plant, and the controller will be given the where it should go, and where it is..  But how should i do it for the velocity.. ?</p>
+			</div>
+			<div id = "comment-10136" class = "comment">
+				<p>The task has now become how to control your device... There are too few information you have provided and the goal is somewhat broad. Start off with $v=K_p \cdot \left( \theta_d - \theta \right)$.</p>
+			</div>
+			<div id = "comment-10137" class = "comment">
+				<p>Well.. that what i am actually doing.. which actually works fine enough..  i mean it doesn't overshoot that much but it react too slowly.
+
+I mean  The displacement has be pretty big before it react.. and when it react it i know it is deemed to overshoot..</p>
+			</div>
+			<div id = "comment-10138" class = "comment">
+				<p>I am tracking faces and convert pixel displacement into angular displacement..  which i then multiple with a factor (kp)..  
+
+The position and velocity (kp) are both different... 
+
+ I update My velocity with a higher freq then my position such that overshoot is minimized, which i also thereby somehow think i have a Cascade close loop.. But My solution is purely math based i mean.. Its  a bit a of miracle that the pixel to angular conversion fits that well..</p>
+			</div>
+			<div id = "comment-10139" class = "comment">
+				<p>Its just my control consist of some if statement that kinda make is say.. like if the velocity calculated becomes above something..  then use max speed, and if its below something its 0.. 
+
+there isn't some actual "science" behind its just made using common sense and some good luck i guess.. thats irritating me a bit..</p>
+			</div>
+			<div id = "comment-10140" class = "comment">
+				<p>And for values in the middle i use that formula..</p>
+			</div>
+			</div>
+				<textarea id = "speech-7141" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7141">
+					<img id="start_img-7141" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7141">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,141 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Why the IMU measurements only accumulate drift in 4DOF
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-12597" class = "post">
+			<h2>Question</h2>
+			<div id="vote-12597" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 53</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Why the IMU measurements only accumulate drift in 4DOF</h2>
+<p>I'm studying the Technical Report of VINS-Mono: A Robust and Versatile Monocular Visual-Inertial State Estimator available at: <a href="https://github.com/HKUST-Aerial-Robotics/VINS-Mono/blob/master/support_files/paper/tro_technical_report.pdf" rel="nofollow noreferrer">https://github.com/HKUST-Aerial-Robotics/VINS-Mono/blob/master/support_files/paper/tro_technical_report.pdf</a></p>
+
+<p>In section V, where Loop Closure is discussed is writen:
+"The IMU measurements render roll and pitch angle fully
+observable, so the accumulated drift only occurs in four
+degrees-of-freedom (x, y, z and yaw angle). To avoid importing
+spurious information, we directly optimize pose graph on these
+four degrees-of-freedom."</p>
+
+<p>I'm having trouble to understand this, in my conception, imu noise should propagate in all degrees of freedom. This might have something to do with the gravity vector?</p>
+
+<p>Thank You All</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12597" data-toggle = "popover">
+				<p>user name : Ricardo Achilles</p>
+				<p> user reputation : 63</p>
+				<p class = "tagcontent" id = "usertaginfo-12597">{'odometry': 0, 'None': 3, 'computer-vision': 0, 'occupancygrid': 0, 'localization': 0, 'particle-filter': 0, 'slam': 0, 'imu': 0, 'sensor-fusion': 0, 'mobile-robot': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-12597" class = 'collapse'>
+			</div>
+				<textarea id = "speech-12597" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12597">
+					<img id="start_img-12597" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12597">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-12599"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-12599" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Correct, it's all about the gravity vector. I would argue that it is NOT necessarily possible to get the gravity vector out of the measurement, but that's because it's possible to put the IMU in a constant acceleration state that would skew the gravity vector (i.e. a rotation). </p>
+
+<p>Check out Sebastian Madgwick's paper on IMU filtering. </p>
+
+<p>Basically, if it's level, z-axis reads gravity and x- and y-axes read zero. As you tilt the IMU, the gravity vector projects onto the associated axis. Gravity is a constant (hand waving) so you know the input vector (0;0;g), the output vector, and you solve for the rotation matrix that gives you the roll and pitch values. </p>
+
+<p>The trouble is that gravity isn't the same everywhere, may slowly shift over time (tidal motion), and it's not possible to discern gravitational acceleration from external acceleration. The solution seems to be to normalize the accelerometer outputs and change the input vector from (0;0;g) to (0;0;1).</p>
+
+<p>This means that you wind up skewing the gravitational vector's orientation, but the effects seem to be minimal with regards to orientation. I haven't tried on a rotating platform though. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12599" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-12599">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-12599">Load Comments</button></br>
+			<div id = "commentsection-12599" class = 'collapse'>
+			<div id = "comment-22091" class = "comment">
+				<p>Np @RicardoAchilles. If this is the answer you were looking for, then please accept it so the question is flagged as answered (check mark between up and down buttons).</p>
+			</div>
+			</div>
+				<textarea id = "speech-12599" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12599">
+					<img id="start_img-12599" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12599">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

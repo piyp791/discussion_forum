@@ -1,0 +1,324 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>EKF-SLAM Update step, Kalman Gain becomes singular
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-519" class = "post">
+			<h2>Question</h2>
+			<div id="vote-519" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">13</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 1231</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>EKF-SLAM Update step, Kalman Gain becomes singular</h2>
+<p>I'm using an EKF for SLAM and I'm having some problem with the update step.  I'm getting a warning that K is singular, rcond evaluates to near eps or NaN. I think I've traced the problem to the inversion of Z.  Is there a way to calculate the Kalman Gain without inverting the last term? </p>
+
+<p>I'm not 100% positive this is the cause of the problem, so I've also put my entire code here <a href="https://github.com/jdowns/EKF-SLAM">https://github.com/jdowns/EKF-SLAM</a>.  The main entry point is slam2d.</p>
+
+<pre><code>function [ x, P ] = expectation( x, P, lmk_idx, observation)
+    % expectation
+    r_idx = [1;2;3];
+    rl = [r_idx; lmk_idx];
+
+    [e, E_r, E_l] = project(x(r), x(lmk_idx)); 
+    E_rl = [E_r E_l];
+    E = E_rl * P(rl,rl) * E_rl';
+
+    % innovation
+    z = observation - e;
+    Z = E;
+
+    % Kalman gain
+    K = P(:, rl) * E_rl' * Z^-1;
+
+    % update
+    x = x + K * z;
+    P = P - K * Z * K';
+end
+
+
+function [y, Y_r, Y_p] = project(r, p)     
+    [p_r, PR_r, PR_p] = toFrame2D(r, p);
+    [y, Y_pr]   = scan(p_r);
+    Y_r = Y_pr * PR_r;
+    Y_p = Y_pr * PR_p;    
+end
+
+
+function [p_r, PR_r, PR_p] = toFrame2D(r , p)
+    t = r(1:2);
+    a = r(3);
+    R = [cos(a) -sin(a) ; sin(a) cos(a)];
+    p_r = R' * (p - t);
+    px = p(1);
+    py = p(2);
+    x = t(1);
+    y = t(2);
+    PR_r = [...
+        [ -cos(a), -sin(a),   cos(a)*(py - y) - sin(a)*(px - x)]
+        [  sin(a), -cos(a), - cos(a)*(px - x) - sin(a)*(py - y)]];
+    PR_p = R';    
+end
+
+
+function [y, Y_x] = scan(x)
+    px = x(1);
+    py = x(2);
+    d = sqrt(px^2 + py^2);
+    a = atan2(py, px);
+    y = [d;a];
+    Y_x =[...
+    [     px/(px^2 + py^2)^(1/2), py/(px^2 + py^2)^(1/2)]
+    [ -py/(px^2*(py^2/px^2 + 1)), 1/(px*(py^2/px^2 + 1))]];
+end
+</code></pre>
+
+<p>Edits:
+project(x(r), x(lmk)) should have been project(x(r), x(lmk_idx)) and is now corrected above.  </p>
+
+<p>K goes singular after a little while, but not immediately.  I think it's around 20 seconds or so.  I'll try the changes @josh suggested when I get home tonight and post the results.</p>
+
+<p><strong>Update 1:</strong></p>
+
+<p>My simulation first observes 2 landmarks, so K is 7x2.  (P(rl,rl) * E_rl') * inv( Z ) results in a 5x2 matrix, so it can't be added to x in the next line.  </p>
+
+<p>K becomes singular after 4.82 seconds, with measurements at 50Hz (241 steps).  Following the advice here (http://www.mathworks.com/help/matlab/ref/inv.html), I tried K = (P(:, rl) * E_rl')/Z which results in 250 steps before a warning about K being singular is produced.  </p>
+
+<p>This tells me the problem isn't with matrix inversion, but it's somewhere else that's causing the problem.    </p>
+
+<p><strong>Update 2</strong></p>
+
+<p>My main loop is (with a robot object to store x,P and landmark pointers):</p>
+
+<pre><code>for t = 0:sample_time:max_time
+    P = robot.P;
+    x = robot.x;
+    lmks = robot.lmks;
+    mapspace = robot.mapspace;
+
+    u = robot.control(t);
+    m = robot.measure(t);
+
+    % Added to show eigenvalues at each step
+    [val, vec] = eig(P);
+    disp('***')
+    disp(val)
+
+    %%% Motion/Prediction
+    [x, P] = predict(x, P, u, dt);
+
+    %%% Correction
+    lids = intersect(m(1,:), lmks(1,:));  % find all observed landmarks
+    lids_new = setdiff(m(1,:), lmks(1,:));
+    for lid = lids
+        % expectation
+        idx = find (lmks(1,:) == lid, 1);
+        lmk = lmks(2:3, idx);
+        mid = m(1,:) == lid;
+        yi = m(2:3, mid);
+
+        [x, P] = expectation(x, P, lmk, yi);
+    end  %end correction
+
+    %%% New Landmarks
+
+    for id = 1:length(lids_new)
+    % if id ~= 0
+        lid = lids_new(id);
+        lmk = find(lmks(1,:)==false, 1);
+        s = find(mapspace, 2);
+        if ~isempty(s)
+            mapspace(s) = 0;
+            lmks(:,lmk) = [lid; s'];
+            yi = m(2:3,m(1,:) == lid);
+
+            [x(s), L_r, L_y] = backProject(x(r), yi);
+
+            P(s,:) = L_r * P(r,:);
+            P(:,s) = [P(s,:)'; eye(2)];
+            P(s,s) = L_r * P(r,r) * L_r';
+        end
+    end  % end new landmarks
+
+    %%% Save State
+    robot.save_state(x, P, mapspace, lmks)
+    end  
+end
+</code></pre>
+
+<p>At the end of this loop, I save x and P back to the robot, so I believe I'm propagating the covariance through each iteration.  </p>
+
+<p><strong>More edits</strong>
+The (hopefully) correct eigenvalues are now here: <a href="http://pastebin.com/Vn4NzkQy">http://pastebin.com/Vn4NzkQy</a></p>
+
+<p>There are a number of eigenvalues that are negative.  Although their magnitude is never very large, 10^-2 at most, it happens on the iteration immediately after the first landmark is observed and added to the map (in the "new landmarks" section of the main loop).</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-519" data-toggle = "popover">
+				<p>user name : munk</p>
+				<p> user reputation : 406</p>
+				<p class = "tagcontent" id = "usertaginfo-519">{'None': 2, 'noise': 7, 'theory': 7, 'ekf': 14, 'mapping': 13, 'slam': 41, 'kalman-filter': 26}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-519">Load Comments</button></br>
+			<div id = "commentsection-519" class = 'collapse'>
+			<div id = "comment-630" class = "comment">
+				<p>Are you propagating the uncertainty? Does the eigenvalues of your covariance get arbitrarily small or large?</p>
+			</div>
+			<div id = "comment-673" class = "comment">
+				<p>What you put in pastebin is the eigenvectors, not the eigenvalues.  do this: [v,d]=eig(P). disp(diag(d)). or just disp(eig(P)). Then, you can check the following necessary conditions: Are all eigenvalues >0 at every step (they should be in practice). Do they _increase_ after propagation and _decrease_ after measurements / corrections?  In my experience, this is usually the problem.</p>
+			</div>
+			<div id = "comment-706" class = "comment">
+				<p>Something is wrong if your eigenvalues are negative. When you initialize a landmark, what is the uncertainty associated with it's first estimated position?</p>
+			</div>
+			<div id = "comment-764" class = "comment">
+				<p>The observation is a pair.  When the first landmark is initialized, it has a covariance of [5.8938, 3.0941; 3.0941, 2.9562].  For the second, it's covariance is [22.6630 -14.3822; -14.3822, 10.5484] The full matrix is [here](http://pastebin.com/Np186GLV)</p>
+			</div>
+			</div>
+				<textarea id = "speech-519" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-519">
+					<img id="start_img-519" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-519">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-529"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-529" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>If you are only updating the covariance sub-matrix associated with the robot and landmark (as is typical), then K and P should be $(N_r + N_l)\times(N_r + N_l)$ for robot state size $N_r$ and landmark size $N_l$. Note that you have: </p>
+
+<p>K = P(:, rl) * E_rl' * Z^-1</p>
+
+<p>which I think should be (P(rl,rl) * E_rl') * inv( Z ).<br>
+(but see: <a href="http://www.mathworks.com/help/matlab/ref/mrdivide.html" rel="nofollow">matrix division</a>).
+Check the size of K.</p>
+
+<p>Also: 
+Please provide a little more information: Does K go singular immediately or only after some time? </p>
+
+<p>This worries me: "project(x(r), x(lmk));" since lmk is not defined. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-529" data-toggle = "popover">
+				<p>user name : Josh Vander Hook</p>
+				<p> user reputation : 3960</p>
+				<p class = "tagcontent" id = "usertaginfo-529">{'None': 345}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-529" class = 'collapse'>
+			</div>
+				<textarea id = "speech-529" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-529">
+					<img id="start_img-529" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-529">Comment</button>
+			<br><div id = "ans-1208"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-1208" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I just see your post now and it is maybe too late to really help you...but in case you are still interested in this: I think that i identified your problem.</p>
+
+<p>You write the innovation covariance matrix in the following way:
+E=jacobian measure * P * jacobian measure '</p>
+
+<p>It might be alright in theory but what happens is that if your algorithm is effective and especially if you are working on a simulation : the uncertainties will decrease, especially in the directions of your measurement. So E will tend to [[0,0][0,0]].</p>
+
+<p>To avoid this problem what you can do is to add a measurement noise corresponding to the uncertainties in the measurement and your innovation covariance becomes:
+E= Jac*P*Jac'+R
+where are is the covariance of the measurement noise (diagonal matrix where the terms on diagonal are the squares of the standard deviation of the noise). If you actually don't want to consider noise you can make it as small as you want.</p>
+
+<p>I also add that your covariance update seems strange to me the classical formula is:
+P=P - K * jacobian measure * P
+I never saw your formula written anywhere else, I might be correct but if you are not sure of it you should check it.</p>
+
+<p>I hope it helps</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1208" data-toggle = "popover">
+				<p>user name : Jaeger0</p>
+				<p> user reputation : 41</p>
+				<p class = "tagcontent" id = "usertaginfo-1208">{'None': 4}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1208">Load Comments</button></br>
+			<div id = "commentsection-1208" class = 'collapse'>
+			<div id = "comment-2732" class = "comment">
+				<p>Ah, the old "salt the covariance" trick.</p>
+			</div>
+			</div>
+				<textarea id = "speech-1208" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1208">
+					<img id="start_img-1208" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1208">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

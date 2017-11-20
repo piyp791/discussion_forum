@@ -1,0 +1,220 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Stop giving current to motor with Roboclaw
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-12826" class = "post">
+			<h2>Question</h2>
+			<div id="vote-12826" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 30</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Stop giving current to motor with Roboclaw</h2>
+<p>I am not an expert on this topic and I know this is kind of old thread but im facing the same issue and I would like some help or advice.</p>
+
+<p>I am using and Arduino and a Roboclaw 2x7A (old version)</p>
+
+<p>At first I was also stopping the motors using</p>
+
+<pre><code>roboclaw.SpeedAccelM2(address, 0, 0);
+</code></pre>
+
+<p>on each one and it worked, but later I saw it is still consuming current. I used your suggestion and it works, but only for M1, M2 doesn't seem to stop recieving current, less than an ampere, but i would like it to be zero.</p>
+
+<p>I am uploading a piece of code so I can explain myself and to show you what I am doing.</p>
+
+<p>This is the part where it checks if error (difference between origin and goal) is greater than deadzone, if greater then keep moving, if lower, it would stop by itself but also it must stop giving current to that motor.</p>
+
+<pre><code>  // M1 &gt; Azimut
+  //M2 &gt; Zenith
+
+  if (abs(error1) &gt; deadzone1) {
+    roboclaw.SpeedAccelDeccelPositionM1(address, 0, 0, 0, posicionM1, depth1);
+  } else {
+    Serial.println("Azimut - error es menor que deadzone");
+    roboclaw.DutyM1(address, 0);
+  }
+  if (abs(error2) &gt; deadzone2) {
+    roboclaw.SpeedAccelDeccelPositionM2(address, 0, 0, 0, posicionM2, depth2);
+  } else {
+    Serial.println("Zenith - error es menor que deadzone");
+    roboclaw.DutyM2(address, 0);
+  }
+</code></pre>
+
+<p>And this is the output (with some extra info)</p>
+
+<pre><code>Azimut - error es menor que deadzone
+Zenith - error es menor que deadzone
+Encoder1:15531 80 Speed1:0    Temp:  47.10   error : -24
+Encoder2:15474 80 Speed2:0    Temp2: 0.00   error : -81
+Pos Obj       - M1 : 15555
+Pos Real      - M1 : 19.97
+azimuthGlobal - M1 : 20.00
+Pos Obj       - M2 : 15555
+Pos Real      - M2 : 19.90
+zenithGlobal  - M2 : 20.00
+PWM        Zen : 0   Azi : 0
+switch Pin Zen : 0      Azi : 0
+e-Stop : 0
+total revs Zen : 280000   Azi : 280000
+Corrientes Zen : 0.06   Azi : 0.00
+</code></pre>
+
+<p>At the end, as you can see, Zen motor is still recieving 0.06 A, but the other motor is fully stopped.</p>
+
+<p>Why does this only works with one of them?, Or. Is there some configuration I am doing wrong?.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12826" data-toggle = "popover">
+				<p>user name : Carlos.V</p>
+				<p> user reputation : 16</p>
+				<p class = "tagcontent" id = "usertaginfo-12826">{'None': 1, 'arduino': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-12826">Load Comments</button></br>
+			<div id = "commentsection-12826" class = 'collapse'>
+			<div id = "comment-22517" class = "comment">
+				<p>Are the motors or servos (unclear) supporting a load when the command goes to zero? It sounds like they're just holding position.</p>
+			</div>
+			</div>
+				<textarea id = "speech-12826" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12826">
+					<img id="start_img-12826" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12826">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-12864"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-12864" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Solved.</p>
+
+<p>Controller error, even when the controller "says" there is current, actually there isn't any!</p>
+
+<p><strong>Update:</strong> </p>
+
+<p>The problem is inside the controller Roboclaw. Roboclaw's forum moderator says the problem is because current is too low to get an accurate measure.</p>
+
+<blockquote>
+  <p>A current of .06 amps is noise, not actual current. Anythign under 1
+  amp isnt really accurate and even with no motors attached(so there is
+  definitely no current) you will usually see readings from 60 to 200ma,
+  .06 to .2, coming from the current sensors.</p>
+</blockquote>
+
+<p>Also, the sensor is not very good calibrated, and there is no way a user can calibrate that. </p>
+
+<blockquote>
+  <p>The current sense is measuring .001v/amp. We already do a lot of
+  filtering to get reasonably good values but there is no way to
+  completely elliminate the noise or offset error(not without adding
+  craszy costs).</p>
+</blockquote>
+
+<p><strong>Solution:</strong> Just ignore any current under 1 amp. </p>
+
+<p><strong>Robloclaw's forum moderator solution:</strong> You should use a conditional in your code to display zero if the value is less than around 200ma to 1amp.</p>
+
+<p>More info <a href="http://forums.ionmc.com/viewtopic.php?f=2&amp;t=44#p1621" rel="nofollow noreferrer">here</a></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12864" data-toggle = "popover">
+				<p>user name : Carlos.V</p>
+				<p> user reputation : 16</p>
+				<p class = "tagcontent" id = "usertaginfo-12864">{'None': 1, 'arduino': 1}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-12864">Load Comments</button></br>
+			<div id = "commentsection-12864" class = 'collapse'>
+			<div id = "comment-22586" class = "comment">
+				<p>I'm glad you solved your problem, but could you please give more context to the solution? I followed your link and you discovered that the controller wasn't actually providing any current, but what was the *fix*? What did you change to get it to *start* providing current? Was this a wiring problem or a software problem? Etc.</p>
+			</div>
+			<div id = "comment-22587" class = "comment">
+				<p>Also, it looks like you may have accidentally created two accounts (Carlos V. & Carlos Villa). Stack Exchange only allows an individual to actively use one account, so please follow the instructions at [I accidentally created two accounts; how do I merge them?](https://robotics.stackexchange.com/help/merging-accounts)
+Note that moderators [can't merge accounts](https://meta.stackexchange.com/a/272251) for you, but may delete accounts they believe to be [sock puppets](https://meta.stackexchange.com/a/57685/138432).</p>
+			</div>
+			<div id = "comment-22588" class = "comment">
+				<p>Lastly, please go ahead and accept your own answer as the solution with the check mark between the up and down arrows. Note you need to use the account with which you created the *question* to be able to accept the answer - please merge your accounts if you need to. By expanding your answer to include more details of what the fix was, and the accepting it as the answer, future visitors to the site can quickly find the answer if they are facing a similar problem :)</p>
+			</div>
+			<div id = "comment-22612" class = "comment">
+				<p>There is no solution, actually the problem here is the controller, as the links says, "Anything under 1 amp is consider noise" and is inaccurate, readings in controller says there are current from 0.8 to 0.2 in M1 and from 0.02 to 0.00 in M2, but this is normal. If you test it with a ampere meter the reading is 0.00.. Sorry for creating other account I didn't remember the other password and was easier just create another one :$</p>
+			</div>
+			<div id = "comment-22613" class = "comment">
+				<p>Accounts merged, thanks :)</p>
+			</div>
+			</div>
+				<textarea id = "speech-12864" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12864">
+					<img id="start_img-12864" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12864">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

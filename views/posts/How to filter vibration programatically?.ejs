@@ -1,0 +1,195 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to filter vibration programatically?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-4426" class = "post">
+			<h2>Question</h2>
+			<div id="vote-4426" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 1134</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to filter vibration programatically?</h2>
+<p>I'm working on a quadcopter. I'm reading the accelerometer and gyro data out from the MPU6050 and using complementary filter to calculate the roll and pitch values. When the quad is on the floor, and the motors are turned on the roll values are: </p>
+
+<pre><code>-4.88675227698
+-5.07656137566
+ 7.57363774442
+-3.53006785613
+ 4.44833961261
+-2.64380479638
+-3.70460025582
+</code></pre>
+
+<p>It is very messy. After minus five there is plus seven. I would like to filter out this too high/low values programmatically but I have no idea how to do it.</p>
+
+<p>EDIT:
+At this moment I think the solution is the Low-pass filter. I'll let you know if it is successful or not.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4426" data-toggle = "popover">
+				<p>user name : Alex</p>
+				<p> user reputation : 26</p>
+				<p class = "tagcontent" id = "usertaginfo-4426">{'quadcopter': 0, 'None': 1, 'accelerometer': 0, 'raspberry-pi': 1, 'kalman-filter': 2, 'servos': 1, 'gyroscope': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-4426">Load Comments</button></br>
+			<div id = "commentsection-4426" class = 'collapse'>
+			<div id = "comment-6997" class = "comment">
+				<p>When you say the quad is sitting on the ground, do you mean the motors are off? That data looks way too noisy for the motors off. How does your accelerometer and gyro data look?</p>
+			</div>
+			<div id = "comment-6999" class = "comment">
+				<p>There are several open source projects based on same or similar chips. Why not search and get them and take a look for inspirations?</p>
+			</div>
+			<div id = "comment-7000" class = "comment">
+				<p>@ryan0270: The four motors were turned on when I got these values. The MPU6050 is mounted to the frame.</p>
+			</div>
+			<div id = "comment-7001" class = "comment">
+				<p>@JohnWilliams: I was trying to find something useful, but I haven't found anything. I'll try the Low-pass filter.</p>
+			</div>
+			<div id = "comment-7002" class = "comment">
+				<p>Some software take input from multiple sensor and do data fusion, that is, take best characteristic from different sensor and infer best data.  Example is http://www.varesano.net/topic/freeimu https://www.youtube.com/watch?v=gU9vM0UE3Ug</p>
+			</div>
+			</div>
+				<textarea id = "speech-4426" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4426">
+					<img id="start_img-4426" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4426">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-4431"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4431" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I faced similar problem , </p>
+
+<p>My solution was:- </p>
+
+<ul>
+<li>1- Record raw data for mpu6050 (6 DOF) , the chip should stay stable
+with no move</li>
+<li>2- Apply kalman filter ( one dimensional on each data type , we are
+not trying to fuse data here .. ok :) )</li>
+<li>3-Now you have a noiseless raw data that represents that the status
+with no move or (vibration)</li>
+<li>4-Calculate the standard deviation for each type of data i.e
+(standard deviation for X axis, Y axis ... ) , you can also calcualte
+the standard deviation for multiple trials and finding the mean or
+average for them</li>
+<li>5-Say we got 25 as standard deviation for X accelerator axis , you
+will put a condition  </li>
+</ul>
+
+<blockquote>
+<pre><code>if(current_reading - previous_reading &gt;
+   standard_devaition)  { accept this data as it doesn't represent
+   vibration  }
+</code></pre>
+</blockquote>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4431" data-toggle = "popover">
+				<p>user name : RoboMan</p>
+				<p> user reputation : 84</p>
+				<p class = "tagcontent" id = "usertaginfo-4431">{'servomotor': 4, 'None': 6, 'accelerometer': 3, 'pid': 6, 'brushless-motor': 4, 'imu': 3, 'motor': 4, 'sensors': 3, 'gyroscope': 3}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-4431" class = 'collapse'>
+			</div>
+				<textarea id = "speech-4431" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4431">
+					<img id="start_img-4431" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4431">Comment</button>
+			<br><div id = "ans-4446"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4446" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Essentially you are talking about a low-pass filter on your output.  Kalman filtering is probably your best option for accuracy, but simply calculating a moving average should go a long way toward quieting the noise in your input.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4446" data-toggle = "popover">
+				<p>user name : Ian</p>
+				<p> user reputation : 9640</p>
+				<p class = "tagcontent" id = "usertaginfo-4446">{'planning': 10, 'None': 809, 'power': 1, 'algorithm': 10, 'battery': 1, 'slam': 7, 'coverage': 10, 'mobile-robot': 9, 'sensors': 9}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-4446" class = 'collapse'>
+			</div>
+				<textarea id = "speech-4446" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4446">
+					<img id="start_img-4446" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4446">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

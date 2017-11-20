@@ -1,0 +1,177 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Advise on ROS move_base costmap footprint not connected error
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-10891" class = "post">
+			<h2>Question</h2>
+			<div id="vote-10891" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 397</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Advise on ROS move_base costmap footprint not connected error</h2>
+<p>I'm using ROS indigo in my project and all the nodes and visualisation (Rviz) seems to be functional when I launch the program using roslaunch. Here are the sensors used in the scooter:</p>
+
+<ul>
+<li>Hokuyo Lidar </li>
+<li>Phidgets Encoder</li>
+</ul>
+
+<p>However, when I start moving the scooter (the robot) using the joystick, the scooter will move physically, but in Rviz, the object detected by the lidar moves to the scooter, instead of the scooter moving in the map. Furthermore, the costmap obstacles will get smeared as I continue to move the scooter forward. Where could I have missed out?</p>
+
+<p>Here are the node connections:</p>
+
+<p><a href="https://i.stack.imgur.com/lMSC6.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/lMSC6.png" alt="enter image description here"></a></p>
+
+<p>A screenshot of the tf tree:</p>
+
+<p><a href="https://i.stack.imgur.com/ft3Gw.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/ft3Gw.png" alt="enter image description here"></a></p>
+
+<p>EDIT:
+When I did <em>roswtf</em>, it shows that the robot footprint is disconnected, though the rqt graph shows otherwise. Here is the log of it:</p>
+
+<pre><code>Beginning test of your ROS graph. These may take a while...
+analyzing graph...
+... done analyzing graph
+running graph rules...
+... done running graph rules
+running tf checks, this will take a second...
+... tf checks complete
+
+Online checks summary:
+
+Found 1 warning(s).
+Warnings are things that may be just fone, but are sometimes at fault
+
+WARNING The following node subscriptions are unconnected:
+* /rqt_gui_py_node_646:
+  * /statistics
+  * /tf_static
+* /amcl:
+  * /tf_static
+* /rviz_1476945491120458509:
+  * /tf_static
+  * /map_updates
+* /move_base
+  * /tf_static
+  * /move_base/TebLocalPlannerROS/obstacles
+  * /move_base/cancel
+* /robot_pose_publisher
+  * /tf_static
+
+
+Found 1 error(s).
+
+ERROR The following nodes should be connected but aren't:
+ * /move_base-&gt;/move_base (/move_base/global_costmap/footprint)
+ * /move_base-&gt;/move_base (/move_base/local_costmap/footprint)
+</code></pre>
+
+<p>Please advise on the possible ways that I can undertake to debug this issue.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10891" data-toggle = "popover">
+				<p>user name : Photon</p>
+				<p> user reputation : 23</p>
+				<p class = "tagcontent" id = "usertaginfo-10891">{'motion-planning': 1, 'None': 0, 'ros': 1, 'navigation': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10891">Load Comments</button></br>
+			<div id = "commentsection-10891" class = 'collapse'>
+			<div id = "comment-20871" class = "comment">
+				<p>Seems like the fixed-frame in rviz is not "map" Hard to figure out the root cause with information you provided. Please provide your rviz setting as well.</p>
+			</div>
+			<div id = "comment-20872" class = "comment">
+				<p>The fixed frame in Rviz was set to map, here is a screenshot of rviz: https://i.stack.imgur.com/KYTr7.png</p>
+			</div>
+			<div id = "comment-20874" class = "comment">
+				<p>How does Encoder effect /odom? Since map is fixed, and /odom, /base_link stuck there, looks like the encoder data doesn't change any transformation.</p>
+			</div>
+			<div id = "comment-20875" class = "comment">
+				<p>The encoder actually does provide the odom of the scooter. When i tested out rviz with only the tfs checked, the odom and base_link does move accordingly. But when I overlay the static map, the map will move instead of the robot footprint moving on the map. The same thing happens when I overlay the local costmap. Is it possible that some frame settings within the node has been wrongly set?</p>
+			</div>
+			<div id = "comment-20876" class = "comment">
+				<p>check/uncheck visible items in rviz should not change tf tree. However, according to your description, you might have to check whether the tf tree changes when you check/uncheck static map and cost map.</p>
+			</div>
+			<div id = "comment-20877" class = "comment">
+				<p>Another weird thing, your amcl node didn't listen to /odom, then how did it work? To simplify debugging, trying to disable amcl first might be another way to go.</p>
+			</div>
+			<div id = "comment-20878" class = "comment">
+				<p>When I tried disabling amcl and move _base, the base_link tf will move with respect to the odom tf. However, when I re-enable the amcl w/o movebase, with the map as the fixed frame, i noticed that the map tf moves with the odom tf, though the map tf should be fixed. I also ensured that the amcl global frame id is map, odom frame id is odom, and baselink id as base_id.</p>
+			</div>
+			<div id = "comment-20879" class = "comment">
+				<p>Welcome to *Robotics* Photon. On stack exchange, it is better to edit your question to add information requested in comments, rather than adding more comments. Comments are for helping to improve questions and answers, and are distracting, so we try to keep them to a minimum. If all of the information needed to answer the question is contained within it, the comments can be tidied up (deleted), which can happen at any time.</p>
+			</div>
+			</div>
+				<textarea id = "speech-10891" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10891">
+					<img id="start_img-10891" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10891">Comment</button>
+
+<h1>Answers</h1>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

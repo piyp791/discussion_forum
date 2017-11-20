@@ -1,0 +1,154 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Line following robot path planning
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8130" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8130" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 351</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Line following robot path planning</h2>
+<p>I have built a mobile robot with several ultrasonic sensors to detect obstacles and an infrared sensor to track a line as a path. I have written a simple algorithm to follow the line which works fine, but avoiding obstacles are a problem because the robot doesn't know the layout of the path, so even if it does move around the obstacle, it is not guaranteed that it will find the path line again(unless the line is perfectly straight). Therefore, I think I may need to use a path/motion planning algorithm or find a way to store the layout of the path so that robot could predict where to move and get back to the path line and keep on following after overcoming an obstacle. I would like to hear suggestions or types of algorithms I should focus on for this specific problem.</p>
+
+<p>Picture might help specifying the problem I'm facing.</p>
+
+<p><a href="https://i.stack.imgur.com/pSmil.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/pSmil.png" alt="path issue"></a>
+Thank you.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8130" data-toggle = "popover">
+				<p>user name : JVTura</p>
+				<p> user reputation : 26</p>
+				<p class = "tagcontent" id = "usertaginfo-8130">{'None': 0, 'motion-planning': 5}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8130" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8130" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8130">
+					<img id="start_img-8130" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8130">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8132"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8132" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Line following is a simple reactive behaviour. Before you get into planning to solve the obstacle avoidance problem - which can get quite complex - you should consider simpler solutions.</p>
+
+<p>What this simpler solution could be depends a bit on the environment and on your robot. But let me make a suggestion:</p>
+
+<pre><code>while()
+    follow line
+    if( detect obstacle )
+         turn left (leave line)
+         while( not detect line )
+             keep obstacle within distance d to the right
+</code></pre>
+
+<p>The devil is in the implementation and sensor setup, but the principle idea is that you track the contours of your obstacle to get you back to your line.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8132" data-toggle = "popover">
+				<p>user name : Jakob</p>
+				<p> user reputation : 2519</p>
+				<p class = "tagcontent" id = "usertaginfo-8132">{'ransac': 3, 'None': 210, 'computer-vision': 1, 'cameras': 1, 'c++': 3, 'slam': 12, 'rock': 1, 'i2c': 3, 'servos': 3, 'software': 1}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8132">Load Comments</button></br>
+			<div id = "commentsection-8132" class = 'collapse'>
+			<div id = "comment-12981" class = "comment">
+				<p>Thank you, I already have something similar to that to avoid obstacles. You have just re-described the problem I have stated.</p>
+			</div>
+			<div id = "comment-12985" class = "comment">
+				<p>I think the difference lies in the assumption that the line is straight. By going around the object until you find the line, you will also cover the case for your second illustration.</p>
+			</div>
+			<div id = "comment-13016" class = "comment">
+				<p>Jakob is correct here.  If the obstacle is on the line, you can think of it as having exactly 2 lines touching it: the one you are coming in on, and the one you want to find as you're leaving.  If you can detect the obstacle on your side, you are guaranteed that by leaving one line and moving around it, the next line you find will be the one you want.</p>
+			</div>
+			<div id = "comment-13017" class = "comment">
+				<p>You can test whether your solution is working properly by putting the obstacle at the end of a dead-end line.  If your robot should find the obstacle, go around it, and re-join the line -- going back the way it came.</p>
+			</div>
+			<div id = "comment-13018" class = "comment">
+				<p>Thank you. The problem becomes more complex if robot meets another obstacles while going around the object and its off the line. It will make another move to avoid it and will possibly end up further away from the line, which makes it almost impossible to find the path again. So I have to return to my main question,a way to store the layout of the path or something equivalent.Blindly going around the object and assuming the path will be detected is not a very consistent solution.If I have time following week,I will be looking into traditional path planning algorithms and will post my solution.</p>
+			</div>
+			<div id = "comment-13027" class = "comment">
+				<p>If your second obstacle is in the path of going around the first, the behaviour of going around and potentially going further away from the line seems correct to me. A path planner would do the same, just using a potentially shorter path. But doing it with planning requires you to know the shape of the obstacle.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8132" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8132">
+					<img id="start_img-8132" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8132">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

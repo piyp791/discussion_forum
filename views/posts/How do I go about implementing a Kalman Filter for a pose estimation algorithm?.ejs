@@ -1,0 +1,171 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How do I go about implementing a Kalman Filter for a pose estimation algorithm?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8751" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8751" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 656</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How do I go about implementing a Kalman Filter for a pose estimation algorithm?</h2>
+<p>I am currently in the process of writing a pose estimation algorithm using image data. I receive images at 30 fps, and for every image, my program computes the x,y,z and roll, pitch, yaw of the camera with respect to a certain origin. This is by no means very accurate, there are obvious problems such as too much exposure in the image, not enough feature points in the image, etc., and the positions go haywire every once in a while; so I want to write a Kalman filter that can take care of this part.  </p>
+
+<p>I have read through the basics of KF, EKF etc. and then I was reading through an OpenCV <a href="http://docs.opencv.org/master/dc/d2c/tutorial_real_time_pose.html#gsc.tab=0" rel="nofollow">tutorial</a> that has an implementation of a Kalman Filter inside an algorithm for the pose estimation of an object. While this matches my use case very well, I don't understand why they are using a linear Kalman Filter while explicitly specifying parameters like (dt*dt) in the state transition matrix. For reference, the state transition matrix they are considering is </p>
+
+<pre><code>             /* DYNAMIC MODEL */
+//  [1 0 0 dt  0  0 dt2   0   0 0 0 0  0  0  0   0   0   0]
+//  [0 1 0  0 dt  0   0 dt2   0 0 0 0  0  0  0   0   0   0]
+//  [0 0 1  0  0 dt   0   0 dt2 0 0 0  0  0  0   0   0   0]
+//  [0 0 0  1  0  0  dt   0   0 0 0 0  0  0  0   0   0   0]
+//  [0 0 0  0  1  0   0  dt   0 0 0 0  0  0  0   0   0   0]
+//  [0 0 0  0  0  1   0   0  dt 0 0 0  0  0  0   0   0   0]
+//  [0 0 0  0  0  0   1   0   0 0 0 0  0  0  0   0   0   0]
+//  [0 0 0  0  0  0   0   1   0 0 0 0  0  0  0   0   0   0]
+//  [0 0 0  0  0  0   0   0   1 0 0 0  0  0  0   0   0   0]
+//  [0 0 0  0  0  0   0   0   0 1 0 0 dt  0  0 dt2   0   0]
+//  [0 0 0  0  0  0   0   0   0 0 1 0  0 dt  0   0 dt2   0]
+//  [0 0 0  0  0  0   0   0   0 0 0 1  0  0 dt   0   0 dt2]
+ /  [0 0 0  0  0  0   0   0   0 0 0 0  1  0  0  dt   0   0]
+//  [0 0 0  0  0  0   0   0   0 0 0 0  0  1  0   0  dt   0]
+//  [0 0 0  0  0  0   0   0   0 0 0 0  0  0  1   0   0  dt]
+//  [0 0 0  0  0  0   0   0   0 0 0 0  0  0  0   1   0   0]
+//  [0 0 0  0  0  0   0   0   0 0 0 0  0  0  0   0   1   0]
+//  [0 0 0  0  0  0   0   0   0 0 0 0  0  0  0   0   0   1]
+</code></pre>
+
+<p>I'm a little confused, so my main question can be broken down into three parts:</p>
+
+<ol>
+<li>Would a linear Kalman Filter suffice for a 6DOF pose estimation filtering? Or should I go for an EKF?</li>
+<li>How do I come up with the "model" of the system? The camera is not really obeying any trajectory, the whole point of the pose estimation is to track the position and rotation even through noisy movements. I don't understand how they came up with that matrix.</li>
+<li>Can the Kalman Filter understand that, for instance, if the pose estimation says my camera has moved half a meter between one frame and other, that's plain wrong, because at 1/30th of a second, there's no way that could happen?</li>
+</ol>
+
+<p>Thank you!</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8751" data-toggle = "popover">
+				<p>user name : HighVoltage</p>
+				<p> user reputation : 398</p>
+				<p class = "tagcontent" id = "usertaginfo-8751">{'stereo-vision': 2, 'probability': 10, 'multi-agent': 4, 'planning': 10, 'manipulator': 2, 'cameras': 1, 'matlab': 1, 'kalman-filter': 7, 'None': 19, 'noise': 3, 'inverse-kinematics': 2, 'localization': 8, 'pose': 4, 'mapping': 0, 'rotation': 1, '3d-reconstruction': 0, 'computer-vision': 8, 'algorithm': 3, 'c++': 3, 'slam': 2, 'exploration': 0, 'path-planning': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8751" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8751" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8751">
+					<img id="start_img-8751" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8751">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8753"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8753" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>It sounds like you're using the camera frames to get a PnP solution, or something along those lines.</p>
+
+<ol>
+<li><p>A linear Kalman filter will usually work OK for most purposes if you're using roll/pitch/yaw and pose measurements coming from the camera algorithm. This is always the first port of call because it's much easier than EKF/UKF/etc. If this does not give adequate results then you should consider more complex filters.</p></li>
+<li><p>The "model" of the system is generally at least two models: a process model (how the system state evolves in time) and a measurement model (how the camera makes measurements based on the system state). Aside: "Pose estimation" is simply finding a pose, what the *KF does is <em>state filtering</em>. A widely used model ( and what seems to be the model you have pasted ) is the constant-velocity model; which assumes that between camera measurements the camera is a particle travelling with constant linear and angular velocity.</p></li>
+<li><p>The KF has no in-built way to discriminate if there is an uncharacteristically large spike in measurements. The term for this used in KF papers is "update rejection" and a popular empirical method thresholding each update based on Mahalanobis distance (see <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.128.9319&amp;rep=rep1&amp;type=pdf" rel="nofollow">1</a> section IIIE). Before implementing this, simply increase the measurement noise in your filter and see if it gives you acceptable results. If you see a high correlation between unacceptable state error and the "outlier" then you will need update rejection.</p></li>
+</ol>
+
+<p>A very good read is: <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.128.9319&amp;rep=rep1&amp;type=pdf" rel="nofollow">A Kalman Filter-based Algorithm for IMU-Camera Calibration</a>.</p>
+
+<p>Aside: You can also do things like after every measurement update, saturate the state vector's velocities or positions (e.g. make sure it's not travelling 100m/s when it can only go 1m/s). Also be aware if you use Euler angles to represent your orientation then you will undoubtebly run in to problems if you operate near +/- 90 degree Pitch angles. Also problematic is if operating near the Yaw angle limits (angle wrap), typically only if you are controlling something based off the Yaw angle.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8753" data-toggle = "popover">
+				<p>user name : Gouda</p>
+				<p> user reputation : 632</p>
+				<p class = "tagcontent" id = "usertaginfo-8753">{'control': 0, 'None': 39, 'computer-vision': 1, 'calibration': 1, 'cameras': 1, 'kalman-filter': 0, 'jacobian': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8753">Load Comments</button></br>
+			<div id = "commentsection-8753" class = 'collapse'>
+			<div id = "comment-14339" class = "comment">
+				<p>Thank you, that was very informative. Just one clarification though: you mentioned that the model being used is a constant velocity one, but in my application (and you are right, I am using PNP), the cameras don't necessarily move continuously: so what would the Kalman Filter think if the camera has actually stopped moving but the model is telling it that it needs to keep moving?</p>
+			</div>
+			<div id = "comment-14344" class = "comment">
+				<p>It depends on your choice of measurement and process noise magnitudes, and your measurement rate. This is referred to as "tuning" the filter to both the noise profile of the system and the application. Having a large process noise in the velocity component would enable the filter to correctly process quick stops or starts. Long story short it takes at least 2 measurement intervals but depends on your process and measurement noises. The model doesn't know it's "stopped",  but estimates the velocity to be negligible (eg 1e-6 m/s)</p>
+			</div>
+			<div id = "comment-20543" class = "comment">
+				<p>This OpenCV example actually assumes constant acceleration. And it's linear regarding the state vector. dt is not part of it and therefore a constant as is dt * dt.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8753" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8753">
+					<img id="start_img-8753" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8753">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

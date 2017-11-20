@@ -1,0 +1,386 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Quadcopter PID Algorithm
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9554" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9554" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 696</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Quadcopter PID Algorithm</h2>
+<p>I'm trying to implement a PID control on my quadcopter using the Tiva C series microcontroller but I have trouble making the PID stabilize the system. </p>
+
+<p>While I was testing the PID, I noticed slow or weak response from PID controller (the quad shows no response at small angles). In other words, it seems that the quad's angle range has to be relatively large (above 15 degrees) for it to show a any response. Even then, the response always over shoots no matter what I, D gains I choose for my system. At low P, I can prevent overshoot but then it becomes too weak.   </p>
+
+<p>I am not sure if the PID algorithm is the problem or if its some kinda bad hardware configuration (low IMU sample rate or maybe bad PWM configurations), but I have strong doubts about my PID code as I noticed changing some of the gains did not improve the system response.  </p>
+
+<p>I will appreciate If someone can point out whether i'm doing anything wrong in the PID snippet for the pitch component I posted. I also have a roll PID but it is similar to the code I posted so I will leave that one out.</p>
+
+<pre><code>void pitchPID(int16_t pitch_conversion)
+{
+  float  current_pitch = pitch_conversion;
+  //d_temp_pitch is global variable
+  //i_temp_pitch is global variable
+  float  pid_pitch=0; //pitch pid controller
+  float  P_term, I_term, D_term;
+  float  error_pitch = desired_pitch - current_pitch;
+
+  //if statement checks for error pitch in negative or positive direction
+  if ((error_pitch&gt;error_max)||(error_pitch&lt;error_min))
+    {
+      if (error_pitch &gt; error_max) //negative pitch- rotor3&amp;4 speed up
+        {
+          P_term = pitch_kp*error_pitch; //proportional
+          i_temp_pitch += error_pitch;//accumulate error
+          if (i_temp_pitch &gt; iMax)
+            {
+            i_temp_pitch = iMax;
+            }
+          I_term = pitch_ki*i_temp_pitch;
+          if(I_term &lt; 0)
+            {
+            I_term=-1*I_term;
+            }
+          D_term = pitch_kd*(d_temp_pitch-error_pitch);
+          if(D_term&gt;0)
+            {
+            D_term=-1*D_term;
+            }
+          d_temp_pitch = error_pitch; //store current error for next iteration
+          pid_pitch = P_term+I_term+D_term;
+          if(pid_pitch&lt;0)
+            {
+            pid_pitch=(-1)*pid_pitch;
+            }
+          //change rotor3&amp;4
+          pitchPID_adjustment (pid_pitch, 'n'); //n for negative pitch
+        }
+      else if (error_pitch &lt; error_min) // positive pitch- rotor 1&amp;2 speed up
+        {
+        P_term = pitch_kp*error_pitch; //proportional
+        i_temp_pitch += error_pitch;
+        if (i_temp_pitch &lt; iMin)
+          {
+          i_temp_pitch = iMin;
+          }
+        I_term = pitch_ki*i_temp_pitch;
+        if(I_term &gt; 0)
+          {
+          I_term=-1*I_term;
+          }
+        D_term = pitch_kd*(d_temp_pitch - error_pitch);
+        if(D_term &lt; 0)
+          {
+          D_term=-1*D_term;
+          }
+        d_temp_pitch = error_pitch;
+        pid_pitch = P_term+I_term+D_term;
+        if(pid_pitch&lt;0)
+          {
+          pid_pitch=(-1)*pid_pitch;
+          }
+        print(pid_pitch);//pitch
+        printString("\r\n");
+        //change rotor1&amp;2
+        pitchPID_adjustment(pid_pitch,'p'); //p for positive pitch
+      }
+    }
+  }
+</code></pre>
+
+<p> </p>
+
+<pre><code>void pitchPID_adjustment(float pitchPIDcontrol, unsigned char pitch_attitude)
+  {
+  if (pitchPIDcontrol&gt;(maximum_dutyCycle-set_dutyCycle))
+    {
+    pitchPIDcontrol=maximum_dutyCycle-set_dutyCycle;
+    }
+  switch (pitch_attitude){
+  //change rotor1&amp;2
+  case 'p': //positive status
+    PWM0_2_CMPA_R += (pitchPIDcontrol);//(RED)//motor1
+    PWM0_0_CMPA_R += (pitchPIDcontrol);//(Yellow)//motor2
+    break;
+  //change rotor 3&amp;4
+  case 'n': //negative status
+    PWM0_1_CMPA_R += pitchPIDcontrol;//(ORANGE)//motor3
+    PWM1_1_CMPA_R += pitchPIDcontrol;//(green)//motor4
+    break;
+  }
+</code></pre>
+
+<p>Also, can someone please tell me how this motor mixing works?: </p>
+
+<pre><code>Front =Throttle + PitchPID 
+Back =Throttle - PitchPID 
+Left =Throttle + RollPID 
+Right =Throttle - RollPID
+</code></pre>
+
+<p>vs what I did in the function:</p>
+
+<pre><code>void pitchPID_adjustment(float pitchPIDcontrol, unsigned char pitch_attitude)
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9554" data-toggle = "popover">
+				<p>user name : Saeed Molaie</p>
+				<p> user reputation : 23</p>
+				<p class = "tagcontent" id = "usertaginfo-9554">{'quadcopter': 4, 'control': 4, 'None': 0, 'pid': 4, 'imu': 4, 'pwm': 4}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9554">Load Comments</button></br>
+			<div id = "commentsection-9554" class = 'collapse'>
+			<div id = "comment-16895" class = "comment">
+				<p>how accurate are you attitude estimates? how are you generating attitudes?</p>
+			</div>
+			<div id = "comment-16899" class = "comment">
+				<p>I'm using MPU 6050 as my sensor. I wrote the fro IMU drivers using registers from the datasheet. The angle measurements are decent but very sluggish. On a Horizontal surface, the reading for the roll is -2 degrees and the pitch reads -3 degrees. These values sometimes over long period of time. When I bring the quad at 90 degrees, the actual readings are around 78-82 degrees. When the motors speed up, the angles start to fluctuate noticeably (around 4-5 degrees from idle state). Also, I should mention that I used a 10ms sample time, that I just simply guessed,  for integrating the gyro speed.</p>
+			</div>
+			<div id = "comment-16900" class = "comment">
+				<p>I'm using complimentary filter to fuse accelerometer angle and gyroscope angles.</p>
+			</div>
+			<div id = "comment-16903" class = "comment">
+				<p>Use a nonlinear kalman filter. Complimentary filters should not be trusted. They are used by computer people who want to get into drones.</p>
+			</div>
+			<div id = "comment-16913" class = "comment">
+				<p>@holmeski- I will look more into the statistical signal processing, but for now I need to make sure im implementing my PID correctly. Non-linear kalman filter is probably better suited for my quadcopter since my system it produces a lot of vibrations. Hopefully it could also make my angle change less sluggish.  If not, then I will probably have to look at the mpu-6050 configuration.</p>
+			</div>
+			</div>
+				<textarea id = "speech-9554" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9554">
+					<img id="start_img-9554" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9554">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9559"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9559" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">10</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The glaring issue I see at the moment is that you are forcing polarity on the I and D terms. In general, you are using a lot of sign checks, sign <em>assignments</em>, and conditional programming. </p>
+
+<p>None of that belongs in a PID controller. The entire controller should look like:</p>
+
+<pre><code>pError = Input - Output;
+iError = iError + pError*dt;
+dError = (pError - previousError);
+previousError = pError;
+
+ControlSignal = kp*pError + ki*iError + kd*dError;
+</code></pre>
+
+<p>That's it. No need for checks, assignments, etc. See my <a href="https://robotics.stackexchange.com/a/9466/9720">related answer</a> on splitting the control signal as opposed to control each motor pair individually (which is what I believe your goal is with the if elseif code).</p>
+
+<p>Imagine a PID controller as three people watching your vehicle, all trying to give advice based on their "experience" (mode). Each "person" will give you one of three "statements" So you have:</p>
+
+<ul>
+<li><p><strong>Mr. Proportional</strong> - This person looks at where the output is and compares it to what you asked for. The statements given by this person are:</p>
+
+<ol>
+<li>There is a large difference between what you want and what you have - <em>take a big action</em>. </li>
+<li>There is a small difference between what you want and what you have - <em>take a small action</em>. </li>
+<li>What you have is what you asked for - <em>take no action</em>.</li>
+</ol></li>
+<li><p><strong>Mr. Integral</strong> - This person looks at the same error value Mr. Proportional does, but compares it to <em>how long</em> it's been that way. The statements given by this person are:</p>
+
+<ol>
+<li>You have chronic/acute error (small error for a long time or big error for a small time) - <em>take a big action</em>.</li>
+<li>You have mild error (small error for a short time) - <em>take a small action</em>. </li>
+<li>Your error history is neutral (time * positive error is equal to time * negative error) - <em>take no action</em>. </li>
+</ol></li>
+<li><p><strong>Mr. Derivative</strong> - This person looks at the same error value Mr. Proportional does, but compares it to <em>how it's changing</em>. The statements given by this person are:</p>
+
+<ol>
+<li>Your error is getting bigger - <em>take a bigger action</em>. </li>
+<li>Your error is getting smaller - <em>take a <strong>negative</strong> action</em>. </li>
+<li>Your error is not changing - <em>take no action</em>. </li>
+</ol></li>
+</ul>
+
+<p>It's important to note statement 2 of Mr. Derivative up there - imagine you're driving a car behind someone who is already at a stop. As you get closer to them (error is getting smaller), not only do you want to let off the gas, but you also want to brake! Derivative action is what gives you "braking" - no other term (P or I) gives you <em>negative</em> action until you're <em>past</em> the setpoint. Derivative is the only term that tells you to <em>slow down because you're getting close</em>. </p>
+
+<p>Another way to help understand these terms is to understand <em>physically</em> what they mean. Say your reference is a speed. This means:</p>
+
+<ul>
+<li>Proportional error compares your speed to your target speed. Want to be going 60 and you're going 55? Speed up. Going 65? Slow down. This is easy. </li>
+<li>Integral error compares the <em>integral</em> of target speed to the <em>integral</em> of actual speed. This means that it's comparing a target <strong>position</strong> to your actual <strong>position</strong>. Were you supposed to be in the city already? Then you need to speed up. Were you supposed to be in the city and you're still at your house? <em>SPEED THE ENTIRE WAY</em>. </li>
+<li>Derivative error compares the <em>derivative</em> of the difference between target and actual speeds. Is the person in front of you pulling away? <em>Speed up!</em> Is the person in front of you pushing their brakes? <em>Slow down!</em> As I mentioned above, if your target is to be immediately behind the person in front of you, then proportional and integral will both "tell" you to speed up. Derivative is the only "person" to tell you you're going to rear-end them if you don't start braking. </li>
+</ul>
+
+<p><strong>SO</strong>, what happens when you force signs on the error terms? </p>
+
+<p>Let's suppose you're in a car, trying to follow a friend to a restaurant. Here the friend's speed represents the speed reference and your speed represents your speed feedback. Speed limit on the road is 35mph (55kph). Here's what happens:</p>
+
+<ol>
+<li>Your friend begins to move.</li>
+<li>You are still stationary, so the following errors happen:
+
+<ul>
+<li>Proportional error is positive (you want to go 35 and are actually going 0).</li>
+<li>Integral error is a little positive (your friend is farther from you).</li>
+<li>Derivative error is large and positive (your friend is quickly pulling away from you). </li>
+<li>You force signs: force integral error to be positive (already is) and derivative error to be negative.</li>
+<li>This means that derivative error is "telling" you that the car is getting farther away from you, but you <em>invert</em> that and assume that derivative error <em>meant</em> to say that you are getting closer to your friend. <strong>This is wrong.</strong></li>
+<li>Actions: <strong>Proportional</strong> - press the gas a moderate amount. <strong>Integral</strong> - Press the gas pedal a little bit. <strong>Derivative</strong> - Should be press the <strong>gas</strong> pedal a lot, but you inverted it, so instead you <strong>press the brake a lot</strong>. </li>
+</ul></li>
+<li>Eventually your friend gets far enough away that the proportional and integral error becomes large enough that it overrides your (incorrectly inverted) derivative term. At this point:
+
+<ul>
+<li>Proportional error is large (still going zero and want to go 35). </li>
+<li>Integral error is very large (your friend is very, very far in front of you). </li>
+<li>Derivative term is still large (friend is still actively getting farther from you), but you are still forcing it to be negative. </li>
+<li>Actions: <strong>Proportional</strong> - press the gas a lot. <strong>Integral</strong> - Floor the gas pedal. <strong>Derivative</strong> - Should be push the gas pedal, but you inverted it, so instead you <em>press the brake</em>.</li>
+</ul></li>
+<li>After some time, you get to 34.999 mph. Proportional error is still (slightly) positive because you want to go 35 and you're actually at 34.999, so proportional error is 0.001
+
+<ul>
+<li>Proportional error is barely positive (still going slower than 35mph)</li>
+<li>Integral error is at its largest (you are farthest from your friend thus far because your friend has been going 35 the whole time)</li>
+<li>Derivative error is roughly zero (you're almost the same speed your friend is, so now the proportional error stabilizes)</li>
+<li>You force signs: Force integral error to be positive (already is) and derivative error to be negative (it's almost zero, so negligible change). </li>
+<li>Action: <strong>Proportional</strong> - No action because you're almost at 35mph. <strong>Integral</strong> - You are now <em>really</em> far from your friend, so you floor the gas. <strong>Derivative</strong> - No action because the proportional error is almost stable. </li>
+</ul></li>
+<li>Now, because you were flooring the gas, you pass 35mph and hit 35.01mph. Now, your proportional error becomes negative (want 35, are going 35.01, so error is -0.01). 
+
+<ul>
+<li>Proportional error is almost zero (going just over the speed limit)</li>
+<li>Integral error is very large and still very positive because you are actually very far behind your friend. </li>
+<li>Derivative error is almost zero (because proportional error is still almost zero). </li>
+<li>You force signs: Force derivative error to be positive - little change because it's almost zero anyways. The problem here comes when you force integral error to be negative - it <em>was</em> very large and very positive! Now you're forcing it to be negative. This means Mr. Integral was telling you you're very far behind your friend, but you <strong>invert</strong> that and assume integral error <em>meant</em> to say that you are very far in front of your friend. </li>
+<li>Action: <strong>Proportional</strong> - No action because you're going 35mph. <strong>Integral</strong> - You are very far behind your friend and should floor the gas pedal, but <em>you inverted that</em> and now think that you are very far ahead of your friend, so you <strong>stomp the brake pedal instead!</strong> <strong>Derivative</strong> - No action because proportional error is pretty stable. </li>
+</ul></li>
+</ol>
+
+<p>At this point you hit a loop - you slam on brakes when your speed just passes 35mph because you invert integral error, then you floor the gas when you fall below 35mph because you un-invert integral error. This should (violently!) jerk the car (aircraft) around and prevent you from ever eliminating any steady state error. </p>
+
+<p>Worse, I'm not sure how this would behave once you get to the set position, but I think the constant sign flipping might prevent you from stopping anywhere close to where you wanted (if it ever stabilizes at all). </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9559" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-9559">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9559">Load Comments</button></br>
+			<div id = "commentsection-9559" class = 'collapse'>
+			<div id = "comment-16896" class = "comment">
+				<p>Are suggesting I should change my motor speed using:                      motor speed1 = motor speed 1 + PitchPID 
+motor speed 2 = motor speed 2 - PitchPID 
+motor speed 3  =motor speed 3+ RollPID 
+motor speed 4 = motor speed 5 - RollPID, Instead of using the speed adjustments to pairs or motors like the one I posted in the second function?</p>
+			</div>
+			<div id = "comment-16897" class = "comment">
+				<p>Also, I should mention that I didnt take any sample time for any of the PID gains calculations as I was not sure how its done or why its important. Would it be possible to accurately record sample time using only a oscilloscope/LA? Also, would I only need to measure the length of the period it takes to complete one of the PID functions?</p>
+			</div>
+			<div id = "comment-16902" class = "comment">
+				<p>It will probably be better if i used timer interrupt since the time it takes to complete a loop will vary depending on conditions.</p>
+			</div>
+			<div id = "comment-16908" class = "comment">
+				<p>@SaeedMolaie - Yes, using an interrupt is the best route because you know for a fact what the interval is, you don't need to spend time measuring it, and it's stable and unaffected by logic branching or data transmission in your base code.</p>
+			</div>
+			<div id = "comment-16909" class = "comment">
+				<p>Regarding your other comment, you can add them all together. The PID output will give you some value (thrust) to use to modify your motor speeds. So `motor1 = altitudeSpeed/4 + pitchPID/4 -rollPID/4 +yawPID/4`. Flip the signs as appropriate for all the motors. The sum of all four motors should be `altitudeSpeed` - there should be two positive `pitchPID/4` and two negative `pitchPID/4`, etc., such that the two forward motors combine for `pitchPID/2` and the two aft make `-pitchPID/2`, and then *those* combine as `(+x)*pitchPID/2 + (-x)*(-pitchPID/2)` for `pitchPID`.</p>
+			</div>
+			<div id = "comment-16911" class = "comment">
+				<p>Thank you for your comprehensive answer, I'm much more clear on the PID. Regarding your last comment, why did you include both pitch and roll PID for motor 1?  I see some motor mixes that don't include both pitch and roll PID for the same motor. Does this have to do with wether if I have my quadcopter in the X or + configuration ? Currently my quad is in the X configuration ( you probably noticed based on the way I adjusted my speed).</p>
+			</div>
+			<div id = "comment-16912" class = "comment">
+				<p>@SaeedMolaie - That's correct; you have to choose a heading as "forward" for your quadcopter (X is just a rotated + and vice-versa) and set your axes accordingly. So, in an X configuration, if motor one is the top-left motor, two is top-right, three is bottom-right, and four is bottom-left, then motors 1+2 will pitch but motors 1+4 will roll. If you want to pitch AND roll at the same time, then you should turn "on" 1+4 and 1+2. Dividing between pairs means 1++, 2+-, 4+-, and 3--. That is, if you wanted to pitch and roll (equally), leave motors 2 and 4 alone, speed 1 up, and slow 3 down.</p>
+			</div>
+			<div id = "comment-16916" class = "comment">
+				<p>I also use an X-configuration with 3 PID controllers for angular speed around the pitch, roll and yaw axis, respectively. These setpoints are manipulated by 3 more PID controllers to achieve desired angular positions. See https://github.com/tswanepoel/pilotgadgetry/blob/master/PilotGadgetry/Quadcopter.cs</p>
+			</div>
+			<div id = "comment-16935" class = "comment">
+				<p>+1 I might steal "Mr. Proportional," etc the next time I explain this concept.   Well done.</p>
+			</div>
+			<div id = "comment-16936" class = "comment">
+				<p>And, Mr. Integral has issues with forgiveness.   He doesn't forget unless you force him to do so (anti-windup).</p>
+			</div>
+			<div id = "comment-16945" class = "comment">
+				<p>@ Biscuits- Thank you!</p>
+			</div>
+			<div id = "comment-16972" class = "comment">
+				<p>You're welcome. It all comes down to deciding where to distribute the total power (thrust). What you take away from one side, you must try to place on the other side to avoid a drop in total power. This applies for every flight dynamic (pitch, roll, yaw). Naturally, there are limits to how much power you have left in each motor, so we must decide which flight dynamics are most important to us. I choose to honour demands for pitch and roll over demand for yaw.</p>
+			</div>
+			<div id = "comment-17349" class = "comment">
+				<p>@Chuck- I have only recently made the changes to the PID and now im wondering if the Quadcopter will hover if I omitted the Yaw PID and have no Yaw in the motor mix? I don't mind if the Quadcopter rotates, I just want to focus on having a stable lift off and hover.</p>
+			</div>
+			</div>
+				<textarea id = "speech-9559" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9559">
+					<img id="start_img-9559" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9559">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,171 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Measuring vehicle's forward and lateral acceleration using a smartphone
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9751" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9751" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 145</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Measuring vehicle's forward and lateral acceleration using a smartphone</h2>
+<p>I want to measure the acceleration (forward and lateral separately) using an android smartphone device in order to be able to analyse the driving behavior. </p>
+
+<p>My approach would be as follows:</p>
+
+<h2>1. Aligning coordinate systems</h2>
+
+<p><strong>Calibration (no motion / first motion):</strong>
+While the car is stationary, I would calculate the magnitude of gravity using <code>Sensor.TYPE_GRAVITY</code> and rotate it straight to the z-axis (pointing downwards assuming a flat surface). That way, the <strong>pitch</strong> and <strong>roll</strong> angles should be near zero and equal to the angles of the car relativ to the world.</p>
+
+<p>After this, I would start moving straight forward with the car to get a first motion indication using <code>Sensor.TYPE_ACCELEROMETER</code> and rotate this magnitude straight to the x-axis (pointing forward). This way, the <strong>yaw</strong> angle should be equal to the vehicle's heading relativ to the world.</p>
+
+<p><strong>Update Orientation (while driving):</strong>
+To be able to keep the coordinate systems aligned while driving I am going to use <code>Sensor.TYPE_GRAVITY</code> to maintain the roll and pitch of the system via</p>
+
+<p><img src="https://i.stack.imgur.com/4gm3G.gif" alt="enter image description here"></p>
+
+<p><img src="https://i.stack.imgur.com/Zoz9b.gif" alt="enter image description here"></p>
+
+<p>where A_x,y,z is the acceleration of gravity. </p>
+
+<p>Usually, the yaw angle would be maintained via <code>Sensor.ROTATION_VECTOR</code> or <code>Sensor.MAGNETIC_FIELD</code>. However, the reason behind not using them is because I am going to use the application also in <strong>electrical vehicles</strong>. The high amounts of volts and ampere produced by the engine would presumably make the accuracy of those sensor values suffer. Hence, the best alternative that I know (although not optimal) is using the GPS course to maintain the yaw angle.</p>
+
+<h2>2. Getting measurements</h2>
+
+<p>By applying all aforementioned rotations it should be possible to maintain an alignment between the smartphone's and vehicle's coordinate systems and, hence, giving me the pure forward and lateral acceleration values on the x-axis and y-axis.</p>
+
+<h2><em>Questions:</em></h2>
+
+<ul>
+<li>Is this approach applicable or did I miss something crucial?</li>
+<li>Is there an easier/alternative approach to this?</li>
+</ul>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9751" data-toggle = "popover">
+				<p>user name : R. Doe</p>
+				<p> user reputation : 23</p>
+				<p class = "tagcontent" id = "usertaginfo-9751">{'None': 0, 'rotation': 0, 'sensors': 4, 'accelerometer': 4, 'gps': 4}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9751">Load Comments</button></br>
+			<div id = "commentsection-9751" class = 'collapse'>
+			<div id = "comment-17990" class = "comment">
+				<p>Is there a real-time requirement? Are you using many test subjects?</p>
+			</div>
+			<div id = "comment-17996" class = "comment">
+				<p>Welcome to *Robotics*, RDoe. This type of question would be great for [chat], but for Q&A it's generally regarded as [not 
+constructive](http://robotics.stackexchange.com/help/dont-ask): *"As it currently
+stands, this question is not a good fit for our Q&A format. We expect answers to 
+be supported by facts, references, or specific expertise, but this question will 
+likely solicit debate, arguments, polling, or extended discussion.*  There is a
+[relevant discussion on this topic at our meta 
+site](http://meta.robotics.stackexchange.com/q/29/350)</p>
+			</div>
+			<div id = "comment-17997" class = "comment">
+				<p>Generally speaking I would comment that the EM fields from the vehicle should only affect the magnetometer. That is, you should still be able to use the yaw gyro. Check out the [Madgwick filter](http://www.x-io.co.uk/open-source-imu-and-ahrs-algorithms/) for more info on gyro and accelerometer sensor fusion. (The algorithms are available for download in Matlab and C/C# at the bottom of the page)</p>
+			</div>
+			</div>
+				<textarea id = "speech-9751" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9751">
+					<img id="start_img-9751" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9751">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-10112"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10112" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>There are many things to consider.</p>
+
+<p>Assuming that you are developing an app to accomplish this, you should invest some time in filtering. Depending on the vehicle and the phone's position in the vehicle, you would expect to encounter sensor noise due to vibration induced by the road surface or possibly the engine. Among many filtering techniques, Kalman filtering is often used with Accelerometer/Gyroscopes to fuse the raw sensor measurements and implementation is straight forward. To understand Kalman filtering (and possibly pick up a few other techniques), I suggest Sebastian Thrun's textbook <em>Probabilistic Robotics,</em> which covers the topic quite well. </p>
+
+<p>While we are considering things you may have left out, assuming you are attempting to characterize driving behaviour of many test subjects, you should count on the subjects not using your app as intended. If a subject uses the phone while driving, your measurements will obviously be affected. Consider implementing a "quiet mode" while testing to discourage using the phone. Furthermore, you cannot assume that the phone will start in any one place. </p>
+
+<p>Of the concerns above and the many like them, rather than characterizing driver behaviour in real-time using the phone, you could instead have the phone log raw sensor data, including GPS location and raw accelerometer/gyroscope data--you could then use statistical techniques (again described in Thrun's text) to determine the transformation between the coordinates of the phone and the coordinates of the vehicle to finally determine the pose of the vehicle and characterize driving behaviour. This approach has the benefit of being easier to deploy and being robust in the event that your characterization procedures change in the future.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10112" data-toggle = "popover">
+				<p>user name : NBCKLY</p>
+				<p> user reputation : 741</p>
+				<p class = "tagcontent" id = "usertaginfo-10112">{'None': 44, 'roomba': 4, 'irobot-create': 4, 'arduino': 2}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-10112" class = 'collapse'>
+			</div>
+				<textarea id = "speech-10112" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10112">
+					<img id="start_img-10112" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10112">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

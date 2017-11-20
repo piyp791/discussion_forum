@@ -1,0 +1,208 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Micro Quadcopter PID problem
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-6957" class = "post">
+			<h2>Question</h2>
+			<div id="vote-6957" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 606</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Micro Quadcopter PID problem</h2>
+<p>I designed a mini quadcopter which is about 4.5x4.5cm(Main Body). The main body is the PCB. </p>
+
+<p>![enter image description here][1]</p>
+
+<p>It weighs about ~20 grams with the battery. I'm using the MPU6050 with the DMP using the i2cDevLib. I am using raw radians for pitch, roll, and yaw these measures are read from the MPU6050's DMP. The motors are attached to the body using electrical tape(Black thing  around motors). The motors are 8.5mm in diameter and are driven by a n-channel mosfet. The mode of control right now is bluetooth(HC-05 module). The code being used is my own.
+I have a control loop on all axes, the pitch and roll have the same values since the quadcopter is symmetrical. The problem I have is that PID tuning is next to impossible, the best I got was a ~2 second flight ([Video in slow-motion][2]).</p>
+
+<p>At first I was using my own code for the control loop, but it wasn't as effective as the Arduino PID library. </p>
+
+<p>The output of the PID loops are mapped to -90 to 90 on all axes. This can be seen in the code</p>
+
+<pre><code>myPID.SetOutputLimits(-90, 90); //Y angle    
+myPID1.SetOutputLimits(-90, 90); // X angle
+myPID2.SetOutputLimits(-90, 90); // Yaw angle
+myPID.SetMode(AUTOMATIC);
+myPID1.SetMode(AUTOMATIC);
+myPID2.SetMode(AUTOMATIC);
+</code></pre>
+
+<p>My full code is below, but what do you think the problem is?</p>
+
+<h1>Code</h1>
+
+<p><a href="http://pastebin.com/cnG6VXr8" rel="nofollow">http://pastebin.com/cnG6VXr8</a></p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6957" data-toggle = "popover">
+				<p>user name : user2900812</p>
+				<p> user reputation : 11</p>
+				<p class = "tagcontent" id = "usertaginfo-6957">{'quadcopter': 2, 'None': 0, 'pid': 2, 'arduino': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-6957">Load Comments</button></br>
+			<div id = "commentsection-6957" class = 'collapse'>
+			<div id = "comment-9929" class = "comment">
+				<p>Hard to tell... Could be a bug or bugs in your code or it could hardware related (too much vibration, props mounted the wrong way, etc). I would try running a well known flight controller code like ardupilot just a test to make sure hardware is fine. And then you have a solid ref to compare your code with, I.e. compare the PID outputs for instance</p>
+			</div>
+			<div id = "comment-9931" class = "comment">
+				<p>@dm76 Vibration is very minimal, and the props are balanced. The props are mounted correctly and spin in the correct direction. The problem with ardupilot is that it uses brushless motors, different sensors, and totally different configurations.</p>
+			</div>
+			<div id = "comment-9932" class = "comment">
+				<p>So now the question, how did you tune the PID settings? You would need some kind of setup to hold it in place while allowing it to pitch and roll</p>
+			</div>
+			<div id = "comment-9933" class = "comment">
+				<p>@dm76 Yep, that was exactly what I did. It works on one axis, but when I test all axes to fly out doesn't work. I think the code itself doesn't work.</p>
+			</div>
+			</div>
+				<textarea id = "speech-6957" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6957">
+					<img id="start_img-6957" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6957">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-6998"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6998" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>It could be a number of things.  You are clearly in a positive feedback loop.  You can see this with the way the amplitude of the oscillation increases with time in your video.  The most likely problem is that your gain is too high.  You should be able to get flight that doesn't crash quickly with just P control.  I would start with zero I and D and a low P value, then ramp up P value to get reasonable responsiveness without too much overshoot, then increase I to remove steady state error, and throw in a little D if necessary to reduce overshoot.  You probably won't even need D if you back off the aggressiveness of P and I.  Measuring the derivative of the error can also have a lot of noise in it.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6998" data-toggle = "popover">
+				<p>user name : DrRoboto</p>
+				<p> user reputation : 151</p>
+				<p class = "tagcontent" id = "usertaginfo-6998">{'None': 12}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-6998">Load Comments</button></br>
+			<div id = "commentsection-6998" class = 'collapse'>
+			<div id = "comment-9967" class = "comment">
+				<p>I've tried slowly increasing the P gain, but it's always either too sluggish, or to responsive. I will keep trying. Looking at the code, is the PID correctly implemented?
+
+Also thank you for your response.</p>
+			</div>
+			<div id = "comment-10004" class = "comment">
+				<p>I can't tell if it is correct or not.  You might try to verify that the PID output is controlling the right motors to counteract the error.  I don't know what orientation the mpu is mounted relative to the motors.  It looks like it might be rotated as it looks like you are mapping pitch errors to increasing speed of the right side motors relative to left.  If it was mounted aligned with the robot, I would expect it to map to the front motors relative to back.</p>
+			</div>
+			<div id = "comment-10006" class = "comment">
+				<p>I think I found the problem. Previously the control loops were running every 100ms meaning 10hz. I have now decreased it to every 5ms meaning 200hz. The IMU updates at 100hz. It is flying much higher, and a bit more stable. It's able to fly for about 3-4 seconds.</p>
+			</div>
+			<div id = "comment-10284" class = "comment">
+				<p>Delay of signals from sensors to props can be an important factor, but you have probably done the best that could be done by increasing the runtime frequency. The next thing that can be done (if tuning the PID is not enough at all) would be to increase the stability of the quadrotor (like extending the motors away from the body, to have higher inertia, etc) or increase the acceleration performance of the motors (might even mean changing the motors).</p>
+			</div>
+			</div>
+				<textarea id = "speech-6998" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6998">
+					<img id="start_img-6998" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6998">Comment</button>
+			<br><div id = "ans-7471"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7471" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Your derivative term is incorrect. You have:</p>
+
+<blockquote>
+  <p>dTerm = Kd * (error - last_error);</p>
+</blockquote>
+
+<p>Note that this is <em>not</em> a derivative of the error, this is simply the difference between the previous error and the current error. To get the derivative of the error you need to divide by the sample time. I am not familiar with your platform so I cannot tell you how to get the sample time (loop time, sweep time, etc.), but you need a timer to start and stop every loop.</p>
+
+<p>Anyways, assuming that $t_{elapsed} = dT$, and you can get this from a timer set to count and reset every time your PID code executes, then your sample time is $dT$ and your dTerm needs to become:</p>
+
+<blockquote>
+  <p>dTerm = Kd * (error - last_error)<strong>/dT</strong>;</p>
+</blockquote>
+
+<p>If this isn't the root cause of your control issues it's a major contributing factor. It looks like your PID sections are commented out (not sure why), but I noticed this error everywhere I saw a "dTerm" defined. </p>
+
+<p>Hope this helps!</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7471" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-7471">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7471" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7471" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7471">
+					<img id="start_img-7471" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7471">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

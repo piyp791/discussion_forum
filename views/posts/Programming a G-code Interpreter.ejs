@@ -1,0 +1,210 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Programming a G-code Interpreter
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-4880" class = "post">
+			<h2>Question</h2>
+			<div id="vote-4880" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 1724</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Programming a G-code Interpreter</h2>
+<p>I want programme my very own G-code generator for my final year electrical engineering project. I know that there are many open source G-code generators out there, but I need a G-code generator which generates a G-codes for custom circuit designs drawn by the user and pass the G-code serially to my 2 axis CNC machine. So currently I'm working on a Qt based GUI where I draw .dxf format circuit diagrams and electrical components (like resistors, capacitors) and when I press a "Generate G-code" push button I should generate a text file with nice set of G-codes for my designed diagram.</p>
+
+<p>So the problem here is, how do I generate the G-code? Is there any specific algorithm to follow or adapt? I tried googling for G-code generator algorithm but I couldn't find any helpful stuff.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4880" data-toggle = "popover">
+				<p>user name : Vino</p>
+				<p> user reputation : 75</p>
+				<p class = "tagcontent" id = "usertaginfo-4880">{'control': 1, 'robotic-arm': 1, 'pid': 1, 'slam': 0, 'motor': 1, 'linux': 5, 'mobile-robot': 0, 'ros': 5, 'forward-kinematics': 5, 'manipulator': 1, 'robotics-library': 0, 'mechanism': 1, 'opencv': 0, 'cnc': 2, 'machine-learning': 0, 'None': 2, 'inverse-kinematics': 5, 'artificial-intelligence': 0, 'automation': 1, 'industrial-robot': 0, 'quadcopter': 0, 'computer-vision': 2, 'c++': 5, 'circuit': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-4880">Load Comments</button></br>
+			<div id = "commentsection-4880" class = 'collapse'>
+			<div id = "comment-7572" class = "comment">
+				<p>Is this for a pick-and-place machine for electrical components, or to mill the traces of a PCB?</p>
+			</div>
+			<div id = "comment-7573" class = "comment">
+				<p>There's a few algorithms and other ideas related to generating G-code for electronic circuits in the [PCB milling](http://reprap.org/wiki/PCB_Milling) and [Automated Circuitry Making](http://reprap.org/wiki/Automated_Circuitry_Making) pages on the RepRap wiki.</p>
+			</div>
+			<div id = "comment-7578" class = "comment">
+				<p>@Ben Basically a xy-plotter machine which sketches the circuits</p>
+			</div>
+			<div id = "comment-7579" class = "comment">
+				<p>@David Cary Thank you bro, ill have a look at it.</p>
+			</div>
+			</div>
+				<textarea id = "speech-4880" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4880">
+					<img id="start_img-4880" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4880">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-4883"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4883" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I assume you know (or can figure out) how to parse the line objects in the dxf file, and can convert them to straight line operations in g-code.  So the basic problem is how to order the operations to minimize time (which is the same as unnecessary travel).  </p>
+
+<p>This sounds like a variant of the <a href="http://en.wikipedia.org/wiki/Travelling_salesman_problem" rel="nofollow">Travelling Salesman Problem</a>.  Except instead of visiting nodes, you traverse edges (the lines in your circuit).  So there is probably no efficient solution to the problem.  </p>
+
+<p>I assume that once you are tracing a line, you don't want to stop until the line ends.  This is to avoid unnecessary pen-up, pen-down operations.  I guess a <a href="http://en.wikipedia.org/wiki/Greedy_algorithm" rel="nofollow">greedy</a> solution would probably be fine.  I envision the algorithm to be something like this:</p>
+
+<pre><code>given a list of lines with endpoints:
+
+0. if list is empty: end
+1. Pick a line and endpoint, go there, pen down.  
+   (you might want to use a heuristic here such as pick the closest point to where you are).
+2. go to other endpoint, delete line from list
+3. search through list of lines and find a new line with same endpoint.  
+   (you might want to use a heuristic here to continue going straight if you can).
+  if you found one: goto 2
+  else: pen up, goto 0
+</code></pre>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4883" data-toggle = "popover">
+				<p>user name : Ben</p>
+				<p> user reputation : 3608</p>
+				<p class = "tagcontent" id = "usertaginfo-4883">{'None': 277, 'inverse-kinematics': 3, 'accelerometer': 5, 'calibration': 10, 'kinematics': 14, 'robotic-arm': 8, 'jacobian': 6, 'dh-parameters': 8, 'imu': 5, 'sensors': 5}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-4883">Load Comments</button></br>
+			<div id = "commentsection-4883" class = 'collapse'>
+			<div id = "comment-7580" class = "comment">
+				<p>I think the problem is considerably harder than that. Remember, we're not drawing out the tracks that are defined in the DXF file, we're cutting away the space in-between the tracks.</p>
+			</div>
+			<div id = "comment-7582" class = "comment">
+				<p>No, for my case I'm actually drawing out the tracks. Thank you so much for answering my query. Much appreciate!</p>
+			</div>
+			</div>
+				<textarea id = "speech-4883" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4883">
+					<img id="start_img-4883" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4883">Comment</button>
+			<br><div id = "ans-4886"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4886" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>This is not a trivial problem to solve. Assuming your DXF file contains various primitives like tracks and pads drawn out, you need to create an algorithm which draws cuts <em>around</em> them, to end up with a PCB something like this:</p>
+
+<p><img src="https://i.stack.imgur.com/A8nKP.jpg" alt="CNC cut PCB"></p>
+
+<p>This is known as PCB isolation routing, and is in itself is non-trivial because (I assume) the tracks and pads will overlap in places, and so the algorithm has to be sure not to cut all the way around every primitive, but to cut around them in so far as to avoid cutting through any of them.</p>
+
+<p><img src="https://i.stack.imgur.com/CS5Iv.gif" alt="CNC cut PCB toolpaths"></p>
+
+<p>There are two ways you can approach this problem:</p>
+
+<p><strong>Vector:</strong> The 'best' way is to solve it using vectors. Calculate the set of lines and arc segments around each primitive, calculate where they intersect neighboring lines or arcs, and trim them to length so that they form a continuous loop around the copper net. This is the 'best' because the lines and arcs naturally translate into a simple set of G-Codes. However, it can be a pain to program, and you'll be working out lots of linear algebra, and dealing with a ton of tricky edge cases.</p>
+
+<p><strong>Bitmap:</strong> This way produces more bloated G-Code, but is easier to program. Simply render the image of your PCB at high resolution. But for each primitive, draw it wider by the width of the cutting tool, Then write an algorithm which follows the edges around the copper nets, generating G-Code commands as it goes. If you're smart, you can reduce the number of G-Code lines produced by detecting movement in straight lines, and only generating a G-Code command when you turn a corner. If you're <em>really</em> smart, you might even be able to <a href="http://forskningsavd.se/category/projects/" rel="nofollow noreferrer">detect arcs</a> too:</p>
+
+<p><img src="https://i.stack.imgur.com/MMhVc.jpg" alt="Bitmap to vector conversion"></p>
+
+<p>You might want to go the next step and cut out the dead copper to have a PCB like this:</p>
+
+<p><img src="https://i.stack.imgur.com/CcM91.jpg" alt="CNC cut PCB"></p>
+
+<p>This is only a little harder, and involves offsetting your cutting paths, trimming them against each other, offsetting again, etc. Then finally joining up all of the concentric loops into one continuous path. This example image is not from a PCB, but it's the same principle:</p>
+
+<p><img src="https://i.stack.imgur.com/2AA9B.gif" alt="CNC pocketing toolpath"></p>
+
+<p>Having written several similar programs, I can tell you from experience that it's not trivial. But it's also not impossibly hard. You'll have to decide how much time you have to spare on this problem. If you have less than a week (though I suggest at least two weeks), then I suggest you try out one of the many source code repositories out there which do this.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4886" data-toggle = "popover">
+				<p>user name : Rocketmagnet</p>
+				<p> user reputation : 4235</p>
+				<p class = "tagcontent" id = "usertaginfo-4886">{'control': 31, 'force': 8, 'multi-agent': 5, 'pid': 29, 'air-muscle': 6, 'uav': 52, 'stepper-driver': 3, 'reliability': 5, 'motor': 12, 'esc': 1, 'mobile-robot': 6, 'ros': 35, 'stepper-motor': 3, 'tuning': 12, 'swarm': 10, 'research': 5, 'platform': 17, 'imu': 4, 'kalman-filter': 49, 'hri': 4, 'None': 266, 'raspberry-pi': 24, 'localization': 7, 'python': 7, 'torque': 3, 'brushless-motor': 28, 'failure': 5, 'force-sensor': 15, 'sensors': 20, 'pwm': 10, 'wireless': 10, 'servos': 7, 'wifi': 24, 'simulation': 6, 'servomotor': 11, 'particle-filter': 0, 'sensor-fusion': 4, 'automatic': 12, 'software': 17}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-4886">Load Comments</button></br>
+			<div id = "commentsection-4886" class = 'collapse'>
+			<div id = "comment-7583" class = "comment">
+				<p>Thank you so much for answering my query. Much appreciate!</p>
+			</div>
+			<div id = "comment-7584" class = "comment">
+				<p>@VinokanthVelu - You're welcome. Good luck with your project.</p>
+			</div>
+			</div>
+				<textarea id = "speech-4886" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4886">
+					<img id="start_img-4886" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4886">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

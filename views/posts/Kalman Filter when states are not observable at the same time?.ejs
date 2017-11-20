@@ -1,0 +1,149 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Kalman Filter when states are not observable at the same time?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2661" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2661" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 315</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Kalman Filter when states are not observable at the same time?</h2>
+<p>I have a system that I can make a strong kinematic model for, but my sensors send readings at unpredictable times. When I say unpredictable, I am not just saying the order the readings will arrive, I also mean that sensors are able to sleep when they do not see a significant change. When an input arrives for any given sensor, that information can be used to infer the states of many other sensors based on my model.</p>
+
+<p>At first, it seemed like a Kalman Filter was exactly what I needed because I could make a prediction of all of the states of the system and then update those states when one piece of information comes in and repeat this process until a good estimate of the system as a whole was determined. However, after reading over Kalman filters, it looks like they assume that every state will be updated on a regular basis. Is there a way the Kalman filter can be modified for when you are unsure about what input will come in next and you are also unsure how much time will elasped before the next input arrives? Please note that in my case, once the information arrives, I will know the source of the input as well as the time that has elapsed since the last update, I just won't be able to predict these two things beforehand.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2661" data-toggle = "popover">
+				<p>user name : tomsrobots</p>
+				<p> user reputation : 58</p>
+				<p class = "tagcontent" id = "usertaginfo-2661">{'None': 4, 'kalman-filter': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2661" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2661" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2661">
+					<img id="start_img-2661" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2661">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-2662"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2662" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>First, be careful when using the term "observable" with respect to Kalman filters. It has a precise mathematical meaning that basically determines whether or not the filter is even possible.</p>
+
+<p>With respect to your question, you need to select a subset of the observation and measurement noise covariance matrices depending on which measurements are available. Assume you have the system
+$$
+\begin{align}
+x_{t+1} &amp;= A_t x_t + B_t u_t + G_t w_t
+\\
+y_t &amp;= C_t x_t  + v_t
+\end{align}
+$$
+where $w$ and $v$, with covariance $W$ and $V$, are the dynamic and measurement noises respectively.</p>
+
+<p>Now partition your measurements as
+$$
+\begin{align}
+y = \begin{bmatrix} y_1 \\ y_2\end{bmatrix},\quad
+C = \begin{bmatrix} C_{11} &amp; C_{12} \\ C_{21} &amp; C_{22} \end{bmatrix},\quad
+V = \begin{bmatrix} V_{11} &amp; V_{12} \\ V_{21} &amp; V_{22} \end{bmatrix}
+\end{align}
+$$</p>
+
+<p>If you only have measurement 1 available, you would use the observation equation
+$$
+\begin{align}
+y_1 &amp;= C_{11} x + v_1
+\end{align}
+$$
+and apply the Kalman filter measurement update accordingly.</p>
+
+<p>The difference in time between measurements is not a problem since you can just keep running the time update equation ($x_{t+1} = \dots$) until you get a measurement. i.e. You might run the time update equation 5 times before running a single measurement update.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2662" data-toggle = "popover">
+				<p>user name : ryan0270</p>
+				<p> user reputation : 1814</p>
+				<p class = "tagcontent" id = "usertaginfo-2662">{'None': 133}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2662" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2662" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2662">
+					<img id="start_img-2662" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2662">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

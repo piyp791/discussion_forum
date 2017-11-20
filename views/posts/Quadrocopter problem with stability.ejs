@@ -1,0 +1,153 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Quadrocopter problem with stability
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8525" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8525" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 96</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Quadrocopter problem with stability</h2>
+<p>I'm building quadcopter from scratch, software is implemented on STM32F4 microcontroller. Frequency of main control loop equals 400Hz.</p>
+
+<p>I've though everything is almost finished but when i've mounted everything and started calibration of PIDs i faced a problem.
+It was impossible to adjust PID parameters properly.
+So i started test with lower power (not enough to fly) and i've managed quite fast adjust PID for roll but when i've increased power problems with control came back.</p>
+
+<p>After that i've done more measurements.
+<a href="https://i.stack.imgur.com/2Bix8.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/2Bix8.jpg" alt="Roll angle with engines off"></a>
+<a href="https://i.stack.imgur.com/y2878.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/y2878.jpg" alt="Roll angle with engines on but without blades from complementary filter"></a></p>
+
+<p>I didn't make test with blades but probably this is even worse and that is why i cannot calibrate it.</p>
+
+<ul>
+<li>If problem is due to vibration how can i fix it?</li>
+<li>If something else is cause of that symptom, what is it?</li>
+<li>Can i solve this through better controls and data fusion algorithms?
+Now i use complementary filter for acc and gyro sensors data fusion in roll and pitch.</li>
+</ul>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8525" data-toggle = "popover">
+				<p>user name : unitatem</p>
+				<p> user reputation : 18</p>
+				<p class = "tagcontent" id = "usertaginfo-8525">{'control': 1, 'None': 1, 'imu': 1, 'gyroscope': 1, 'accelerometer': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8525">Load Comments</button></br>
+			<div id = "commentsection-8525" class = 'collapse'>
+			<div id = "comment-13794" class = "comment">
+				<p>fast comment: Tune the complementary filter (it must be slower) or use a more sophisticated approach like a kalman filter. Maybe I add a complete answer later.</p>
+			</div>
+			<div id = "comment-13797" class = "comment">
+				<p>You can't tune your controller without the blades.</p>
+			</div>
+			<div id = "comment-13798" class = "comment">
+				<p>i've took off blades after all to take measurements if this is necessary i can mount it and measure it again but imho outcome will look even worse</p>
+			</div>
+			</div>
+				<textarea id = "speech-8525" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8525">
+					<img id="start_img-8525" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8525">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8529"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8529" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You have far too much vibration reaching your sensors. Mount the board you're using with vibration damping mounts, this should solve most of your problem. An easy way to do this is to attach each corner of your board to the frame using a small but thick piece of double stick squishy foam[1]. The board will now act as a spring mass damper attached to your frame. By making the pieces of foam narrower you will increase the cutoff frequency of the system. Here is a link to an arducopter page talking about vibration damping to solve this problem[2].</p>
+
+<p>While a complementary filter may be suitable for your application, the correct tool for estimating attitude is a kalman filter capable of handling nonlinear system dynamics and measurement dynamics. The pixhawk uses an extended kalman filter to estimate attitude[3]. It may be overkill for your system depending on how far you want your quad to deviate from level hover.</p>
+
+<p>[1]<a href="http://hobbyking.com/hobbyking/store/__26457__anti_vibration_foam_orange_latex_190mm_x_140mm_x_6mm.html" rel="nofollow">http://hobbyking.com/hobbyking/store/__26457__anti_vibration_foam_orange_latex_190mm_x_140mm_x_6mm.html</a></p>
+
+<p>[2]<a href="http://copter.ardupilot.com/wiki/common-vibration-damping/" rel="nofollow">http://copter.ardupilot.com/wiki/common-vibration-damping/</a></p>
+
+<p>[3]<a href="https://pixhawk.org/firmware/apps/attitude_estimator_ekf" rel="nofollow">https://pixhawk.org/firmware/apps/attitude_estimator_ekf</a></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8529" data-toggle = "popover">
+				<p>user name : holmeski</p>
+				<p> user reputation : 1338</p>
+				<p class = "tagcontent" id = "usertaginfo-8529">{'pose': 3, 'None': 101, 'computer-vision': 3, 'kalman-filter': 3}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8529" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8529" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8529">
+					<img id="start_img-8529" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8529">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

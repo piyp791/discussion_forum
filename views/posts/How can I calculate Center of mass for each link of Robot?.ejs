@@ -1,0 +1,207 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How can I calculate Center of mass for each link of Robot?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11519" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11519" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 168</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How can I calculate Center of mass for each link of Robot?</h2>
+<p>I want to calculate 'r'
+<a href="https://i.stack.imgur.com/CALUW.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/CALUW.png" alt="enter image description here"></a></p>
+
+<p>I know <a href="https://i.stack.imgur.com/4BaS6.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/4BaS6.png" alt="enter image description here"></a>, and the Position of(X, Z)
+But I don't know how to apply it in this robot.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11519" data-toggle = "popover">
+				<p>user name : Nour Khashan</p>
+				<p> user reputation : 13</p>
+				<p class = "tagcontent" id = "usertaginfo-11519">{'None': 0, 'humanoid': 1, 'dh-parameters': 1, 'mobile-robot': 1, 'forward-kinematics': 1, 'robotc': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11519" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11519" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11519">
+					<img id="start_img-11519" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11519">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-11525"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11525" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Since it is not sure that your robot is in a plane or not, I would consider it in 3D. </p>
+
+<p>You have all the geometrical dimensions of the robot. And I assume you have also all angles in all joints. </p>
+
+<p>You need to calculate the X Y and Z coordinates of all centers of masses on the image, relative to the same coordinate system. It is important that they are computed relative to the same coordinate system. In order to compute them in the same coordinate system you need to know all the joint angles.</p>
+
+<p>For example:</p>
+
+<p>The X coordinate of the center of mass ($x_{CoG}$) will equal, as the formula says:</p>
+
+<p>$x_{CoG} = \frac{\sum{m_i \cdot x_i}}{M}$</p>
+
+<p>the same is true for all other coordinates:</p>
+
+<p>$y_{CoG} = \frac{\sum{m_i \cdot y_i}}{M}$; $z_{CoG} = \frac{\sum{m_i \cdot z_i}}{M}$</p>
+
+<p>If all y coordinates are 0 (i.e. the robot is in a plane) obviously $y_{coG}$ will also be zero.</p>
+
+<p>You can define a <a href="https://en.wikipedia.org/wiki/Transformation_matrix" rel="nofollow noreferrer">transformation</a> matrix for each joint. The transformation matrices should be set up according to the <a href="https://en.wikipedia.org/wiki/Denavit%E2%80%93Hartenberg_parameters" rel="nofollow noreferrer">D-H convention</a>. This is not a must.  The only variable in the transformation matrix will be the joint angle. You will need a vector which points to the CoG from the joint. This will be a constant vector (without variables), form the joint to the CoG (as it seems $[r,0,0]$). Please note that if you are not using the D-H convention the vector coordinates are not valid!</p>
+
+<p>Let the reference coordinate system be $CS_a$ in the ankle. 
+Assuming you have a 2 dof joint in the "ankle" of the robot</p>
+
+<p>$$
+\begin{pmatrix} 
+x_m5 \\
+y_m5 \\
+z_m5 \\
+1
+\end{pmatrix}
+= 
+T_a \cdot T_{ankle_1}(q_{a1}) \cdot T_{ankle2}(q_{a2}) \cdot T_{ll} \cdot T_{knee}(q_k) \cdot
+\begin{pmatrix} 
+r_5 \\
+0 \\
+0 \\
+1
+\end{pmatrix}  $$</p>
+
+<p>Where $T_a$ is the transformation matrix of the reference coordiante system ($CS_a$). If indeed this it the reference coordinat system then it equals the $4x4$ identiy matrix $I_{4x4}$. $T_{ankle1}$ is the Dh transformation matrix of the first ankle rotation $T_{ankle2}$ is the transformation matrix f the second ankle joint. $q_{a1}$ and $q_{a2}$ are the joint angles. The translation from the anle joint to the knee joint is sperated to a constant transformation matrix, $T_{ll}$, corresponding to the lower leg. 
+$$ T_{ll} = 
+\begin{pmatrix} 
+1 &amp; 0 &amp; 0 &amp; L_6 \\
+0 &amp; 1 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 1 &amp; 0\\
+0 &amp; 0 &amp; 0 &amp; 1
+\end{pmatrix}  $$</p>
+
+<p>Thre reason behing this speparation is that this way you can caluclate the coordinates of the CoG in the lower leg as:
+$$
+\begin{pmatrix} 
+x_m6 \\
+y_m6 \\
+z_m6 \\
+1
+\end{pmatrix}
+= 
+T_a \cdot T_{ankle_1}(q_{a1}) \cdot T_{ankle2}(q_{a2}) \cdot
+\begin{pmatrix} 
+r_6 \\
+0 \\
+0 \\
+1
+\end{pmatrix}  $$</p>
+
+<p>You can calcualte similarly all coordinates of the centers of masses expressed in the same coordinate system (in this case the ankle coordinate system) and the mass associated with each center of mass. Then you start multiplying the masses with the coordinates and summing them up, divided by the total mass (similar to the same equation above). In your case 7 times.</p>
+
+<p>However, I must add that this formula is used for calculating the center of mass of rigid bodies. I am not sure how well it performs for linkages. </p>
+
+<p>When the robot is in motion, in order to calculate the positions of the CoGs, the same principles have to be applied, but cyclically. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11525" data-toggle = "popover">
+				<p>user name : 50k4</p>
+				<p> user reputation : 2800</p>
+				<p class = "tagcontent" id = "usertaginfo-11525">{'geometry': 0, 'None': 193, 'kinematics': 0, 'robotic-arm': 0}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11525">Load Comments</button></br>
+			<div id = "commentsection-11525" class = 'collapse'>
+			<div id = "comment-20679" class = "comment">
+				<p>It is the same for linkages.</p>
+			</div>
+			<div id = "comment-20680" class = "comment">
+				<p>@SteveO, only if the linkages are rigid. If you need to take care of the links bending given their angles w.r.t to horizon, things get more complicated.</p>
+			</div>
+			<div id = "comment-20681" class = "comment">
+				<p>Yes, I agree.  But the drawing indicates (at least to me) that the links have constant lengths $L_i$.  So I think the rigid body assumption holds for this problem.</p>
+			</div>
+			<div id = "comment-20749" class = "comment">
+				<p>Yes I agree with you. But I can't get for example xi position for m5 and so on. how can I calculate it?</p>
+			</div>
+			<div id = "comment-20757" class = "comment">
+				<p>The answer is updated to reflect your comment</p>
+			</div>
+			</div>
+				<textarea id = "speech-11525" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11525">
+					<img id="start_img-11525" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11525">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

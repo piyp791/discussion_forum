@@ -1,0 +1,180 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Self learning robotics algoritm: feedback needed
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-11645" class = "post">
+			<h2>Question</h2>
+			<div id="vote-11645" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 79</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Self learning robotics algoritm: feedback needed</h2>
+<p>I'm working on a robotics project and I've got this idea for a self learning algorithm. I'm looking for some feedback on this, and specifically on whether this is a more common way of doing things. </p>
+
+<p>I simply want to store a lot of numerical log data of previous actions the robot took and the results it got. I then want to let it search through the DB multiple times per second so that the robot can make decisions based on that and thus learn from it's actions (like humans do).</p>
+
+<p>So I constantly log a lot of data. One simple log record could be for example:</p>
+
+<ul>
+<li>speed: 5.43</li>
+<li>altitude: 35.23</li>
+<li>wind_speed: 6.19</li>
+<li>direction: 27</li>
+<li>current position: [12, -20]</li>
+<li>desired position: [18, -25]</li>
+<li>steering decision: 23</li>
+<li>success: 12</li>
+</ul>
+
+<p>The <code>desired_position</code> are coordinates on a 2 dimensional matrix and the <code>success</code> is how close it came to the desired position within 10 seconds (so the lower the better).</p>
+
+<p>I then have a certain situation for which I want to find a comparable experience in the database. So let's say my current situation is this:</p>
+
+<ul>
+<li>speed: 5.13 </li>
+<li>altitude: 35.98 </li>
+<li>wind_speed: 7.54 </li>
+<li>direction: 24 </li>
+<li>current position: [14, -22]</li>
+<li>desired_position: [17, -22]</li>
+</ul>
+
+<p>As you can see it doesn't have a <code>steering decision</code> or a <code>success</code> yet, because it still has to make a steering decision and only after taking that action and seeing the result the success rate can be calculated.</p>
+
+<p>So I want to search for the record "closest" to my current situation within certain boundaries, and which has the best (lowest) success rate. So for example, the boundaries could be that the <code>direction</code> cannot be more than 10% difference, and the <code>heading</code> cannot be more than 15% difference. So I first make a selection based on that. I'm left with A LOT of records. I then calculate for every field in every record the percentage difference, and accumulate those per record so that I get some sort of  closeness factor . Once that's done I combine the closeness with the success, order by that number, and take the top record to base my decision on for the action to be taken. I take the steering decision of that record and randomly change it to something which is within a certain change percentage range. I do this because people also experiment, you try something new every time. And as the system becomes better at steering the robot (success factors get better) I also reduce the randomization change percentage. This is because as people get better, they also know that they are closer to the objective and they don't need to experiment as much any more.</p>
+
+<p>So to steer my robot I will run the following process as often as possible (I will try to run it 20 times per second) and use this system to steer my robot.</p>
+
+<p>So my questions are; </p>
+
+<ol>
+<li>Do you think that this can work? </li>
+<li>Is this kind of thing used more often? </li>
+<li>Does anybody know a database which would make it possible to query based on a dynamically calculated factor (the closeness factor)?</li>
+</ol>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11645" data-toggle = "popover">
+				<p>user name : kramer65</p>
+				<p> user reputation : 227</p>
+				<p class = "tagcontent" id = "usertaginfo-11645">{'wheel': 6, 'None': 5, 'noise': 1, 'usb': 6, 'algorithm': 1, 'encoding': 6, 'battery': 1, 'uav': 5, 'python': 1, 'kalman-filter': 1, 'imu': 1, 'motor': 1, 'raspberry-pi': 4, 'mobile-robot': 4, 'sensors': 6, 'pitot-tube': 1, 'self-driving': 1, 'steering': 1, 'gyroscope': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-11645">Load Comments</button></br>
+			<div id = "commentsection-11645" class = 'collapse'>
+			<div id = "comment-20847" class = "comment">
+				<p>Machine learning is not the same as learning for humans, it is more than inverse dynamics. For a given forward simulation the parameter are searched for reaching a certain point in state-space. What you need is not a logging function, but an algorithm for solving the game. The construction of these algorithm is based on the problem. Try to get more information about sailing and weather conditions and use object-oriented programming languages for storing this knowledge into a program.</p>
+			</div>
+			</div>
+				<textarea id = "speech-11645" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11645">
+					<img id="start_img-11645" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11645">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-11662"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-11662" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>What you are describing seems a lot like <a href="https://en.wikipedia.org/wiki/Reinforcement_learning" rel="nofollow noreferrer">reinforcement learning</a>, and yes, it works well for this sort of scenario. It is a popular enough approach that you should be able to find starter code in whatever language you prefer.  This <a href="ftp://ftp.idsia.ch/pub/juergen/icra06.pdf" rel="nofollow noreferrer">paper</a> looks like it could be interesting for you. </p>
+
+<h2>Basic set-up</h2>
+
+<p>Typically the way the problem is set up is that we want to find a function called a <em>policy</em> which maps <em>state</em>/<em>action</em> pairs to <em>rewards</em>. For your problem, the state is all of the information besides <code>steering_decision</code> and <code>success</code>, your action is <code>steering_decision</code> and your reward is <code>success</code>. The goal is to find a policy that gives the best reward, where "best" could be the highest mean, lowest risk, etc. depending on the setting. </p>
+
+<h2>Importance of exploration</h2>
+
+<p>The randomization idea you propose is crucial, known as "exploration" in the reinforcement learning community. If you want to go really deep into how to best trade-off exploration and exploitation, statisticians have been studying the "Multi-armed bandit" problem for a few decades. If you're ok with exploration that is "good enough", then a linearly decreasing exploration factor will work fine.</p>
+
+<h2>Making it fast</h2>
+
+<p>As you note the amount of data you have to sift through makes it difficult to compute this policy quickly, so what typically happens is that we run a <em>training</em> phase off line (either based on historical data or simulated data) in order to find a good policy.  Then we use this policy (without changing it) on-line. If you store the policy as a look-up table (for example by hashing your state), then the on-line computation will be very fast. Off-line training will work well as long as your environment is fairly static, or you are able to capture the time-variation in your state (for example by including weather or time-of-day information).</p>
+
+<h2>Comparing "similar" states</h2>
+
+<p>The last piece of the puzzle is to formalize the "closeness" concept, where you decide what information is relevant. There are quite a few ways to do this, but I would recommend looking into a Gaussian process approach (see <a href="http://www.gaussianprocess.org/gpml/" rel="nofollow noreferrer">this on-line book</a>), where you define a <em>kernel function</em>, which takes in two state vectors $x_1$ and $x_2$, and returns a number which represents how similar the states are. The reason to use this approach is that you can use your historical data to fit a statistical model for the reward distribution given a state $x$, even if you haven't seen the state before.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-11662" data-toggle = "popover">
+				<p>user name : combo</p>
+				<p> user reputation : 230</p>
+				<p class = "tagcontent" id = "usertaginfo-11662">{'None': 10}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-11662" class = 'collapse'>
+			</div>
+				<textarea id = "speech-11662" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-11662">
+					<img id="start_img-11662" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-11662">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

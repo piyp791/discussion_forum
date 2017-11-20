@@ -1,0 +1,162 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to calculate Euler Angles from gyroscope output?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-6953" class = "post">
+			<h2>Question</h2>
+			<div id="vote-6953" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">4</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 6224</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to calculate Euler Angles from gyroscope output?</h2>
+<p>I am using a tri-axis accelerometer and tri-axis gyroscope to measure the linear acceleration of a body. I need to get the orientation of the body in euler form in order to rotate the accelerometer readings from the body frame into the earth frame. Please help I'm so stuck</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6953" data-toggle = "popover">
+				<p>user name : Sean Moran</p>
+				<p> user reputation : 21</p>
+				<p class = "tagcontent" id = "usertaginfo-6953">{'None': 0, 'gyroscope': 4, 'accelerometer': 4, 'frame': 4}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-6953" class = 'collapse'>
+			</div>
+				<textarea id = "speech-6953" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6953">
+					<img id="start_img-6953" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6953">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-6966"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6966" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Look into a complementary filter. It isn't the correct way to go out this but it will give you usable data for attitudes around level. It's also worth mentioning that you will not be able to track yaw. There is no way to account for bias/noise with the two sensors you've listed.</p>
+
+<p>complementary filter:
+<a href="http://www.pieter-jan.com/node/11" rel="nofollow">http://www.pieter-jan.com/node/11</a></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6966" data-toggle = "popover">
+				<p>user name : holmeski</p>
+				<p> user reputation : 1338</p>
+				<p class = "tagcontent" id = "usertaginfo-6966">{'pose': 3, 'None': 101, 'computer-vision': 3, 'kalman-filter': 3}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-6966" class = 'collapse'>
+			</div>
+				<textarea id = "speech-6966" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6966">
+					<img id="start_img-6966" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6966">Comment</button>
+			<br><div id = "ans-7003"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7003" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>First you need to integrate the output from the gyro to get the actual X, Y and Z angles.</p>
+
+<p><code>angleX = gyroAngleX + gyroInputX
+angleY = gyroAngleY + gyroInputY
+</code></p>
+
+<p>However this value will drift over time so you will need to use a complementary filter or kalman filter. Personally, I would recommend a complementary filter because it is much simpler to implement.</p>
+
+<p>First you must find the angle from the accelerometer using a little bit of trigonometry.</p>
+
+<p><code>accelAngleX = atan2(accelY, accelZ) * 180/M_PI;
+accelAngleY = atan2(-accelX, sqrt(accelY*accelY + accelZ*accelZ)) * 180/M_PI;</code></p>
+
+<p>Then get the actual angle using this formula.</p>
+
+<p><code>angleX = 0.98*angleX + 0.02*accelAngleX
+angleY = 0.98*angleY + 0.02*accelAngleY</code></p>
+
+<p>The variables above must be the same variables used when calculating the gyro angle. The <code>0.98</code> and <code>0.02</code> can be tuned to get the best output, but they should always add up to one.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7003" data-toggle = "popover">
+				<p>user name : Zachary Schroeder</p>
+				<p> user reputation : 46</p>
+				<p class = "tagcontent" id = "usertaginfo-7003">{'quadcopter': 1, 'None': 4, 'pid': 1, 'raspberry-pi': 1}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7003" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7003" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7003">
+					<img id="start_img-7003" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7003">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

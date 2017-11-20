@@ -1,0 +1,190 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Need help regarding EKF in MonoSLAM
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7517" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7517" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 251</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Need help regarding EKF in MonoSLAM</h2>
+<p>I am trying to understand the implementation of Extended Kalman Filter for <a href="http://www.doc.ic.ac.uk/~ajd/Publications/davison_iccv2003.pdf" rel="nofollow" title="Paper describing MonoSLAM">SLAM using a single, agile RGB camera.</a> </p>
+
+<p>The vector describing the camera pose is 
+$$
+\begin{pmatrix}
+r^W \\
+q^W  \\
+V^W \\
+\omega^R \\
+a^W \\
+\alpha^R
+\end{pmatrix}
+$$</p>
+
+<p>where:</p>
+
+<ul>
+<li>$r^W$ :   3D coordinates of camera w.r.t world</li>
+<li>$q^W$ :   unit quaternion describing camera pose w.r.t world</li>
+<li>$V^W$ :   linear velocity along three coordinate frames, w.r.t world</li>
+<li>$\omega$ :   angular velocity w.r.t body frame of camera</li>
+</ul>
+
+<p>The feature vector set is described as 
+$$
+\begin{pmatrix}
+y_1 \\
+y_2  \\
+\vdots \\
+y_n
+\end{pmatrix}
+$$
+where, each feature point is described using XYZ parameters.</p>
+
+<p>For the EKF acting under an unknown linear and angular acceleration $[A^W,\psi^R] $ , the process model used for predicting the next state is:</p>
+
+<p>$$
+\begin{pmatrix}
+r^W + V^W\Delta t + \frac{1}{2}\bigl(a^W + A^W\bigr)\Delta t^2 \\
+q^W \bigotimes q^W\bigl(\omega^R\Delta t + \frac{1}{2}\bigl(\alpha^R + \psi^R\bigr)\Delta t^2\bigr)   \\
+V^W + \bigl(a^W + A^W\bigr)\Delta t\\
+\omega^R + \bigl(\alpha^R + \psi^R\bigr)\Delta t \\
+a^W + A^W \\
+\alpha^R + \psi^R
+\end{pmatrix}
+$$</p>
+
+<hr>
+
+<p>So far, I'm clear with the EKF steps. Post this prediction step, I'm not clear how to perform the measurement update of the system state.</p>
+
+<p><a href="http://www.doc.ic.ac.uk/~ajd/Scene/Release/monoslamtutorial.pdf" rel="nofollow">From this slide</a>, I was under the impression that we need to initialize random depth particles between 0.5m to 5m from the camera. But, at this point, both the camera pose and the feature depth is unknown.</p>
+
+<ul>
+<li><p>I can understand running a particle filter for estimating feature
+depth if camera pose is known. I tried to implement such a concept <a href="https://github.com/agnivsen/LibMonoSLAM" rel="nofollow">in this project: where I read the camera pose from a ground truth file</a> and keep triangulating the depth of features w.r.t world reference frame</p></li>
+<li><p>I can also comprehend running a particle filter for estimating the
+camera pose if feature depths are known.</p></li>
+</ul>
+
+<p>But both these parameters are unknown. How do I perform the measurement update?</p>
+
+<p>I can understand narrowing down the active search region for feature matching based on the predicted next state of the camera. But after the features are matched using RANSAC (or any other algorithm), how do I find the updated camera pose? We are not estimating homography, are we?</p>
+
+<p>If you have any idea regarding MonoSLAM (or RGB-D SLAM), please help me out with understanding the EKF steps.</p>
+
+<hr>
+
+<p>To be more specific: is there a homography estimation step in the algorithm? how do we project the epipolar line (inverse depth OR XYZ) in the next frame if we do not have any estimate of the camera motion?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7517" data-toggle = "popover">
+				<p>user name : metsburg</p>
+				<p> user reputation : 269</p>
+				<p class = "tagcontent" id = "usertaginfo-7517">{'quadcopter': 15, 'None': 8, 'ardupilot': 6, 'accelerometer': 1, 'arduino': 13, 'ekf': 0, 'pid': 12, 'stability': 10, 'slam': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7517" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7517" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7517">
+					<img id="start_img-7517" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7517">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7566"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7566" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I found an answer to this question. </p>
+
+<p>Homography estimation is not needed at all. The  EKF takes care of the problem of depth estimation. If you start with an initial inverse depth estimate of $\rho_0 = 0.1 $ and $\sigma_\rho = 0.5$, the depth estimate would range from [-0.9,1.1]. This depth estimate would be corrected based on the observed values, obtained through feature matching. <a href="https://www.doc.ic.ac.uk/~ajd/Publications/civera_etal_tro2008.pdf" rel="nofollow">Please refer to this paper</a>.</p>
+
+<p>Anybody trying to learn this algorithm would do well by going through this publicly available <a href="http://www-lehre.inf.uos.de/~svalbrec/documents/master_thesis.pdf" rel="nofollow">dissertation by Sven Albrecht</a>. To my understanding, the mathematics involving MonoSLAM can't be elucidated any better than this! </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7566" data-toggle = "popover">
+				<p>user name : metsburg</p>
+				<p> user reputation : 269</p>
+				<p class = "tagcontent" id = "usertaginfo-7566">{'quadcopter': 15, 'None': 8, 'ardupilot': 6, 'accelerometer': 1, 'arduino': 13, 'ekf': 0, 'pid': 12, 'stability': 10, 'slam': 0}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7566" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7566" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7566">
+					<img id="start_img-7566" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7566">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

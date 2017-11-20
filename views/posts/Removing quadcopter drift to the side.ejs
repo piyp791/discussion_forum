@@ -1,0 +1,219 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Removing quadcopter drift to the side
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-2668" class = "post">
+			<h2>Question</h2>
+			<div id="vote-2668" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 578</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Removing quadcopter drift to the side</h2>
+<p>I wrote my own quadcopter firmware which is based on some older code. This code shall stabilize the copter to be always in equilibrium. The model is behaving relatively nice. I can control it with my laptop.
+However I noticed, that the copter is hovering to the side (if not manually controlled), likely because of wind, not well balanced or turbulence. </p>
+
+<p>My idea was maybe to fuse GPS and accelerometer data to implement a function which shall help to hold the position. But this will likely only work if I have a hold altitude function, because changes in pitch or roll change the height, because the thrust is changed slightly. This is why I recently added a routine which shall allow to hold the altitude. </p>
+
+<p>Is someone having experiences with this? I mean with avoiding side drifts of the model because of whatever by software? The problem is in my opinion, that I don't know whether the position change is wanted (by remote control) or not. Additionally it is hard to localize the correct position and calculate the distance caused by drift from it (just with GPS, but this is not precise).</p>
+
+<pre><code>void hold_altitude(int_fast16_t &amp;iFL, int_fast16_t &amp;iBL, int_fast16_t &amp;iFR, int_fast16_t &amp;iBR, 
+                   const int_fast32_t rcalt_m) 
+{
+  // Enhance the performance:
+  // This function is only needed for (semi-)autonomous flight mode like:
+  // * Hold altitude
+  // * GPS auto-navigation
+  if(_RECVR.m_Waypoint.m_eMode == GPSPosition::NOTHING_F) {
+    return;
+  }
+
+  // Return estimated altitude by GPS and barometer 
+  float fCurAlti_cm       = _HAL_BOARD.get_alti_m() * 100.f;
+  // Estimate current climb rate
+  float fBaroClimb_cms    = _HAL_BOARD.get_baro().climb_rate_ms * 100;
+  float fAcclClimb_cms    = _HAL_BOARD.get_accel_ms().z * 100;
+  // calculate the 
+  float fAltStabOut      = _HAL_BOARD.m_rgPIDS[PID_THR_STAB].get_pid(fCurAlti_cm - (float)(rcalt_m*100), 1);
+  float fBarAcclOut      = _HAL_BOARD.m_rgPIDS[PID_THR_ACCL].get_pid(fAltStabOut - fBaroClimb_cms, 1);
+  float fAccAcclOut      = _HAL_BOARD.m_rgPIDS[PID_THR_ACCL].get_pid(fAltStabOut - fAcclClimb_cms, 1);
+  int_fast16_t iAltOutput = _HAL_BOARD.m_rgPIDS[PID_THR_RATE].get_pid(fAltStabOut - (fBarAcclOut + fAccAcclOut), 1);
+  // Modify the speed of the motors
+  iFL += iAltOutput;
+  iBL += iAltOutput;
+  iFR += iAltOutput;
+  iBR += iAltOutput;
+}
+</code></pre>
+
+<p>Copter control:</p>
+
+<pre><code>// Stabilise PIDS
+float pit_stab_output = constrain_float(_HAL_BOARD.m_rgPIDS[PID_PIT_STAB].get_pid((float)rcpit - vAtti.x, 1), -250, 250);
+float rol_stab_output = constrain_float(_HAL_BOARD.m_rgPIDS[PID_ROL_STAB].get_pid((float)rcrol - vAtti.y, 1), -250, 250);
+float yaw_stab_output = constrain_float(_HAL_BOARD.m_rgPIDS[PID_YAW_STAB].get_pid(wrap180_f(targ_yaw - vAtti.z), 1), -360, 360);
+
+// is pilot asking for yaw change - if so feed directly to rate pid (overwriting yaw stab output)
+if(abs(rcyaw ) &gt; 5.f) {
+  yaw_stab_output = rcyaw;
+  targ_yaw = vAtti.z; // remember this yaw for when pilot stops
+}
+
+// rate PIDS
+int_fast16_t pit_output = (int_fast16_t)constrain_float(_HAL_BOARD.m_rgPIDS[PID_PIT_RATE].get_pid(pit_stab_output - vGyro.x, 1), -500, 500);
+int_fast16_t rol_output = (int_fast16_t)constrain_float(_HAL_BOARD.m_rgPIDS[PID_ROL_RATE].get_pid(rol_stab_output - vGyro.y, 1), -500, 500);
+int_fast16_t yaw_output = (int_fast16_t)constrain_float(_HAL_BOARD.m_rgPIDS[PID_YAW_RATE].get_pid(yaw_stab_output - vGyro.z, 1), -500, 500);
+
+int_fast16_t iFL = rcthr + rol_output + pit_output - yaw_output;
+int_fast16_t iBL = rcthr + rol_output - pit_output + yaw_output;
+int_fast16_t iFR = rcthr - rol_output + pit_output + yaw_output;
+int_fast16_t iBR = rcthr - rol_output - pit_output - yaw_output;
+// Hold the altitude
+hold_altitude(iFL, iBL, iFR, iBR, rcalt);
+
+hal.rcout-&gt;write(MOTOR_FL, iFL);
+hal.rcout-&gt;write(MOTOR_BL, iBL);
+hal.rcout-&gt;write(MOTOR_FR, iFR);
+hal.rcout-&gt;write(MOTOR_BR, iBR);
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2668" data-toggle = "popover">
+				<p>user name : dgrat</p>
+				<p> user reputation : 213</p>
+				<p class = "tagcontent" id = "usertaginfo-2668">{'quadcopter': 14, 'magnetometer': 1, 'None': 0, 'ardupilot': 4, 'orientation': 0, 'accelerometer': 4, 'arduino': 2, 'multi-rotor': 7, 'c++': 1, 'mavlink': 1, 'calibration': 1, 'compass': 1, 'sensors': 5, 'navigation': 3, 'gyroscope': 1, 'gps': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-2668" class = 'collapse'>
+			</div>
+				<textarea id = "speech-2668" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2668">
+					<img id="start_img-2668" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2668">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-2670"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2670" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Do you have Gyros (roll pitch and yaw) installed? I would recommend those, since they give stability feedback to your code. If possible, you can even add a control board (from Hobbyking, kkV2). This board has 3 gyros, inputs to ale, rud, thr, ele. But the best thing is, it has gain adjusters for all 3 gyros, which means you can adjust them till your quad is stable (they adjust the power given to motors to keep the quad flat)</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2670" data-toggle = "popover">
+				<p>user name : Anshul</p>
+				<p> user reputation : 151</p>
+				<p class = "tagcontent" id = "usertaginfo-2670">{'None': 10, 'irobot-create': 2, 'microcontroller': 0, 'openni': 1, 'kinect': 2, 'ros': 1, 'arm': 1}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2670">Load Comments</button></br>
+			<div id = "commentsection-2670" class = 'collapse'>
+			<div id = "comment-5034" class = "comment">
+				<p>I have an APM 2.5 board from Hobby King. This board has a 3-axis gyrometer/accelerometer and a barometer :D Most of the interial sensor fusion is working already (with an elegant way). I just don't know exactly how to remove the side drift theoretically in a nice way.</p>
+			</div>
+			</div>
+				<textarea id = "speech-2670" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2670">
+					<img id="start_img-2670" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2670">Comment</button>
+			<br><div id = "ans-2675"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-2675" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The drift is being caused either by your position data being consistently wrong, or by your roll/pitch PIDs not correcting the drift error with their integral term.  </p>
+
+<p>In any case, it is the integral term of a PID that (when working properly) prevents drift.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-2675" data-toggle = "popover">
+				<p>user name : Ian</p>
+				<p> user reputation : 9640</p>
+				<p class = "tagcontent" id = "usertaginfo-2675">{'planning': 10, 'None': 809, 'power': 1, 'algorithm': 10, 'battery': 1, 'slam': 7, 'coverage': 10, 'mobile-robot': 9, 'sensors': 9}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-2675">Load Comments</button></br>
+			<div id = "commentsection-2675" class = 'collapse'>
+			<div id = "comment-5038" class = "comment">
+				<p>At the moment my copter has no position data at all. Only attitude/altitude. I reduced my PIDs to a relatively low value, because I noticed, that the copter was overcompensating. Maybe I should try it with increasing the PIDs again stepwise first.</p>
+			</div>
+			<div id = "comment-5052" class = "comment">
+				<p>Oh, if you're not controlling position (i.e. reading position and adjusting for error) then you have no way to eliminate the drift.  Under perfect conditions you can make the drift very small, but the only practical way to hold position is to measure position.</p>
+			</div>
+			</div>
+				<textarea id = "speech-2675" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-2675">
+					<img id="start_img-2675" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-2675">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

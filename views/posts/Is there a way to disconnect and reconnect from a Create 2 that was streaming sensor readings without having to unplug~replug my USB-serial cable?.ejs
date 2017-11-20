@@ -1,0 +1,168 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Is there a way to disconnect and reconnect from a Create 2 that was streaming sensor readings without having to unplug~replug my USB-serial cable?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-8487" class = "post">
+			<h2>Question</h2>
+			<div id="vote-8487" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 93</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Is there a way to disconnect and reconnect from a Create 2 that was streaming sensor readings without having to unplug~replug my USB-serial cable?</h2>
+<p>I am working with a Create 2 and I am executing a simple sequence like (in pseudocode):</p>
+
+<pre><code>create serial connection from Macbook to Create
+
+start the OI with by sending the 128 code
+
+send a pause-stream command (just to be safe)
+
+initiate the data streaming with ids: [29, 13]
+
+every 0.5 seconds for 15 seconds:
+    poll the streamed sensor data and print it
+
+send a pause-stream command before shutdown
+
+send a 128 to put the robot in "passive mode" (I have also tried 173)
+
+close the serial connection
+</code></pre>
+
+<p>The outcome when I run the above program repeatedly is that it works the first time, I see sensor data (that seems to not change or be reactive) printing to the screen, but on future runs no serial can be read and the program crashes (because I am throwing an exception because I want to get this problem ironed out before getting to far along with other things). If I unplug and replug my USB cable from my Macbook, then the program will work for another run, and then fall back into the faulty behavior.</p>
+
+<p>I do not experience this issue with other things like driving the robot, I am able to run programs of similar simplicity repeatedly. If I mix driving and sensor streaming, the driving works from program run to program run, but the data streaming crashes the program on the subsequent runs.</p>
+
+<p>I have noticed that if I want to query a single sensor, I need to pause the stream to get the query response to come through on the serial port, and then resume it. That is why I am so inclined to pause/restart the stream.</p>
+
+<p>Am I doing something wrong, like pausing the stream too often? Are there other things I need to take care of when starting/stopping the stream? Any help would be appreciated!</p>
+
+<p><strong>EDIT:</strong>
+I should note that I am using Python and pyserial. I should also note, for future readers, that the iRobot pushes its streamed data to the laptop every 15ms where it sits in a buffer, and the data sits there until a call to serial.read() or to serial.flushInput(). This is why it seemed that my sensor values weren't updating when I read/polled every half second, because I was reading old values while the current ones were still buried at the back of the buffer. I worked around this issue by flushing the buffer and reading the next data to come in.</p>
+
+<p><strong>EDIT 2:</strong>
+Sometimes the above workaround fails, so if I detect the failure, I pause the stream, re-initialize the stream, and read the fresh data coming in. This seems to work pretty well. It also seems to have solved the issue that I originally asked the question about. I still don't know <em>exactly</em> why it works, so I will still accept @Jonathan 's answer since I think it is good practice and has not introduced new issues, but has at least added the benefit of the robot letting me know that it has started/exited by sounding tones.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8487" data-toggle = "popover">
+				<p>user name : Eric</p>
+				<p> user reputation : 20</p>
+				<p class = "tagcontent" id = "usertaginfo-8487">{'digital-audio': 2, 'None': 0, 'roomba': 2, 'irobot-create': 3, 'mobile-robot': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-8487" class = 'collapse'>
+			</div>
+				<textarea id = "speech-8487" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8487">
+					<img id="start_img-8487" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8487">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8488"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8488" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I usually do this to disconnect and I've had no issues with it to date:</p>
+
+<pre><code>128 // To put in passive mode
+173 // To stop OI
+</code></pre>
+
+<p>If you only do 128 or 173 on their own, I could see it potentially having issues since it may not exit OI depending on what mode you were in. </p>
+
+<p>I do not request the stream to be paused, though I can't imagine that hurting.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8488" data-toggle = "popover">
+				<p>user name : Jonathan</p>
+				<p> user reputation : 177</p>
+				<p class = "tagcontent" id = "usertaginfo-8488">{'None': 14}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8488">Load Comments</button></br>
+			<div id = "commentsection-8488" class = 'collapse'>
+			<div id = "comment-13759" class = "comment">
+				<p>I attempted this solution, and I saw similar results (I still have to unplug/replug) except that the robot now beeps when receiving mode commands (high pitched for the 'safe' command, low pitched for the 'stop' command) with each attempted run of the program described in my question. I will continue to try and see if I can find anything out and report back.</p>
+			</div>
+			<div id = "comment-13774" class = "comment">
+				<p>You could also  go to the extreme and request the robot to reset (opcode 7) after doing the 128. I don't think that will help at all, but if it still doesn't work when you reset, I would guess that there is a bug somewhere in the serial drivers you are using or your code.</p>
+			</div>
+			<div id = "comment-13776" class = "comment">
+				<p>I did not have to go to the extreme of resetting the robot, fortunately, see the edits in my question for an outline of may experience. I did incorporate your suggestion into my final solution.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8488" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8488">
+					<img id="start_img-8488" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8488">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

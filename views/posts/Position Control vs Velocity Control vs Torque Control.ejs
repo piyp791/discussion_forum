@@ -1,0 +1,221 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Position Control vs Velocity Control vs Torque Control
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-10052" class = "post">
+			<h2>Question</h2>
+			<div id="vote-10052" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 3859</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Position Control vs Velocity Control vs Torque Control</h2>
+<p>Please can somebody explain to me the difference between Position Control, Velocity Control, and Torque Control? Specifically, I am thinking in terms of a robot arm. I understand that position control tries to control the position of the actuators, such that the error signal is the difference between the current position and the desired position. Velocity control is then trying to control the velocity of each actuator, and torque control is trying to control the torque of each actuator.</p>
+
+<p>However, I don't understand why these are not all the same thing. If you want to send a robot arm to a certain position, then you could use position control. But in order to move an actuator to a certain position, you need to give it a velocity. And in order to give it a velocity, you need to give it a torque. Therefore, whether the error is in position, velocity, or torque, it always seems to come back to just the error in torque. What am I missing?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10052" data-toggle = "popover">
+				<p>user name : Karnivaurus</p>
+				<p> user reputation : 328</p>
+				<p class = "tagcontent" id = "usertaginfo-10052">{'control': 10, 'walking-robot': 4, 'simulator': 0, 'torque': 4, 'slam': 0, 'robotic-arm': 20, 'mobile-robot': 0, 'dynamics': 17, 'forward-kinematics': 7, 'manipulator': 10, 'accelerometer': 4, 'kinematics': 29, 'jacobian': 16, 'policy': 1, 'actuator': 4, 'None': 0, 'inverse-kinematics': 18, 'localization': 0, 'mapping': 0, 'sensors': 4, 'simulation': 0, 'navigation': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-10052" class = 'collapse'>
+			</div>
+				<textarea id = "speech-10052" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10052">
+					<img id="start_img-10052" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10052">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-10054"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10054" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">9</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Torque is analogous to force for rotating systems, in that:</p>
+
+<p>$$ 
+F = m a \\
+\tau = I \alpha \\
+$$</p>
+
+<p>Where $\alpha$ is angular acceleration and $I$ is moment of inertia. $m$ and $a$ are mass and linear acceleration, respectively. </p>
+
+<p>So, in a way, a position controller, a velocity controller, and an acceleration (torque) controller are all different implementations of each other because each is the <a href="https://en.wikipedia.org/wiki/Integral">integral</a> of the next - position is the integral of velocity, and velocity is the integral of acceleration. </p>
+
+<p>Where these differ is how you apply the controller. This typically depends on what you're interested in. For instance, are you trying to control position, as in a servo motor? Are you trying to regulate acceleration, as in a hospital elevator? </p>
+
+<p>Typically you will have some specification you are trying to meet. Then, with your specifications, you can use typical <a href="http://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&amp;section=ControlPID">PID guidelines</a> to build a controller for that particular aspect. That is, if you work at that particular "level": position, velocity, or acceleration, then you can design for a particular rise time, overshoot, and damping. </p>
+
+<p>The difference being that you're designing <em>acceleration</em> overshoot, or <em>positional</em> overshoot. </p>
+
+<p>Generally I would say the output of the controller goes to motor voltage, so while the output of the controller is always the same (motor volts) the input and gains are different, with the desire to achieve a different set of operating parameters. </p>
+
+<p>I'll close by pointing out that a motor controller output is terminal voltage because that's how one modulates motor current. Motor current, in turn, generates torque via the <a href="https://en.wikipedia.org/wiki/Motor_constants#Motor_Torque_constant">motor torque constant</a>. </p>
+
+<p>So, ultimately, every controller regulates motor torque, but with the <em>end goals</em> varying - control motor acceleration, velocity, or position. Again, what you're trying to control depends on the application and will affect the gains you choose. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10054" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-10054">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10054">Load Comments</button></br>
+			<div id = "commentsection-10054" class = 'collapse'>
+			<div id = "comment-17890" class = "comment">
+				<p>Thanks very much for your answer. I guess my confusion comes from understanding why you would ever use anything other than position control. For example, with a robot arm, all you need to do is to get it from one position to the next. Why would you care about the actual torque in the joints? Why not just figure out the position which all the joints need to be set at, and then use the position error in your feedback loop?</p>
+			</div>
+			<div id = "comment-17897" class = "comment">
+				<p>As I say in [my answer](http://robotics.stackexchange.com/a/10062/37) @Karnivaurus second order effects are notoriously difficult to control. If you need Torque Control it's probably because you want to control Torque as a first order effect. You don't want your robot to start dropping things because someone decided that it should be able to run a bit faster.</p>
+			</div>
+			<div id = "comment-17899" class = "comment">
+				<p>@MarkBooth gives a great example of torque control for robotic hands. In general, these applications are referred to as ["compliant actuators"](https://www.youtube.com/watch?v=PzT9pmytNMc&t=38s) - a position or velocity controller might seed the operating point of a torque controller. Note also that not every application that needs a controller is a robotic arm.</p>
+			</div>
+			<div id = "comment-17900" class = "comment">
+				<p>@Karnivaurus - In my line of work (industrial drives) we care a lot about precise control of motor *speeds* - this is in between a *position* and *torque* (acceleration) controller. If the forward drive in a metal mill is turning too slow then there's a ["cobble"](https://www.youtube.com/watch?v=QNlrDLkUUWA) - the metal accumulates somewhere it's not supposed to, which is generally where people stand. Too fast in a paper mill and it [breaks the sheet](https://www.youtube.com/watch?v=QNlrDLkUUWA).</p>
+			</div>
+			</div>
+				<textarea id = "speech-10054" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10054">
+					<img id="start_img-10054" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10054">Comment</button>
+			<br><div id = "ans-10062"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10062" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">6</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I'm going to take a slightly different tack to <a href="https://robotics.stackexchange.com/a/10054/37">Chuck</a>.</p>
+
+<h2>What is Torque Control?</h2>
+
+<p>For me, Torque Control is about performing a move with an explicitly defined torque, rather considering torque just the means to the end of Position or Velocity control.</p>
+
+<p>Normally when you move a robot, you specify position and speed, with the robot allowed to use any and all torque up to it's maximum, required to achieve those two goals.</p>
+
+<p>When you specify a move with a Torque component, you are saying you want to use that specific torque for that move. It's easiest to illustrate this with an example.</p>
+
+<h2>Example: picking up an egg</h2>
+
+<p>Let's say that you want your robot to grip an egg. The egg is a fragile spheroid of (slightly) variable size.</p>
+
+<h3>Without Torque control</h3>
+
+<p>Ideally, you would have to know the orientation of the egg and the precise dimension along the grip axis. You then have to close the gripper to be slightly smaller than that grip axis dimension and rely in the error between the demanded and actual position to apply the correct amount of force grip the egg securely.</p>
+
+<p>This second order effect is very fragile and could result in eggs being dropped once motors start to age and provide less torque, or start to crush eggs if PID parameters are tweaked to (say) improve position or velocity accuracy.</p>
+
+<p>Since eggs aren't uniform, if you cannot measure the grip axis dimension for each egg, then you will need to work out a compromise grip position.</p>
+
+<p>Too small and large eggs will be broken by the force applied, too large and small eggs won't be gripped tightly enough. If there is sufficient variation between the smallest and largest eggs, there may be no compromise position which won't either crush or drop some eggs.</p>
+
+<h3>With Torque control</h3>
+
+<p>With Torque control, you have much finer, more predictable control. You are specifying torque as a first order effect and have direct control over it.</p>
+
+<p>Typically, you would start by moving the gripper without Torque Control to just larger than the largest egg, then move the gripper with Torque Control to just smaller than the smallest egg. As soon as the torque limit is achieved, the motor would stop moving, and the egg would be gripped with precisely the required force.</p>
+
+<h2>Why not use Torque control all the time?</h2>
+
+<p>You typically only ever use Torque Control when you absolutely need it because direct Torque Control means giving up control of position and velocity.</p>
+
+<p>You can get close to direct Torque Control by applying a Torque limit to a standard Position/Velocity move, but you have to be careful, since the torque must be higher than the minimum torque to achieve those moves.</p>
+
+<p>Applying a torque limit which is too low for can easily result in following errors (requested position falling behind expected position, resulting in poor control) and can even prevent a robot from moving to it's destination position (if the torque limit is lower than the torque required to make the move).</p>
+
+<h2>Complications</h2>
+
+<p>There are some situations where you need to apply a force smaller than the stiction of the system. Because the static friction would prevent the required force being applied, effectively no force would be applied. This could be the case with some direct drive motors for instance. In that case your Torque Control system may need to be able to briefly apply a higher force to break past the static friction, but then quickly revert to the required Torque, so that excess force is not applied.</p>
+
+<h2>Conclusion</h2>
+
+<p>Torque control is an important technique for some applications, it is something which our bodies take for granted, but which Robot systems have to be explicitly configured for.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10062" data-toggle = "popover">
+				<p>user name : Mark Booth</p>
+				<p> user reputation : 3037</p>
+				<p class = "tagcontent" id = "usertaginfo-10062">{'control': 7, 'quadcopter': 2, 'None': 258, 'tuning': 7, 'uav': 2, 'design': 2, 'stepper-motor': 7}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-10062" class = 'collapse'>
+			</div>
+				<textarea id = "speech-10062" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10062">
+					<img id="start_img-10062" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10062">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

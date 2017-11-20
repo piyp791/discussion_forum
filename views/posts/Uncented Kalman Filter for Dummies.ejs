@@ -1,0 +1,226 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Uncented Kalman Filter for Dummies
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-9233" class = "post">
+			<h2>Question</h2>
+			<div id="vote-9233" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 523</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Uncented Kalman Filter for Dummies</h2>
+<p>I need some help here because I can't figure how the Unscented Kalman Filter works.
+I've searched for examples but all of them are too hard to understand.</p>
+
+<p>Please someone can explain how it works step by step with a trivial example like position estimation, sensor fusion or something else?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9233" data-toggle = "popover">
+				<p>user name : Thiago Bezerra</p>
+				<p> user reputation : 28</p>
+				<p class = "tagcontent" id = "usertaginfo-9233">{'None': 0, 'kalman-filter': 5}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-9233" class = 'collapse'>
+			</div>
+				<textarea id = "speech-9233" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9233">
+					<img id="start_img-9233" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9233">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-9237"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-9237" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">13</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I'm going to give you a high-level overview without going into much math. The purpose here is to give you a somewhat intuitive understanding of what is going on, and hopefully this will help the more mathematical resources make more sense. I'm mostly going to focus on the <em>unscented transform</em>, and how it relates to the UKF.</p>
+
+<h1>Random variables</h1>
+
+<p>Alright, the first thing you need to understand is that modern (mobile) robotics is <em>probabilistic</em>; that is, we represent things we aren't sure about by <em>random variables</em>. I've <a href="http://marcgallant.ca/2015/12/16/you-dont-know-where-your-robot-is/" rel="noreferrer">written about this topic</a> on my personal website, and I strongly suggest you check it out for a review. I'm going to briefly go over it here.</p>
+
+<p>Take the (one-dimensional) position of a robot for example. Usually we use sensors (e.g., wheel encoders, laser scanners, GPS, etc.) to estimate the position, but all of these sensors are <em>noisy</em>. In other words, if our GPS tells us we are at $x = 10.2$ m, there is some uncertainty associated with that measurement. The most common way we model this uncertainty is using <em>Gaussian</em> (also known as <em>Normal</em>) distributions. The probabilistic density function (don't worry about what this means for now) of a Gaussian distribution looks like this:</p>
+
+<p><img src="https://i.stack.imgur.com/Hey7S.png" alt="Gaussian PDF"></p>
+
+<p>On the $x$ axis are different values for your random variable. For example, this could be the one dimensional position of the robot. The <em>mean</em> position is denoted by $\mu$, and the <em>standard deviation</em> is denoted by $\sigma$, which is a sort of "plus/minus" applied to the mean. So instead of saying "the robot's position is $x = 9.84$ m", we say something along the lines of "the mean of our estimate of the robot's position is $x = 9.84$ m with a standard deviation of $0.35$ m".</p>
+
+<p>On the $y$ axis is the relative <em>likelihood</em> of that value occurring. For example, note that $x = \mu$ has a relative likelihood of about $0.4$, and $x = \mu - 2\sigma$ has a relative likelihood of about $0.05$. And let's pretend that $\mu = 9.84$ m and $\sigma = 0.35$ m like the above example. That means</p>
+
+<p>$$
+\mu = 9.84 \text{ m}, \quad \mu - 2\sigma = 9.84 - 2(0.35) = 9.14 \text{ m}
+$$</p>
+
+<p>What the $y$-axis values are telling you is that the likelihood that the robot is at $9.84$ is <em>eight times higher</em> than $9.14$ because the ratio of their likelihoods is $0.4/0.05 = 8$.</p>
+
+<p>The takeaway point from this section is that the things we often most interested in (e.g., position, velocity, orientation) are <em>random variables</em>, most often represented by <em>Gaussian distributions</em>.</p>
+
+<h1>Passing random variables through functions</h1>
+
+<p>An interesting property of Gaussian random variables is that the result of passing one through a linear function results in a Gaussian random variable. So if we have a function like</p>
+
+<p>$$
+y = 12x - 7
+$$</p>
+
+<p>and $x$ is a Gaussian random variable, then $y$ is also a Gaussian random variable (but with a different mean and standard deviation). On the other hand, this property does <em>not</em> hold for nonlinear functions, such as</p>
+
+<p>$$
+y = 3\sin(x) - 2x^2.
+$$</p>
+
+<p>Here, passing the Gaussian random variable $x$ through the function results in a non-Gaussian distribution $y$. In other words, the shape of the PDF for $y$ would not look like the above plot. But what do I mean by "passing a Gaussian random variable through a function". In other words, what do I put in for $x$ in the above equation? As we saw in the above plot, $x$ has many possible values. </p>
+
+<p>As before, let's say $x$ has mean $\mu = 9.84$ m and standard deviation $\sigma = 0.35$ m. We are interested in <em>approximating</em> $y$ as a Gaussian random variable. One way to do this would be calculating a whole bunch of $y$s for different $x$s. Let's calculate $y$ for $x = \mu$, $x = \mu + 0.1\sigma$, $x = \mu - 0.1\sigma$, $x = \mu + 0.2\sigma$, etc. I've tabulated some results below.</p>
+
+<p>$$
+\begin{array}{|c|c|}
+x &amp; y = 3\sin(x) - 2x^2 \\
+\hline
+\mu &amp; -194.5 \\
+\mu + 0.1\sigma &amp; -195.9 \\
+\mu - 0.1\sigma &amp; -193.0 \\
+\mu + 0.2\sigma &amp; -197.3 \\
+\mu - 0.2\sigma &amp; -191.6 \\
+\vdots &amp; \vdots \\
+\mu + 10\sigma &amp; -354.5 \\
+\mu - 10\sigma &amp; -80.3
+\end{array}
+$$</p>
+
+<p>Although the values of $y$ do not form a Gaussian distribution, we create one by taking the mean of all the $y$ values to get $\mu_y$ (in this case $\mu_y = -201.8$), and we calculate the standard deviation the usual way:</p>
+
+<p>$$
+\sigma_y = \sqrt{\frac{1}{n-1}\sum_{i=1}^n(y_i-\mu_y)^2} = 81.2.
+$$</p>
+
+<p>So voila! We have come up a way to pass Gaussian random variables through nonlinear functions. Problem solved, right? Well not necessarily. It took a lot of computations to come up with our solution, so solving problems this way when our data is streaming in many times per second may not be possible. And how did we choose how spread out our values of $x$ were? And why did we stop at $\mu \pm 10\sigma$? </p>
+
+<h1>The unscented transformation</h1>
+
+<p>The unscented transformation is a method of passing Gaussian distributions through nonlinear functions. It is not dissimilar to the brute force method I described above. In fact, it uses the exact same approach, but is really smart about how it chooses which values of $x$ to choose to pass through the nonlinear function.</p>
+
+<p>In fact, for the problem I described, the unscented transformation requires you to pass exactly three points (called <em>sigma points</em>) through the nonlinear function:</p>
+
+<p>$$
+x = \mu, \quad x = \mu + \alpha\mu, \quad x = \mu - \alpha\mu,
+$$</p>
+
+<p>where $\alpha$ depends on the dimensionality of the random variable (one in this case) and other scaling factors. In other words, you pass the mean and one point on each side of the mean through the nonlinear function. Then you calculate the mean and standard deviation of the result to approximate $y$ as a random variable.</p>
+
+<h1>The unscented Kalman filter</h1>
+
+<p>Under the assumption that you have a basic understanding of Kalman filters, you'll recall that there are essentially two steps: prediction and correction. In the prediction step, you have a motion model that propagates the state forward in time. It might look something like</p>
+
+<p>$$
+x_{k+1} = f(x_k, u_k)
+$$</p>
+
+<p>where $u_k$ is the input, and both $x_k$ and $u_k$ are (Gaussian) random variables. Now in a regular Kalman filter, $f(x_k, u_k)$ is a linear function, which results in $x_{k+1}$ being a Gaussian random variable. However, it is often the case that $f(x_k, u_k)$ is nonlinear. So what do we do? We calculate sigma points, pass them through the motion model, and then calculate the mean and variance of the result. This gives us our approximate estimate of $x_{k+1}$ as a Gaussian random variable.</p>
+
+<p>The correction step mostly works the same way. This time you have a measurement model that looks something like</p>
+
+<p>$$
+z_k = h(x)
+$$</p>
+
+<p>where $h(x)$ may be nonlinear. So how do we get calculate our predicted measurement $z$? You guessed it, we use an unscented transformation again. I won't go into details on how you update the state from here (it's outside of the scope of my "intuitive" description), but it's relatively straightforward. </p>
+
+<h1>Summary</h1>
+
+<ol>
+<li>The state (what we are estimating) and the measurements come from "real-life" sensors, which all have noise. We model this uncertainty by representing them as Gaussian random variables.</li>
+<li>Passing Gaussian random variables through linear functions results in other Gaussian random variables. Passing them through nonlinear functions does not.</li>
+<li>One method of approximating the result of passing a Gaussian random variable through a nonlinear function as a Gaussian random variable is by sampling the input variable at a bunch of different points, passing those through the nonlinear function, and then considering the mean and standard deviation of the resulting output as a Gaussian distribution.</li>
+<li>The unscented transformation strategically picks points from distribution of the input variable that keep the most information about the distribution and passes them through the nonlinear function, then calculates the mean and standard deviation of the output.</li>
+<li>The unscented Kalman filter uses the unscented transformation to pass Gaussian random variables through the motion and measurement models. </li>
+</ol>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-9237" data-toggle = "popover">
+				<p>user name : kamek</p>
+				<p> user reputation : 775</p>
+				<p class = "tagcontent" id = "usertaginfo-9237">{'None': 48}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-9237">Load Comments</button></br>
+			<div id = "commentsection-9237" class = 'collapse'>
+			<div id = "comment-22705" class = "comment">
+				<p>Very helpful intuition. I wish to have further treatment on how the estimated Gaussian distribution by the unscented transformation can lead to the estimation of the state update. (i.e. interpret Kalman filter in light of transformation to the Gaussian distribution.)</p>
+			</div>
+			</div>
+				<textarea id = "speech-9237" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-9237">
+					<img id="start_img-9237" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-9237">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,163 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How do I convert link parameters and angles (in kinematics) into transformation matrices in programming logic?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-940" class = "post">
+			<h2>Question</h2>
+			<div id="vote-940" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">9</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 1281</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How do I convert link parameters and angles (in kinematics) into transformation matrices in programming logic?</h2>
+<p>I'm doing robotics research as an undergraduate, and I understand the conceptual math for the most part; however, when it comes to actually implementing code to calculate the forward kinematics for my robot, I am stuck. I'm just not getting the way the book or websites I've found explain it.</p>
+
+<p>I would like to calculate the X-Y-Z angles given the link parameters (Denavit-Hartenberg parameters), such as the <a href="https://i.stack.imgur.com/j6Cf6.png" rel="nofollow noreferrer">following</a>:</p>
+
+<p>$$\begin{array}{ccc}
+\bf{i} &amp; \bf{\alpha_i-1} &amp; \bf{a_i-1} &amp; \bf{d_i} &amp; \bf{\theta_i}\\
+\\ 
+1 &amp; 0 &amp; 0 &amp; 0 &amp; \theta_1\\
+2 &amp; -90^{\circ} &amp; 0 &amp; 0 &amp; \theta_2\\
+3 &amp; 0 &amp; a_2 &amp; d_3 &amp; \theta_3\\
+4 &amp; -90^{\circ} &amp; a_3 &amp; d_4 &amp; \theta_4\\
+5 &amp; 90^{\circ} &amp; 0 &amp; 0 &amp; \theta_5\\
+6 &amp; -90^{\circ} &amp; 0 &amp; 0 &amp; \theta_6\\
+\end{array}$$</p>
+
+<p>I don't understand how to turn this table of values into the proper transformation matrices needed to get $^0T_N$, the Cartesian position and rotation of the last link. From there, I'm hoping I can figure out the X-Y-Z angle(s) from reading my book, but any help would be appreciated.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-940" data-toggle = "popover">
+				<p>user name : Grace</p>
+				<p> user reputation : 73</p>
+				<p class = "tagcontent" id = "usertaginfo-940">{'forward-kinematics': 14, 'None': 0, 'kinematics': 14, 'inverse-kinematics': 5}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-940" class = 'collapse'>
+			</div>
+				<textarea id = "speech-940" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-940">
+					<img id="start_img-940" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-940">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-945"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-945" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">6</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The <a href="http://en.wikipedia.org/wiki/Denavit%E2%80%93Hartenberg_parameters" rel="nofollow">DH Matrix</a> section of the DH page on wikipedia has the details.</p>
+
+<p>Basically you want to use the information in your table to create a set of homogeneous transformation matrices. We do so because homogeneous transformations can be multiplied to find the relation between frames seperated by one or more others. For example, $^0T_1$ represents the transformation from frame 1 to frame 0 while $^1T_2$ represents the transformation from frame 2 to frame 1. By multiplying them we get the transformation from frame 2 to frame 0, i.e. $^0T_2 = ^0T_1^1T_2$.</p>
+
+<p>An easy way to create each of the transformations is to make a homogeneous transformation or homogeneous rotation matrix for each column in the table and multiply them together. For example, the transformation from 1 to 0 (e.g. $^{i-1}T_i, i = 1$) is</p>
+
+<p>$^0T_1 = Trans(d_1)*Rot(\theta_1)*Trans(a_2)*Rot(\alpha_2)$</p>
+
+<p>where</p>
+
+<p>$Trans(d_1) = \begin{bmatrix}1 &amp; 0 &amp; 0 &amp; 0 \\ 0 &amp; 1 &amp; 0 &amp; 0 \\ 0 &amp; 0 &amp; 1 &amp; \bf{d_1 = 0} \\ 0 &amp; 0 &amp; 0 &amp; 1 \end{bmatrix},$</p>
+
+<p>$Rot(\theta_1) = \begin{bmatrix} \text{cos}(\bf{\theta_1}) &amp; - \text{sin}(\bf{\theta_1}) &amp; 0 &amp; 0 \\ \text{sin}(\bf{\theta_1}) &amp; \text{cos}(\bf{\theta_1}) &amp; 0 &amp; 0 \\ 0 &amp; 0 &amp; 1 &amp; 0 \\ 0 &amp; 0 &amp; 0 &amp; 1 \end{bmatrix},$</p>
+
+<p>$Trans(a_2) = \begin{bmatrix} 1 &amp; 0 &amp; 0 &amp; \bf{a_2 = 0} \\ 0 &amp; 1 &amp; 0 &amp; 0 \\ 0 &amp; 0 &amp; 1 &amp; 0 \\ 0 &amp; 0 &amp; 0 &amp; 1 \end{bmatrix},$</p>
+
+<p>$Rot(\alpha_2) = \begin{bmatrix} 1 &amp; 0 &amp; 0 &amp; 0 \\ 0 &amp; \text{cos}(\bf{\alpha_2 = 0}) &amp; -\text{sin}(\bf{\alpha_2 = 0}) &amp; 0 \\ 0 &amp; \text{sin}(\bf{\alpha_2 = 0}) &amp; \text{cos}(\bf{\alpha_2 = 0}) &amp; 0 \\ 0 &amp; 0 &amp; 0 &amp; 1 \end{bmatrix}$.</p>
+
+<p>In this case</p>
+
+<p>$^0T1 = Rot(\theta_1)$.</p>
+
+<p>Once you have all your transformations you multiply them togther, e.g.</p>
+
+<p>$^0T_N = ^0T_1*^1T_2...^{N-1}T_N$.</p>
+
+<p>Finally you can read the displacement vector out of the homogenous transform $^0T_N$ (i.e. $d = [^0T_{N,14}, ^0T_{N,24}, ^0T_{N,34}]^T$). Similarly you can read out the rotation matrix from $^0T_N$ to find the X-Y-Z angles.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-945" data-toggle = "popover">
+				<p>user name : DaemonMaker</p>
+				<p> user reputation : 3321</p>
+				<p class = "tagcontent" id = "usertaginfo-945">{'control': 4, 'stereo-vision': 15, 'None': 271, 'computer-vision': 15, 'battery': 7, 'cameras': 15, 'research': 4, 'troubleshooting': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-945">Load Comments</button></br>
+			<div id = "commentsection-945" class = 'collapse'>
+			<div id = "comment-2515" class = "comment">
+				<p>Wouldn't alpha_2 be -90 degrees?</p>
+			</div>
+			</div>
+				<textarea id = "speech-945" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-945">
+					<img id="start_img-945" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-945">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

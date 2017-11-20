@@ -1,0 +1,201 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Understanding and correct drift when using BreezySLAM (aka tinySLAM ~ CoreSLAM)
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-10371" class = "post">
+			<h2>Question</h2>
+			<div id="vote-10371" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 530</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Understanding and correct drift when using BreezySLAM (aka tinySLAM ~ CoreSLAM)</h2>
+<p>I was looking for a Python implementation of SLAM and stumbled upon <a href="https://github.com/simondlevy/BreezySLAM" rel="nofollow noreferrer">BreezySLAM</a> which implements <a href="https://openslam.org/tinyslam.html" rel="nofollow noreferrer">tinySLAM</a> aka CoreSLAM. </p>
+
+<p>My robot is equipped with the <a href="https://www.hokuyo-aut.jp/02sensor/07scanner/urg_04lx_ug01.html" rel="nofollow noreferrer">hokuyo urg-04lx-ug01</a>. </p>
+
+<p>I have odometry hence passing it to the updater: </p>
+
+<pre><code>self.slam.update(ls_array, (dxy_mm, dtheta_deg, dt));
+</code></pre>
+
+<p>As I <strong>start</strong> moving the robot starts discovering <strong>room A</strong> and then <strong>room B &amp; C</strong> already the map seems to have rotated. I come back to room A and return the initial pose <strong>end=start</strong> using the same path. Now I noticed <strong>room A</strong> has significantly rotated in relation to the other room. Consequently the map isn't correct at all, neither is the path travelled by the robot. </p>
+
+<ol>
+<li>Wasn't the SLAM supposed to store and keep the boundaries for the first room it discovered?</li>
+<li>Why this rotation may be happening?</li>
+<li>How could I try to troubleshoot this issue with the data I have collected (odometry, calculated position, liDAR scans)?</li>
+<li>Can I tune SLAM to do a better job for my robot?</li>
+</ol>
+
+<p>SLAM is pretty new to me, so please bear with me, any pointers on literature that may clarify and moderate my expectations of what SLAM can do.</p>
+
+<p><a href="https://i.stack.imgur.com/vsidl.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/vsidl.png" alt="enter image description here"></a></p>
+
+<h1>Extra</h1>
+
+<p>... and <a href="https://www.youtube.com/watch?v=aUkBa1zMKv4" rel="nofollow noreferrer">Here the best video I found to understand particle filter</a></p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10371" data-toggle = "popover">
+				<p>user name : zabumba</p>
+				<p> user reputation : 118</p>
+				<p class = "tagcontent" id = "usertaginfo-10371">{'None': 0, 'slam': 3, 'mapping': 3, 'localization': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-10371" class = 'collapse'>
+			</div>
+				<textarea id = "speech-10371" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10371">
+					<img id="start_img-10371" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10371">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-10372"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10372" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>You'll find that <a href="https://www.openslam.org/gmapping.html" rel="nofollow">Gmapping</a> works a lot better. I have used core slam quite a bit with the 04lx, tweaked the code, and tuned the algorithm. It works in a lot of cases, but... </p>
+
+<p>If you really want to keep using it, adjust your parameters so that it searches more (more particles) and really make sure that the robot motion is inside the search domain.</p>
+
+<p>While tuning (and in general) monitor your map and restart with better parameters if the map jumps or rotates.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10372" data-toggle = "popover">
+				<p>user name : hauptmech</p>
+				<p> user reputation : 2621</p>
+				<p class = "tagcontent" id = "usertaginfo-10372">{'battery': 2, 'None': 220, 'lithium-polymer': 2}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-10372">Load Comments</button></br>
+			<div id = "commentsection-10372" class = 'collapse'>
+			<div id = "comment-18616" class = "comment">
+				<p>Thanks for this. About Gmapping "Short range lasers like Hokuyo scanner will not work that well with the standard parameter settings." So for there as well I will have to adjust the number of particles (?)</p>
+			</div>
+			<div id = "comment-18624" class = "comment">
+				<p>Start by matching the map resolution to the sensor resolution and see how you go. In general all slam algorithms require a basic understanding of the individual algorithm used and attention to the capability of your chosen sensor. Definitely not a plug and play sort of thing....</p>
+			</div>
+			</div>
+				<textarea id = "speech-10372" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10372">
+					<img id="start_img-10372" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10372">Comment</button>
+			<br><div id = "ans-10564"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-10564" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Till now this is the easiest SLAM implementation that I've found.
+It works pretty well, however, there is a lot of room for improvement using the same principle used in the original code online.</p>
+
+<p>"1- Wasn't the SLAM supposed to store and keep the boundaries for the first room it discovered?</p>
+
+<p>2- Why this rotation may be happening?"</p>
+
+<p>In the implementation you have I would say it failed match the new scan to the already constructed map (there are lots of reasons for this problem)</p>
+
+<p>3- How could I try to troubleshoot this issue with the data I have collected (odometry, calculated position, liDAR scans)?</p>
+
+<p>it depends what hardware you are using. If you are correctly acquiring the Hukuyo scans the algorithm should work even if you have some errors from odometry or IMU, unless, the errors are too large (eg instead of calculating 5cm using odometry you get  100, 200 or 500 for example)</p>
+
+<p>IMU and odometry can help a lot however in the algorithm you are using you can just use the LIDAR, thus the priority is to check your LIDAR scans.</p>
+
+<p>4-Can I tune SLAM to do a better job for my robot?</p>
+
+<p>Of course, you can also rewrite it to include lots of optimizations adapted to the robotic platform you are using.</p>
+
+<p><strong>EDIT:</strong></p>
+
+<p>2- Why this rotation may be happening?"</p>
+
+<p>Try to decrease the maximum rotation speed of your robot</p>
+
+<p>I can't explain the whole algorithm in this post, and as I've previously said there are lots of other reasons, study the theory + read the code to understand what's going on, good luck</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-10564" data-toggle = "popover">
+				<p>user name : AL-ROBOT</p>
+				<p> user reputation : 299</p>
+				<p class = "tagcontent" id = "usertaginfo-10564">{'None': 16}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-10564" class = 'collapse'>
+			</div>
+				<textarea id = "speech-10564" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-10564">
+					<img id="start_img-10564" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-10564">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

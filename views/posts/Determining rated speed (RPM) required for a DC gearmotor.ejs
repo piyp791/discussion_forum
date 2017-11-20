@@ -1,0 +1,185 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Determining rated speed (RPM) required for a DC gearmotor
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-12832" class = "post">
+			<h2>Question</h2>
+			<div id="vote-12832" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 47</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Determining rated speed (RPM) required for a DC gearmotor</h2>
+<p>I'd like a two-wheeled robot to travel at 1m/s, given a wheel radius of 0.03m. I've calculated the rated speed required by the gearmotor as 318.28RPM:</p>
+
+<p>$v = \omega r$, $\displaystyle{\frac{v}{r} = \omega}$</p>
+
+<p>$\displaystyle{\frac{1 \mathrm{\frac{m}{s}}}{0.03 \,\mathrm{m}}} = $ $33.33 \mathrm{\frac{radians}{s}}$</p>
+
+<p>$33.33 \mathrm{\frac{radians}{s}} \left(\frac{1 \,\mathrm{rev}}{2 \pi \, \mathrm{radians}}\right) \left(\frac{60 \, \mathrm{s}}{1 \, \mathrm{min}}\right)$</p>
+
+<p>$= 318.28 \mathrm{\frac{rev}{min}}$</p>
+
+<p>Is this correct? </p>
+
+<p>On a side note, would an acceleration value of 0.5m/s^2 be a good choice for the robot, based on the velocity I've chosen? Help appreciated, thanks.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12832" data-toggle = "popover">
+				<p>user name : somers</p>
+				<p> user reputation : 44</p>
+				<p class = "tagcontent" id = "usertaginfo-12832">{'control': 3, 'None': 0, 'two-wheeled': 4, 'theory': 1, 'arduino': 2, 'battery': 0, 'microcontroller': 2, 'wheeled-robot': 3, 'current': 0, 'cnc': 0, 'motor': 0, 'dynamics': 1, 'balance': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-12832" class = 'collapse'>
+			</div>
+				<textarea id = "speech-12832" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12832">
+					<img id="start_img-12832" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12832">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-12833"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-12833" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Yes, that's correct. </p>
+
+<p>A "good choice" for acceleration has nothing to do with velocity. Generally, acceleration limits are chosen based on motor thermal ratings. You should have some design load the motor should accelerate, that design load should require some quantity of torque, the motor constant relates torque to current, and then the current heats the motor. </p>
+
+<p>Typically you would see "duty cycle" ratings for the motor - 20%, 30%, etc. That means you should only run at full power for 20% of the time to avoid overheating the motor. Generally those duty cycle ratings will also come with design durations - run at full power for 20 seconds then turn off for at least 80 seconds, etc. </p>
+
+<p>You could <em>probably</em> run at 20% power for an unlimited period of time, but you should really contact the manufacturer to verify that. So then you have 20% of power as the limit, and you have a design load moment of inertia $I$, torque is $\tau = I\alpha$, or moment of inertia times angular acceleration, and power is $P = \tau\omega$. </p>
+
+<p>The duty cycle rating cascades down from the power rating to an acceleration limit:</p>
+
+<p>$$
+P_{\mbox{max}} = \left(\tau_{\mbox{max}}\right)\omega \\
+P_{\mbox{max}} = I\left(\alpha_{\mbox{max}}\right)\omega \\
+$$</p>
+
+<p>Here it's assumed that your angular speed $\omega$ is fixed, because you have some design speed you want to operate at, and the moment of inertia $I$ is fixed, because you have to operate at your design speed with a target load, and so then the only thing that you can vary to get below the power rating is the motor acceleration:</p>
+
+<p>$$
+\alpha_{\mbox{max}} = \frac{P_{\mbox{max}}}{I\omega} \\
+$$</p>
+
+<p>This is how you would arrive at an acceleration limit. </p>
+
+<p>You should also include a factor of safety or some other margin in the design, and you should also look at accounting for viscous friction. There are power losses due to friction, and friction force (torque) is proportional to the motor speed:</p>
+
+<p>$$
+\tau_{\mbox{friction}} = b \omega \\
+$$</p>
+
+<p>Where $b$ is the viscous friction constant for the motor. </p>
+
+<p>So, if you were to combine the above with the power equation, you get a more complete model:</p>
+
+<p>$$
+P_{\mbox{max}} = \left(\tau_{\mbox{acceleration}} + \tau_{\mbox{friction}}\right)\omega \\
+P_{\mbox{max}} = \left(\tau_{\mbox{acceleration}}\right)\omega + b\omega\omega \\
+P_{\mbox{max}} = I\left(\alpha_{\mbox{max}}\right)\omega + b\omega^2 \\
+$$</p>
+
+<p>That speed squared term is the real killer, and it's why accounting for it is important. Increasing speed by a factor of 10 increases the friction power requirement by a factor of 100.</p>
+
+<p>So, rearrange to get the fuller model for the acceleration limit:</p>
+
+<p>$$
+\alpha_{\mbox{max}} = \frac{P_{\mbox{max}}-b\omega^2}{I\omega} \\
+$$</p>
+
+<p>Unfortunately, the only good way to get the viscous friction constant value is by empirical testing. It's complicated by the fact that real motors are inefficient, otherwise you could just calculate input power ($P=IV$), get unloaded top speed $\omega$, and determine the friction constant that way. </p>
+
+<p>The trick would be to alter input power (by varying input voltage) and making a <em>plot</em> of input power versus top speed. You should see that top speed drops off as $1/\sqrt{P}$, but there should be an offset to the data as well. The curve would give you the friction coefficient and the offset gives you the efficiency.</p>
+
+<hr>
+
+<p>But again, this all requires you to get a quality estimate of the design load (moment of inertia) and top speed. The moment of inertia calculation will be a little harder, but you should be able to do it with a good solid modeling software kit like Solidworks or Inventor. </p>
+
+<p>You could also just try to get motor that is very oversized to what you need and then set the acceleration limit after the fact. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12833" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-12833">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-12833" class = 'collapse'>
+			</div>
+				<textarea id = "speech-12833" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12833">
+					<img id="start_img-12833" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12833">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

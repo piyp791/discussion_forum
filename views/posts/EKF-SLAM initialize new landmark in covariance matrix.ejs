@@ -1,0 +1,155 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>EKF-SLAM initialize new landmark in covariance matrix
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7802" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7802" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 389</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>EKF-SLAM initialize new landmark in covariance matrix</h2>
+<p>I am trying to implement an EKF-SLAM using the algorithm for unknown correspondences proposed in the book "Probalistic Robotics" by Sebastian Thrun in Table 10.2 . </p>
+
+<p>By now I understand actually all of the algorithm except of the initialization of new landmarks in the covariance matrix $ P_{new} $. </p>
+
+<p>In that algorithm when a new landmark is detected the procedure is just the same as if a normal measurment update for an already observed landmark is done: the Kalman gain $ K $ is calculated for the new landmark and then the covariance is updated with that Kalman gain and the jacobian $ H $ of that new landmark like this $ P_{new}=  (I  -  K * H) * P$ . </p>
+
+<p>In my understanding a just new observed landmark would not have any effect on the rows and columns that correspond to already mapped landmarks or the robot pose in the covariance matrix. Instead I think that just two rows and columns for x and y should be created with some uncertainity like proposed here: <a href="https://robotics.stackexchange.com/questions/4599/the-uncertainty-of-initializing-new-landmark-in-ekf-slam">the uncertainty of initializing new landmark in EKF-SLAM</a> .</p>
+
+<p>I tried to split down the calculation of $ P_{new}$ via claculating it blockwise to see if I could somehow come to the same initialization as shown in the link above. But I end up having a different covariance matrix where apparently the new landmark is effecting the rows and columns of the parts of the old covariance, which in my view can't be right.</p>
+
+<p>I hope I don't understand the pseudo code of the book wrong or I did a mistake in my try to come to the same initialization. Any advice how the initialization of new lnndmarks work in that code or if it actually is the same as in the link will be appreciated.</p>
+
+<p><strong>Edit</strong></p>
+
+<p>So basically what I am asking is: why would they do a normal Kalman update of the covariance matrix in line 24 of table 10.2 for a new observed landmark? Why is there no explicit case for the initialization of new rows/columns of new observed landmarks in the covariance matrix? It seems to me like they just do a normal measurement update even for a just newly observed landmark.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7802" data-toggle = "popover">
+				<p>user name : Marcel_marcel1991</p>
+				<p> user reputation : 16</p>
+				<p class = "tagcontent" id = "usertaginfo-7802">{'mobile-robot': 3, 'None': 0, 'slam': 3, 'ekf': 3}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7802" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7802" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7802">
+					<img id="start_img-7802" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7802">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7811"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7811" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Unfortunately, the aforementioned book doesn't address initializing the uncertainty of a new landmark, however, it does address initializing the mean of a new landmark though (i.e. by using the inverse measurement function). In this <a href="http://www.iri.upc.edu/people/jsola/JoanSola/objectes/curs_SLAM/SLAM2D/SLAM%20course.pdf" rel="nofollow">link</a>, the author addresses the issue. See <code>2.3.4 Landmark initialization for full observations</code> in the pdf. The bottom line is that you should never ever touch the elements of the uncertainty matrix. The proper way to augment the uncertainty of a new landmark is addressed in the aforementioned pdf. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7811" data-toggle = "popover">
+				<p>user name : CroCo</p>
+				<p> user reputation : 1040</p>
+				<p class = "tagcontent" id = "usertaginfo-7811">{'control': 18, 'pid': 4, 'slam': 16, 'manipulator': 3, 'mobile-robot': 14, 'dynamics': 6, 'errors': 2, 'data-association': 1, 'kinematics': 3, 'matlab': 6, 'kalman-filter': 21, 'motion-planning': 3, 'None': 41, 'noise': 24, 'theory': 1, 'localization': 14, 'microcontroller': 5, 'mapping': 5, 'sensor-error': 1, 'sensors': 7, 'quadcopter': 8, 'ekf': 26, 'simulation': 1, 'motion': 3}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7811" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7811" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7811">
+					<img id="start_img-7811" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7811">Comment</button>
+			<br><div id = "ans-7814"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7814" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>I explained exactly how you can add the new row/columns to the covariance matrix <a href="https://robotics.stackexchange.com/a/5173/4320">in this answer</a>.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7814" data-toggle = "popover">
+				<p>user name : kamek</p>
+				<p> user reputation : 775</p>
+				<p class = "tagcontent" id = "usertaginfo-7814">{'None': 48}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7814" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7814" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7814">
+					<img id="start_img-7814" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7814">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

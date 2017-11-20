@@ -1,0 +1,136 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Implementing Slip Compensation into a Half-Size Micromouse
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-1658" class = "post">
+			<h2>Question</h2>
+			<div id="vote-1658" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 283</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Implementing Slip Compensation into a Half-Size Micromouse</h2>
+<p>I would like to know if there are any other solutions to implement slip compensation into a Half-Size Micromouse other than the conventional method. I have spoken to a few Japanese competitors, and they told me that the only solution they have to such a problem is creating a table of predetermined values and using these values to increase or decrease the before turn/after turn distances. The values used are determined by the Mouse's intelligence. Due to the fact that this method has too many limitations, I would like to hear more suggestions from people who are familiar with this matter.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-1658" data-toggle = "popover">
+				<p>user name : None</p>
+				<p> user reputation : NA</p>
+				<p class = "tagcontent" id = "usertaginfo-1658">{'control': 0, 'force': 3, 'encoding': 1, 'wheeled-robot': 1, 'legged': 5, 'embedded-systems': 0, 'stability': 5, 'design': 15, 'motor': 3, 'mobile-robot': 3, 'connector': 1, 'h-bridge': 1, 'mrds': 0, 'arduino': 1, 'current': 1, 'kinematics': 0, 'kalman-filter': 8, 'imu': 18, 'irobot-create': 0, 'gyroscope': 1, 'micromouse': 3, 'None': 35, 'power': 16, 'artificial-intelligence': 8, 'driver': 1, 'industrial-robot': 19, 'sensors': 11, 'quadcopter': 7, 'c': 1, 'motion': 1, 'balance': 7, 'servos': 15}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-1658">Load Comments</button></br>
+			<div id = "commentsection-1658" class = 'collapse'>
+			<div id = "comment-3484" class = "comment">
+				<p>What specific limitations are undesirable?</p>
+			</div>
+			<div id = "comment-3486" class = "comment">
+				<p>This question would benefit from links to the background information on the Micromouse competition.  What is the "conventional method" of slip compensation?  Does slip compensation affect rotation, linear motion, or both?</p>
+			</div>
+			</div>
+				<textarea id = "speech-1658" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-1658">
+					<img id="start_img-1658" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-1658">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-3177"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-3177" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Wheel slip is a serious limitation for any odometry-based robot tracking system.  The big problem is a wheel will slip when the force due to wheel <strong>torque</strong> exceeds the tire/ground static <strong>friction</strong> force.  Wheel torque depends on not just the PWM commanded power, but also the battery voltage and the gearbox.  The drive friction depends on the vehicle dynamic weight, and the tire and surface properties, both of which can change dramatically over short periods (e.g., when crossing a bump).</p>
+
+<p>At low torques and speeds, slip is a small effect, mostly noticable as a small deviation in the distance turned.  At high speeds or torque, which is what wins competitions, wheel slip dominates the vehicle's dynamics.</p>
+
+<p>But there are lots of possible tools to detect and compensate for wheel slip:</p>
+
+<ul>
+<li><p>An accelerometer and gyro based <strong>IMU</strong> can be used to cross-check wheel odometry, since slip will cause a mismatch between these two.  Magnetometer (9-axis) IMUs are better for big applications, since the magnetic axis helps stop gyro drift, but you need to be careful about shielding the fields from the motors on a small robot. Surface mount MEMS IMU packages can be quite lightweight.</p></li>
+<li><p>A downward-facing <strong>optical sensor</strong>, like the optic flow <a href="http://home.roadrunner.com/~maccody/robotics/croms-1/croms-1.html" rel="nofollow">motion sensor in an optical mouse</a>, can be used to estimate vehicle motion.  I've seen these used on micro-mouse sized platforms.  Like a black mousepad, the track typically has enough optical roughness to allow the sensor to work reliably, although depth of focus blur and motion blur can be a problem.</p></li>
+<li><p>Separate non-powered odometry <strong>wheels</strong> are another option, although these are difficult to fit even in a full size micro mouse platform.</p></li>
+<li><p>Outward-looking <strong>wall tracking</strong> sensors are very useful in micro mouse localization.  Of course, you need to detect the walls to map the maze, but you can also use them to calibrate your motion, especially if you can reliably measure distances in the forward direction, such as via ultrasonics or laser distance measurement.</p></li>
+</ul>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-3177" data-toggle = "popover">
+				<p>user name : Orion Lawlor</p>
+				<p> user reputation : 61</p>
+				<p class = "tagcontent" id = "usertaginfo-3177">{'None': 6}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-3177" class = 'collapse'>
+			</div>
+				<textarea id = "speech-3177" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-3177">
+					<img id="start_img-3177" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-3177">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

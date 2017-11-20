@@ -1,0 +1,151 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Mobile robot speed synchronization for straight line moving
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-12259" class = "post">
+			<h2>Question</h2>
+			<div id="vote-12259" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 62</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Mobile robot speed synchronization for straight line moving</h2>
+<p>I would like to build a simple mobile robot with differential wheels, and I am currently design the wheel speed controller. After reading some papers, I noticed that to realize a straight line moving, the linear speed and angular speed of the mobile robot have to be controlled at the same time, which makes the system a Multi-input-multi-output (MIMO) system. I plotted two different controller structures I came across while reading materials. Both of them have angular speed feedback and control, but one with linear speed feedback and control, the other without. In the picture, Gl(s) and Gr(s) refer to the motor transfer function, and <em>vl</em> and <em>vr</em> are the measured wheel speed.</p>
+
+<p>Would anyone please suggest which controller structure is more reasonable and can realize better straight line moving?
+<a href="https://i.stack.imgur.com/u0Imr.png" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/u0Imr.png" alt="enter image description here"></a></p>
+
+<p><strong>Updates</strong>
+v* and w* are linear speed reference and angular speed reference respectively that could either be fixed values or come from trajectory generation; corrected a typo in the motor block in structure 2, as @Chuck pointed out, and changed G1(s) and G2(s) to Gl(s) and Gr(s) for better illustration. </p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12259" data-toggle = "popover">
+				<p>user name : roTor-roTor</p>
+				<p> user reputation : 6</p>
+				<p class = "tagcontent" id = "usertaginfo-12259">{'mobile-robot': 1, 'None': 0, 'motor': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-12259" class = 'collapse'>
+			</div>
+				<textarea id = "speech-12259" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12259">
+					<img id="start_img-12259" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12259">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-12264"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-12264" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>There are really <strong>two</strong> problems here:</p>
+
+<ol>
+<li>You are trying to derive an appropriate speed command to send to the motors, and</li>
+<li>You are trying to drive the vehicle in a straight line. </li>
+</ol>
+
+<p>Suppose you get the "perfect" control scheme that sends exactly the correct signals to the motors. The problem then becomes: What if one wheel runs over a piece of paper and just spins for a little bit instead of generating traction? What if one wheel runs over some dust that sticks to the tire and now it's a little bigger than the other wheel?</p>
+
+<p>I'm assuming here that your wheel odometry is coming off of encoders on the motor, but the same arguments are true if you've got an idle wheel to do odometry measurements. </p>
+
+<p>Assuming some rotation of the motor $\theta$, each wheel should traverse a distance of $r\theta$, where $r$ is the wheel radius. However, if one wheel is slightly larger than the other $(r+\epsilon)$, then one wheel traverses $r\theta$ while the other traverses $(r+\epsilon)\theta$, or $r\theta + \epsilon \theta$.</p>
+
+<p>Your vehicle will then turn (assuming a differentially steered or two-wheel robot) an angle of $\psi = \epsilon \theta / d$, where $d$ is the wheel base (distance between the two wheels. </p>
+
+<p>You can see now that the angle your vehicle turns, $\psi$, is a linear function of how far your wheels turn, $\theta$. </p>
+
+<p>I have <a href="https://robotics.stackexchange.com/a/9006/9720">posted an answer like this before</a> - The only way you can be sure to drive in a straight line is to <em>measure</em> where the robot is relative to the straight line. This could be LIDAR, a localization routine (like SLAM), overhead webcam watching the robot, compass/magnetometer, etc. There will <strong>always</strong> be variations that prevent your vehicle from going exactly straight, so you need to be able measure how you're travelling and be able to adjust accordingly. </p>
+
+<p>With regards to your original question though, first I'll comment that you're looking to provide only a wheel speed, so if anything it's multi-input <em>single</em>-output. If you're looking for someone to comment specifically on the block diagrams you've provided, then you need to explain what they mean. Typically the symbols $x$, $v$, and $a$ are used for linear position, speed, acceleration, respectively, and $\theta$, $\omega$, $\alpha$ are used for <em>angular</em> position, speed, and acceleration. </p>
+
+<p>You use $v$* and $\omega$*, which looks like linear speed and angular speed, so I don't know what your inputs are, or what the star means, or why there aren't any integrator or derivative blocks (how are you getting between position and speed?), or why Structure 1 has G1 and G2 where Structure 2 has G1 and G1, etc.</p>
+
+<p>If you want to drive in a straight line without measuring the orientation of the vehicle, send the same speed signal to both motors. That's probably the best you can do. </p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12264" data-toggle = "popover">
+				<p>user name : Chuck</p>
+				<p> user reputation : 8534</p>
+				<p class = "tagcontent" id = "usertaginfo-12264">{'actuator': 7, 'None': 616, 'dynamics': 7, 'joint': 7}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-12264">Load Comments</button></br>
+			<div id = "commentsection-12264" class = 'collapse'>
+			<div id = "comment-21637" class = "comment">
+				<p>thanks a lot for your comments and I updated my post to answer some of your questions. As you may see, if the system has linear and angular speed as reference inputs and left and right wheel speed as output, isn't it a MIMO system? The purpose of this controller is to make the left and right wheel speed follow the desired reference so that the mobile robot linear and angular speed can follow the reference value. I understand the structures here are not the same as those using dx/dt, dy/dt and dtheta/dt, but can the two structures realize linear and angular speed control?</p>
+			</div>
+			</div>
+				<textarea id = "speech-12264" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12264">
+					<img id="start_img-12264" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12264">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

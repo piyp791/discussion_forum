@@ -1,0 +1,149 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>How to efficiently update a local Cartesian frame when traveling over long distances on a curved earth
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-12824" class = "post">
+			<h2>Question</h2>
+			<div id="vote-12824" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 32</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>How to efficiently update a local Cartesian frame when traveling over long distances on a curved earth</h2>
+<p>I have a mobile robot which receives GPS position (lat/lon) and has an IMU for handling gaps in GPS service. </p>
+
+<p>I want to be able to conduct short distance planning in a Cartesian plane, but the robot will ultimately be traveling over long distances. Most references I have found describe using a tangential North-East-Down (NED) frame starting at the robot initial position for local planning. This is fine but I am not sure how to go about updating this plane as the robot moves. </p>
+
+<p>If I was to update (change the origin) for the frame every 5 min, then I would need to compute many new transformations at this time and potentially introduce a repeating lag in the system. How can I avoid this?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12824" data-toggle = "popover">
+				<p>user name : user1433734</p>
+				<p> user reputation : 6</p>
+				<p class = "tagcontent" id = "usertaginfo-12824">{'None': 0, 'ros': 1, 'localization': 1, 'motion-planning': 1, 'navigation': 1, 'gyroscope': 1}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-12824">Load Comments</button></br>
+			<div id = "commentsection-12824" class = 'collapse'>
+			<div id = "comment-22508" class = "comment">
+				<p>What type of planning? What type of map? There is some distance at which the projection of a sphere onto a plane creates an error that exceeds what is acceptable for your sensor resolution and robot speed. What is this approximately?</p>
+			</div>
+			<div id = "comment-22511" class = "comment">
+				<p>Motion planning over distances of generally less than 100m. At this point there are bounding box obstacles in the plane which would need to be planned around. Ideally the projection should correct every 5km, but there is some margin here.</p>
+			</div>
+			</div>
+				<textarea id = "speech-12824" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12824">
+					<img id="start_img-12824" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12824">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-12827"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-12827" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Caveat: This is outside my area of expertise so I'm just making stuff up.</p>
+
+<p>The best approach I have thought of so far that avoids extra computation, is to use a distance metric that is a hybrid of true distance and plane approximation distance. </p>
+
+<p><a href="https://i.stack.imgur.com/MoSvq.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/MoSvq.jpg" alt="enter image description here"></a></p>
+
+<p>The coordinate of objects, observations, used for planning and navigation are the plane cartesian coordinate, and which mesh element that coordinate is relative to. </p>
+
+<p>For local planning, whose horizon is contained within a mesh element, you can use only the local coordinate. For global planning, the distance between objects is the sum of the great circle between mesh element origins and the local vectors to the start and end point. </p>
+
+<p>Planning and pathfinding with meshes is well researched I think, though you will want to use the great circle distance between nodes rather than the cartesian distance.</p>
+
+<p>You should be able to find a mesh size that works for you. One for which the error in distance is acceptable for the simplification of using a plane approximation locally. </p>
+
+<p>EDIT:</p>
+
+<p>At the boundary you need to convert objects in the current 100m window from the last origin to the next one. This is a simple plane translation or transform which can be done at object creation to spread out the computation cost. You'll need some hysterisis to prevent switching too often at the boundary.</p>
+
+<p>Back of the envelope calcs give about 1mm of error from true position at a 5Km radius. So you could probably get away with increasing your mesh size.</p>
+
+<p>Bottom line, used many fixed location local maps and jump from one to the other rather than dragging the origin of a single map along with you.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12827" data-toggle = "popover">
+				<p>user name : hauptmech</p>
+				<p> user reputation : 2621</p>
+				<p class = "tagcontent" id = "usertaginfo-12827">{'battery': 2, 'None': 220, 'lithium-polymer': 2}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-12827" class = 'collapse'>
+			</div>
+				<textarea id = "speech-12827" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12827">
+					<img id="start_img-12827" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12827">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

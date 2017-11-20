@@ -1,0 +1,145 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Understanding a sliding mode controller for quadrotors
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-4847" class = "post">
+			<h2>Question</h2>
+			<div id="vote-4847" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 220</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Understanding a sliding mode controller for quadrotors</h2>
+<p>I'm really willing to understand and implement such a controller (sliding mode) for a quadrotor.
+I've found <a href="http://waset.org/Publication/modeling-and-control-of-a-quadrotor-uav-with-aerodynamic-concepts/7686" rel="nofollow">this interesting document explaining that topic</a>.
+If you scroll down until page 381 (don't be scared, the document is just 6-7 pages) you can find the following height control law (equation .19):</p>
+
+<p>$$
+U_1 = \frac{m}{\cos{\phi}\cos{\theta}}[c_1(\dot z_r - \dot z) + \ddot z_r + \epsilon_1  sgn(s_1) + k_1 s_1 + g]
+$$</p>
+
+<p>The explanation of most of the term should be quite easy, but let's focus on the variable <em>z</em>, the height (or altitude if absolute) of the quadrotor. Anyway the control law "pretends" not only the goal height <em>z</em> (through $s_{1}$) but even the vertical speed $\dot z_{r}$ and vertical acceleration $\ddot z_{r}$ (<em>r</em> means here <em>reference</em>).</p>
+
+<p>Now...to me is not clear whether those variables the setpoints are, that must be reached once the quadrotor reaches its predefined height or they just symbolize an abstract mathematical formalism but are going to be most of the time Zero (because I want to reach the target height with $z = z_{r}$ but $\dot z_{r} = \ddot z_{r} = 0$)</p>
+
+<p>?!?!?</p>
+
+<p>I hope my question is clear. Even if this I put in the title "sliding control" I think it may be helpful for other type of controllers.
+Regards</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4847" data-toggle = "popover">
+				<p>user name : Dave</p>
+				<p> user reputation : 294</p>
+				<p class = "tagcontent" id = "usertaginfo-4847">{'control': 10, 'quadcopter': 11, 'None': 6, 'pid': 13, 'uav': 3, 'matlab': 0, 'mobile-robot': 0, 'ros': 2, 'movement': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-4847" class = 'collapse'>
+			</div>
+				<textarea id = "speech-4847" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4847">
+					<img id="start_img-4847" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4847">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-4848"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-4848" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>What you say ($\dot{z}_r$ = 0, $\ddot{z}_r=0$) is true in only the most basic systems. As a trivial counter example, consider systems where the desired height is moving: then it should be obvious that $\dot{z}_r$ and $\ddot{z}_r$ will be non-zero.</p>
+
+<p>Even for systems with $z_r = const$, if you want to improve performance you need to start thinking about $\dot{z}_r$ and $\ddot{z}_r$. Imaging you've just changed the set point so $|z-z_r| &gt;&gt; 0$. Your quad can't instantly jump so it will take some time during which $\dot{z}$ will necessarily be non-zero. If you define a profile, with conistent $z_r$, $\dot{z}_r$, and $\ddot{z}_r$ you get much better overall control than just leaving $\dot{z}_r=0$ and $\ddot{z}_r=0$.</p>
+
+<p>To be clear, this doesn't uniquely define $\dot{z}_r$ and $\ddot{z}_r$. That is for the system designer to decide. For best performance, just make sure the system is consistent, i.e. $\frac{d}{dt} z = \ddot{z}_r$ and $\frac{d^2}{dt^2} z_r = \ddot{z}_r$</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-4848" data-toggle = "popover">
+				<p>user name : ryan0270</p>
+				<p> user reputation : 1814</p>
+				<p class = "tagcontent" id = "usertaginfo-4848">{'None': 133}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-4848">Load Comments</button></br>
+			<div id = "commentsection-4848" class = 'collapse'>
+			<div id = "comment-7556" class = "comment">
+				<p>Thanks Ryan, that was the missing "link". The height could change.
+And I suppose that it can be very useful for following trajectory, or not?</p>
+			</div>
+			<div id = "comment-7558" class = "comment">
+				<p>Yes, for good trajectory following you really need to consider velocity and accel.</p>
+			</div>
+			</div>
+				<textarea id = "speech-4848" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-4848">
+					<img id="start_img-4848" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-4848">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,160 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>following a trajectory with LQR controller
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-5095" class = "post">
+			<h2>Question</h2>
+			<div id="vote-5095" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">5</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 152</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>following a trajectory with LQR controller</h2>
+<p>We want our wheeled robot to follow a (rather short) trajectory. We wrote an LQR controller, which works well in simulation. However, our robot offers two problems:</p>
+
+<p>1.) The reported state information does not seem to be very accurate.</p>
+
+<p>2.) Its motion seems to underly some random deviations. We did not succeed in establishing a good model to predict the robots motion with a given control input.</p>
+
+<p>Is it possible to manage these problems with the LQR controller? If yes, how?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-5095" data-toggle = "popover">
+				<p>user name : ed_wallberg</p>
+				<p> user reputation : 26</p>
+				<p class = "tagcontent" id = "usertaginfo-5095">{'control': 5, 'kinematics': 5, 'None': 0, 'wheeled-robot': 5}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-5095" class = 'collapse'>
+			</div>
+				<textarea id = "speech-5095" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-5095">
+					<img id="start_img-5095" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-5095">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-5096"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-5096" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>It depends on the actual source of problems. If you just have a lot of noise in your state estimate you can improve things a bit by adjusting weights to be less aggressive.</p>
+
+<p>If the problem is that your state estimate is consistently far off you can't do anything until you fix your estimator. Quite often in vehicle control this is actually the biggest challenge.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-5096" data-toggle = "popover">
+				<p>user name : ryan0270</p>
+				<p> user reputation : 1814</p>
+				<p class = "tagcontent" id = "usertaginfo-5096">{'None': 133}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-5096" class = 'collapse'>
+			</div>
+				<textarea id = "speech-5096" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-5096">
+					<img id="start_img-5096" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-5096">Comment</button>
+			<br><div id = "ans-5100"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-5100" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>It is possible under limited conditions. The <a href="http://en.wikipedia.org/wiki/Linear-quadratic_regulator" rel="nofollow">Linear-quadratic regulator (LQR) controller</a> assumes that the system under control has linear dynamics and that the transition and observation models are deterministic. While in practice it works if these conditions are violated, the more extreme the violation the more likely it is to fail.</p>
+
+<p>An alternative is the <a href="http://en.wikipedia.org/wiki/Linear-quadratic-Gaussian_control" rel="nofollow">Linear-quadratic-gaussian controller</a> because it allows for noise in the motions and percepts. A challenge with using LQG is that you must have model of the noise.</p>
+
+<p>More specifically, assume you have the following dynamical model:</p>
+
+<p>$\dot{\mathbf{x}}(t) = A\mathbf{x}(t) + B\mathbf{u}(t) + \mathbf{v}(t), \mathbf{v}(t) \sim \mathcal{N}(0, M) \\
+\mathbf{y}(t) = C\mathbf{x}(t) + \mathbf{w}(t), \mathbf{w}(t) \sim \mathcal{N}(0, N)$</p>
+
+<p>where $\mathbf{x}(t)$, and $\mathbf{u}(t)$ represent the state of the system and the control applied to at it at time $t$ respectively, $A$, $B$, and $C$ represent the natural dynamics, the control dynamics, and the observation dynamics respectively, and finally $\mathbf{v}(t)$ and $\mathbf{w}(t)$ represent noise of the motion and observation models respectively and are zero mean gaussian distributions with covariances $M$ and $N$.</p>
+
+<p>In order to use LQG you need to know $A$, $B$, $C$, $M$, and $N$ as well as the initial state of the system, i.e. $\mathbf{x}(0)$.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-5100" data-toggle = "popover">
+				<p>user name : DaemonMaker</p>
+				<p> user reputation : 3321</p>
+				<p class = "tagcontent" id = "usertaginfo-5100">{'control': 4, 'stereo-vision': 15, 'None': 271, 'computer-vision': 15, 'battery': 7, 'cameras': 15, 'research': 4, 'troubleshooting': 7}</p>
+			</div><br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-5100" class = 'collapse'>
+			</div>
+				<textarea id = "speech-5100" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-5100">
+					<img id="start_img-5100" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-5100">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

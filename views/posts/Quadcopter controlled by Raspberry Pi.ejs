@@ -1,0 +1,157 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Quadcopter controlled by Raspberry Pi
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-13883" class = "post">
+			<h2>Question</h2>
+			<div id="vote-13883" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 62</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Quadcopter controlled by Raspberry Pi</h2>
+<p>I have:</p>
+
+<ol>
+<li>Raspberry Pi 3.</li>
+<li>Pi camera.</li>
+<li>CC3D flight controller.</li>
+</ol>
+
+<p>I have already developed a Python script that decides whether the quadcopter dron has to turn left/right, move straight on or to stop.</p>
+
+<p>Is there a way to connect the Raspberry Pi to the flight controller to send it the commands?</p>
+
+<p>Is it as easy as it sounds?</p>
+
+<p><strong>Edit</strong>: I can change the flight controller if necessary.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-13883" data-toggle = "popover">
+				<p>user name : Oscar Martinez</p>
+				<p> user reputation : 3</p>
+				<p class = "tagcontent" id = "usertaginfo-13883">{'quadcopter': 0, 'None': 0, 'raspberry-pi': 0}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-13883" class = 'collapse'>
+			</div>
+				<textarea id = "speech-13883" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-13883">
+					<img id="start_img-13883" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-13883">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-13884"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-13884" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The easiest way to do this would be using UART for serial communication. The CC3D has TX/RX/GND pins which you connect to Raspberry Pi. </p>
+
+<p>Now you will need some sort of protocol or data framing to send pitch/roll/yaw/throttle values to the flight controller and differentiate these values somehow. You can implement and use the <a href="http://www.multiwii.com/wiki/index.php?title=Multiwii_Serial_Protocol" rel="nofollow noreferrer">MultiWii Serial Protocol</a> for this purpose. Flight controller firmware such as CleanFlight already support MSP. On the RaspPi, <a href="https://github.com/alduxvm/pyMultiWii" rel="nofollow noreferrer">PyMultiWii</a> can be used to handle MSP frames. </p>
+
+<p>What is the format or range of the controls the python script decides for the quadcopter? You will have to convert or map these values into MSP RC frame format. The pitch/roll/yaw/throttle range in MSP is 1000-2000 (centered at 1500 at pitch/roll/yaw) and 1000 for throttle stops all motors and 2000 is the max value for throttle. The RC frame also support 4 AUX channels, where you can send any sort of data you want. Here's a good <a href="https://github.com/heethesh/eYSIP-2017_Control_and_Algorithms_development_for_Quadcopter/blob/master/documents/tutorials/multiwii_serial_protocol/Tutorial-3-MultiWii-Serial-Protocol.pdf" rel="nofollow noreferrer">tutorial</a> for implementing MSP with python and STM32 microntroller (which is used on CC3D).</p>
+
+<p>Tip: You can also make use of the MSP attitude and heading frame to get the pitch, roll and yaw computed from the IMU on the flight controller and integrate this with your Python script on RaspPi for better control!</p>
+
+<p><a href="https://i.stack.imgur.com/aQUlZ.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/aQUlZ.jpg" alt="enter image description here"></a>
+<a href="https://i.stack.imgur.com/baqqs.jpg" rel="nofollow noreferrer"><img src="https://i.stack.imgur.com/baqqs.jpg" alt="enter image description here"></a></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-13884" data-toggle = "popover">
+				<p>user name : HVN1673</p>
+				<p> user reputation : 28</p>
+				<p class = "tagcontent" id = "usertaginfo-13884">{'motion-planning': 2, 'None': 0, 'computer-vision': 2, 'navigation': 2}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-13884">Load Comments</button></br>
+			<div id = "commentsection-13884" class = 'collapse'>
+			<div id = "comment-22629" class = "comment">
+				<p>My python script just decides the time in seconds that the drone should execute a movement. For example: turn left until 2.344 seconds and then stop. So the flight controller makes the drone to move to the left for 2.344 seconds, at the same time that it holds the drone well stabilished on the air.</p>
+			</div>
+			<div id = "comment-22639" class = "comment">
+				<p>If your drone is stabilized already, this is just a matter of setting the pitch/roll rate as inputs to your controller. If you are using some open-source flight controller firmware such as CleanFlight on CC3D, you can use MSP-SET-RC to set your input rates. As I mentioned earlier, you will have to map your timings to the range 1000-2000.</p>
+			</div>
+			<div id = "comment-22640" class = "comment">
+				<p>Thanks. I have read the tutorial you mentioned, and I understand the code, but I dont know how he is setting up the connection between RaspberryPi and flight controller. Do you know where can I find a better example?</p>
+			</div>
+			<div id = "comment-22641" class = "comment">
+				<p>In the tutorial, Wi-Fi is used for wireless communication with a PC. There's an on-board ESP8266 wifi module on the flight controller. In your case, you will have to create a wired connection (using TX/RX/GND). [Here](https://www.raspberrypi.org/forums/viewtopic.php?f=63&t=173461) is an example of UART on RaspPi. And [here](http://thrustworx.com/how-to-install-cleanflight-cc3d-guide/) is a guide on installing CleanFlight firmware on your CC3D board.</p>
+			</div>
+			<div id = "comment-22642" class = "comment">
+				<p>But CC3D has an INPUT of yaw/pitch/roll/throttle, can I connect raspberry to that input instead of TX/RX/GND ?</p>
+			</div>
+			</div>
+				<textarea id = "speech-13884" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-13884">
+					<img id="start_img-13884" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-13884">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

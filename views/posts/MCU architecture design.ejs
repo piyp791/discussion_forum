@@ -1,0 +1,183 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>MCU architecture design
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7838" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7838" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">3</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 54</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>MCU architecture design</h2>
+<p>Are there any standards regarding single vs multiple MCU in a robotic system? More specifically, if a single MCU can handle all of the sensor data and actuator controls, is it better to use a single MCU or multiple MCUs in a hierarchical manner? Are there any references/papers regarding this topic? What are the arguments towards one or the other? I am looking for facts, not personal opinions, so pros, cons, standards and such.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7838" data-toggle = "popover">
+				<p>user name : Damjan Dakic</p>
+				<p> user reputation : 650</p>
+				<p class = "tagcontent" id = "usertaginfo-7838">{'control': 6, 'None': 32, 'sensor-fusion': 5, 'localization': 5, 'rcservo': 3, 'pid': 6, 'automation': 0, 'servomotor': 3, 'differential-drive': 6, 'design': 3, 'kalman-filter': 5, 'sensors': 5, 'pwm': 3, 'navigation': 6}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-7838" class = 'collapse'>
+			</div>
+				<textarea id = "speech-7838" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7838">
+					<img id="start_img-7838" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7838">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-8283"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-8283" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Although you have asked for facts and not opinions, that's a difficult thing to do. As of now, there are no current standards for much of anything in robotics. The field as a whole is so scattered with many avenues of research. In the end, it all comes down to what makes the most sense for the robot being designed. With that said, I do recall some information regarding this subject in this robotics handbook: <a href="https://www.cs.cmu.edu/~mmv/planning/readings/handbook.pdf" rel="nofollow">https://www.cs.cmu.edu/~mmv/planning/readings/handbook.pdf</a> but I'm unaware of any specific papers on this topic - most focus on some specific aspect of robotics or AI, and the controller architecture is just a means to that end.</p>
+
+<h2>Single Controller Architecture</h2>
+
+<p>For small applications or one-offs, this is a perfectly viable choice. If you know that a single MCU can handle all of the data input and actuator output, then there is nothing wrong with just using one MCU.</p>
+
+<h3>Pros</h3>
+
+<ol>
+<li>Fewer Components</li>
+<li>Fewer (or none) board-board connections</li>
+<li>Lower Cost</li>
+<li>Less Power Use (potentially)</li>
+<li>Less Firmware to maintain/update</li>
+</ol>
+
+<h3>Cons</h3>
+
+<ol>
+<li>Not easily expandable (limited I/O / space for code)</li>
+<li>All components are coupled - removing 1 thing might break other things</li>
+<li>Not modular - must redesign/reprogram similar systems in the future</li>
+<li>No redundancy - MCU failure is catastrophic</li>
+<li>No Fail-safe - Any blocking code stalls all systems</li>
+</ol>
+
+<h2>Multi-Controller Architecture</h2>
+
+<p>For larger, complex systems or those which will likely be expanded upon or used for research purposes, a multi-controller architecture is the better option. It should also be noted that robot controllers are not only MCUs, but are commonly controller using microprocessors (MPU) as well, as they are capable of processing more data at higher speeds.</p>
+
+<h3>Pros</h3>
+
+<ol>
+<li>Modularity - simple systems can be reused (motor drivers, sensor interfaces)</li>
+<li>Easy to swap to different sensors using documented interfaces</li>
+<li>Decoupled components - Switching to a different sensor or motor does not affect other systems</li>
+<li>Multiple controllers could be less expensive than one powerful one</li>
+<li>Timing - different systems can run at different clock speeds</li>
+<li>Simple firmware - specific code is less cluttered</li>
+<li>Well known and easy to implement serial interfaces (SPI, I2C, USB, etc)</li>
+<li>Able to split control into layers of abstraction</li>
+</ol>
+
+<h3>Cons</h3>
+
+<ol>
+<li>More components to manage</li>
+<li>More power usage</li>
+<li>Complicated hardware infrastructure</li>
+<li>More cables to run</li>
+</ol>
+
+<h2>Wrapping Up</h2>
+
+<p>It's obvious that the pros of one architecture are the cons of the other, and vice versa. This is to be expected. For complex robotic systems, it is common (not necessarily standard, but typical) to break the problem down into smaller chunks - using small MCU circuits that do very specific things. These can then be grouped together, whatever makes sense to you. </p>
+
+<p>For example, there could be one central controller for all motor drivers or distance sensors. Similarly, all of the drivers for one section of a robot could be grouped together, such as a single arm in a humanoid robot. All of these mid-level-controllers are then commanded by a single high-level controller which decides when and why to do things, but doesn't really care how it gets done.</p>
+
+<p>On the other hand, for a simple robot using a vary unique structure that is unlikely to be reused, a single central controller is often used.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-8283" data-toggle = "popover">
+				<p>user name : Kurt E. Clothier</p>
+				<p> user reputation : 371</p>
+				<p class = "tagcontent" id = "usertaginfo-8283">{'None': 21}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-8283">Load Comments</button></br>
+			<div id = "commentsection-8283" class = 'collapse'>
+			<div id = "comment-13258" class = "comment">
+				<p>I hoped that someone will appear with a paper that does a thorough comparative analysis but you argumented everything quite well. Thanks</p>
+			</div>
+			<div id = "comment-13261" class = "comment">
+				<p>Thank you. I agree, a paper would be best, but I don't think it's really a valid avenue of research since there is no best way to do this. Like I said, the answer really depends on the application.</p>
+			</div>
+			</div>
+				<textarea id = "speech-8283" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-8283">
+					<img id="start_img-8283" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-8283">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

@@ -1,0 +1,297 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Multicopter: What are Euler angles used for?
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-12701" class = "post">
+			<h2>Question</h2>
+			<div id="vote-12701" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 151</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Multicopter: What are Euler angles used for?</h2>
+<p>I hope you can help me and this is the right forum to ask.</p>
+
+<p>In the process of building and programming my own Quadcopter, I encountered the term Euler angles. I took some time to understand them and then wondered why they are used in multicopter systems.</p>
+
+<p>In my understanding Euler angles are used to rotate a point or vector in a coordinate system/ to express that rotation. I now wonder why i should use Euler angles to compute the orientation of the quadcopter as I could easily(at least i think so) compute the angles by themself, like
+$$
+\theta = arctan(y/z)
+$$
+$$
+\phi = arctan(x/z)
+$$
+(just using accelerometer, where $x, y, z$ are axis accelerations and $\theta, \phi$ are pitch and roll, respectively. In the actual implementation I do <em>not</em> only use the accelerometer, this is just simplified to make the point clear).</p>
+
+<p>Where exactly are Euler angles used?
+Are they only used to convert desired trajectory in the earth frame to desired trajectory in the Body frame?</p>
+
+<p>I would be very glad if anyone could point this out and explain the concept/ why and where they are used further.</p>
+
+<p>To clarify: I do know that Euler angles encounter gimbal lock, that they are three rotations about $x, y, z$ axis and 
+how they generally work(I think). @Christo gave a very good explanation.</p>
+
+<p>My question now is, why are <em>they</em> used? Isn't it counterproductive to apply the yaw rotation, then pitch, and then roll?</p>
+
+<pre><code>-Earth frame X,Y,Z
+rotation about Z(psi)
+-&gt;Frame 1 x', y', z'
+rotation about y'(theta)
+-&gt;Frame 2 x'', y'', z''
+rotation about x''(phi)
+-&gt;Body frame x, y, z
+</code></pre>
+
+<p>and vice versa.</p>
+
+<p>Why? I would just have said:</p>
+
+<pre><code>pitch = angles between X and x
+roll = angle between Y and y
+yaw = angle between x-y-projection of the magnetic field-vector and the starting vector(yaw is kinda different).
+</code></pre>
+
+<p>(Notice the difference between uppercase and lowercase, look at the Earth-to-Body-Frame for notation).
+Tied with this i wonder why the correct formula for pitch($\theta)$ should be $$\theta = \tan^{-1}\left(-f_x/\sqrt{f_y^2+f_z^2}\right)$$
+I would have thought $$\theta = \tan^{-1}\left(-f_x/f_z\right)$$ suffices.
+Maybe I have some flaw in my knowledge or a piece of the puzzle is still missing.</p>
+
+<p>I hope this is understandable, if not feel free to ask. If this gets too crowded, I can always ask another question, just make me aware of it.</p>
+
+<p>If anyone could explain how to use quaternions to express orientation I would be very thankful, but I can also just ask another time. I get the concept of Quaternions, just not how to use them to express <em>orientation</em> not <em>rotation</em>.</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12701" data-toggle = "popover">
+				<p>user name : JustAGuy</p>
+				<p> user reputation : 13</p>
+				<p class = "tagcontent" id = "usertaginfo-12701">{'quadcopter': 2, 'None': 0, 'orientation': 2, 'algorithm': 2, 'multi-rotor': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-12701" class = 'collapse'>
+			</div>
+				<textarea id = "speech-12701" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12701">
+					<img id="start_img-12701" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12701">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-12702"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-12702" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Your own equations make a lot of assumptions about the problem you are trying to solve. They are sufficient to solve your problem, but will not work for certain conditions (z = 0 for instance). </p>
+
+<p>Euler angles are similar. A way describe orientation (we typically use orientation to mean all angles, not just pitch and roll as you are using here). Euler angles have limitations similar to your equations and won't work for a lot of situations (Search: gimbal lock). </p>
+
+<p>In my own career, I have never used euler angles. I find them confusing since there are so many permutations of them.</p>
+
+<p>Direction cosines (3x3 rotation matrices) are much easier to visualize for me and I use them when doing things by hand. Since they are also the primary way to do transforms, it's also the way that most use to do calculations.</p>
+
+<p>Quaternions work great for calculation. Convert your orientation to a quaternion using the typical equations, do your slerp or whatever, and convert them back to an orientation when you need to transform coordinates or vectors. </p>
+
+<p>My recommendation would be to learn to use rotation matrices and quaternions when working with orientations, and leave representations that use angles to the primary school kids.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12702" data-toggle = "popover">
+				<p>user name : hauptmech</p>
+				<p> user reputation : 2621</p>
+				<p class = "tagcontent" id = "usertaginfo-12702">{'battery': 2, 'None': 220, 'lithium-polymer': 2}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-12702">Load Comments</button></br>
+			<div id = "commentsection-12702" class = 'collapse'>
+			<div id = "comment-22264" class = "comment">
+				<p>Thank you for your advice. I know Euler angles 'suffer' from gimbal lock, but they can be used anyways since most quadrotors are not made to approach angles of 90  in either pitch or roll. And they __are__ widely used- which is not comprehensible for me. In my understanding pitch, roll and yaw are the angles between the Body frame axis and the Earth frame axis, completely uncoupled. Why are euler angles used then to express the orientation?</p>
+			</div>
+			</div>
+				<textarea id = "speech-12702" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12702">
+					<img id="start_img-12702" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12702">Comment</button>
+			<br><div id = "ans-12705"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-12705" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Euler angle can be used to describe the orientation of the quadcopter relative to the local level surface and relative to a azimuth reference (typically true north). The roll ($\phi$) and pitch ($\theta$) angles describe the tilt of the quadrotor relative to the local vertical; i.e., relative to the gravity vector.  The yaw angle ($\psi$) describes the amount of rotation around the local vertical direction. </p>
+
+<p>Typically, the roll and pitch angles are used to control the direction of the quadcopter's total thrust vector.  If they are zero, the thrust vector will point directly upwards, opposite to the direction of the gravity vector. Non-zero values of roll and pitch can be used to tilt the thrust vector so that the resultant horizontal component of the thrust vector can be used for translational motion. </p>
+
+<p>It is generally not a good idea to use accelerometer measurements to calculate roll and pitch angles:<br>
+Accelerometers measure the specific force vector in body axes.  Three accelerometers aligned along the body axes will measure
+\begin{eqnarray}
+f_x &amp;=&amp; a_x-g\sin\theta \\
+f_y &amp;=&amp; a_y+g\cos\theta\sin\phi \\
+f_z &amp;=&amp; a_z+g\cos\theta\cos\phi
+\end{eqnarray}
+where $a_x$, $a_y$, and $a_z$ are components of the kinematic acceleration in body axes, and $g$ is the acceleration due to gravity.  If your Quadcopter is <em>not</em> accelerating, such as when it is stationary, the $a_x$, $a_y$, and $a_z$ components become zero. And <em>only then</em> can you use the accelerometer measurements to calculate the roll and pitch angles:
+\begin{eqnarray}
+\phi &amp;=&amp; \tan^{-1}\left(f_y/f_z\right) \\
+\theta &amp;=&amp; \tan^{-1}\left(-f_x/\sqrt{f_y^2+f_z^2}\right)
+\end{eqnarray}
+This is a common method used to initialize the roll and pitch angles in a stationary IMU.  In flight, the accelerometers will also measure the components of its kinematic acceleration and the equations given above cannot be used to measure the roll and pitch angles. </p>
+
+<p>Euler angles is one of three methods commonly used to describe the orientation of the quadcopter relative to the earth.  The other two are quaternions, and  direction cosines.  Each of these methods have advantages and disadvantages, and we can easily convert from one representation to another.  But, this a probably a topic for a next question.</p>
+
+<p><strong>Edit: Description of Conventional Euler Angles</strong></p>
+
+<p>First, we need to define two Cartesian frames with their origins located at the centre of mass of the quadrotor.  The body frame is fixed to the vehicle, with its $x$-axis parallel to the plane of the rotors pointing "forward", its $y$-axis is parallel to the plane of the rotors and perpendicular to the $x$-axis pointing to the right, and its $z$-axis perpendicular to the $xy$-plane pointing down. The origin of the local-level local north (LLLN) frame translates with the body frame, but always remain level with its $N$-axis pointing north, its $E$-axis pointing east, and its $D$-axis pointing down. The orientation of the quadrotor relative to the Earth is then described by the orientation of the body frame relative to the LLLN frame.  Euler angles are a set of three rotations taken about a single axis at a time in a specified order to generate the orientation of the body frame relative to the LLLN frame.  The so-called "conventional" Euler angles used in the aerospace industry are yaw ($\psi$), pitch ($\theta$), and roll ($\phi$) obtained from a particular sequence of rotations.</p>
+
+<p>With the body frame initially aligned with the LLLN frame so that the $x,y,z$ axes are aligned with the $N,E,D$ axes and $\psi=\theta=\phi=0$, or stated differently, that the plane of the rotors is horizontal and the quadrotor's nose is pointing north, perform the following three rotations:</p>
+
+<ol>
+<li>First, the body frame is rotated through the yaw angle in a positive sense around its $z$-axis. </li>
+<li>Then the displaced body frame is rotated through the pitch angle in a positive sense around the displaced $y$-axis.</li>
+<li>Finally, the displaced body frame is rotated through the roll angle in a positive sense around the displaced $x$-axis to obtain its final arbitrary orientation relative to the LLLN frame.</li>
+</ol>
+
+<p>(Use a little model to visualize these three rotations.)</p>
+
+<p>Note that these three rotations are not commutative (angle are not vectors) so that a different sequence of rotations will result in a different final orientation.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-12705" data-toggle = "popover">
+				<p>user name : Christo</p>
+				<p> user reputation : 351</p>
+				<p class = "tagcontent" id = "usertaginfo-12705">{'None': 19}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-12705">Load Comments</button></br>
+			<div id = "commentsection-12705" class = 'collapse'>
+			<div id = "comment-22265" class = "comment">
+				<p>Thank you for your explanation. I do a fusion of gyroscope and accelerometer  data with a complementary filter which will late become a Kalman filter. So I dont (yet) need help in implementing things because I want to understand everything before attempting to do it. I do get how things generally work, but not how/why Euler angles are used.</p>
+			</div>
+			<div id = "comment-22266" class = "comment">
+				<p>How exactly are roll, pitch and yaw represented? I would calculate them based on accelerometer and gyro readings according to my formulas, in addition to the integrated gyro term with some filtering and stuff. But why is theta = arctan(-fx/__sqrt(fy^2 + fz^2)__)? Has this something to do with Euler angles or am I just kinda dumb?</p>
+			</div>
+			<div id = "comment-22267" class = "comment">
+				<p>Euler angles are single axis rotations performed one at a time.  So, there will be different definitions based on the sequence in which these rotations are performed.  The sequence that I use is the one commonly used in aerospace engineering: yaw around the $z$-axis (down), followed by pitch around the $y$-axis (pointing to the right), followed by roll around the $x$-axis (pointing forward).  These are the "conventional" Euler angles used in aerospace engineering. Do you want to ask another question, or should I expand my current answer?</p>
+			</div>
+			<div id = "comment-22268" class = "comment">
+				<p>Now we are getting closer to the root of my problem, which is more of a theoretical one. 
+Why are these rotation applied one at a time to the 'new' reference system and not all on one? Why do we need multiple reference systems? Can't I just say pitch = 45  and roll is 45  and yaw is 3  completely unrelated to one another? You can explain here or I can ask another question, I don't  know what is better too :) Thank you for your help again, much appreciated!</p>
+			</div>
+			<div id = "comment-22269" class = "comment">
+				<p>To further clarify my problem(I am truly sorry that I can't articulate myself enough so I get understood, this happens to me all the time): 
+For example, I dont understand why there should be $sin\phi$ _and_ $cos\theta$ in $f_y$:
+\begin{eqnarray}
+f_x &=& a_x-g\sin\theta \\
+f_y &=& a_y+g\cos\theta\sin\phi \\
+f_z &=& a_z+g\cos\theta\cos\phi
+\end{eqnarray}
+This probably is derived from Euler angles, in which the rotations are applied one at a time. Why not just
+\begin{eqnarray}
+f_x &=& a_x-g\sin\theta \\
+f_y &=& a_y+g\sin\phi \\
+f_z &=& a_z+g\cos\theta\cos\phi
+\end{eqnarray}</p>
+			</div>
+			<div id = "comment-22270" class = "comment">
+				<p>I suspect Euler angles are only used to rotate the desired trajectory from the Earth frame(travel 5m north) to the Body frame(rotate 5m-north-vector by inverse Euler angles, this is where 5m north points from the Multicopters point of view).</p>
+			</div>
+			<div id = "comment-22271" class = "comment">
+				<p>@WombleIsAFaggot, I hope my edit wil clarify this for you.</p>
+			</div>
+			<div id = "comment-22275" class = "comment">
+				<p>Thanks again for your time. I actually knew what you just explained, my problem are not the Euler angles themselves, but _why exactly they are used_. I simply do not grasp how applying rotations about three axis on already rotated coordinate systems is better than just taking the plain angle trigonometrically. I think I should edit my question.</p>
+			</div>
+			<div id = "comment-22276" class = "comment">
+				<p>You could define pitch, yaw, and roll angles with respect to some global reference frame.  However, as @Hauptmech says, an easier approach would be to use 3x3 rotation matrices.</p>
+			</div>
+			<div id = "comment-22277" class = "comment">
+				<p>Regarding why one Euler angle's coordinate system is based on the previous rotation, instead of relating to a fixed coordinate system, consider flying a plane.  If I, as the pilot, roll my plane so that the wings are tilted, say, 30 degrees, then pitch up (pull back on the yoke), what happens?  The pitch command does not cause a vertical pitch with respect to some Earth-fixed frame, but rather it causes a rotation about the *new* axis which is at the same angle as the wings.  Euler angles function similarly to this.</p>
+			</div>
+			<div id = "comment-22278" class = "comment">
+				<p>Ok, this makes sense. Thank you! But is this sensible and useful in the application of a multicopter too? Are the Euler angles the 'real' angles? -> Is the error between Euler and desired angles correct?</p>
+			</div>
+			<div id = "comment-22280" class = "comment">
+				<p>And also, which was kind of the original root of my problem a week ago, aren't rotation matrices and quaternions used to _rotate_ something around an arbitrary axis? How would I use them to calculate errors between desired and actual angles? Do i have to make a 'heading vector' up which consists of the actual and one which consists of the desired, and then calculate the angles? Or should I ask another question? :D</p>
+			</div>
+			<div id = "comment-22281" class = "comment">
+				<p>This is becoming a "chat" site. Go and study coordinate transformations, direction cosine matrices, quaternions, and Euler angles. And the duality between rotating vectors and describing orientations.</p>
+			</div>
+			<div id = "comment-22298" class = "comment">
+				<p>@ Christo You are probably right. Thank you all for your help, I think I actually got it now. Just the
+\begin{eqnarray}
+\theta &=& \tan^{-1}\left(-f_x/\sqrt{f_y^2+f_z^2}\right)
+\end{eqnarray}
+part is a bit unclear(why squareroot of y and z squared?).</p>
+			</div>
+			</div>
+				<textarea id = "speech-12705" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-12705">
+					<img id="start_img-12705" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-12705">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

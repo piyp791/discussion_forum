@@ -1,0 +1,151 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>PID controller for trajectory with mutliple setpoints
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-6522" class = "post">
+			<h2>Question</h2>
+			<div id="vote-6522" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 267</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>PID controller for trajectory with mutliple setpoints</h2>
+<p>We implemented a PID controller for our quadcopter which allows us to fly from point A to B. The precise position of the quadcopter is measured using an external tracking system.</p>
+
+<p>Now that we can fly from A to B, we would like to implement a controller to fly more complex trajectories with multiple set points. E.g. from A to B to C or flying in a circle using sample points.</p>
+
+<p>We tried to use our regular PID controller for this but this of course doesn't work well since the PID controller forces the quadcopter to stabalize at any set point. We would like to have a controller that allows the quadcopter to fly a trajectory fairly smoothly. I think this has to be a controller that takes into account multiple set points in the trajectory at the same time so that it can already slow down/speed up based on the trajectory that is ahead.</p>
+
+<p>Can someone point me to some controllers / algorithms that I can look at to realize this? Do I need a completely different controller to do this or will it be an adapted version of the PID controller that I have now?</p>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6522" data-toggle = "popover">
+				<p>user name : alcon</p>
+				<p> user reputation : 13</p>
+				<p class = "tagcontent" id = "usertaginfo-6522">{'quadcopter': 2, 'None': 0, 'pid': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3><p>no comments yet<p><br>
+			<div id = "commentsection-6522" class = 'collapse'>
+			</div>
+				<textarea id = "speech-6522" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6522">
+					<img id="start_img-6522" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6522">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-6524"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-6524" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">1</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>The most common way to address this is to actually change the setpoint sent to the controller over time. For example, to get from point A to point B in T seconds, you would do
+$$
+\begin{align}
+x^d(t) &amp;=  t p_B + (T-t) p_A
+\end{align}
+$$
+where $x^d$ is the desired position sent to the controller, $p_A$ and $p_B$ are the two setpoints, and $t$ is time (assume $t=0$ at the start of the maneuver). For best control it is also good to define a desired velocity:
+$$
+\begin{align}
+v^d &amp;= \frac{||p_B - p_A||}{T}
+\end{align}
+$$</p>
+
+<p>This process in general is called trajectory generation.</p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-6524" data-toggle = "popover">
+				<p>user name : ryan0270</p>
+				<p> user reputation : 1814</p>
+				<p class = "tagcontent" id = "usertaginfo-6524">{'None': 133}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-6524">Load Comments</button></br>
+			<div id = "commentsection-6524" class = 'collapse'>
+			<div id = "comment-9380" class = "comment">
+				<p>But this formula requires to change the setpoint of the controller all the time. However, normally when I change the setpoint of my PID controller, I also reset my entire PID because we need to go to a new position. This would mean that I have to reset my pid controller all the time ... at that moment it would not do anything anymore.</p>
+			</div>
+			<div id = "comment-9381" class = "comment">
+				<p>What do you mean "reset" your PID?</p>
+			</div>
+			<div id = "comment-9383" class = "comment">
+				<p>When I fly a completely different trajectory, I reset my PID because it has nothing to do with it any more. But probably to go to consecutive setpoints in a single trajectory I should not reset my pid. 
+Does this makes sense?</p>
+			</div>
+			<div id = "comment-9385" class = "comment">
+				<p>Correct, there should be no need to reset your PID. In general, you should always have a trajectory generation step before your PID. This way if the user suddenly changes setpoints, causing a large position erorr, your system doesn't go crazy; the trajectory generation step generates a smooth plan to get from the current position the new one so the controller never needs any "reset".</p>
+			</div>
+			</div>
+				<textarea id = "speech-6524" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-6524">
+					<img id="start_img-6524" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-6524">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>

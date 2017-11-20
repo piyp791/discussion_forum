@@ -14,8 +14,13 @@ import re
 userdict = {}
 
 QUES_RATING = 1
-ANSWER_RATING = 1
-COMMENT_RATING = 1
+ANSWER_RATING = 2
+COMMENT_RATING = 1.5
+
+user_counter_dict = {}
+post_counter_dict = {}
+user_counter = 0;
+post_counter = 0;
 
 def write_to_file(userdict):
 	ratings_str = ''
@@ -31,20 +36,43 @@ def write_to_file(userdict):
 			if activity > 5:
 				activity = 5;
 			if ratings_str == '':
-				ratings_str = user + " " + post + " " + str(activity)
+				ratings_str = str(user) + " " + str(post) + " " + str(activity)
 			else:
-				ratings_str = ratings_str + ("\n" + user + " " + post + " " + str(activity))
+				ratings_str = ratings_str + ("\n" + str(user) + " " + str(post) + " " + str(activity))
 
-	f = open("ratings.dat","w") #opens file with name of "test.txt"
+	f = open("ratings_robotics.dat","w") #opens file with name of "test.txt"
 	f.write(ratings_str);
 	f.close();
 	print ratings_str
 
 
 
+def convert_counters(type, id):
+
+	global user_counter;
+	global post_counter;
+	if type == 'user':
+		if id in user_counter_dict:
+			return user_counter_dict[id]
+		else:
+			user_counter = user_counter+1;
+			user_counter_dict[id] = user_counter
+			return user_counter_dict[id]
+
+	elif type == 'post':
+		if id in post_counter_dict:
+			return post_counter_dict[id]
+		else:
+			post_counter = post_counter+1;
+			post_counter_dict[id] = post_counter
+			return post_counter_dict[id]		
+
 def add_post_to_user_activity_dict(userId, postId, postTypeId):
 	#print 'adding post to user activity';
-
+	userId = convert_counters('user', userId)
+	postId = convert_counters('post', postId)
+	
+	
 	if userId in userdict:
 		if postId in userdict[userId]:
 			#print 'dictionary exists'
@@ -56,6 +84,7 @@ def add_post_to_user_activity_dict(userId, postId, postTypeId):
 				userdict[userId][postId]+=COMMENT_RATING
 		else:
 			#post doesnt exist for this user
+			
 			if postTypeId == '1':
 				userdict[userId][postId] = QUES_RATING
 			elif postTypeId == '2':
@@ -65,6 +94,7 @@ def add_post_to_user_activity_dict(userId, postId, postTypeId):
 
 	else:
 		#create new dictionary for user
+
 		userdict[userId] = {}
 		if postTypeId == '1':
 			userdict[userId][postId] = QUES_RATING
@@ -77,7 +107,7 @@ def add_post_to_user_activity_dict(userId, postId, postTypeId):
 def get_user_activity_from_comments():
 
 	print 'getting user data from comments...';
-	comment_tree = ET.parse('../data/apple.meta.stackexchange.com/Comments.xml');
+	comment_tree = ET.parse('../data/robotics.stackexchange.com/Comments.xml');
 	comment_root = comment_tree.getroot();
 
 	for child in comment_root:
@@ -89,7 +119,7 @@ def get_user_activity_from_comments():
 def get_user_activity_from_posts():
 
 	print 'getting user data from posts...';
-	tree = ET.parse('../data/apple.meta.stackexchange.com/Posts.xml');
+	tree = ET.parse('../data/robotics.stackexchange.com/Posts.xml');
 	root = tree.getroot();
 	for child in root:
 		postTypeId = child.get('PostTypeId');
@@ -115,7 +145,7 @@ def get_user_activity_from_posts():
 def main():
 	#iterate over Posts data and get user rating json
 	get_user_activity_from_posts();
-	print userdict['3'];
+	#print userdict['3'];
 	#iterate over Comments data and add to user rating json
 	get_user_activity_from_comments();
 	print userdict;

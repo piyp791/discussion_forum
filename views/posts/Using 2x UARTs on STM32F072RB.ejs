@@ -1,0 +1,231 @@
+<html>
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+		<script src = "/jquery-highlight.js"></script>
+		<link href="/jquery.upvote.css" rel="stylesheet">
+		<script src = "/jquery.upvote.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="/style.css"/>
+		<script src="/createlinks.js"></script>
+		<script src="/textaudit.js"></script>
+		<script src="/PorterStemmer1980.min.js"></script>
+		<script src="/highlight.js"></script>
+		<title id = 'pagetitle'>Using 2x UARTs on STM32F072RB
+		</title>
+	</head>
+	<body id = 'pagebody'>
+		<div id = "loginmodals"></div>
+		<div id = "issuemodals"></div>
+		<div id = "highlight_tool"></div>
+		<div class = "container">
+			<header>
+				<h1>Just Another Discussion Forum</h1>
+			</header>
+			<div class="topnav" id="myTopnav">
+				<a href="/home">Home</a>
+				<a href = "#issueModal" data-toggle="modal" style = "float:right">Report Issue</a>
+			</div>
+			<div class = "content">
+			<div id = "ques-7617" class = "post">
+			<h2>Question</h2>
+			<div id="vote-7617" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">2</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+				<p>Views :: 287</p>
+			</div>
+			<form id = "questionpostsform" method="GET" action = "/ask">
+				<input type="submit" id = "quesbtn" class="btn btn-primary btn-lg" value="Ask Question">
+			</form>
+				<h2>Using 2x UARTs on STM32F072RB</h2>
+<p>I am trying to use 2x UARTs with ChibiOS on the STM32F072RB Nucleo Board. </p>
+
+<p>I initialized UART2 but I am still getting output on UART1 pins, which is totally weird.</p>
+
+<pre><code>#include "ch.h"
+#include "hal.h"
+
+
+/*
+ * UART driver configuration structure.
+ */
+static UARTConfig uart_cfg_1 = {
+    NULL,   //txend1,
+    NULL,   //txend2,
+    NULL,   //rxend,
+    NULL,   //rxchar,
+    NULL,   //rxerr,
+    800000,
+    0,
+    0,      //USART_CR2_LINEN,
+    0
+};
+
+static UARTConfig uart_cfg_2 = {
+    NULL,   //txend1,
+    NULL,   //txend2,
+    NULL,   //rxend,
+    NULL,   //rxchar,
+    NULL,   //rxerr,
+    800000,
+    0,
+    0,
+    0
+};
+
+/*
+ * Application entry point.
+ */
+int main(void) {
+
+  /*
+   * System initializations.
+   * - HAL initialization, this also initializes the configured device      drivers
+   *   and performs the board-specific initializations.
+   * - Kernel initialization, the main() function becomes a thread and the
+   *   RTOS is active.
+   */
+  halInit();
+  chSysInit();
+
+  /*
+   * Activates the serial driver 1, PA9 and PA10 are routed to USART1.
+   */
+  //uartStart(&amp;UARTD1, &amp;uart_cfg_1);
+  uartStart(&amp;UARTD2, &amp;uart_cfg_2);
+
+  palSetPadMode(GPIOA, 9, PAL_MODE_ALTERNATE(1));  // USART1 TX.
+  palSetPadMode(GPIOA, 10, PAL_MODE_ALTERNATE(1)); // USART1 RX.
+  palSetPadMode(GPIOA, 2, PAL_MODE_ALTERNATE(1));  // USART2 TX.
+  palSetPadMode(GPIOA, 3, PAL_MODE_ALTERNATE(1));  // USART2 RX.
+
+  /*
+   * Starts the transmission, it will be handled entirely in background.
+   */
+  //uartStartSend(&amp;UARTD1, 13, "Starting...\r\n");
+  uartStartSend(&amp;UARTD2, 13, "Starting...\r\n");
+
+  /*
+   * Normal main() thread activity, in this demo it does nothing.
+   */
+  while (true) {
+    chThdSleepMilliseconds(500);
+    uartStartSend(&amp;UARTD2, 7, "Soom!\r\n");
+    //uartStartSend(&amp;UARTD1, 7, "Boom!\r\n");
+  }
+}
+</code></pre>
+
+<p>The line <code>uartStartSend(&amp;UARTD2, 7, "Soom!\r\n");</code> gives output on UART1. </p>
+
+<p>Is there anything else I need to do?</p>
+
+<p>mcuconfig.h reads</p>
+
+<pre><code>#define STM32_UART_USE_USART1               TRUE
+#define STM32_UART_USE_USART2               TRUE
+#define STM32_UART_USART1_IRQ_PRIORITY      3
+#define STM32_UART_USART2_IRQ_PRIORITY      3
+#define STM32_UART_USART1_DMA_PRIORITY      0
+#define STM32_UART_USART2_DMA_PRIORITY      0
+</code></pre>
+
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7617" data-toggle = "popover">
+				<p>user name : user2967920</p>
+				<p> user reputation : 136</p>
+				<p class = "tagcontent" id = "usertaginfo-7617">{'None': 2, 'microcontroller': 9, 'beagle-bone': 0, 'power': 0, 'battery': 1, 'wifi': 2, 'c': 2, 'wireless': 1, 'imu': 5, 'circuit': 1, 'electronics': 1, 'i2c': 1, 'serial': 2}</p>
+			</div><br>
+			<br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7617">Load Comments</button></br>
+			<div id = "commentsection-7617" class = 'collapse'>
+			<div id = "comment-14442" class = "comment">
+				<p>So if you uncomment both `uartStartSend(&UARTD2, 7, "Soom!\r\n");` and `uartStartSend(&UARTD1, 7, "Boom!\r\n");`, you get both outputs on UART1?</p>
+			</div>
+			<div id = "comment-17371" class = "comment">
+				<p>USART2 also available on PA14 and PA15 pins, you should try those too.</p>
+			</div>
+			<div id = "comment-17471" class = "comment">
+				<p>The best option was to use a custom proto board to avoid all those conflicts. 
+Thanks for the suggestion. 
+CHeers</p>
+			</div>
+			<div id = "comment-17836" class = "comment">
+				<p>@user2967920, you can add a new answer with more details, and later accept it! That would help others with similar problem in the future.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7617" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7617">
+					<img id="start_img-7617" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7617">Comment</button>
+
+<h1>Answers</h1>
+			<br><div id = "ans-7619"  class = "post">
+				<h2>Answer</h2>
+			<div id="vote-7619" class="upvote" style="float:left;">
+				<a class="upvote"></a>
+				<span class="count">0</span>
+				<a class="downvote"></a>
+				<a class="star"></a>
+			</div>
+				<p><p>Perhaps try UART3? UART2 might be in use for something else as the manual says,</p>
+
+<p>"By default the USART2 communication between the target MCU and ST-LINK MCU is enabled..." on page 23, section 5.8.</p>
+
+<p><a href="http://www.st.com/st-web-ui/static/active/en/resource/technical/document/user_manual/DM00105823.pdf" rel="nofollow">Manual for reference</a></p>
+</p><br>
+			</div>
+			<div class = "userinfosection"  id = "userinfo-7619" data-toggle = "popover">
+				<p>user name : Matt Brown</p>
+				<p> user reputation : 188</p>
+				<p class = "tagcontent" id = "usertaginfo-7619">{'None': 16, 'wheeled-robot': 2}</p>
+			</div><br><h3>Comments</h3>
+				<button data-toggle = 'collapse' data-target = "#commentsection-7619">Load Comments</button></br>
+			<div id = "commentsection-7619" class = 'collapse'>
+			<div id = "comment-11021" class = "comment">
+				<p>UART2 Is shared with the STLnk BUS, so i am trying to get UART3 to work. I am stuck in a unhandled exception phase now need to sort out the vector tables and isr numbers.</p>
+			</div>
+			</div>
+				<textarea id = "speech-7619" rows="3" cols="80"></textarea><br>
+				<button class="record-start" id="start-7619">
+					<img id="start_img-7619" src="/mic.gif" alt="Start">
+				</button>
+				<button class = "comment-btn" id = "comment-btn-7619">Comment</button>
+			</div>
+			<div id = "resourcestab" class = "resourcestab">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#resources">Resources</a></li>
+					<li><a data-toggle="tab" href="#summary">Summary</a></li>
+				</ul>
+					<div class="tab-content">
+						<div id="resources" class="tab-pane fade in active">
+							<h3>Resources</h3>
+							<div id = "resourcescontent"></div>
+						</div>
+						<div id="summary" class="tab-pane fade">
+							<h3>Summary</h3>
+							<div id = "summarycontent"></div>
+						</div>
+			</div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+	</div>
+	<script src="/post.js"></script>
+	<script type="text/javascript">
+		$("#loginmodals").load("/loginModal.html");
+		$("#issuemodals").load("/issueModal.html");
+		$("#highlight_tool").load("/highlight_tool.html");
+		checkLoggedInUser()
+		var content = $('.content').html();
+		populateResources(content)
+		getHighlights()
+		setOnLinksHover()
+	</script>
+	<script src="/media.js"></script>
+	<script src="/vote.js"></script>
+	<script src="/managefunction.js"></script>
+	</body>
+</html>
