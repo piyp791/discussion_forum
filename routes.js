@@ -1,8 +1,3 @@
-var request = require('request');
-const querystring = require('querystring');                                                                                                                                                                                                
-const https = require('https');
-const fs = require('fs');
-var path = require("path");
 var express = require('express');
 var dbHelper = require('./db-helper');
 var misc = require('./misc');
@@ -46,35 +41,15 @@ module.exports = function(app) {
             res.json(JSON.stringify({'status': 'failure'}))
         }
 
-        misc.getActivityForUser(userid, function(err, activityPosts){
-            if(err){
-                console.log('some error retrieving user activity');
-                res.json('error')
-            }else{
-                console.log(JSON.stringify(activityPosts));
+        misc.getContentBasedResults(userid, function(err, contentPosts){
 
-                //get important words for this id
-                misc.getQueryWordsForUser(activityPosts, function(err, words){
-                    if(err){
-                        console.log('some error retrieving user activity');
-                        res.json('error')
-                    }else{
-                        console.log(JSON.stringify(words));
+            console.log('content based results -->' +JSON.stringify(contentPosts)) 
 
-                        misc.doContentBasedQuery(words, function(err, posts){
+            misc.getCollaborativeResults(userid, function(err, collaborativePosts){
 
-                            if(err){
-                                console.log('error retrieving results from elasticseat');
-                            }else{
-                                console.log('posts-->' +JSON.stringify(posts));
-                                res.json(posts['hits']['hits']);
-                            }
-                        });
-                    }
-                })
-            }
+                console.log('collaborative filtering results -->' +JSON.stringify(collaborativePosts))
+            });
         });
-
     });
 
     app.get('/page/:link', function(req, res){

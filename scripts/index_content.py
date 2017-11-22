@@ -2,6 +2,9 @@ import xml.dom.minidom as minidom
 import xml.etree.ElementTree as ET
 import re
 import es as indexer
+import redis
+import json
+
 
 def find_parent_info(root, parentid):
 	for child in root:
@@ -24,12 +27,11 @@ def find_post_for_comment(root, post_id):
 			return title;
 
 		elif posttypeid == '2' and post_id == child.get('ParentId'):
-
 			parentid = child.get('ParentId');
 			title = find_parent_info(root, parentid);
 			return title;
 
-def index_comments(comment_root, root, fts):
+def index_comments(comment_root, root, fts, post_store):
 	for child in comment_root:
 		post_id = child.get('PostId');
 		comment_id = child.get('Id')
@@ -43,7 +45,15 @@ def index_comments(comment_root, root, fts):
 
 		body = title +  ' ' + body
 
-		fts.add_document(comment_id, title, 'text', body);
+		if post_id in post_store:
+			parentid = post_id
+		else:
+			for post in post_store:
+				answers = post_store[post]['answers']
+				if post_id in answers:
+					parentid = post_id
+					break;
+		fts.add_document(comment_id, title, parentid, 'text', body);
 
 
 def index_posts(root, fts):
@@ -52,6 +62,7 @@ def index_posts(root, fts):
 		post_type_id = child.get('PostTypeId');
 		post_id = child.get('Id');
 
+		parent_id = ''
 		if post_type_id == '2':
 			parent_id = child.get('ParentId');
 			parent_title = find_parent_info(root, parent_id)
@@ -73,7 +84,7 @@ def index_posts(root, fts):
 		#print body
 
 		body = title +  ' ' + body
-		fts.add_document(post_id, title, 'text', body);
+		fts.add_document(post_id, title, parent_id, 'text', body);
 
 def main():
 
@@ -90,8 +101,12 @@ def main():
 	index_posts(root, fts);
 	print 'posts indexed...';
 
+	r = redis.Redis('localhost')
+	post_store = r.hget('test', 'post_store');
+	post_store = json.loads(post_store)
+
 	print 'indexing comments...';
-	index_comments(comment_root, root, fts);
+	index_comments(comment_root, root, fts, post_store);
 	print 'comments indexed...';
 
 

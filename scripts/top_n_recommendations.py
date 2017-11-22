@@ -12,6 +12,8 @@ from collections import defaultdict
 from surprise import SVD
 from surprise import Dataset
 from surprise.dataset import Reader
+import redis
+import json
 
 
 def get_top_n(predictions, n=10):
@@ -55,7 +57,9 @@ testset = trainset.build_anti_testset()
 predictions = algo.test(testset)
 
 top_n = get_top_n(predictions, n=10)
+r = redis.Redis('localhost')
+r.hset('test', 'suggestions_dict',json.dumps(top_n))
 
 # Print the recommended items for each user
-for uid, user_ratings in top_n.items():
-    print(uid, [iid for (iid, _) in user_ratings])
+#for uid, user_ratings in top_n.items():
+#    print(uid, [iid for (iid, _) in user_ratings])

@@ -1,9 +1,5 @@
-import matplotlib.pyplot as plt; 
-plt.rcdefaults();
 import numpy as np;
-import matplotlib.pyplot as plt;
 import redis
-import pickle
 import json
 import sys
 from scipy import stats
@@ -41,10 +37,16 @@ def write_to_file(userdict):
 				ratings_str = ratings_str + ("\n" + str(user) + " " + str(post) + " " + str(activity))
 
 	f = open("ratings_robotics.dat","w") #opens file with name of "test.txt"
-	f.write(ratings_str);
+	#f.write(ratings_str);
 	f.close();
 	print ratings_str
 
+
+def save_counters_to_json(user_counter_dict, post_counter_dict, r):
+	print user_counter_dict
+	print post_counter_dict
+	r.hset('test', 'user_counter_dict',json.dumps(user_counter_dict))
+	r.hset('test', 'post_counter_dict',json.dumps(post_counter_dict))
 
 
 def convert_counters(type, id):
@@ -53,19 +55,19 @@ def convert_counters(type, id):
 	global post_counter;
 	if type == 'user':
 		if id in user_counter_dict:
-			return user_counter_dict[id]
+			return user_counter_dict[id];
 		else:
 			user_counter = user_counter+1;
-			user_counter_dict[id] = user_counter
-			return user_counter_dict[id]
+			user_counter_dict[id] = user_counter;
+			return user_counter_dict[id];
 
 	elif type == 'post':
 		if id in post_counter_dict:
-			return post_counter_dict[id]
+			return post_counter_dict[id];
 		else:
 			post_counter = post_counter+1;
-			post_counter_dict[id] = post_counter
-			return post_counter_dict[id]		
+			post_counter_dict[id] = post_counter;
+			return post_counter_dict[id];		
 
 def add_post_to_user_activity_dict(userId, postId, postTypeId):
 	#print 'adding post to user activity';
@@ -152,6 +154,8 @@ def main():
 	#write the ratings json to a file
 	write_to_file(userdict);
 	#save ratings json to redis
+	r = redis.Redis('localhost')
+	save_counters_to_json(user_counter_dict, post_counter_dict, r)
 	
 if __name__ == "__main__":
 	main();

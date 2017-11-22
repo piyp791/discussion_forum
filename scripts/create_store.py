@@ -10,6 +10,19 @@ import numpy as np
 from scipy.sparse.csr import csr_matrix #need this if you want to save tfidf_matrix
 
 
+def get_parent_tags(parent_id, post_tree):
+	root = post_tree.getroot();
+	for child in root:
+		post_id = child.get('Id');
+		if parent_id == post_id:
+			tags = child.get('Tags')
+			return tags
+
+def split_tags_str(tag_str):
+	tag_str =  tag_str[1:-1];
+	tag_arr = tag_str.split('><')
+	return tag_arr
+
 def init_tfidf():
 	tf = TfidfVectorizer(analyzer='word', ngram_range=(1,3),
                      min_df = 0, stop_words = 'english', sublinear_tf=True)
@@ -64,7 +77,6 @@ def store_words_for_each_doc(post_tree, comment_tree, tf):
 	return tfidf_obj
 
 
-
 def split_tags_str(tag_str):
 	tag_str =  tag_str[1:-1];
 	tag_arr = tag_str.split('><')
@@ -90,7 +102,6 @@ def create_tag_wise_posts(post_tree, comment_tree):
 
 			post_title = child.get('Title');
 			post_title = re.sub(r'[^\x00-\x7F]+',' ', post_title);
-
 			tags = child.get('Tags');
 
 		elif post_type_id == '2':
@@ -152,6 +163,100 @@ def create_tag_wise_posts(post_tree, comment_tree):
 	return tag_post_obj
 
 
+def create_post_store(post_tree, comment_tree):
+
+	post_store = {}
+	user_tag_store = {}
+	post_root = post_tree.getroot()
+	for post_child in post_root:
+
+		post_obj = {}
+		post_id = post_child.get('Id')
+		post_type_id = post_child.get('PostTypeId');
+		post_user_id = post_child.get('OwnerUserId')
+		if post_type_id == '1':
+
+			tags = post_child.get('Tags')
+
+			if post_id not in post_store:
+				#create new entry for this post
+
+				post_obj['Id'] = post_id
+				post_obj['Title'] = post_child.get('Title')
+				post_obj['answers'] = [];
+				post_obj['comments'] = [];
+
+				post_store[post_id] = post_obj
+
+		elif post_type_id == '2':
+
+			parent_id = post_child.get('ParentId');
+
+			tags = get_parent_tags(parent_id, post_tree);
+
+			if parent_id not in post_store:
+
+				#create new entry for parent id
+				temp_root = post_tree.getroot();
+				for temp_child in temp_root:
+					temp_type_id = temp.child.get('PostTypeId');
+					temp_id = temp_child.get('Id');
+					if temp_type_id == '1' and temp_id == parent_id:
+						post_obj['Id'] = temp_id
+						post_obj['Title'] = temp_child.get('Title')
+						post_obj['answers'] = [];
+						post_obj['comments'] = [];
+
+						post_obj['answers'].append(post_id)
+
+						post_store[temp_id] = post_obj;
+
+			elif parent_id in post_store:
+
+				post_store[parent_id]['answers'].append(post_id)
+
+		tags_arr = split_tags_str(tags)
+		if post_user_id not in user_tag_store:
+			user_tag_store[post_user_id] = tags_arr
+		else:
+			user_tag_store[post_user_id] = user_tag_store[post_user_id] + list(set(tags_arr) - set(user_tag_store[post_user_id]))
+
+
+	#print post_store
+	comment_root =comment_tree.getroot();
+	for comment_child in comment_root:
+		comment_post_id = comment_child.get('PostId');
+		comment_id = comment_child.get('Id');
+		comment_user = comment_child.get('UserId')
+		if comment_post_id in post_store:
+			post_store[comment_post_id]['comments'].append(comment_id);
+
+			tagstr = get_parent_tags(comment_post_id, post_tree);
+			tags_arr = split_tags_str(tagstr);
+			if comment_user not in user_tag_store:
+				user_tag_store[comment_user] = tags_arr
+			else:
+				user_tag_store[comment_user] = user_tag_store[comment_user] + list(set(tags_arr) - set(user_tag_store[comment_user]))
+
+		elif comment_post_id not in post_store:
+			for question in post_store:
+				answers = post_store[question]['answers'];
+				if comment_post_id in answers:
+					post_store[question]['comments'].append(comment_id);
+
+					tagstr = get_parent_tags(question, post_tree);
+					tags_arr = split_tags_str(tagstr);
+					if comment_user not in user_tag_store:
+						user_tag_store[comment_user] = tags_arr
+					else:
+						user_tag_store[comment_user] = user_tag_store[comment_user] + list(set(tags_arr) - set(user_tag_store[comment_user]))
+					break;
+
+		
+
+	#print user_tag_store
+	return (post_store, user_tag_store)
+
 def main():
 
 	post_tree = ET.parse('../data/robotics.stackexchange.com/Posts.xml');
@@ -161,26 +266,30 @@ def main():
 
 	r = redis.Redis('localhost')
 
-	#create structure to hold posts segregated ta wise
+	#create structure for post relationships
+	print 'Creating post store'
+	(post_store, user_tag_store) = create_post_store(post_tree, comment_tree)
+
+	r.hset('test', 'post_store',json.dumps(post_store))
+	r.hset('test', 'user_tag_store',json.dumps(user_tag_store))
+
+	
+	#create structure to hold posts segregated tag wise
 	print 'Creating tag wise posts data structure'
 	tag_post_obj = create_tag_wise_posts(post_tree, comment_tree);
 	#print tag_post_obj
+
 
 	#save the structure in redis db
 	print 'saving the structure in redis'
 	r.hset('test', 'tag-post_obj',json.dumps(tag_post_obj))
 		
-	#test the saved structure by retriving it
-	#new_tag_post_obj = r.hget('test', 'tag-post_obj');
-	#new_tag_post_obj = json.loads(new_tag_post_obj)
-	#print new_tag_post_obj
 	print 'initializing tf-idf'
 	tf = init_tfidf()
 
 	print 'Onto doing the tfidf and storing the important keywords for each doc'
 	tfidf_obj = store_words_for_each_doc(post_tree, comment_tree, tf);
-	#for obj in tfidf_obj:
-	#	print obj, '->', tfidf_obj[obj]
+
 	print 'saving the tfidf table in redis'
 	r.hset('test', 'tfidf_obj',json.dumps(tfidf_obj))
 

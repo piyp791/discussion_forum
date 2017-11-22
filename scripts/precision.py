@@ -51,8 +51,8 @@ reader = Reader(line_format='user item rating', rating_scale=(1, 5), sep=' ')
 data = Dataset.load_from_file(file_path, reader=reader)
 #data = Dataset.load_builtin('ml-100k')
 data.split(n_folds=5)
-#algo = SVD()
-algo = NMF()
+algo = SVD()
+#algo = NMF()
 
 for trainset, testset in data.folds():
     algo.train(trainset)

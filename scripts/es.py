@@ -7,8 +7,8 @@ class SearchEngine():
 		self.es = Elasticsearch()
 		self.index_name = index_name
 
-	def add_document(self, id, title, doctype, body):
-		self.es.index(index=self.index_name, id = id, doc_type=doctype, body={"title": title, "content": body, "timestamp": datetime.now()})
+	def add_document(self, id, title, parentid, doctype, body):
+		self.es.index(index=self.index_name, id = id, doc_type=doctype, body={"title": title, "parent_id": parentid, "content": body, "timestamp": datetime.now()})
 		print('added document ', title)
 
 	def search(self, query):
@@ -31,7 +31,7 @@ def main():
 	results = fts.search(query)
 	print results['hits']['hits']
 
-	#fts.deleteIndex()
+	fts.deleteIndex()
 	print fts.countDocs()
 
 if __name__ == "__main__":
