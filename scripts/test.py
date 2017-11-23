@@ -9,27 +9,6 @@ from redis_helper import load_obj_from_redis
 from redis_helper import save_obj_in_redis
 from tfidf_helper import do_tf_idf
 
-def update_tag_store(tag_post_store, tag_arr, post_id, post_type_id):
-    #print 'inside update tag store function:: post_type_id-->', post_type_id;
-
-    for tag in tag_arr:
-        if tag not in tag_post_store:
-            tag_post_store[tag] = {};
-            tag_post_store[tag]['questions'] = [];
-            tag_post_store[tag]['answers'] = [];
-            tag_post_store[tag]['comments'] = [];
-
-        #add post
-        if post_type_id == '1':
-            tag_post_store[tag]['questions'].append(post_id);
-        elif post_type_id == '2':
-            tag_post_store[tag]['answers'].append(post_id);
-        else:
-            tag_post_store[tag]['comments'].append(post_id);
-
-    return tag_post_store;
-
-
 def store_words_for_each_doc(post_tree, comment_tree):
 
 	#create array from Posts tree
@@ -54,34 +33,55 @@ def store_words_for_each_doc(post_tree, comment_tree):
 	tfidf_obj = do_tf_idf(post_content_array, post_id_array)
 	return tfidf_obj
 
+def update_tag_store(tag_post_store, tag_arr, post_id, post_type_id):
+    #print 'inside update tag store function:: post_type_id-->', post_type_id;
+
+    for tag in tag_arr:
+        if tag not in tag_post_store:
+            tag_post_store[tag] = {};
+            tag_post_store[tag]['questions'] = [];
+            tag_post_store[tag]['answers'] = [];
+            tag_post_store[tag]['comments'] = [];
+
+        #add post
+        if post_type_id == '1':
+            tag_post_store[tag]['questions'].append(post_id);
+        elif post_type_id == '2':
+            tag_post_store[tag]['answers'].append(post_id);
+        else:
+            tag_post_store[tag]['comments'].append(post_id);
+
+    return tag_post_store;
+
 def create_post_store(post_tree, comment_tree):
 
-	post_store = {}
-	user_tag_store = {}
+	post_store = {};
+	user_tag_store = {};
 	tag_post_store = {};
-	post_root = post_tree.getroot()
+	post_root = post_tree.getroot();
 	for post_child in post_root:
 
-		post_obj = {}
-		post_id = post_child.get('Id')
+		post_obj = {};
+		post_id = post_child.get('Id');
 		post_type_id = post_child.get('PostTypeId');
-		post_user_id = post_child.get('OwnerUserId')
+		post_user_id = post_child.get('OwnerUserId');
+
 		if post_type_id == '1':
 
-			tags = post_child.get('Tags')
+			tags = post_child.get('Tags');
 			tags_arr = split_tags_str(tags);
 			tag_post_store = update_tag_store(tag_post_store, tags_arr, post_id, post_type_id);
 
 			if post_id not in post_store:
 				#create new entry for this post
 
-				post_obj['Id'] = post_id
-				post_obj['Title'] = post_child.get('Title')
+				post_obj['Id'] = post_id;
+				post_obj['Title'] = post_child.get('Title');
 				post_obj['answers'] = [];
 				post_obj['comments'] = [];
 				post_obj['Tags'] = tags_arr;
 
-				post_store[post_id] = post_obj
+				post_store[post_id] = post_obj;
 
 		elif post_type_id == '2':
 
@@ -110,24 +110,20 @@ def create_post_store(post_tree, comment_tree):
 						post_store[temp_id] = post_obj;
 
 			elif parent_id in post_store:
+				post_store[parent_id]['answers'].append(post_id);
 
-				post_store[parent_id]['answers'].append(post_id)
-
-		tags_arr = split_tags_str(tags)
-		#print 'user tag array-->', user_tag_store;
-		#print 'tags array -->', tags_arr;
-		#print 'post user id -->', post_user_id;
-
-		if post_user_id not in user_tag_store:
-			#if post_user_id == '21':
-			#	print post_user_id
-			user_tag_store[post_user_id] = tags_arr
-		else:
-			#if post_user_id == '21':
-			#	print post_user_id
-			user_tag_store[post_user_id] = user_tag_store[post_user_id] + list(set(tags_arr) - set(user_tag_store[post_user_id]))
+		tags_arr = split_tags_str(tags);
+		print 'user tag array-->', user_tag_store;
+		print 'tags array -->', tags_arr;
+		print 'post user id -->', post_user_id;
+        if post_user_id not in user_tag_store:
+        	print 'creating new entry for users';
+        	user_tag_store[post_user_id] = tags_arr;
+        else:
+        	user_tag_store[post_user_id] = user_tag_store[post_user_id] + list(set(tags_arr) - set(user_tag_store[post_user_id]));
 
 
+	print user_tag_store
 	#print post_store
 	comment_root =comment_tree.getroot();
 	for comment_child in comment_root:
@@ -154,7 +150,6 @@ def create_post_store(post_tree, comment_tree):
 
 					tagstr = get_parent_tags(question, post_tree);
 					tags_arr = split_tags_str(tagstr);
-
 					tag_post_store = update_tag_store(tag_post_store, tags_arr, comment_post_id, '3');
 
 					if comment_user not in user_tag_store:
@@ -174,9 +169,8 @@ def main():
 	tag_tree = ET.parse('../data/robotics.stackexchange.com/Tags.xml');
 
 	#create structure for post relationships
-	print 'Creating post store'
-	(post_store, user_tag_store, tag_post_store) = create_post_store(post_tree, comment_tree)
-
+	print 'Creating post, user tag, and tag post stores stores';
+	(post_store, user_tag_store, tag_post_store) = create_post_store(post_tree, comment_tree);
 	#print tag_post_store
 	#save post store and user-tag store to redis
 	print 'Saving post and user tag, and post tag stores';

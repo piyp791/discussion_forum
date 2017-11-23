@@ -12,6 +12,7 @@ userdict = {}
 QUES_RATING = 1
 ANSWER_RATING = 2
 COMMENT_RATING = 1.5
+ACCESS_RATING = 0.2
 
 user_counter_dict = {}
 post_counter_dict = {}
@@ -96,7 +97,6 @@ def add_post_to_user_activity_dict(userId, postId, postTypeId):
 
 	else:
 		#create new dictionary for user
-
 		userdict[userId] = {}
 		if postTypeId == '1':
 			userdict[userId][postId] = QUES_RATING
@@ -152,10 +152,14 @@ def main():
 	get_user_activity_from_comments();
 	print userdict;
 	#write the ratings json to a file
-	write_to_file(userdict);
+	r = redis.Redis('localhost');
+	user_activity_obj = r.hget('test', 'user_activity_obj');
+	user_activity_obj = json.loads(user_activity_obj);
+	#get user activity from browsing activity
+	#get_user_browsing_activity(user_activity_obj);
+	#write_to_file(userdict);
 	#save ratings json to redis
-	r = redis.Redis('localhost')
-	save_counters_to_json(user_counter_dict, post_counter_dict, r)
+	#save_counters_to_json(user_counter_dict, post_counter_dict, r)
 	
 if __name__ == "__main__":
 	main();

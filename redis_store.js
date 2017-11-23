@@ -93,6 +93,7 @@ module.exports = {
 				    		post_dictionary = JSON.parse(replies);
 				    		//console.log('post dictionary-->' +JSON.stringify(post_dictionary))
 				    		posts = [];
+
 				    		for(var post of suggestions){
 				    			console.log('post id -->' +post[0]);
 				    			for (var key in post_dictionary) {
@@ -103,7 +104,37 @@ module.exports = {
 								}
 				    		}
 
-				    		resolve(posts);
+				    		client.hget('test', 'post_store', function(err, replies){
+
+				    			var post_store = JSON.parse(replies);
+				    			//console.log('post store-->' + JSON.stringify(post_store));
+                                var titles = [];
+				    			for(var post of posts){
+                                    if(post in post_store){
+                                        console.log('its a question...');
+                                        var title = post_store[post]['Title'];
+                                        console.log('Title-->' +title);
+                                        titles.push(title);
+                                    }else{
+                                        console.log('its an answer');
+                                        for (var key in post_store) {
+                                            if (post_store.hasOwnProperty(key)) {
+                                                if(post_store[key]['answers'].indexOf(post)>-1){
+                                                    console.log('title-->' +post_store[key]['Title']);
+                                                    titles.push(post_store[key]['Title']);
+                                                    break;
+                                                }
+                                            }
+                                        }
+
+                                    }
+								}
+
+                                resolve(titles);
+
+							});
+
+
 				    	});
 				    	
 					});

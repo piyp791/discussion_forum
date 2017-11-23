@@ -12,10 +12,10 @@ module.exports = function(app) {
         dbHelper.getHomePageLinks('trending', -1, function(err, data){
             if(err){
                 console.log('some error!!');
-                res.render('home.ejs', {'homePageContent': 'hahahahahaha'})
+                res.render('home.ejs', {'homePageContent': 'hahahahahaha'});
 
             }else{
-                res.render('home.ejs', {'homePageContent': JSON.stringify(data)})
+                res.render('home.ejs', {'homePageContent': JSON.stringify(data)});
             }
         });
     });
@@ -47,7 +47,7 @@ module.exports = function(app) {
 
             misc.getCollaborativeResults(userid, function(err, collaborativePosts){
 
-                console.log('collaborative filtering results -->' +JSON.stringify(collaborativePosts))
+                console.log('collaborative filtering results -->' +JSON.stringify(collaborativePosts));
             });
         });
     });
@@ -181,9 +181,9 @@ module.exports = function(app) {
         dbHelper.storeHighlightDetails(title, text, function(err, data){
 
             if(err){
-                console.log('some error while storing highlight details')
+                console.log('some error while storing highlight details');
             }else{
-                console.log('result from database-->' +JSON.stringify(data))
+                console.log('result from database-->' +JSON.stringify(data));
                 if(data && data.insertId!=-1){
                     res.json({'status': 'success'});
                 }else{
@@ -203,7 +203,7 @@ module.exports = function(app) {
             if(err){
                 console.log('some error while storing highlight details')
             }else{
-                console.log('result from database-->' +JSON.stringify(data))
+                console.log('result from database-->' +JSON.stringify(data));
                 res.json(data);
             }
 
