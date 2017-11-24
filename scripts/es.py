@@ -7,13 +7,16 @@ class SearchEngine():
 		self.es = Elasticsearch()
 		self.index_name = index_name
 
-	def add_document(self, id, title, parentid, doctype, body):
-		self.es.index(index=self.index_name, id = id, doc_type=doctype, body={"title": title, "parent_id": parentid, "content": body, "timestamp": datetime.now()})
+	def add_document(self, id, title, tags, parentid, doctype, body):
+		self.es.index(index=self.index_name, id = id, doc_type=doctype, body={"title": title, "tags": tags, "parent_id": parentid, "content": body, "timestamp": datetime.now()})
 		print('added document ', title)
 
-	def search(self, query):
+	def search(self, query, tags = None):
 		#res = es.search(index="asgn3", body={"query": {"match_all": {}}})
-		res = self.es.search(index=self.index_name, body={"query": {"match": {"content": query}}})
+		if tags is None:
+			res = self.es.search(index=self.index_name, body={"query": {"match": {"content": query}}})
+		else:
+			res = self.es.search(index=self.index_name, body={"query": {"match": {"content": query, "tags": tags}}})
 		return res;
 
 	def deleteIndex(self):
@@ -29,10 +32,14 @@ def main():
 	index_name = 'df'
 	fts = SearchEngine(index_name);
 	results = fts.search(query)
-	print results['hits']['hits']
+	results = results['hits']['hits']
+	for result in results:
+		print result['_type'];
+		print result['_source']['title'];
+		print result['_source']['tags'];
 
-	fts.deleteIndex()
-	print fts.countDocs()
+	#fts.deleteIndex()
+	#print fts.countDocs()
 
 if __name__ == "__main__":
 	main()

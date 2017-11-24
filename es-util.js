@@ -7,13 +7,13 @@ var client = new elasticsearch.Client({
 
 module.exports = {
 
-	doSearch: function(query){
+	doSearch: function(query, tags_words){
 
-		query = query.replace("," , " ")
-		console.log('query -->' +query)
+		query = query.replace("," , " ");
+		console.log('query -->' +query);
 		return new Promise(function(resolve, reject){
 			// Retrieve an access token
-			client.search({index: 'df', q: 'content:' + query})
+			client.search({index: 'df', q: 'tags:' + tags_words +', content:' + query})
 			  .then(function(data) {
 			  	//console.log('data-->' + JSON.stringify(data['hits']))
 				resolve(data);

@@ -1,6 +1,6 @@
-var conf = require('./config');
-var mysql = require('mysql');
-var redis = require("redis");
+var conf = require('./config'),
+mysql = require('mysql'),
+redis = require("redis"),
 fs = require('fs');
 
 
@@ -12,47 +12,11 @@ client.on("error", function (err) {
 
 module.exports = {
 
-	getUserActivity: function(userid){
-
-		//console.log('get user activity from redis...');
-		return new Promise(function(resolve, reject){
-			client.hget('test', 'user_activity_obj', function (err, replies) {
-		    	//console.log(replies);
-
-		    	replies = JSON.parse(replies);
-		    	if(userid in replies){
-		    		var suggestions = replies[userid];
-		    	}else{
-		    		console.log('user id not present in table....')
-					var suggestions = [];
-
-		    	}
-		    	
-		    	//console.log('suggestions-->' + JSON.stringify(suggestions));
-		    	resolve(suggestions);
-			});
-		})
-	},
-
-	getQueryWordsForPost: function(post){
-
-		return new Promise(function(resolve, reject){
-			client.hget('test', 'tfidf_obj', function (err, replies) {
-		    	//console.log(replies);
-				//replies = JSON.parse(replies);
-
-		    	var suggestions = replies[post.id];
-		    	//console.log('suggestions-->' + JSON.stringify(suggestions));
-		    	resolve(suggestions);
-			});
-		})
-	},
-
     getQueryWords: function(userid){
 
         return new Promise(function(resolve, reject){
             client.hget('test', 'user_keywords_store', function (err, replies) {
-                console.log(replies);
+                //console.log(replies);
                 replies = JSON.parse(replies);
                 if(userid in replies){
                     var queryStr = '';
@@ -69,6 +33,26 @@ module.exports = {
             });
         })
     },
+
+    getTagWordsForUser: function(userid){
+
+    	return new Promise(function(resolve, reject){
+
+            client.hget('test', 'user_tag_store', function (err, replies) {
+                var user_tag_store = JSON.parse(replies);
+                //console.log('user tag store-->' +JSON.stringify(user_tag_store));
+                for (var user in user_tag_store) {
+                    if (user_tag_store.hasOwnProperty(user) && user == userid) {
+                        console.log('tag words for user-->' + JSON.stringify(user_tag_store[user]));
+                        resolve(user_tag_store[user]);
+                    }
+                }
+                resolve('');
+
+            });
+
+		});
+	},
 
 	actualSearchForRecommendations: function (userid){
 		console.log('searching via collaborative filtering for user id-->' +userid);

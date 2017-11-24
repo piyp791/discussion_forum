@@ -4,14 +4,16 @@ import re
 import es as indexer
 import redis
 import json
-
+from misc import split_tags_str
 
 def find_parent_info(root, parentid):
 	for child in root:
 		post_id = child.get('Id');
 		if post_id == parentid:
 			title = child.get('Title');
-			return title;
+			tags_str = child.get('Tags');
+			tags_arr = split_tags_str(tags_str);
+			return title, tags_arr;
 
 def find_post_for_comment(root, post_id):
 	for child in root:
@@ -19,24 +21,26 @@ def find_post_for_comment(root, post_id):
 		posttypeid = child.get('PostTypeId');
 		if post_id == postid and posttypeid == '1':
 			title = child.get('Title');
-			return title;
+			tags_str = child.get('Tags');
+			tags = split_tags_str(tags_str);
+			return title, tags;
 
 		elif post_id == postid and posttypeid == '2':
 			parentid = child.get('ParentId');
-			title = find_parent_info(root, parentid);
-			return title;
+			title, tags = find_parent_info(root, parentid);
+			return title, tags;
 
 		elif posttypeid == '2' and post_id == child.get('ParentId'):
 			parentid = child.get('ParentId');
-			title = find_parent_info(root, parentid);
-			return title;
+			title, tags = find_parent_info(root, parentid);
+			return title, tags;
 
 def index_comments(comment_root, root, fts, post_store):
 	for child in comment_root:
 		post_id = child.get('PostId');
 		comment_id = child.get('Id')
 		
-		title = find_post_for_comment(root, post_id);
+		title, tags = find_post_for_comment(root, post_id);
 		title = re.sub(r'[^\x00-\x7F]+',' ', title);
 		title = title.replace("/", "~");
 		
@@ -53,7 +57,7 @@ def index_comments(comment_root, root, fts, post_store):
 				if post_id in answers:
 					parentid = post_id
 					break;
-		fts.add_document(comment_id, title, parentid, 'text', body);
+		fts.add_document(comment_id, title, tags, parentid, 'comment', body);
 
 
 def index_posts(root, fts):
@@ -65,14 +69,17 @@ def index_posts(root, fts):
 		parent_id = ''
 		if post_type_id == '2':
 			parent_id = child.get('ParentId');
-			parent_title = find_parent_info(root, parent_id)
+			parent_title, parent_tags = find_parent_info(root, parent_id);
 			
 			#post_id = parent_id
-			title = parent_title
+			title = parent_title;
+			tags = parent_tags;
 			
 		elif post_type_id == '1':
 			
 			title = child.get('Title');
+			tags_str = child.get('Tags');
+			tags = split_tags_str(tags_str);
 
 		if title is not None:
 			title = re.sub(r'[^\x00-\x7F]+',' ', title);
@@ -84,7 +91,10 @@ def index_posts(root, fts):
 		#print body
 
 		body = title +  ' ' + body
-		fts.add_document(post_id, title, parent_id, 'text', body);
+		if post_type_id == '1':
+			fts.add_document(post_id, title, tags, parent_id, 'question', body);
+		else:
+			fts.add_document(post_id, title, tags, parent_id, 'answer', body);
 
 def main():
 

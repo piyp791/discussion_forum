@@ -156,7 +156,6 @@ def main():
 	
 	#print 'saving simulated activity data structure to redis'
 	tfidf_obj = load_obj_from_redis('tfidf_obj');
-
 	save_obj_in_redis('user_activity_obj', user_activity_obj);
 	user_keywords_store = {};
 

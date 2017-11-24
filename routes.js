@@ -43,7 +43,7 @@ module.exports = function(app) {
 
         misc.getContentBasedResults(userid, function(err, contentPosts){
 
-            console.log('content based results -->' +JSON.stringify(contentPosts)) 
+            console.log('content based results -->' +JSON.stringify(contentPosts));
 
             misc.getCollaborativeResults(userid, function(err, collaborativePosts){
 
