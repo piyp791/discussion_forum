@@ -12,6 +12,24 @@ client.on("error", function (err) {
 
 module.exports = {
 
+    getObjLinks: function(questionId){
+
+        return new Promise(function(resolve, reject){
+
+            client.hget('test', 'linkobjs', function(err, replies){
+
+                replies = JSON.parse(replies);
+                console.log('replies-->' +replies);
+                if(questionId in replies){
+                    resolve(replies[questionId])
+                }else{
+                    resolve([])
+                }
+            });
+        })
+
+    },
+
     getQueryWords: function(userid){
 
         return new Promise(function(resolve, reject){

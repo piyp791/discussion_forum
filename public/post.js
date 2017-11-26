@@ -2,7 +2,7 @@
 /*description: javascript code for all posts files.*/
 /*author: ppapreja*/
 
-/*TO-DO*/
+/*TODO*/
 /*1. implement ajax request for comment posting.*/
 
 /*implements popover opening on comment button click.*/
@@ -119,12 +119,14 @@ function setOnLinksHover(){
 
     $(".pagelinks").each( function () {
         var id = $(this).attr('id');
-        console.log(id)
-        var parentPostid = id.substring(5)
+        console.log(id);
+        var parentPostid = id.substring(5);
         console.log(parentPostid);
 
         $(this).hover(function(e){
             //alert('hover');
+            console.log('id-->' +id);
+            console.log('hover on-->' +parentPostid);
             $("#"+parentPostid)[0].scrollIntoView({
                 behavior: "smooth", // or "auto" or "instant"
                 block: "start" // or "end"
@@ -137,121 +139,106 @@ function setOnLinksHover(){
 /*populates resources (links extracted from the page into the resources window pane)*/
 function populateResources(content){
 
-    /*$('.content').children().each(function () {
-        var $currentElement = $(this);
-        console.info($currentElement);
-    });*/
+    var linksArray = [];
 
-    var linksArray = []
+    var result = $('div')
+        .filter(function() {
+            var result = this.id.match(/ques/);
+            return result;
+        });
 
-    $('.content').find('a').each(function () {
-        var currentElement = $(this)
+    console.log(result.attr('id'));
 
-        var classname = currentElement.attr('class')
-        //console.log('classname-->' +classname)
-        if(classname == 'upvote' || classname == 'downvote' || classname == 'star'){
-            //console.log('skipping element')
-        }else{
+    var quesId = result.attr('id').substring(5);
+    console.log('questionid-->' +quesId);
 
-            var obj = {}
-            var elemlink = currentElement.attr('href')
-            var elemhtml = currentElement.html()
-            //console.log('html link-->' + currentElement.attr('href')); // "this" is the current element in the loop
-            //console.log('inner html-->' + currentElement.html())
+    $.get("/getPageLinks/" +quesId, function(data, status){
+        console.log("Data: " + data + "\nStatus: " + status);
 
-            //find parent div
-            var parent = currentElement.parent().closest('div').attr('class', 'post');
-            console.log('parent div-->' +parent.attr('id'));
-            var parentid = parent.attr('id')
+        sorterArray = JSON.parse(data);
+        sorterArray = sorterArray.sort(function(a,b){ var ascore = a['likes'] + a['dislikes'] + 0.5*a['views'] + 2*a['likes'] - 2.5*a['dislikes']; var bscore = b['likes'] + b['dislikes'] + 0.5*b['views'] + 2*b['likes'] - 2.5*b['dislikes'];return bscore - ascore;});
 
-            //find vote element and then span count element
-            var voteElem = parent.find('div').attr('class', 'upvote')
-            if(voteElem){
-                //console.log(voteElem)
-                var count = voteElem.find('span').attr('class', 'count')
-                //console.log(count)
-                var votecount =count.html()
-                //console.log('vote count-->' +votecount)
-                //push elements in dictionary
-                obj['link'] = elemlink
-                obj['html'] = elemhtml
-                obj['votes'] = parseInt(votecount)
-                obj['id'] = 'link-' +parentid
-                obj['class'] = 'pagelinks'
+        console.log('links array-->' +JSON.stringify(sorterArray))
 
-            }
+        var index = 0;
 
-            //console.log('obj-->' + JSON.stringify(obj))
-            linksArray.push(obj)
-            
+        startindex = 0;
+        endindex = 0;
+
+        var list = document.createElement('ul');
+        var resourcestab = document.getElementById('resourcescontent');
+        resourcestab.appendChild(list);
+
+        for(var linkObj of sorterArray){
+
+            var el = document.createElement('li');
+            var linkel = document.createElement('a');
+
+            var p = document.createElement('p');
+
+            p.innerHTML = '<b><a class = \'' +  linkObj['class'] + '\' href = "#" id = \'' + linkObj['id'] +  '\'>Parent Post Link.</a></b>';
+            p.innerHTML +=  '<span style = "border:solid black 1px; margin-left:8px;"><span style = "padding:5px" class="glyphicon glyphicon-thumbs-up"></span>' +  linkObj['votes'] + '</span>';
+            p.style.textAlign = 'left';
+            el.appendChild(p);
+
+            el.appendChild(linkel);
+            list.appendChild(el);
+            linkel.innerHTML = linkObj['html'];
+            linkel.href = linkObj['link'];
+            linkel.id = linkObj['id'];
+            linkel.className = linkObj['class'];
+
+            linkel.appendChild(document.createElement('br'));
+            linkel.appendChild(document.createElement('br'));
+            var linkinfo = document.createElement('span');
+            var linkviews = document.createElement('img');
+            linkviews.src = "/eye-con-48.png";
+            linkviews.style.height = "20px";
+            linkviews.style.width = "20px";
+            linkinfo.style.border = "solid black 1px";
+            linkinfo.style.marginRight = "8px";
+            linkinfo.style.paddingBottom = "5px";
+            linkinfo.appendChild(linkviews);
+            //var randomviews = Math.floor(Math.random() * 20);
+            linkinfo.innerHTML += (" " + linkObj['views'] ) ;
+
+            el.appendChild(linkinfo);
+
+            var like = document.createElement('a');
+            like.href = '#';
+            like.className = 'btn btn-info btn-sm';
+            like.style.marginRight = '8px';
+
+            var likebtn = document.createElement('span');
+            likebtn.className = "glyphicon glyphicon-thumbs-up";
+            //var randomlikes = Math.floor(Math.random() * randomviews);
+            likebtn.innerHTML = linkObj['likes'];
+
+            like.appendChild(likebtn);
+            el.appendChild(like);
+
+            var dislike = document.createElement('a');
+            dislike.href = '#';
+            dislike.className = 'btn btn-info btn-sm';
+
+            var dislikebtn = document.createElement('span');
+            dislikebtn.className = "glyphicon glyphicon-thumbs-down";
+            //var randomdislikes = Math.floor(Math.random() * randomviews);
+            //dislikebtn.innerHTML = randomdislikes;
+            dislikebtn.innerHTML = linkObj['dislikes'];
+
+            dislike.appendChild(dislikebtn);
+            el.appendChild(dislike);
+
+            list.append(document.createElement('br'));
+            list.append(document.createElement('br'));
+
+
         }
 
+        setOnLinksHover();
+
     });
-
-    //console.log('links array-->' +JSON.stringify(linksArray))
-    var sorterArray = linksArray.sort(function(a,b){return b['votes']-a['votes']})
-    console.log('links array-->' +JSON.stringify(sorterArray))
-    //alert(keysSorted); 
-    //var somecontent = $('.content').html();
-
-    //console.log('content' +somecontent);
-
-    var index = 0;
-    
-    startindex = 0;
-    endindex = 0;
-
-    var list = document.createElement('ul');
-    var resourcestab = document.getElementById('resourcescontent');
-    resourcestab.appendChild(list);
-
-    for(var linkObj of sorterArray){
-
-        var el = document.createElement('li');
-        var linkel = document.createElement('a');
-
-        var p = document.createElement('p');
-
-        p.innerHTML = 'Parent <b><a class = \'' +  linkObj['class'] + '\' href = "#" id = \'' + linkObj['id'] +  '\'>Post Link.</a></b>'
-        p.innerHTML +=  '<span style = "border:solid black 1px; margin-left:8px;"><span style = "padding:5px" class="glyphicon glyphicon-thumbs-up"></span>' +  linkObj['votes'] + '</span>'    
-        p.style.textAlign = 'left'
-        el.appendChild(p) 
-
-        el.appendChild(linkel) 
-        list.appendChild(el);
-        linkel.innerHTML = linkObj['html'];
-        linkel.href = linkObj['link']
-        linkel.id = linkObj['id'];
-        linkel.className = linkObj['class']
-
-        linkel.appendChild(document.createElement('br'))
-
-        var like = document.createElement('a');
-        like.href = '#';
-        like.className = 'btn btn-info btn-sm';
-        like.style.marginRight = '8px';
-
-        var likebtn = document.createElement('span');
-        likebtn.className = "glyphicon glyphicon-thumbs-up";
-
-
-        like.appendChild(likebtn)
-        el.appendChild(like)
-
-        var dislike = document.createElement('a');
-        dislike.href = '#';
-        dislike.className = 'btn btn-info btn-sm';
-
-        var dislikebtn = document.createElement('span');
-        dislikebtn.className = "glyphicon glyphicon-thumbs-down";
-
-        dislike.appendChild(dislikebtn)
-        el.appendChild(dislike)
-
-        list.append(document.createElement('br')); 
-
-        
-    }
 }
 
 function getHighlights(){

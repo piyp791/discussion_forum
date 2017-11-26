@@ -24,6 +24,12 @@ module.exports = {
 
          //map ids to questions titles
          callback(null, cfresponse);
+    },
+
+    getPageLinks: async function(questionId, callback){
+
+        pagelinks = await redis.getObjLinks(questionId);
+        callback(null, pagelinks);
     }
 }
 

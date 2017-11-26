@@ -7,13 +7,39 @@ var client = new elasticsearch.Client({
 
 module.exports = {
 
-	doSearch: function(query, tags_words){
+	doSearch: function(querywords, tags_words){
 
-		query = query.replace("," , " ");
-		console.log('query -->' +query);
-		return new Promise(function(resolve, reject){
+		querywords = querywords.replace("," , " ");
+		console.log('query -->' +querywords);
+
+		tags_words = "soccer,control,microcontroller,raspberry-pi,arduino,wheeled-robot, localization";
+
+		var special_tag_words = "computer-vision, mobile-robot";
+
+        return new Promise(function(resolve, reject){
 			// Retrieve an access token
-			client.search({index: 'df', q: 'tags:' + tags_words +', content:' + query})
+            client.search({
+                index: 'df',
+                body: {
+                    query: {
+                        bool:{
+                        	must:[{
+                                match:{
+                                    tags: {query: special_tag_words.toString(), boost: 3, }
+                                }},
+								{match:{
+                        			tags:{query: tags_words.toString()}
+								}}
+							],
+							should:{
+                        		match:{
+                        			content:querywords
+								}
+							}
+						}
+                    }
+                }
+            })
 			  .then(function(data) {
 			  	//console.log('data-->' + JSON.stringify(data['hits']))
 				resolve(data);

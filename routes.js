@@ -1,6 +1,7 @@
 var express = require('express');
 var dbHelper = require('./db-helper');
 var misc = require('./misc');
+var redisHelper = require('./redis_store');
 
 module.exports = function(app) {
 
@@ -30,6 +31,14 @@ module.exports = function(app) {
             }else{
                 res.json(JSON.stringify(data))
             }
+        });
+    });
+
+    app.get('/getPageLinks/:questionid', function(req, res){
+
+        var questionId = req.params.questionid;
+        misc.getPageLinks(questionId, function(err, links){
+            res.json(JSON.stringify(links));
         });
     });
 
