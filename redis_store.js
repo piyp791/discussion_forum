@@ -12,6 +12,51 @@ client.on("error", function (err) {
 
 module.exports = {
 
+    saveUserPreferences: function(preferences){
+        return new Promise(function(resolve, reject){
+
+            client.hset('test', 'preferences', JSON.stringify(preferences), function(err, replies){
+                console.log(JSON.stringify(replies));
+                resolve('success');
+            })
+        });
+    },
+
+    getPreferences: function(userid){
+        console.log('getting preferencs for user-->' +userid);
+        return new Promise(function(resolve, reject){
+            client.hget('test', 'preferences', function(err, replies){
+                console.log('preferences object-->' +replies.trim());
+
+                var repliesObj = JSON.parse(replies.trim());
+                console.log('replies obj-->' +repliesObj);
+                if(userid==-1){
+                    resolve(repliesObj);
+                }
+
+                var isEmpty = true;
+                for(var key in repliesObj) {
+                    if(repliesObj.hasOwnProperty(key)){
+                        console.log('key-->' +key + ' value-->' +repliesObj[key]);
+                        isEmpty = false;
+                    }
+                }
+                if(isEmpty == true){
+                    console.log('empty object');
+                    resolve({})
+                }else{
+                    console.log('non empty object');
+                    if(userid in repliesObj){
+                        console.log('user preferences-->' +JSON.stringify(repliesObj[userid]));
+                        resolve(repliesObj[userid])
+                    }else{
+                        resolve({})
+                    }
+                }
+            });
+        })
+    },
+
     getObjLinks: function(questionId){
 
         return new Promise(function(resolve, reject){
@@ -28,6 +73,23 @@ module.exports = {
             });
         })
 
+    },
+
+    getUserTags: function(userid){
+
+        return new Promise(function(resolve, reject){
+
+            client.hget('test', 'user_tag_store', function(err, replies){
+
+                replies = JSON.parse(replies);
+                //console.log(replies);
+                if(userid in replies){
+                    resolve(replies[userid]);
+                }else{
+                    resolve([]);
+                }
+            });
+        });
     },
 
     getQueryWords: function(userid){

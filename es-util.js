@@ -4,38 +4,19 @@ var client = new elasticsearch.Client({
 	log: 'debug'
 });
 
-
 module.exports = {
 
-	doSearch: function(querywords, tags_words){
-
-		querywords = querywords.replace("," , " ");
-		console.log('query -->' +querywords);
-
-		tags_words = "soccer,control,microcontroller,raspberry-pi,arduino,wheeled-robot, localization";
-
-		var special_tag_words = "computer-vision, mobile-robot";
+	doSearch: function(querywords, tagQryStr){
 
         return new Promise(function(resolve, reject){
 			// Retrieve an access token
             client.search({
                 index: 'df',
+				size: 30,
                 body: {
                     query: {
                         bool:{
-                        	must:[{
-                                match:{
-                                    tags: {query: special_tag_words.toString(), boost: 3, }
-                                }},
-								{match:{
-                        			tags:{query: tags_words.toString()}
-								}}
-							],
-							should:{
-                        		match:{
-                        			content:querywords
-								}
-							}
+                        	should: tagQryStr
 						}
                     }
                 }

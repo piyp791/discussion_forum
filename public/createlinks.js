@@ -56,7 +56,12 @@ function createPostLogInLinks(){
 		var preferencesLink = document.createElement('a');
 		preferencesLink.innerHTML = 'Preferences';
 		preferencesLink.id = 'preferenceslink';
-		preferencesLink.style.float = "right"
+		preferencesLink.style.float = "right";
+    	if(!localStorage.getItem("userid") || localStorage.getItem("userid")==""){
+            preferencesLink.href = "#";
+        }else{
+            preferencesLink.href = "getPreferences/" +localStorage.getItem(("userid"));
+		}
 
 		navbar.appendChild(preferencesLink);
 

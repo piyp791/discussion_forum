@@ -1,0 +1,40 @@
+<script>
+    function close_comment_box(){
+        $('div .comment_tools').fadeOut(200);
+    }
+
+    function post_comment(){
+        //$('div .comment_tools').fadeOut(200);
+        //rest call to server -->simulate for now.
+        //get a response -->simulate for now.
+        var comment = "here's a sample comment.";
+
+        commentText = $('#highlight_comment').val();
+        console.log('comment text-->' +commentText);
+
+        //rest call to save the comment
+
+        console.log('finalselected text-->'+finalSelectedText);
+        console.log('comment text-->' +commentText);
+        $.post( "/commentOnHighlight", {'title' :  $(document).attr('title'), 'text': finalSelectedText, 'comment':commentText }, function( data ) {
+
+            console.log('data-->' +JSON.stringify(data));
+            if(data.status == 'success'){
+                $('div .comment_tools').fadeOut(200);
+                getHighlights();
+            }else{
+                alert('some problem saving the highlight!!!');
+            }
+        });
+        //click on the highlights tab
+        //show comment
+
+    }
+</script>
+<div class="comment_tools">
+    <p>Enter comment to higlight</p>
+    <br><br><br>
+    <textarea id = "highlight_comment"/><br>
+    <input id = "cmt_box_cmt_btn" type = "button" onclick = "post_comment()" value = "Comment"/>
+    <input id = "close_comment_box_btn" type = "button" value = "Close" onclick = "close_comment_box()"/>
+</div>

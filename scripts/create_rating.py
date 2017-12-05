@@ -38,7 +38,7 @@ def write_to_file(userdict):
 				ratings_str = ratings_str + ("\n" + str(user) + " " + str(post) + " " + str(activity))
 
 	f = open("ratings_robotics.dat","w") #opens file with name of "test.txt"
-	#f.write(ratings_str);
+	f.write(ratings_str);
 	f.close();
 	print ratings_str
 
@@ -157,7 +157,7 @@ def main():
 	user_activity_obj = json.loads(user_activity_obj);
 	#get user activity from browsing activity
 	#get_user_browsing_activity(user_activity_obj);
-	#write_to_file(userdict);
+	write_to_file(userdict);
 	#save ratings json to redis
 	#save_counters_to_json(user_counter_dict, post_counter_dict, r)
 	

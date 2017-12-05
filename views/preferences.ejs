@@ -1,0 +1,168 @@
+<html>
+	<head>
+		 <link rel="stylesheet" href="/style.css"/>
+		 <!--<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+   		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>-->
+		<link href="/bootstrap.min.css" rel="stylesheet"/>
+		<script src="/jquery-3.2.1.min.js"></script>
+		<script src="/bootstrap.min.js"></script>
+		<title id = 'pagetitle'>Preferences Page</title>
+	</head>
+	<body id = 'pagebody'>
+		<header>
+			<h1>Just Another Discussion Forum</h1>
+		</header>
+		<div class="topnav" id="myTopnav">
+			  <a href="/">Home</a>
+			  <a href="#" style = "float:right;">About</a>
+			  <a href="#" style = "float:right;">Sign Out</a>
+			</div>
+		<div class="container">
+			<div id = "preferencesPage">
+			    <div id="content">
+					<span class = "slidecontainer" id = "recfilters">
+						<h2>Recommendation Filters</h2>
+						 <input value = 'Save Preferences' type = 'button' onclick = "savePreferences();"/>
+							<br>
+						 <p>Recommendations :Content Based ----> Collaborative</p>
+						 <input type="range" min="1" max="10" value="5" id ="recfilter" style = "width:30%"/>
+						 <p id ="rangeOutput"></p>
+
+						<p><b>Your Tag Filters</b></p>
+
+					</span>
+			    </div>
+			</div>
+			<footer>Moore & Peps collaboration.</footer>
+		</div>
+	<script>
+
+		function savePreferences(){
+		    //alert('preferences saved!!');
+
+
+			var userPreferences = {};
+			userPreferences['tags'] = {};
+
+			//retrieve the preferences range values
+			$(".filterclass").each(function(){
+                var id = $(this).attr('id');
+                console.log('id-->' +id);
+                tag = id.substring(9);
+                console.log('tag-->' +tag);
+                var value = this.value;
+                console.log('value-->' +value);
+
+                userPreferences['tags'][tag] = value;
+			});
+
+			//get content-cf value from slider
+			var contentCf = document.getElementById('recfilter');
+			console.log('contentcf-->' +contentCf.value);
+
+			userPreferences['source'] = {};
+			userPreferences['source']['content'] = contentCf.value/10;
+            userPreferences['source']['cf'] = (1 -contentCf.value/10);
+
+			console.log('preferences->' +JSON.stringify(userPreferences))
+
+			var userId = localStorage.getItem("userid");
+			console.log('userid-->' +userId);
+            console.log('saving preferences into database');
+            $.post('/savePreferences', {'preferences': userPreferences, 'userid' : userId}, function(err, data){
+                console.log('data');
+                localStorage.setItem('preferences', JSON.stringify(userPreferences));
+			});
+
+            //save to redis maybe ??
+		}
+
+		function caller(element, tag){
+		    console.log('called with id' +element.id);
+		    console.log('tag-->' +tag);
+		    var labelOutput = document.getElementById("filterOutput-" +tag);
+		    labelOutput.innerHTML = element.value;
+		}
+
+		function displayTagSliders(tags){
+		    console.log(tags);
+		    var tagsObj = JSON.parse(tags);
+		    var recFilters = document.getElementById("recfilters");
+
+		    var istags = true;
+		    for(var key in tagsObj){
+		        if(key == 'tags'){
+                    console.log("key found!!!");
+                    istags = false;
+                    break;
+				}
+			}
+
+			if(istags == false){
+                for(let tag in tagsObj['tags']){
+                    console.log('tag-->' +tag);
+                    console.log('value-->' +tagsObj['tags'][tag]);
+
+                    var label = document.createElement("p");
+                    label.innerHTML = tag;
+                    var filter = document.createElement("input");
+                    filter.setAttribute("type", "range");
+                    filter.setAttribute("class", "filterclass");
+                    filter.setAttribute("min", 1);
+                    filter.setAttribute("max", 3);
+                    filter.setAttribute("value", tagsObj['tags'][tag]);
+                    filter.style.width = "30%";
+                    filter.id = "filterid-" +tag;
+                    filter.oninput = function(){
+                        caller(this, tag);
+                    }
+
+                    var filterOutput = document.createElement("p");
+                    filterOutput.id = 'filterOutput-'+tag;
+
+                    recFilters.appendChild(label);
+                    recFilters.appendChild(filter);
+                    recFilters.appendChild(filterOutput);
+                }
+
+
+			}else{
+                for(let tag of tagsObj){
+                    console.log('tag-->' +tag);
+
+                    var label = document.createElement("p");
+                    label.innerHTML = tag;
+                    var filter = document.createElement("input");
+                    filter.setAttribute("type", "range");
+                    filter.setAttribute("class", "filterclass");
+                    filter.setAttribute("min", 1);
+                    filter.setAttribute("max", 3);
+                    filter.setAttribute("value", 1);
+                    filter.style.width = "30%";
+                    filter.id = "filterid-" +tag;
+                    filter.oninput = function(){
+                        caller(this, tag);
+                    }
+
+                    var filterOutput = document.createElement("p");
+                    filterOutput.id = 'filterOutput-'+tag;
+
+                    recFilters.appendChild(label);
+                    recFilters.appendChild(filter);
+                    recFilters.appendChild(filterOutput);
+                }
+			}
+		}
+        displayTagSliders(<%-JSON.stringify(tags) %>, 'content-1');
+
+        document.getElementById('recfilter').oninput = function() {
+            document.getElementById('rangeOutput').innerHTML = this.value;
+        }
+
+	</script>
+	</body>
+</html>

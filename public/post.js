@@ -2,9 +2,6 @@
 /*description: javascript code for all posts files.*/
 /*author: ppapreja*/
 
-/*TODO*/
-/*1. implement ajax request for comment posting.*/
-
 /*implements popover opening on comment button click.*/
 $(".comment-btn").popover({
 
@@ -45,7 +42,8 @@ $(".comment-btn").popover({
     	}	
     },
     html: true
-}); 
+});
+
 
 
 var originalLeave = $.fn.popover.Constructor.prototype.leave;
@@ -70,7 +68,36 @@ $.fn.popover.Constructor.prototype.leave = function(obj){
   }
 };
 
+function setHighlightHovers(){
+
+    $('.highlight').each(function(){
+
+
+        //console.log(currentelement.html());
+        //parentPost = currentelement.parent().closest('div').attr('class','post'); // this gets the parent classes.
+        //console.log(parentPost[0]);
+
+        $(this).click(function(e){
+
+            currentelement = $(this);
+
+            console.log(currentelement.html());
+            finalSelectedText = currentelement.html();
+            parentPost = currentelement.parent().closest('div').attr('class','post'); // this gets the parent classes.
+            console.log(parentPost[0]);
+            parentPost = parentPost[0];
+
+            $('ul.tools').css({
+                'left': e.pageX + 5,
+                'top' : e.pageY - 55
+            }).fadeIn(200);
+        })
+    });
+}
+
 $(document).ready(function(){
+
+    setHighlightHovers();
 
     $('[data-toggle="popover"]').popover({
 
@@ -175,7 +202,6 @@ function populateResources(content){
             var linkel = document.createElement('a');
 
             var p = document.createElement('p');
-
             p.innerHTML = '<b><a class = \'' +  linkObj['class'] + '\' href = "#" id = \'' + linkObj['id'] +  '\'>Parent Post Link.</a></b>';
             p.innerHTML +=  '<span style = "border:solid black 1px; margin-left:8px;"><span style = "padding:5px" class="glyphicon glyphicon-thumbs-up"></span>' +  linkObj['votes'] + '</span>';
             p.style.textAlign = 'left';
@@ -199,8 +225,7 @@ function populateResources(content){
             linkinfo.style.marginRight = "8px";
             linkinfo.style.paddingBottom = "5px";
             linkinfo.appendChild(linkviews);
-            //var randomviews = Math.floor(Math.random() * 20);
-            linkinfo.innerHTML += (" " + linkObj['views'] ) ;
+            linkinfo.innerHTML += (" " + linkObj['views'] );
 
             el.appendChild(linkinfo);
 
@@ -232,8 +257,6 @@ function populateResources(content){
 
             list.append(document.createElement('br'));
             list.append(document.createElement('br'));
-
-
         }
 
         setOnLinksHover();
@@ -243,14 +266,94 @@ function populateResources(content){
 
 function getHighlights(){
 
-    var title = $(document).attr('title')
+    var title = $(document).attr('title');
 
      $.get( "/getHighlights", {'title' : title}, function( data ) {
 
-        console.log(JSON.stringify(data))
+        console.log('highlights->'+JSON.stringify(data));
 
-        for(var text of data){
-            $('#pagebody').highlight(text.Text);
+
+         var highlightslist = document.createElement('ul');
+         var highlightstab = document.getElementById('highlightcontent');
+         highlightstab.innerHTML = "";
+
+         var banner = document.createElement('h3');
+         banner.innerHTML = "";
+         highlightstab.appendChild(banner);
+
+         highlightstab.appendChild(highlightslist);
+        if(!data){
+            //click on highlights tab
+            //show the banner
+            $('a[href="#highlights"]').trigger('click');
+            banner.innerHTML = "Mark and Earn!!\n";
+            var marker = document.createElement("h4");
+            marker.innerHTML = 'Select the best bits from the page and earn reputation points!!';
+            highlightstab.appendChild(marker);
         }
+        else if(data){
+
+            var prevID = -1;
+            for(var text of data){
+                $('#pagebody').highlight(text.Text);
+
+                //populate the highlighted text in the highlights section
+
+                var currentID = text.ID;
+
+                if(currentID!=prevID && prevID!=-1){
+                    var commentarea = document.createElement('textarea');
+                    highlightedItem.appendChild(commentarea);
+                    var commentbutton = document.createElement('input');
+                    commentbutton.type = 'button';
+                    commentbutton.value = 'Comment';
+                    commentbutton.style.marginLeft = '4px';
+                    commentbutton.style.fontSize = 'xx-small';
+                    highlightedItem.appendChild(commentbutton);
+                }
+                if(currentID!=prevID){
+
+                    //add separate post to pane.
+                    prevID = currentID;
+                    var highlightedItem = document.createElement('li');
+                    highlightedItem.innerHTML = text.Text;
+                    highlightslist.appendChild(highlightedItem);
+
+                    highlightedItem.append(document.createElement('br'));
+
+                    var like = document.createElement('a');
+                    like.href = '#';
+                    like.className = 'btn btn-info btn-sm';
+                    like.style.marginRight = '8px';
+
+                    var likebtn = document.createElement('span');
+                    likebtn.className = "glyphicon glyphicon-thumbs-up";
+                    likebtn.innerHTML = text.NumOfHighlights;
+
+                    highlightedItem.append(document.createElement('br'));
+
+                    like.appendChild(likebtn);
+                    highlightedItem.appendChild(like);
+
+                    if(text.Comment!=null){
+                        var comment = document.createElement('p');
+                        comment.innerHTML = text.Comment;
+                        comment.style.fontSize = 'xx-small';
+                        highlightedItem.appendChild(comment);
+                    }
+
+                    highlightedItem.append(document.createElement('br'));
+                }else{
+                    //add comment to current post.
+                    var commenttext = text.Comment;
+                    console.log('adding comment to previous post.');
+                    var comment = document.createElement('p');
+                    comment.innerHTML = text.Comment;
+                    comment.style.fontSize = 'xx-small';
+                    highlightedItem.appendChild(comment);
+                }
+            }
+        }
+
      });
 }

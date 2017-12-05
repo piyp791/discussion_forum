@@ -12,7 +12,7 @@ from surprise import NMF
 from surprise.dataset import Reader
 
 
-def precision_recall_at_k(predictions, k=10, threshold=2):
+def precision_recall_at_k(predictions, k=10, threshold=3.5):
     '''Return precision and recall at k metrics for each user.'''
 
     # First map the predictions to each user.
@@ -50,6 +50,7 @@ file_path = 'ratings_robotics.dat'
 reader = Reader(line_format='user item rating', rating_scale=(1, 5), sep=' ')
 data = Dataset.load_from_file(file_path, reader=reader)
 #data = Dataset.load_builtin('ml-100k')
+print (data)
 data.split(n_folds=5)
 algo = SVD()
 #algo = NMF()

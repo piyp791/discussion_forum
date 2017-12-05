@@ -198,6 +198,7 @@ def createContent(title, id, body, userInfoHTML, score, views, comments, answerS
 			  "\n\t\t<div id = \"loginmodals\"></div>" +\
     		  "\n\t\t<div id = \"issuemodals\"></div>" +\
     		  "\n\t\t<div id = \"highlight_tool\"></div>" +\
+		  "\n\t\t<div id = \"comment_tool\"></div>" +\
 			  "\n\t\t<div class = \"container\">" +\
 			  "\n\t\t\t<header>" +\
 			  "\n\t\t\t\t<h1>Just Another Discussion Forum</h1>" +\
@@ -226,6 +227,7 @@ def createContent(title, id, body, userInfoHTML, score, views, comments, answerS
 			  "\n\t\t\t\t<ul class=\"nav nav-tabs\">" +\
           	  "\n\t\t\t\t\t<li class=\"active\"><a data-toggle=\"tab\" href=\"#resources\">Resources</a></li>" +\
           	  "\n\t\t\t\t\t<li><a data-toggle=\"tab\" href=\"#summary\">Summary</a></li>" +\
+          	  "\n\t\t\t\t\t<li><a data-toggle=\"tab\" href=\"#highlights\">Highlights</a></li>" +\
         	  "\n\t\t\t\t</ul>" +\
         	  "\n\t\t\t\t\t<div class=\"tab-content\">" +\
               "\n\t\t\t\t\t\t<div id=\"resources\" class=\"tab-pane fade in active\">"+\
@@ -236,6 +238,10 @@ def createContent(title, id, body, userInfoHTML, score, views, comments, answerS
               "\n\t\t\t\t\t\t\t<h3>Summary</h3>" +\
               "\n\t\t\t\t\t\t\t<div id = \"summarycontent\"></div>" +\
               "\n\t\t\t\t\t\t</div>" +\
+              "\n\t\t\t\t\t\t<div id=\"highlights\" class=\"tab-pane fade\">" +\
+              "\n\t\t\t\t\t\t\t<h3>Highlights</h3>" +\
+              "\n\t\t\t\t\t\t\t<div id = \"highlightcontent\"></div>" +\
+              "\n\t\t\t\t\t\t</div>" +\
 			  "\n\t\t\t</div>" +\
 			  "\n\t\t\t</div>" +\
 			  "\n\t\t\t<footer>Moore & Peps collaboration.</footer>"+\
@@ -245,6 +251,7 @@ def createContent(title, id, body, userInfoHTML, score, views, comments, answerS
 			  "\n\t\t$(\"#loginmodals\").load(\"/loginModal.html\");"+\
     		  "\n\t\t$(\"#issuemodals\").load(\"/issueModal.html\");" +\
     		  "\n\t\t$(\"#highlight_tool\").load(\"/highlight_tool.html\");" +\
+		  "\n\t\t$(\"#comment_tool\").load(\"/comment_tool.html\");" +\
     		  "\n\t\tcheckLoggedInUser()" +\
 			  "\n\t\tvar content = $('.content').html();" +\
 			  "\n\t\tpopulateResources(content)" +\

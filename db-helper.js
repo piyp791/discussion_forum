@@ -190,15 +190,12 @@ module.exports = {
         connection = connect();
       }
 
-      title = title.replace(/"/g,"")
-      console.log('title-->' +title)
+      title = title.replace(/"/g,"");
+      console.log('title-->' +title);
       //str = str.replace(/abc/g, '');
-      var query = "select * from Highlights where Title = \"" +title + "\"";
-      //query = query.replace("\"", "")
-      //query = query.replace("'", "")
-      console.log('query-->' +query)
+		var query = "SELECT Highlights.ID, Highlights.Title, Highlights.Text, Highlights.NumOfHighlights, Highlights_Comments.Comment FROM Highlights LEFT JOIN Highlights_Comments ON Highlights.Title=Highlights_Comments.Title and Highlights.Text=Highlights_Comments.Text where Highlights.Title = \"" +title + "\" order by Highlights.ID";
 
-
+      console.log('query-->' +query);
 
       connection.query(query, function(err, result, fields){
 
@@ -217,6 +214,40 @@ module.exports = {
         }
       });
     },
+
+    addCommentOnHighlight: function(comment, title, text, callback){
+        if(!connection){
+            connection = connect();
+        }
+
+        title = title.replace(/"/g,"");
+        console.log('title-->' +title);
+
+        var query = "INSERT INTO Highlights_Comments (Title, Text, Comment) VALUES (\"" + title + "\", \"" + text +"\", \"" + comment +"\")";
+
+        //var query = "Replace into Highlights set Title = \"" +title + "\", Text = \"" + text + "\", NumOfHighlights = NumOfHighlights + 1";
+
+        //query = "insert into Highlights(Title, Text) values(\"" + title + "\",\"" + text + "\")"
+        console.log('query-->' +query)
+
+        connection.query(query, function(err, result, fields){
+
+            if(err){
+                console.log(err);
+                callback(err, null);
+            }
+
+            console.log('number of rows returned -->' +JSON.stringify(result));
+
+            if(result.length == 0){
+                console.log('callback with err called');
+                callback(null, false);
+            }else{
+                callback(null, result);
+            }
+
+        });
+	},
 
   	getUserActivity: function(userid, filtervalue, sortvalue, postval, callback){
 

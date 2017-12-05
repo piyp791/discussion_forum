@@ -21,6 +21,29 @@ module.exports = function(app) {
         });
     });
 
+    app.get('/getPreferences/:userid', function(req, res){
+
+        var userid = req.params.userid;
+
+        //get user tags
+        misc.getPreferences(userid, function(err ,data){
+
+            console.log('data-->' +JSON.stringify(data));
+            if (JSON.stringify(data) == "{}"){
+                misc.getUserTags(userid, function(err, data){
+
+                    console.log('getting user tags');
+                    res.render('preferences.ejs', {'tags': JSON.stringify(data), 'history':[]});
+                });
+            }else{
+                res.render('preferences.ejs', {'tags': JSON.stringify(data), 'history':[]});
+            }
+
+        });
+
+
+    });
+
     app.get('/getlatest', function(req, res){
 
         dbHelper.getHomePageLinks('latest', -1, function(err, data){
@@ -42,6 +65,17 @@ module.exports = function(app) {
         });
     });
 
+    app.post('/savePreferences', function(req, res){
+
+        var preferences = req.body.preferences;
+        var userId = req.body.userid;
+        console.log('saving user preferences-->' +JSON.stringify(preferences));
+        console.log('saving userid-->' +userId);
+        misc.savePreferences(preferences, userId, function(err, result){
+            res.json({'status': 'success'})
+        });
+    });
+
     app.get('/getrecommended/:userid', function(req, res){
 
         var userid = req.params.userid;
@@ -50,15 +84,52 @@ module.exports = function(app) {
             res.json(JSON.stringify({'status': 'failure'}))
         }
 
-        misc.getContentBasedResults(userid, function(err, contentPosts){
+        misc.getPreferences(userid, function(err, preferences){
+            if(JSON.stringify(preferences) == "{}"){
 
-            console.log('content based results -->' +JSON.stringify(contentPosts));
+                misc.getUserTags(userid, function(err, tags){
 
-            misc.getCollaborativeResults(userid, function(err, collaborativePosts){
+                    console.log('user tags-->' +JSON.stringify(tags));
 
-                console.log('collaborative filtering results -->' +JSON.stringify(collaborativePosts));
-            });
-        });
+                    var preferences = {};
+                    preferences['tags'] = {};
+                    for(let tag of tags){
+                        preferences['tags'][tag] = 1;
+                    }
+
+                    preferences['source'] = {};
+
+                    preferences['source']['content'] = 0.5;
+                    preferences['source']['cf'] = 0.5;
+
+                    console.log('preferences-->' +JSON.stringify(preferences));
+
+                    misc.getContentBasedResults(userid, preferences, function(err, contentPosts){
+
+                        console.log('content based results -->' +JSON.stringify(contentPosts));
+
+                        misc.getCollaborativeResults(userid, function(err, collaborativePosts){
+
+                            console.log('collaborative filtering results -->' +JSON.stringify(collaborativePosts));
+                            res.json({'content': contentPosts, 'cf': collaborativePosts});
+                        });
+                    });
+                });
+            }else{
+                misc.getContentBasedResults(userid, preferences, function(err, contentPosts){
+
+                    console.log('content based results -->' +JSON.stringify(contentPosts));
+
+                    misc.getCollaborativeResults(userid, function(err, collaborativePosts){
+
+                        console.log('collaborative filtering results -->' +JSON.stringify(collaborativePosts));
+                        res.json({'content': contentPosts, 'cf': collaborativePosts});
+                    });
+                });
+            }
+        })
+
+
     });
 
     app.get('/page/:link', function(req, res){
@@ -95,10 +166,29 @@ module.exports = function(app) {
                 }
                 
             }
-
         })
-
     });
+
+    app.post('/commentOnHighlight', function(req, res){
+
+        var comment = req.body.comment;
+        var title = req.body.title;
+        var text = req.body.text;
+
+        console.log('comment-->' +comment);
+        console.log('title-->' +title);
+        console.log('text-->'+text);
+
+        dbHelper.addCommentOnHighlight(comment, title, text, function(err, data){
+
+            if(err){
+                console.log('some error!!');
+            }else{
+                res.json({'status': 'success'});
+            }
+        });
+    });
+
 
     app.get('/users/id/:userid', function(req, res){
         var userid = req.params.userid;
@@ -215,8 +305,6 @@ module.exports = function(app) {
                 console.log('result from database-->' +JSON.stringify(data));
                 res.json(data);
             }
-
         });
-
     });
 }

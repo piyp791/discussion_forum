@@ -43,14 +43,12 @@ function getHomeLinks(homePageContent, div){
 
         //console.log('home page content ->' +JSON.stringify(homePageContent[i]));
 
-        if(div == 'recommended-content'){
-            var link = homePageContent[i]['_source']['title']
-        }else{
-            var link = homePageContent[i].Title;
-        }
+
+        var link = homePageContent[i].Title;
+
         
         console.log('link-->', link);
-        link = link.replace("?", "%3F")
+        link = link.replace("?", "%3F");
 
         if(div == 'recommended-content'){
             var date = '---'
@@ -58,7 +56,7 @@ function getHomeLinks(homePageContent, div){
             var date = homePageContent[i].CreationDate;
         }
         
-        console.log('date-->', date)
+        console.log('date-->', date);
 
 
         if(div == 'recommended-content'){
@@ -67,16 +65,16 @@ function getHomeLinks(homePageContent, div){
             var views = homePageContent[i].ViewCount;
         }
        
-        console.log('views-->', views)
+        console.log('views-->', views);
 
         var a = document.createElement('a');
         a.title = link;
 
         var linktext = link.includes("?")?link.replace("?", "%3F"):link;
         var linktext = link.includes("'")?link.replace("'", "%27"):link;
-        console.log('linktext-->', linktext)
+        console.log('linktext-->', linktext);
 
-        a.href = '/page/' + linktext
+        a.href = '/page/' + linktext;
 
         var cell = document.createElement("td");
         var cellText = document.createTextNode(date.substring(0, date.indexOf('T')));
@@ -127,23 +125,53 @@ $(document).ready(function(){
             console.log('logged in user-->' +loggedInUser);
             if(loggedInUser && loggedInUser!=''){
 
+                //get preferences
+                var preferences = localStorage.getItem('preferences');
+                preferences = JSON.parse(preferences);
+
+                console.log('preferences-->' +JSON.stringify(preferences));
+
+                //send tag preferences to server
+                var tagPreferences = preferences['tag'];
+
+                //group preferences on the basis of tag values
+
+
                 $.get( "/getrecommended/"+loggedInUser , function( data ) {
-                    console.log(JSON.stringify(data));
+                    var contentBasedResults = data['content']['hits']['hits'];
+                    var cfResults = data['cf'];
+
+
+                    //check preferences
+                    var combinedResults = [];
+                    //console.log(JSON.stringify(contentBasedResults));
+                    for(let result of contentBasedResults){
+                        console.log('result-->' +JSON.stringify(result));
+                        var obj = {};
+                        obj['Title'] = result['_source']['title'];
+                        let found = false;
+                        for(let item of combinedResults){
+                            if(item['Title'] == obj['Title']){
+                                found = true
+                                break;
+                            }
+                        }
+                        if(!found){
+                            combinedResults.push(obj);
+                            found = false;
+                        }
+                    }
+                    for(let cfresult of cfResults){
+                        var obj = {};
+                        obj['Title'] = cfresult;
+                        combinedResults.push(obj);
+                    }
+                    console.log('combined results-->' +JSON.stringify(combinedResults));
                     $('#recommended-content').html("");
-                    getHomeLinks(data, 'recommended-content');
-                    //$('#latest-content').html("")
-                    //getHomeLinks(data, 'latest-content')
-                    //$('#latest-content').html(JSON.stringify(data))
+                    getHomeLinks(combinedResults, 'recommended-content');
                 });
 
             }else{
-
-                 /*$.get( "/getrecommended/-1" , function( data ) {
-                    console.log('response from recommendation api->' +JSON.stringify(data));
-                    $('#recommended-content').html("");
-                    getHomeLinks(data, 'recommended-content');
-                    //$('#latest-content').html(JSON.stringify(data))
-                 });*/
                  alert('No recommendation since not logged in...');
             }
         }

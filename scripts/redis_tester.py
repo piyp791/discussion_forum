@@ -6,7 +6,7 @@ from redis_helper import save_obj_in_redis
 
 def main():
 
-	tfidf_obj = load_obj_from_redis('tfidf_obj');
+	'''tfidf_obj = load_obj_from_redis('tfidf_obj');
 	user_activity_obj = load_obj_from_redis('user_activity_obj');
 	user_keywords_store = {};
 
@@ -30,7 +30,6 @@ def main():
 							user_keywords_store[userid] = user_keywords_store[userid].append(keywords[:60]);
 
 
-
 	count = 0;
 	for user in user_keywords_store:
 		mylist = user_keywords_store[user];
@@ -44,14 +43,12 @@ def main():
 
 
 	save_obj_in_redis('user_keywords_store', user_keywords_store )
-	#user_keywords_store = load_obj_from_redis('user_keywords_store')
 	for user in user_keywords_store:
 		print user
-		print user_keywords_store[user];
-		#newlist = sorted(user_keywords_store[user], key=itemgetter('score'), reverse=True)
-		#print newlist[:10]
-		#break;
-	#print user_keywords_store;'''
+		print user_keywords_store[user];'''
+
+	load_obj_from_redis()
+		
 
 
 if __name__ == "__main__":
