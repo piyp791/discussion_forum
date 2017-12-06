@@ -40,9 +40,47 @@ module.exports = function(app) {
             }
 
         });
-
-
     });
+
+    app.get('/getUserPreferences/:userid', function(req, res){
+
+        //get user tags
+        var userid = req.params.userid;
+        misc.getPreferences(userid, function(err ,data){
+
+            console.log('data-->' +JSON.stringify(data));
+            if (JSON.stringify(data) == "{}"){
+                misc.getUserTags(userid, function(err, data){
+
+                    console.log('getting user tags');
+                    res.json({'tags': JSON.stringify(data), 'history':[]});
+                });
+            }else{
+                res.json({'tags': JSON.stringify(data), 'history':[]});
+            }
+
+        });
+    });
+
+    app.get('/getUserTags/:userid', function(req, res){
+
+        var userid = req.params.userid;
+
+        misc.getUserTags(userid, function(err, data){
+
+            console.log('user tags-->' +JSON.stringify(data));
+             if (JSON.stringify(data) == "{}"){
+                misc.getUserTags(userid, function(err, data){
+
+                    console.log('getting user tags');
+                    res.json({'tags': JSON.stringify(data), 'history':[]});
+                });
+            }else{
+                res.json({'tags': JSON.stringify(data), 'history':[]});
+            }
+
+        });
+    })
 
     app.get('/getlatest', function(req, res){
 
@@ -272,12 +310,14 @@ module.exports = function(app) {
 
         var title = req.body.title;
         var text = req.body.text;
+        var parentID = req.body.parentID;
 
         console.log('title-->' + title);
         console.log('text-->' +text);
+        console.log('parent id-->' +parentID);
 
         //store in database this information
-        dbHelper.storeHighlightDetails(title, text, function(err, data){
+        dbHelper.storeHighlightDetails(title, text, parentID, function(err, data){
 
             if(err){
                 console.log('some error while storing highlight details');

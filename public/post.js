@@ -158,10 +158,67 @@ function setOnLinksHover(){
                 behavior: "smooth", // or "auto" or "instant"
                 block: "start" // or "end"
             });
-
         })
     });
 }
+
+
+function setHighlightsParents(){
+
+    console.log('set parents of highlights');
+
+     $(".highlight_parent").each( function () {
+        var id = $(this).attr('id');
+        console.log(id);
+        var parentPostid = id.substring(17);
+        console.log(parentPostid);
+
+        $(this).hover(function(e){
+            //alert('hover');
+            console.log('id-->' +id);
+            console.log('hover on-->' +parentPostid);
+
+            $("#"+parentPostid)[0].scrollIntoView({
+                behavior: "smooth", // or "auto" or "instant"
+                block: "start" // or "end"
+            });
+        })
+    });
+}
+
+
+function incLikeVote(){
+
+    $('.likehighlight').each(function(){
+
+        var id = $(this).attr('id');
+        console.log('like butttons-->' +id);
+
+         $(this).click(function(e){
+            //alert('hover');
+            console.log('id-->' +id);
+
+            //get text of the highlight
+            var el = $(this).parent().find( "p" ).attr( "class", "my_highlight_text" );
+            el = el[1]
+
+            console.log('Parent id-->' +id.substring(19))
+
+            console.log(el.innerHTML);
+
+            $.post( "/highlight", {'title' :  $(document).attr('title'), 'text': el.innerHTML, 'parentID': id.substring(19) }, function( data ) {
+
+                 console.log('data-->' +JSON.stringify(data));
+
+                 //increase value of button value
+                 var el = el.find( "span" ).attr( "class", "my_highlight_text" );
+            });
+           
+        })
+
+    });
+}
+
 
 /*populates resources (links extracted from the page into the resources window pane)*/
 function populateResources(content){
@@ -264,6 +321,7 @@ function populateResources(content){
     });
 }
 
+
 function getHighlights(){
 
     var title = $(document).attr('title');
@@ -272,7 +330,7 @@ function getHighlights(){
 
         console.log('highlights->'+JSON.stringify(data));
 
-
+    
          var highlightslist = document.createElement('ul');
          var highlightstab = document.getElementById('highlightcontent');
          highlightstab.innerHTML = "";
@@ -293,8 +351,20 @@ function getHighlights(){
         }
         else if(data){
 
+            //rearrange data on the basis of score 
+            //calculated on the basis of post rating 
+            //and highlight rating
+            //sorterArray = JSON.parse(data);
+            sorterArray = data.sort(function(a,b){ 
+                var ascore = a['NumOfHighlights'] /*+ a['parentscore']*/;  
+                var bscore = b['NumOfHighlights'] /*+ b['parentscore']*/;
+                return bscore - ascore;
+            });
+
+            console.log('sorter array-->'+JSON.stringify(sorterArray));
+
             var prevID = -1;
-            for(var text of data){
+            for(var text of sorterArray){
                 $('#pagebody').highlight(text.Text);
 
                 //populate the highlighted text in the highlights section
@@ -314,9 +384,33 @@ function getHighlights(){
                 if(currentID!=prevID){
 
                     //add separate post to pane.
+                    var parent_id = text.ParentID;
+                    voteid = parent_id.substring(parent_id.indexOf('-')+1);
+                    console.log('vote id-->' +voteid);
+                    voteid = 'vote-' +voteid;
+                    console.log('vote id-->' +voteid);
+                    var votecount = $("#" +voteid).find("span").html();
+                    console.log('votecount=->' +votecount);
+
+
                     prevID = currentID;
                     var highlightedItem = document.createElement('li');
-                    highlightedItem.innerHTML = text.Text;
+
+
+                    var p = document.createElement('p');
+                    p.innerHTML = '<b><a class =  "highlight_parent" href = "#" id = \'highlight_parent-' + text.ParentID +  '\'>Parent Post Link.</a></b>';
+            p.innerHTML +=  '<span style = "border:solid black 1px; margin-left:8px;"><span style = "padding:5px" class="glyphicon glyphicon-thumbs-up"></span>' +  votecount + '</span>';
+            p.style.textAlign = 'left';
+            highlightedItem.appendChild(p);
+
+                  
+
+                    var highlightText = document.createElement('p');
+                    highlightText.innerHTML = text.Text;
+                    highlightText.className = 'my_highlight_text';
+
+
+                    highlightedItem.appendChild(highlightText);
                     highlightslist.appendChild(highlightedItem);
 
                     highlightedItem.append(document.createElement('br'));
@@ -325,6 +419,9 @@ function getHighlights(){
                     like.href = '#';
                     like.className = 'btn btn-info btn-sm';
                     like.style.marginRight = '8px';
+                    like.classList.add('likehighlight');
+                    like.id = 'like-highlight-btn-' +text.ParentID;
+                    
 
                     var likebtn = document.createElement('span');
                     likebtn.className = "glyphicon glyphicon-thumbs-up";
@@ -353,7 +450,10 @@ function getHighlights(){
                     highlightedItem.appendChild(comment);
                 }
             }
-        }
 
+            setHighlightsParents();
+
+            incLikeVote();
+        }
      });
 }

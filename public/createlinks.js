@@ -49,6 +49,10 @@ function createPostLogInLinks(){
 			removePostLoginLinks();
 			createPreLoginLinks();
 
+			//remove user model from home page
+			document.getElementById("piechart").innerHTML = "";
+			window.tagarr = null;
+
 		}
 		
 		navbar.appendChild(signoutlink);

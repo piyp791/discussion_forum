@@ -28,6 +28,53 @@ function doLogin(){
 				removePreLoginLinks()
 				//add new elements to nav bar
 				createPostLogInLinks();
+
+				$.get( "/getUserPreferences/" +accid , function( data ) {
+            		//console.log(JSON.stringify(data));
+            		var tags = data.tags;
+            		console.log('tags-->' +tags)
+            		tags = JSON.parse(tags);
+            		//console.log(tags['tags'])
+
+            		var tagsObj = tags['tags'];
+            		console.log('tag obj-->' +JSON.stringify(tagsObj));
+
+            		window.tagarr = [];
+            		tagarr.push(['Tags', 'Preference'])
+            		for (tag in tagsObj){
+            			var temp = [];
+            			console.log('tag-->' +tag);
+            			temp.push(tag);
+            			temp.push(tagsObj[tag])
+            			tagarr.push(temp)
+            		}
+            		console.log(tagarr)
+
+            		$.get( "/getUserTags/" +accid , function( data ) {
+
+            			console.log('real tags-->' +JSON.stringify(data.tags))
+
+            			realtags = JSON.parse(data.tags);
+
+            			tagarr = []
+            			tagarr.push(['Tags', 'Preference'])
+            			for(temptag in realtags){
+            				tagarr.push([realtags[temptag], 1])
+            			}
+
+            			console.log('new tag arr-->'+JSON.stringify(tagarr));
+
+            			google.charts.load('current', {'packages':['corechart']});
+            			google.charts.setOnLoadCallback(drawChart);
+            		});
+            		
+            		//$('#latest-content').html(JSON.stringify(data)
+            	});
+
+            	//window.tagarr = tagarr;
+
+            	
+				
 			}else{
 				//alert('Invalid username');
 				$('#loginresult').html('It seems the username doesn\'t exist!!');

@@ -149,7 +149,7 @@ module.exports = {
   		});
   	},
 
-    storeHighlightDetails: function(title, text, callback){
+    storeHighlightDetails: function(title, text, parentID, callback){
 
       if(!connection){
         connection = connect();
@@ -158,7 +158,7 @@ module.exports = {
       title = title.replace(/"/g,"")
       console.log('title-->' +title)
 
-      var query = "INSERT INTO Highlights (Title, Text, NumOfHighlights) VALUES (\"" + title + "\", \"" + text +"\", 1) ON DUPLICATE KEY UPDATE NumOfHighlights = NumOfHighlights + 1"
+      var query = "INSERT INTO Highlights (Title, Text, NumOfHighlights, ParentID) VALUES (\"" + title + "\", \"" + text +"\", 1, \""  + parentID + "\") ON DUPLICATE KEY UPDATE NumOfHighlights = NumOfHighlights + 1"
 
       //var query = "Replace into Highlights set Title = \"" +title + "\", Text = \"" + text + "\", NumOfHighlights = NumOfHighlights + 1"; 
 
@@ -193,7 +193,7 @@ module.exports = {
       title = title.replace(/"/g,"");
       console.log('title-->' +title);
       //str = str.replace(/abc/g, '');
-		var query = "SELECT Highlights.ID, Highlights.Title, Highlights.Text, Highlights.NumOfHighlights, Highlights_Comments.Comment FROM Highlights LEFT JOIN Highlights_Comments ON Highlights.Title=Highlights_Comments.Title and Highlights.Text=Highlights_Comments.Text where Highlights.Title = \"" +title + "\" order by Highlights.ID";
+		var query = "SELECT Highlights.ID, Highlights.Title, Highlights.Text, Highlights.NumOfHighlights, Highlights.ParentID,   Highlights_Comments.Comment FROM Highlights LEFT JOIN Highlights_Comments ON Highlights.Title=Highlights_Comments.Title and Highlights.Text=Highlights_Comments.Text where Highlights.Title = \"" +title + "\" order by Highlights.ID";
 
       console.log('query-->' +query);
 

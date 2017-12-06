@@ -58,9 +58,9 @@ predictions = algo.test(testset)
 
 top_n = get_top_n(predictions, n=10)
 
-#r = redis.Redis('localhost')
-#p_mydict = pickle.dumps(top_n)
-#r.hset('test', 'suggestions_dict',json.dumps(top_n))
+r = redis.Redis('localhost')
+p_mydict = pickle.dumps(top_n)
+r.hset('test', 'suggestions_dict',json.dumps(top_n))
 
 #print(len(top_n))
 print(top_n)

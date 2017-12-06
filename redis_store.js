@@ -96,12 +96,13 @@ module.exports = {
 
         return new Promise(function(resolve, reject){
             client.hget('test', 'user_keywords_store', function (err, replies) {
-                //console.log(replies);
+                //console.log(JSON.stringify(replies));
                 replies = JSON.parse(replies);
+                console.log(replies);
                 if(userid in replies){
+                    console.log('length of replies-->' +replies.length);
                     var queryStr = '';
-                    replies = replies[userid];
-                    for(var word of replies) {
+                    for(var word of replies[userid]) {
                         queryStr += (word['n-gram'] + ' ');
                     }
                     resolve(queryStr);

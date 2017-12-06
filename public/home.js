@@ -133,7 +133,6 @@ $(document).ready(function(){
 
                 //send tag preferences to server
                 var tagPreferences = preferences['tag'];
-
                 //group preferences on the basis of tag values
 
 

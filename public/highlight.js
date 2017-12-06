@@ -87,7 +87,7 @@ $(document).ready(function() {
             console.log('id-->' +parentPost.id);
             if(parentPost && parentPost.id){
                 console.log('parent post id-->' +parentPost.id);
-                $.post( "/highlight", {'title' :  $(document).attr('title'), 'text': finalSelectedText }, function( data ) {
+                $.post( "/highlight", {'title' :  $(document).attr('title'), 'text': finalSelectedText, 'parentID': parentPost.id }, function( data ) {
                     console.log('data-->' +JSON.stringify(data));
                     if(data.status == 'success'){
                         $('#pagebody').highlight(finalSelectedText);

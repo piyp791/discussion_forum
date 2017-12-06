@@ -6,7 +6,7 @@ from redis_helper import save_obj_in_redis
 
 def main():
 
-	'''tfidf_obj = load_obj_from_redis('tfidf_obj');
+	tfidf_obj = load_obj_from_redis('tfidf_obj');
 	user_activity_obj = load_obj_from_redis('user_activity_obj');
 	user_keywords_store = {};
 
@@ -45,7 +45,7 @@ def main():
 	save_obj_in_redis('user_keywords_store', user_keywords_store )
 	for user in user_keywords_store:
 		print user
-		print user_keywords_store[user];'''
+		print user_keywords_store[user];
 
 	load_obj_from_redis()
 		
