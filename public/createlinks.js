@@ -3,6 +3,8 @@
 /*author: ppapreja*/
 
 /*opens login modal on login/signup link click*/
+"use strict";
+
 function openModal(action){
 	console.log('action -->' +action);
 	if(action == 'login'){

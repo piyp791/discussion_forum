@@ -3,6 +3,7 @@
 /*author: ppapreja*/
 
 /*implements popover opening on comment button click.*/
+"use strict";
 $(".comment-btn").popover({
 
     title: '<h3 class="custom-title"><span class="glyphicon glyphicon-info-sign"></span> You\'re almost there!</h3>',

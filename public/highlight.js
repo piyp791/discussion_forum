@@ -1,3 +1,4 @@
+"use strict";
 console.log('*******************first line of code....********************');
 
 if (!window.x) {

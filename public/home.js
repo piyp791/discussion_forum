@@ -4,6 +4,7 @@
 
 
 //gets home page links for the 3 tabs (recommended, latest and trending)
+"use strict";
 function getHomeLinks(homePageContent, div){
 
     homePageContent = eval(homePageContent);
