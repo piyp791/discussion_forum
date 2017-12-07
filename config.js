@@ -7,7 +7,7 @@ module.exports = {
     //dbUri: 'localhost',
     dbPort: 3306,
     dbUser: 'peps0791',
-    dbUser: 'root',
+    //dbUser: 'root',
     dbPassword: 'piyush0791'
   }
 };
