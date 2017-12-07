@@ -259,15 +259,15 @@ function populateResources(content){
             var linkel = document.createElement('a');
 
             var p = document.createElement('p');
-            p.innerHTML = '<b><a class = \'' +  linkObj['class'] + '\' href = "#" id = \'' + linkObj['id'] +  '\'>Parent Post Link.</a></b>';
+            p.innerHTML = '<b><a class = \'' +  linkObj['class'] + '\' href = "#" id = \'' + linkObj['LinkID'] +  '\'>Parent Post Link.</a></b>';
             p.innerHTML +=  '<span style = "border:solid black 1px; margin-left:8px;"><span style = "padding:5px" class="glyphicon glyphicon-thumbs-up"></span>' +  linkObj['votes'] + '</span>';
             p.style.textAlign = 'left';
             el.appendChild(p);
 
             el.appendChild(linkel);
             list.appendChild(el);
-            linkel.innerHTML = linkObj['html'];
-            linkel.href = linkObj['link'];
+            linkel.innerHTML = linkObj['href'];
+            linkel.href = linkObj['href'];
             linkel.id = linkObj['id'];
             linkel.className = linkObj['class'];
 

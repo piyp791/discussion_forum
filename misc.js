@@ -1,5 +1,6 @@
 var esUtil = require('./es-util');
 var redis = require('./redis_store');
+var dbHelper = require('./db-helper');
 
 module.exports = {
 
@@ -79,7 +80,8 @@ module.exports = {
 
     getPageLinks: async function(questionId, callback){
 
-        pagelinks = await redis.getObjLinks(questionId);
+        pagelinks = await dbHelper.getPageLinks(questionId);
+        //pagelinks = await redis.getObjLinks(questionId);
         callback(null, pagelinks);
     }
 }

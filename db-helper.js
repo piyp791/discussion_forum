@@ -215,6 +215,28 @@ module.exports = {
       });
     },
 
+    getPageLinks: function(questionid){
+        return new Promise(function(resolve, reject){
+
+          if(!connection){
+            connection = connect();
+          }
+
+          var query = "select * from Link_Store where PostID = " +questionid;
+          console.log('query-->' +query);
+
+          connection.query(query, function(err, result, fields){
+            if(err){
+              console.log(err);
+              resolve([])
+            }
+
+            console.log('number of rows returned -->' +JSON.stringify(result));
+            resolve(result)
+          });
+      })
+    },
+
     addCommentOnHighlight: function(comment, title, text, callback){
         if(!connection){
             connection = connect();

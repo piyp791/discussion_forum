@@ -49,6 +49,7 @@ $(document).ready(function() {
                 }
             }
             window.finalSelectedText = selectedText;
+            console.log('final selected text-->' +finalSelectedText);
             $('ul.tools').css({
                 'left': pageX + 5,
                 'top' : pageY - 55
@@ -103,9 +104,6 @@ $(document).ready(function() {
                         getHighlights();
                         //show selected comment in the highlights tab
                         setHighlightHovers();
-
-
-
                     }else{
                         alert('some problem saving the highlight!!!');
                     }
