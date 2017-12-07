@@ -1,7 +1,6 @@
 var express = require('express');
 var dbHelper = require('./db-helper');
 var misc = require('./misc');
-var redisHelper = require('./redis_store');
 
 module.exports = function(app) {
 
@@ -20,67 +19,6 @@ module.exports = function(app) {
             }
         });
     });
-
-    app.get('/getPreferences/:userid', function(req, res){
-
-        var userid = req.params.userid;
-
-        //get user tags
-        misc.getPreferences(userid, function(err ,data){
-
-            console.log('data-->' +JSON.stringify(data));
-            if (JSON.stringify(data) == "{}"){
-                misc.getUserTags(userid, function(err, data){
-
-                    console.log('getting user tags');
-                    res.render('preferences.ejs', {'tags': JSON.stringify(data), 'history':[]});
-                });
-            }else{
-                res.render('preferences.ejs', {'tags': JSON.stringify(data), 'history':[]});
-            }
-
-        });
-    });
-
-    app.get('/getUserPreferences/:userid', function(req, res){
-
-        //get user tags
-        var userid = req.params.userid;
-        misc.getPreferences(userid, function(err ,data){
-
-            console.log('data-->' +JSON.stringify(data));
-            if (JSON.stringify(data) == "{}"){
-                misc.getUserTags(userid, function(err, data){
-
-                    console.log('getting user tags');
-                    res.json({'tags': JSON.stringify(data), 'history':[]});
-                });
-            }else{
-                res.json({'tags': JSON.stringify(data), 'history':[]});
-            }
-
-        });
-    });
-
-    app.get('/getUserTags/:userid', function(req, res){
-
-        var userid = req.params.userid;
-
-        misc.getUserTags(userid, function(err, data){
-
-            console.log('user tags-->' +JSON.stringify(data));
-             if (JSON.stringify(data) == "{}"){
-                misc.getUserTags(userid, function(err, data){
-
-                    console.log('getting user tags');
-                    res.json({'tags': JSON.stringify(data), 'history':[]});
-                });
-            }else{
-                res.json({'tags': JSON.stringify(data), 'history':[]});
-            }
-
-        });
-    })
 
     app.get('/getlatest', function(req, res){
 
@@ -101,73 +39,6 @@ module.exports = function(app) {
         misc.getPageLinks(questionId, function(err, links){
             res.json(JSON.stringify(links));
         });
-    });
-
-    app.post('/savePreferences', function(req, res){
-
-        var preferences = req.body.preferences;
-        var userId = req.body.userid;
-        console.log('saving user preferences-->' +JSON.stringify(preferences));
-        console.log('saving userid-->' +userId);
-        misc.savePreferences(preferences, userId, function(err, result){
-            res.json({'status': 'success'})
-        });
-    });
-
-    app.get('/getrecommended/:userid', function(req, res){
-
-        var userid = req.params.userid;
-
-        if(!userid){
-            res.json(JSON.stringify({'status': 'failure'}))
-        }
-
-        misc.getPreferences(userid, function(err, preferences){
-            if(JSON.stringify(preferences) == "{}"){
-
-                misc.getUserTags(userid, function(err, tags){
-
-                    console.log('user tags-->' +JSON.stringify(tags));
-
-                    var preferences = {};
-                    preferences['tags'] = {};
-                    for(let tag of tags){
-                        preferences['tags'][tag] = 1;
-                    }
-
-                    preferences['source'] = {};
-
-                    preferences['source']['content'] = 0.5;
-                    preferences['source']['cf'] = 0.5;
-
-                    console.log('preferences-->' +JSON.stringify(preferences));
-
-                    misc.getContentBasedResults(userid, preferences, function(err, contentPosts){
-
-                        console.log('content based results -->' +JSON.stringify(contentPosts));
-
-                        misc.getCollaborativeResults(userid, function(err, collaborativePosts){
-
-                            console.log('collaborative filtering results -->' +JSON.stringify(collaborativePosts));
-                            res.json({'content': contentPosts, 'cf': collaborativePosts});
-                        });
-                    });
-                });
-            }else{
-                misc.getContentBasedResults(userid, preferences, function(err, contentPosts){
-
-                    console.log('content based results -->' +JSON.stringify(contentPosts));
-
-                    misc.getCollaborativeResults(userid, function(err, collaborativePosts){
-
-                        console.log('collaborative filtering results -->' +JSON.stringify(collaborativePosts));
-                        res.json({'content': contentPosts, 'cf': collaborativePosts});
-                    });
-                });
-            }
-        })
-
-
     });
 
     app.get('/page/:link', function(req, res){

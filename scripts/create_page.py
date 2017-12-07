@@ -306,7 +306,7 @@ def main():
 			content = createContent(title, quesId, body, userInfoHTML, score, views, commentStr, answerStr);
 
 			#print content
-			print 'processed ', quesId
+			print ('processed ', quesId)
 			f.write(content);
 			f.close();
 
