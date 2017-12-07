@@ -80,7 +80,7 @@ function setHighlightHovers(){
 
         $(this).click(function(e){
 
-            currentelement = $(this);
+            var currentelement = $(this);
 
             console.log(currentelement.html());
             finalSelectedText = currentelement.html();
@@ -240,15 +240,15 @@ function populateResources(content){
     $.get("/getPageLinks/" +quesId, function(data, status){
         console.log("Data: " + data + "\nStatus: " + status);
 
-        sorterArray = JSON.parse(data);
+        var sorterArray = JSON.parse(data);
         sorterArray = sorterArray.sort(function(a,b){ var ascore = a['likes'] + a['dislikes'] + 0.5*a['views'] + 2*a['likes'] - 2.5*a['dislikes']; var bscore = b['likes'] + b['dislikes'] + 0.5*b['views'] + 2*b['likes'] - 2.5*b['dislikes'];return bscore - ascore;});
 
         console.log('links array-->' +JSON.stringify(sorterArray))
 
         var index = 0;
 
-        startindex = 0;
-        endindex = 0;
+        var startindex = 0;
+        var endindex = 0;
 
         var list = document.createElement('ul');
         var resourcestab = document.getElementById('resourcescontent');
@@ -356,6 +356,7 @@ function getHighlights(){
             //calculated on the basis of post rating 
             //and highlight rating
             //sorterArray = JSON.parse(data);
+            var sorterArray;
             sorterArray = data.sort(function(a,b){ 
                 var ascore = a['NumOfHighlights'] /*+ a['parentscore']*/;  
                 var bscore = b['NumOfHighlights'] /*+ b['parentscore']*/;
@@ -386,7 +387,7 @@ function getHighlights(){
 
                     //add separate post to pane.
                     var parent_id = text.ParentID;
-                    voteid = parent_id.substring(parent_id.indexOf('-')+1);
+                    var voteid = parent_id.substring(parent_id.indexOf('-')+1);
                     console.log('vote id-->' +voteid);
                     voteid = 'vote-' +voteid;
                     console.log('vote id-->' +voteid);

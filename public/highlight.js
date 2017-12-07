@@ -2,7 +2,7 @@
 console.log('*******************first line of code....********************');
 
 if (!window.x) {
-    x = {};
+    window.x = {};
 }
 
 x.Selector = {};
