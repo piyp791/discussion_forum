@@ -58,7 +58,7 @@ def insertIntoPosts(keyStr, value_arr, cnx):
 	print 'format str-->', formatStr;
 	print 'value array -->', value_arr;
 
-	add_user = ("INSERT INTO Tags (" + keyStr + ") VALUES (" + value_arr  + ")");
+	add_user = ("INSERT INTO Comments (" + keyStr + ") VALUES (" + value_arr  + ")");
 
 	#values_arr = 'some text';
 	#add_user = ("INSERT INTO Posts ( Body ) VALUES ('" +values_arr + "' )");
@@ -84,7 +84,7 @@ def main():
 	cnx = getConn()
 	print cnx
 	print 'Hello World'
-	xmldoc = minidom.parse('../data/robotics.stackexchange.com/Tags.xml');
+	xmldoc = minidom.parse('../data/robotics.stackexchange.com/Comments.xml');
 	#doc = ET.parse("apple.meta.stackexchange.com/Posts.xml");
 	itemlist = xmldoc.getElementsByTagName('row')
 

@@ -3,7 +3,6 @@ import xml.etree.ElementTree as ET
 import re
 from bs4 import BeautifulSoup as bshtml
 import html
-from redis_helper import save_obj_in_redis
 from random import randrange
 import mysql.connector
 from mysql.connector import errorcode
@@ -89,7 +88,7 @@ def insertIntoDB(linkid, postid, votes, views, dislikes, html, href, likes, clas
 
 	    print ("Data insertion failed!!!");
 	    print(e)
-	    sys.exit();
+	    #sys.exit();
 
 
 def main():
@@ -143,7 +142,7 @@ def main():
 			print link
 			insertIntoDB(link['id'], tempobj, link['votes'], link['views'], link['dislikes'], link['html'], link['href'], link['likes'], link['class'], cnx)
 
-	save_obj_in_redis('linkobjs', linkobjs)
+	#save_obj_in_redis('linkobjs', linkobjs)
 	print 'links information saved'
 
 if __name__ == "__main__":
