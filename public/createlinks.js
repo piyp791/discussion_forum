@@ -59,7 +59,7 @@ function createPostLogInLinks(){
 		
 		navbar.appendChild(signoutlink);
 
-		var preferencesLink = document.createElement('a');
+		/*var preferencesLink = document.createElement('a');
 		preferencesLink.innerHTML = 'Preferences';
 		preferencesLink.id = 'preferenceslink';
 		preferencesLink.style.float = "right";
@@ -69,7 +69,7 @@ function createPostLogInLinks(){
             preferencesLink.href = "getPreferences/" +localStorage.getItem(("userid"));
 		}
 
-		navbar.appendChild(preferencesLink);
+		navbar.appendChild(preferencesLink);*/
 
 		var profilelink = document.createElement('a');
 		profilelink.innerHTML = 'Profile';
@@ -132,8 +132,8 @@ function checkLoggedInUser(){
 		createPostLogInLinks()
 	}
 
-	var aboutlink = document.createElement('a');
+	/*var aboutlink = document.createElement('a');
 	aboutlink.innerHTML = 'About';
 	aboutlink.style.float = "right"
-	navbar.appendChild(aboutlink);
+	navbar.appendChild(aboutlink);*/
 }
