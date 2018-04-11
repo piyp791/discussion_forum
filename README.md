@@ -5,23 +5,6 @@ discussion forum based on stack overflow, with improved usability and accessibil
 
 ![Post Page](/images/post_page.png)
 
-## current progress status
-
-1. Static HTML Pages created from the dataset.
-2. Dataset dumped in MYSQL database.
-3. Home page fetching 10 links from database.
-4. Link clicks on the home page working.
-
-## to-do
-
-1. styling of pages.
-2. adition of javascript code in the static HTML pages to support features like comment, upvote, downvote etc.
-3. implementation of web sockets.
-4. recommendation engine module.
-5. user event tracking code.
-6. integration of recommendation enginw with the work flow.
-7. NLP tasks
-
 ## project set up
 
 ### Node JS project set up.
